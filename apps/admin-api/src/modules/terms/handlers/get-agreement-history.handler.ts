@@ -4,7 +4,7 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { UserTermAgreement } from '#/core/database/entities/terms/user-term-agreement.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { PrincipalContext } from '#/core/http/contexts/principal.context';
-import { AgreementHistoryCursorResponseDto, AgreementHistoryItemDto } from '#/modules/terms/interfaces';
+import { AgreementHistoryCursorResponseDto, AgreementHistoryItemDto } from '#/modules/terms/dto';
 import { GetAgreementHistoryQuery } from '#/modules/terms/queries';
 
 @Injectable()

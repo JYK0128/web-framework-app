@@ -14,12 +14,22 @@ import { NoStore } from '#/core/http/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, FindIdCommand, GenerateTwoFactorCommand, LoginCommand, type LoginResult, LogoutCommand, RefreshCommand, RegisterCommand, RequestEmailVerificationCommand, RequestPasswordResetCommand, ResetPasswordCommand, TwoFactorLoginCommand, UnregisterCommand, VerifyEmailCommand } from '#/modules/auth/commands';
 import { VerifyPhoneNumberCommand } from '#/modules/auth/commands/verify-phone-number.command';
-import { ChangePasswordRequestDto, ChangePasswordResponseDto, DisableTwoFactorResponseDto, EmptyProfileSecurityRequestDto, EnableTwoFactorRequestDto, EnableTwoFactorResponseDto, GenerateTwoFactorResponseDto, LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, RefreshRequestDto, RefreshResponseDto, TwoFactorLoginRequestDto, UnregisterResponseDto } from '#/modules/auth/interfaces';
-import { VerifyPhoneNumberRequestDto, VerifyPhoneNumberResponseDto } from '#/modules/auth/interfaces/verify-phone-number.dto';
+import { ChangePasswordRequestDto, ChangePasswordResponseDto, DisableTwoFactorResponseDto, EmptyProfileSecurityRequestDto, EnableTwoFactorRequestDto, EnableTwoFactorResponseDto, GenerateTwoFactorResponseDto, LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, RefreshRequestDto, RefreshResponseDto, TwoFactorLoginRequestDto, UnregisterResponseDto } from '#/modules/auth/dto';
+import { EmailVerificationRequestDto } from '#/modules/auth/dto/email-verification.request.dto';
+import { EmailVerificationRequestResponseDto } from '#/modules/auth/dto/email-verification-request.response.dto';
+import { FindIdRequestDto } from '#/modules/auth/dto/find-id.request.dto';
+import { FindIdResponseDto } from '#/modules/auth/dto/find-id.response.dto';
+import { PasswordResetRequestDto } from '#/modules/auth/dto/password-reset.request.dto';
+import { PasswordResetResponseDto } from '#/modules/auth/dto/password-reset.response.dto';
+import { PasswordResetRequestResponseDto } from '#/modules/auth/dto/password-reset-request.response.dto';
+import { RegisterRequestDto } from '#/modules/auth/dto/register.request.dto';
+import { RegisterResponseDto } from '#/modules/auth/dto/register.response.dto';
+import { ResetPasswordRequestDto } from '#/modules/auth/dto/reset-password.request.dto';
+import { VerifyEmailRequestDto } from '#/modules/auth/dto/verify-email.request.dto';
+import { VerifyEmailResponseDto } from '#/modules/auth/dto/verify-email.response.dto';
+import { VerifyPhoneNumberRequestDto } from '#/modules/auth/dto/verify-phone-number.request.dto';
+import { VerifyPhoneNumberResponseDto } from '#/modules/auth/dto/verify-phone-number.response.dto';
 import { MeQuery } from '#/modules/auth/queries';
-
-import { EmailVerificationRequestDto, EmailVerificationRequestResponseDto, FindIdRequestDto, FindIdResponseDto, PasswordResetRequestDto, PasswordResetRequestResponseDto, PasswordResetResponseDto, ResetPasswordDto, VerifyEmailDto, VerifyEmailResponseDto } from './interfaces/account-recovery.dto';
-import { RegisterRequestDto, RegisterResponseDto } from './interfaces/registration.dto';
 
 @ApiTags('Auth')
 @UserAuth()
@@ -63,7 +73,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '관리자 이메일 인증 완료' })
   @SwaggerApiResponse(VerifyEmailResponseDto)
-  verifyEmail(@Body() dto: VerifyEmailDto): Promise<VerifyEmailResponseDto> {
+  verifyEmail(@Body() dto: VerifyEmailRequestDto): Promise<VerifyEmailResponseDto> {
     return this.commandBus.execute(new VerifyEmailCommand(dto));
   }
 
@@ -81,7 +91,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '비밀번호 재설정' })
   @SwaggerApiResponse(PasswordResetResponseDto)
-  resetPassword(@Body() dto: ResetPasswordDto): Promise<PasswordResetResponseDto> {
+  resetPassword(@Body() dto: ResetPasswordRequestDto): Promise<PasswordResetResponseDto> {
     return this.commandBus.execute(new ResetPasswordCommand(dto));
   }
 

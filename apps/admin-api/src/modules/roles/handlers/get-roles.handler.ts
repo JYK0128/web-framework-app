@@ -4,7 +4,7 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Role } from '#/core/database/entities/auth.extensions/role.entity';
 import { User } from '#/core/database/entities/auth/user.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { RoleItemDto, RoleListResponseDto } from '#/modules/roles/interfaces';
+import { RoleItemDto, RoleListResponseDto } from '#/modules/roles/dto';
 import { GetRolesQuery } from '#/modules/roles/queries';
 
 @Injectable()

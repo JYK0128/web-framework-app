@@ -8,7 +8,7 @@ import { UserTermAgreement } from '#/core/database/entities/terms/user-term-agre
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { SetAgreementsCommand } from '#/modules/terms/commands';
-import { SetAgreementsResponseDto } from '#/modules/terms/interfaces';
+import { SetAgreementsResponseDto } from '#/modules/terms/dto';
 
 @Injectable()
 @CommandHandler(SetAgreementsCommand)

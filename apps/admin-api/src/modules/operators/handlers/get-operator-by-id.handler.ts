@@ -5,7 +5,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { Account } from '#/core/database/entities/auth/account.entity';
 import { User } from '#/core/database/entities/auth/user.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { GetOperatorByIdResponseDto, OperatorItemDto } from '#/modules/operators/interfaces';
+import { GetOperatorByIdResponseDto, OperatorItemDto } from '#/modules/operators/dto';
 import { GetOperatorByIdQuery } from '#/modules/operators/queries';
 
 @Injectable()

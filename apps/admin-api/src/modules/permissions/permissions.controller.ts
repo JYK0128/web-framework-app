@@ -7,7 +7,7 @@ import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 
-import { PermissionListResponseDto } from './interfaces';
+import { PermissionListResponseDto } from './dto';
 import { GetPermissionsQuery } from './queries';
 
 @ApiTags('permissions')

@@ -6,12 +6,14 @@ import { AdminPermission } from '@pkg/shared';
 import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
+import { GetHolidaysRequestDto } from '#/modules/system-configs/dto/get-holidays.request.dto';
+import { OperatingHolidayListResponseDto } from '#/modules/system-configs/dto/operating-holiday-list.response.dto';
+import { ServiceConfigResponseDto } from '#/modules/system-configs/dto/service-config.response.dto';
+import { UpdateServiceConfigRequestDto } from '#/modules/system-configs/dto/update-service-config.request.dto';
+import { UpdateSystemConfigResponseDto } from '#/modules/system-configs/dto/update-system-config.response.dto';
 
 import { UpdateSystemConfigCommand } from './commands';
-import { GetHolidaysRequestDto } from './dto/get-holidays.request.dto';
-import { OperatingHolidayListResponseDto } from './dto/operating-holiday-list.response.dto';
 import { GetHolidaysQuery, GetSystemConfigQuery } from './queries';
-import { ServiceConfigResponseDto, UpdateServiceConfigRequestDto, UpdateSystemConfigResponseDto } from './system-config.interfaces';
 
 @ApiTags('service-config')
 @UserAuth()

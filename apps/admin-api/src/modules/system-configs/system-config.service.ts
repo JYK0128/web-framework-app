@@ -6,8 +6,9 @@ import { AdminSystemConfigCode, SystemConfig } from '#/core/database/entities/sy
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { NotificationService } from '#/core/notification/notification.service';
 import { env } from '#/env';
-import { AdminEmailConfigResponseDto, UpdateAdminEmailConfigRequestDto } from '#/modules/system-configs/dto/admin-email/admin-email-config.dto';
-import { TestAdminEmailResponseDto } from '#/modules/system-configs/dto/admin-email/test-email.dto';
+import { AdminEmailConfigResponseDto } from '#/modules/system-configs/dto/admin-email/admin-email-config.response.dto';
+import { TestAdminEmailResponseDto } from '#/modules/system-configs/dto/admin-email/test-admin-email.response.dto';
+import { UpdateAdminEmailConfigRequestDto } from '#/modules/system-configs/dto/admin-email/update-admin-email-config.request.dto';
 
 const CONFIG_CODE = AdminSystemConfigCode.EMAIL;
 const AdminEmailConfigSchema = z.object({

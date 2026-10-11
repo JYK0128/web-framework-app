@@ -5,7 +5,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { TermGroup } from '#/core/database/entities/terms/term-group.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { UpdateTermGroupCommand } from '#/modules/terms/commands';
-import { OperatorTermGroupItemDto, UpdateTermGroupResponseDto } from '#/modules/terms/interfaces';
+import { OperatorTermGroupItemDto, UpdateTermGroupResponseDto } from '#/modules/terms/dto';
 
 @Injectable()
 @CommandHandler(UpdateTermGroupCommand)

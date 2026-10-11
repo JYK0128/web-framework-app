@@ -6,7 +6,7 @@ import { Term } from '#/core/database/entities/terms/term.entity';
 import { TermGroup } from '#/core/database/entities/terms/term-group.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { DeleteTermGroupCommand } from '#/modules/terms/commands';
-import { DeleteTermGroupResponseDto } from '#/modules/terms/interfaces';
+import { DeleteTermGroupResponseDto } from '#/modules/terms/dto';
 
 @Injectable()
 @CommandHandler(DeleteTermGroupCommand)

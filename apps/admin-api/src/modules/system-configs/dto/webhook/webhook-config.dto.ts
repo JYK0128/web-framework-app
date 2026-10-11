@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsEnum, IsInt, IsUrl, Max, Min, ValidateIf } from 'class-validator';
 
+import { BaseDto } from '#/core/http/dto/base/base.dto';
 import { defineEnum } from '#/core/schema/enum';
 
 export const WebhookType = defineEnum('WebhookType', {
@@ -12,7 +13,7 @@ export const WebhookType = defineEnum('WebhookType', {
 
 export type WebhookType = (typeof WebhookType)[keyof typeof WebhookType];
 
-export class WebhookConfigDto {
+export class WebhookConfigDto extends BaseDto {
   @ApiProperty({ example: 10, description: '동일 문의 미응답 알림 재발송 간격 (분)' })
   @IsInt()
   @Min(1)

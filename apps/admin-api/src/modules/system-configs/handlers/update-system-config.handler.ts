@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
 import { UpdateSystemConfigCommand } from '#/modules/system-configs/commands';
+import type { UpdateSystemConfigResponseDto } from '#/modules/system-configs/dto/update-system-config.response.dto';
 import { ServiceSystemConfigClient } from '#/modules/system-configs/service-system-config.client';
-import type { UpdateSystemConfigResponseDto } from '#/modules/system-configs/system-config.interfaces';
 
 @Injectable()
 @CommandHandler(UpdateSystemConfigCommand)

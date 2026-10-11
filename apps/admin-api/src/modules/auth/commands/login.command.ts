@@ -1,7 +1,7 @@
 import { Command } from '@nestjs/cqrs';
 
 import type { TokenPairResult } from '#/core/auth/user/user-auth.interface';
-import type { LoginRequestDto } from '#/modules/auth/interfaces';
+import type { LoginRequestDto } from '#/modules/auth/dto';
 
 export interface TwoFactorLoginChallengeResult {
   requiresTwoFactor: true

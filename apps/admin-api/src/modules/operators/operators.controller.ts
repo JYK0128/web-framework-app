@@ -8,7 +8,7 @@ import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 
 import { BanOperatorCommand, CreateOperatorCommand, DeleteOperatorCommand, ResetOperatorTwoFactorCommand, RestoreOperatorCommand, UnbanOperatorCommand, UpdateOperatorRoleCommand } from './commands';
-import { BanOperatorRequestDto, CreateOperatorRequestDto, CreateOperatorResponseDto, GetOperatorByIdResponseDto, GetOperatorOverviewResponseDto, GetOperatorsRequestDto, OperatorActionResponseDto, OperatorPageResponseDto, UpdateOperatorRoleRequestDto } from './interfaces';
+import { BanOperatorRequestDto, CreateOperatorRequestDto, CreateOperatorResponseDto, GetOperatorByIdResponseDto, GetOperatorOverviewResponseDto, GetOperatorsRequestDto, OperatorActionResponseDto, OperatorPageResponseDto, UpdateOperatorRoleRequestDto } from './dto';
 import { GetOperatorByIdQuery, GetOperatorOverviewQuery, GetOperatorsQuery } from './queries';
 
 @ApiTags('operators')

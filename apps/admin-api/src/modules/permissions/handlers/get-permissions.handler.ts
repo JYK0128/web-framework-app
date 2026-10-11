@@ -3,7 +3,7 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { Permission } from '#/core/database/entities/auth.extensions/permission.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { PermissionItemDto, PermissionListResponseDto } from '#/modules/permissions/interfaces';
+import { PermissionItemDto, PermissionListResponseDto } from '#/modules/permissions/dto';
 import { GetPermissionsQuery } from '#/modules/permissions/queries';
 
 @Injectable()

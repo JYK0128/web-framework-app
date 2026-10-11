@@ -6,7 +6,7 @@ import { Role } from '#/core/database/entities/auth.extensions/role.entity';
 import { User } from '#/core/database/entities/auth/user.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { DeleteRoleCommand } from '#/modules/roles/commands';
-import { DeleteRoleResponseDto } from '#/modules/roles/interfaces';
+import { DeleteRoleResponseDto } from '#/modules/roles/dto';
 
 @Injectable()
 @CommandHandler(DeleteRoleCommand)

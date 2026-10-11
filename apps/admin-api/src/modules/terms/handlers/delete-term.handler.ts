@@ -5,7 +5,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { Term } from '#/core/database/entities/terms/term.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { DeleteTermCommand } from '#/modules/terms/commands';
-import { DeleteTermResponseDto } from '#/modules/terms/interfaces';
+import { DeleteTermResponseDto } from '#/modules/terms/dto';
 
 @Injectable()
 @CommandHandler(DeleteTermCommand)

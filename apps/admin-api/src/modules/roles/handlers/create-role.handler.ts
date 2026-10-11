@@ -6,7 +6,7 @@ import { Permission as PermissionEntity } from '#/core/database/entities/auth.ex
 import { Role } from '#/core/database/entities/auth.extensions/role.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { CreateRoleCommand } from '#/modules/roles/commands';
-import { CreateRoleResponseDto } from '#/modules/roles/interfaces';
+import { CreateRoleResponseDto } from '#/modules/roles/dto';
 
 @Injectable()
 @CommandHandler(CreateRoleCommand)

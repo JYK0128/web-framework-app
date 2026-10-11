@@ -7,7 +7,7 @@ import { Public, UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { NoStore } from '#/core/http/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 import { env } from '#/env';
-import { OAuthCallbackRequestDto, OAuthCallbackResponseDto, OAuthProviderListResponseDto } from '#/modules/auth/interfaces';
+import { OAuthCallbackRequestDto, OAuthCallbackResponseDto, OAuthProviderListResponseDto } from '#/modules/auth/dto';
 import { OAuthService } from '#/modules/auth/oauth.service';
 
 @ApiTags('Auth')

@@ -1,6 +1,6 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { UpdateRoleRequestDto, UpdateRoleResponseDto } from '#/modules/roles/interfaces';
+import type { UpdateRoleRequestDto, UpdateRoleResponseDto } from '#/modules/roles/dto';
 
 export class UpdateRoleCommand extends Command<UpdateRoleResponseDto> {
   constructor(public readonly input: { roleId: string, input: UpdateRoleRequestDto }) { super(); }

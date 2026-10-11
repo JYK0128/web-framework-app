@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class FaqItemDto {
+import { BaseDto } from '#/core/http/dto/base/base.dto';
+
+export class FaqItemDto extends BaseDto {
   @ApiProperty() id!: string;
   @ApiProperty() category!: string;
   @ApiProperty() question!: string;

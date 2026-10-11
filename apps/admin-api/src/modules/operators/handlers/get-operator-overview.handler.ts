@@ -3,7 +3,7 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { User } from '#/core/database/entities/auth/user.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { GetOperatorOverviewResponseDto } from '#/modules/operators/interfaces';
+import { GetOperatorOverviewResponseDto } from '#/modules/operators/dto';
 import { GetOperatorOverviewQuery } from '#/modules/operators/queries';
 
 @Injectable()

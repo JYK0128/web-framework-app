@@ -4,7 +4,7 @@ import { ApplicationError } from '@pkg/shared/common';
 
 import { Term } from '#/core/database/entities/terms/term.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { OperatorTermDetailResponseDto, OperatorTermItemDto } from '#/modules/terms/interfaces';
+import { OperatorTermDetailResponseDto, OperatorTermItemDto } from '#/modules/terms/dto';
 import { GetOperatorTermQuery } from '#/modules/terms/queries';
 
 @Injectable()

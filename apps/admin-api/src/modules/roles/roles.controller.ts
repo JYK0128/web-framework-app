@@ -8,7 +8,7 @@ import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 
 import { CreateRoleCommand, DeleteRoleCommand, UpdateRoleCommand } from './commands';
-import { CreateRoleRequestDto, CreateRoleResponseDto, DeleteRoleResponseDto, GetRolesRequestDto, RoleListResponseDto, UpdateRoleRequestDto, UpdateRoleResponseDto } from './interfaces';
+import { CreateRoleRequestDto, CreateRoleResponseDto, DeleteRoleResponseDto, GetRolesRequestDto, RoleListResponseDto, UpdateRoleRequestDto, UpdateRoleResponseDto } from './dto';
 import { GetRolesQuery } from './queries';
 
 @ApiTags('roles')

@@ -7,7 +7,7 @@ import { Role } from '#/core/database/entities/auth.extensions/role.entity';
 import { User } from '#/core/database/entities/auth/user.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { UpdateRoleCommand } from '#/modules/roles/commands';
-import { UpdateRoleResponseDto } from '#/modules/roles/interfaces';
+import { UpdateRoleResponseDto } from '#/modules/roles/dto';
 
 import { normalizePermissions } from './create-role.handler';
 

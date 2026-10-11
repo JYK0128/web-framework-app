@@ -3,7 +3,7 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { Term } from '#/core/database/entities/terms/term.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { TermRevisionPageResponseDto } from '#/modules/terms/interfaces';
+import { TermRevisionPageResponseDto } from '#/modules/terms/dto';
 import { GetTermRevisionsQuery } from '#/modules/terms/queries';
 
 @Injectable()

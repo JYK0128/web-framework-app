@@ -1,6 +1,7 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { TestAdminEmailRequestDto, TestAdminEmailResponseDto } from '#/modules/system-configs/dto/admin-email/test-email.dto';
+import type { TestAdminEmailRequestDto } from '#/modules/system-configs/dto/admin-email/test-admin-email.request.dto';
+import type { TestAdminEmailResponseDto } from '#/modules/system-configs/dto/admin-email/test-admin-email.response.dto';
 
 export class TestAdminEmailCommand extends Command<TestAdminEmailResponseDto> {
   constructor(public readonly input: TestAdminEmailRequestDto) { super(); }

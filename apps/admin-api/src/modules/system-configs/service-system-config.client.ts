@@ -3,9 +3,10 @@ import type { ServiceSystemConfigCode } from '@pkg/shared/constants';
 import { type DeliveryConfigDto } from '@pkg/shared/server';
 
 import { InternalClient } from '#/core/auth/machine/internal-client';
-
-import type { CreateOAuthIconPresignedUrlRequestDto, CreateOAuthIconPresignedUrlResponseDto } from './dto/create-oauth-icon-presigned-url.dto';
-import type { SystemConfigResponseDto, UpdateSystemConfigRequestDto } from './system-config.interfaces';
+import type { CreateOAuthIconPresignedUrlRequestDto } from '#/modules/system-configs/dto/create-oauth-icon-presigned-url.request.dto';
+import type { CreateOAuthIconPresignedUrlResponseDto } from '#/modules/system-configs/dto/create-oauth-icon-presigned-url.response.dto';
+import type { SystemConfigResponseDto } from '#/modules/system-configs/dto/system-config.response.dto';
+import type { UpdateSystemConfigRequestDto } from '#/modules/system-configs/dto/update-system-config.request.dto';
 
 @Injectable()
 export class ServiceSystemConfigClient {

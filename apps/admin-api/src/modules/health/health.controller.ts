@@ -5,8 +5,7 @@ import { HealthCheck, HealthCheckService, HealthIndicatorService, MikroOrmHealth
 import { Public } from '#/core/http/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 import { KvStore } from '#/core/kv-store/kv-store.service';
-
-import { HealthResponseDto } from './interfaces/health.response.dto';
+import { HealthResponseDto } from '#/modules/health/dto/health.response.dto';
 
 /**
  * Health check controller

@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { type LogEntry } from '#/core/log-telemetry/log-telemetry.interface';
 import { LogTelemetryService } from '#/core/log-telemetry/log-telemetry.service';
-
-import type { GetLogsRequestDto } from './dto/get-logs.request.dto';
+import type { GetLogsRequestDto } from '#/modules/logs/dto/get-logs.request.dto';
 
 @Injectable()
 export class LogsService {

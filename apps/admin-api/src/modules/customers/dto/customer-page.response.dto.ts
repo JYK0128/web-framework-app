@@ -2,8 +2,7 @@ import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
 import { PageResponseDto } from '#/core/http/dto/response/page.response.dto';
-
-import { CustomerItemDto } from './customer-item.dto';
+import { CustomerItemDto } from '#/modules/customers/dto/customer-item.dto';
 
 @ApiSchema({ name: 'AdminCustomerPageResponse' })
 export class CustomerPageResponseDto extends PageResponseDto<CustomerItemDto> {

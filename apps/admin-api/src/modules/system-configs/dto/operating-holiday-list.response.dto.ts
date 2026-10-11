@@ -2,8 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
 import { ListResponseDto } from '#/core/http/dto/response/list.response.dto';
-
-import { OperatingHolidayItemDto } from './operating-holiday-item.dto';
+import { OperatingHolidayItemDto } from '#/modules/system-configs/dto/operating-holiday-item.dto';
 
 export class OperatingHolidayListResponseDto extends ListResponseDto<OperatingHolidayItemDto> {
   @ApiProperty({ example: 2026 })

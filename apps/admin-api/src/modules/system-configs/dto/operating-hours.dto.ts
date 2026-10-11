@@ -1,40 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsBoolean, IsInt, IsString, Matches, Max, Min, ValidateNested } from 'class-validator';
+import { IsArray, IsInt, IsString, Matches, Max, Min, ValidateNested } from 'class-validator';
 
 import { ToNumber } from '#/core/http/decorators/to-number.decorator';
+import { BaseDto } from '#/core/http/dto/base/base.dto';
+import { OperatingLunchBreakDto } from '#/modules/system-configs/dto/operating-lunch-break.dto';
 
-export class OperatingLunchBreakDto {
-  @ApiProperty({ example: false, description: '점심시간 활성화 여부' })
-  @IsBoolean()
-  enabled!: boolean;
-
-  @ApiProperty({ example: '12:00', description: '점심시간 시작 시각 (HH:mm)' })
-  @IsString()
-  @Matches(/^(?:[01]\d|2[0-3]):[0-5]\d$/)
-  start!: string;
-
-  @ApiProperty({ example: '13:00', description: '점심시간 종료 시각 (HH:mm)' })
-  @IsString()
-  @Matches(/^(?:[01]\d|2[0-3]):[0-5]\d$/)
-  end!: string;
-}
-
-export class OperatingMessagesDto {
-  @ApiProperty({ example: '현재 점심시간입니다.', description: '점심시간 안내 문구' })
-  @IsString()
-  lunch!: string;
-
-  @ApiProperty({ example: '현재는 운영시간 외입니다.', description: '운영시간 외 안내 문구' })
-  @IsString()
-  offHours!: string;
-
-  @ApiProperty({ example: '주말 및 공휴일은 고객센터 휴무입니다.', description: '휴일 안내 문구' })
-  @IsString()
-  holiday!: string;
-}
-
-export class OperatingHoursDto {
+export class OperatingHoursDto extends BaseDto {
   @ApiProperty({ example: '09:00', description: '운영 시작 시각 (HH:mm)' })
   @IsString()
   @Matches(/^(?:[01]\d|2[0-3]):[0-5]\d$/)

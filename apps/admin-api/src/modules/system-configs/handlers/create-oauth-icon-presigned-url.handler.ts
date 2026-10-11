@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
 import { CreateOAuthIconPresignedUrlCommand } from '#/modules/system-configs/commands/create-oauth-icon-presigned-url.command';
-import type { CreateOAuthIconPresignedUrlResponseDto } from '#/modules/system-configs/dto/create-oauth-icon-presigned-url.dto';
+import type { CreateOAuthIconPresignedUrlResponseDto } from '#/modules/system-configs/dto/create-oauth-icon-presigned-url.response.dto';
 import { ServiceSystemConfigClient } from '#/modules/system-configs/service-system-config.client';
 
 @Injectable()

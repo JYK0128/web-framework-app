@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
+import type { SystemConfigResponseDto } from '#/modules/system-configs/dto/system-config.response.dto';
 import { GetSystemConfigQuery } from '#/modules/system-configs/queries';
 import { ServiceSystemConfigClient } from '#/modules/system-configs/service-system-config.client';
-import type { SystemConfigResponseDto } from '#/modules/system-configs/system-config.interfaces';
 
 @Injectable()
 @QueryHandler(GetSystemConfigQuery)

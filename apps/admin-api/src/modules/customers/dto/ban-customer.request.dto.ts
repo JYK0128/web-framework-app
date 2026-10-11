@@ -2,7 +2,9 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsDate, IsOptional, IsString, MaxLength } from 'class-validator';
 
-export class BanCustomerRequestDto {
+import { BaseDto } from '#/core/http/dto/base/base.dto';
+
+export class BanCustomerRequestDto extends BaseDto {
   @ApiPropertyOptional({ maxLength: 255 })
   @IsOptional()
   @IsString()

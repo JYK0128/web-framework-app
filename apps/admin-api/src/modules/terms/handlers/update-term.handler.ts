@@ -5,7 +5,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { Term } from '#/core/database/entities/terms/term.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { UpdateTermCommand } from '#/modules/terms/commands';
-import { OperatorTermItemDto, UpdateTermResponseDto } from '#/modules/terms/interfaces';
+import { OperatorTermItemDto, UpdateTermResponseDto } from '#/modules/terms/dto';
 
 @Injectable()
 @CommandHandler(UpdateTermCommand)

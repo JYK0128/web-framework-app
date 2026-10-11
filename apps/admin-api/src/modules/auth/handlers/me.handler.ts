@@ -6,7 +6,7 @@ import { isCredentialPasswordExpired } from '#/core/auth/user/policy/password.po
 import { Account } from '#/core/database/entities/auth/account.entity';
 import { User } from '#/core/database/entities/auth/user.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { MeResponseDto } from '#/modules/auth/interfaces/me.response.dto';
+import { MeResponseDto } from '#/modules/auth/dto/me.response.dto';
 import { MeQuery } from '#/modules/auth/queries/me.query';
 
 @Injectable()

@@ -10,7 +10,7 @@ import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { PhoneIdentityService } from '#/core/phone-identity/phone-identity.service';
 import { env } from '#/env';
 import { VerifyPhoneNumberCommand } from '#/modules/auth/commands/verify-phone-number.command';
-import { VerifyPhoneNumberResponseDto } from '#/modules/auth/interfaces/verify-phone-number.dto';
+import { VerifyPhoneNumberResponseDto } from '#/modules/auth/dto/verify-phone-number.response.dto';
 
 @Injectable()
 @CommandHandler(VerifyPhoneNumberCommand)

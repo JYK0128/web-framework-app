@@ -5,7 +5,7 @@ import { Term } from '#/core/database/entities/terms/term.entity';
 import { UserTermAgreement } from '#/core/database/entities/terms/user-term-agreement.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { PrincipalContext } from '#/core/http/contexts/principal.context';
-import { TermAgreementItemDto, TermAgreementListResponseDto } from '#/modules/terms/interfaces';
+import { TermAgreementItemDto, TermAgreementListResponseDto } from '#/modules/terms/dto';
 import { GetAgreementsQuery } from '#/modules/terms/queries';
 
 @Injectable()

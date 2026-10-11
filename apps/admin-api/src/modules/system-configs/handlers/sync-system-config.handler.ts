@@ -3,8 +3,8 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
 import { AdminWebhookConfigService } from '#/modules/system-configs/admin-webhook-config.service';
 import { SyncSystemConfigCommand } from '#/modules/system-configs/commands/sync-system-config.command';
+import type { SyncSystemConfigResponseDto } from '#/modules/system-configs/dto/sync-system-config.response.dto';
 import { ServiceSystemConfigClient } from '#/modules/system-configs/service-system-config.client';
-import type { SyncSystemConfigResponseDto } from '#/modules/system-configs/system-config.interfaces';
 
 @Injectable()
 @CommandHandler(SyncSystemConfigCommand)

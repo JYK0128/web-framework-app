@@ -1,6 +1,6 @@
 import { Query } from '@nestjs/cqrs';
 
-import type { MeRequestDto, MeResponseDto } from '#/modules/auth/interfaces';
+import type { MeRequestDto, MeResponseDto } from '#/modules/auth/dto';
 
 export interface MePayload {
   userId: string

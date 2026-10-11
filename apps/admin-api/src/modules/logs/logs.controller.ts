@@ -6,11 +6,11 @@ import { AdminPermission } from '@pkg/shared';
 import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
+import { GetLogStatsRequestDto } from '#/modules/logs/dto/get-log-stats.request.dto';
+import { GetLogsRequestDto } from '#/modules/logs/dto/get-logs.request.dto';
+import { LogPageResponseDto } from '#/modules/logs/dto/log-page.response.dto';
+import { LogStatsResponseDto } from '#/modules/logs/dto/log-stats.response.dto';
 
-import { GetLogStatsRequestDto } from './dto/get-log-stats.request.dto';
-import { GetLogsRequestDto } from './dto/get-logs.request.dto';
-import { LogPageResponseDto } from './dto/log-page.response.dto';
-import { LogStatsResponseDto } from './dto/log-stats.response.dto';
 import { GetLogStatsQuery } from './queries/get-log-stats.query';
 import { GetLogsQuery } from './queries/get-logs.query';
 
