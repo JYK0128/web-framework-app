@@ -1,11 +1,11 @@
 import { Global, Module } from '@nestjs/common';
 
-import { SmtpAdapter } from './adapters/email/smtp.adapter';
-import { AlimtalkAdapter } from './adapters/messenger/alimtalk.adapter';
-import { MessengerAdapter } from './adapters/messenger/messenger.adapter';
-import { PushAdapter } from './adapters/push/push.adapter';
-import { SmsAdapter } from './adapters/sms/sms.adapter';
-import { WebhookAdapter } from './adapters/webhook/webhook.adapter';
+import { AlimtalkAdapter } from './adapters/alimtalk.adapter';
+import { MessengerAdapter } from './adapters/messenger.adapter';
+import { PushAdapter } from './adapters/push.adapter';
+import { SmsAdapter } from './adapters/sms.adapter';
+import { SmtpAdapter } from './adapters/smtp.adapter';
+import { WebhookAdapter } from './adapters/webhook.adapter';
 import { MessageService } from './message.service';
 import { MessageTemplateService } from './message-template.service';
 

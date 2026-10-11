@@ -1,6 +1,6 @@
 import type { RedisClientOptions } from 'redis';
 
-export const KV_STORE_ADAPTER = Symbol('KV_STORE_ADAPTER');
+export const KV_ADAPTER = Symbol('KV_ADAPTER');
 export const KV_STORE_MODULE_OPTIONS = Symbol('KV_STORE_MODULE_OPTIONS');
 
 export interface IncrementWithBlockResult {
@@ -10,7 +10,7 @@ export interface IncrementWithBlockResult {
   blockedTtlMilliseconds: number
 }
 
-export interface IKvStoreAdapter {
+export interface KvAdapter {
   readonly name: string
 
   get<T = string>(key: string): Promise<T | null>

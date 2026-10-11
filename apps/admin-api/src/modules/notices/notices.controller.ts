@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post
 import { ApiTags } from '@nestjs/swagger';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalClient } from '#/core/auth/machine/internal-client.service';
+import { InternalClient } from '#/core/auth/machine/internal-client';
 import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';

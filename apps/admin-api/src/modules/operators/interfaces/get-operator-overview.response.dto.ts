@@ -1,6 +1,6 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 
-import { BaseDto } from '#/core/http/dto/base';
+import { BaseDto } from '#/core/http/dto/base/base.dto';
 
 @ApiSchema({ name: 'OperatorOverviewResponse' })
 export class GetOperatorOverviewResponseDto extends BaseDto {

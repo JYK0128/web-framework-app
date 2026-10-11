@@ -1,7 +1,7 @@
 import { DynamicModule, Module } from '@nestjs/common';
 
 import { ApiKeyService } from '#/core/auth/machine/api-key/api-key.service';
-import { InternalClient } from '#/core/auth/machine/internal-client.service';
+import { InternalClient } from '#/core/auth/machine/internal-client';
 import { MachineAuthGuard } from '#/core/auth/machine/machine-auth.guard';
 import { MACHINE_AUTH_ISSUER, MACHINE_AUTH_VERIFIER, MACHINE_CONNECTION, type MachineAuthModuleOptions, MachineConnectionSchema } from '#/core/auth/machine/machine-auth.interface';
 import { MachineJwtService } from '#/core/auth/machine/token/machine-jwt.service';

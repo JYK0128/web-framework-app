@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString, Length } from 'class-validator';
 
 import { SECURITY_CONFIG } from '#/app.config';
 import { BaseDto } from '#/core/http/dto/base/base.dto';
-import { OkResponseDto } from '#/core/http/dto/response';
+import { OkResponseDto } from '#/core/http/dto/response/ok.response.dto';
 
 export class ChangePasswordRequestDto {
   @ApiProperty({ type: String })

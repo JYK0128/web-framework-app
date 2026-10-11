@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
-import { type LogEntry, LogTelemetryService } from '#/core/log-telemetry';
+import { type LogEntry } from '#/core/log-telemetry/log-telemetry.interface';
+import { LogTelemetryService } from '#/core/log-telemetry/log-telemetry.service';
 
 import type { GetLogsRequestDto } from './dto/get-logs.request.dto';
 

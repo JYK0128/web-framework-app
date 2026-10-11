@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 import { BaseDto } from '#/core/http/dto/base/base.dto';
-import { OkResponseDto } from '#/core/http/dto/response';
+import { OkResponseDto } from '#/core/http/dto/response/ok.response.dto';
 
 export class TestSmsRequestDto extends BaseDto {
   @ApiProperty({ example: '01012345678' })

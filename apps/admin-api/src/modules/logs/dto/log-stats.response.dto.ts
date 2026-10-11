@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { BaseDto } from '#/core/http/dto/base';
+import { BaseDto } from '#/core/http/dto/base/base.dto';
 
 export class LogStatsResponseDto extends BaseDto {
   @ApiProperty() total!: number;

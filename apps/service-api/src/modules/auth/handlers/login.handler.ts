@@ -6,7 +6,6 @@ import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { hmac, verify } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { TwoFactorLoginKvStoreKey } from '#/modules/auth/two-factor-login-kv-store';
 import { type IUserAuthService, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
 import { TwoFactor } from '#/core/database/entities/auth.extensions/two-factor.entity';
 import { Account } from '#/core/database/entities/auth/account.entity';
@@ -15,6 +14,7 @@ import { AppEntityManager } from '#/core/database/entity-manager';
 import { KvStore } from '#/core/kv-store/kv-store.service';
 import { env } from '#/env';
 import { LoginCommand, type LoginResult } from '#/modules/auth/commands';
+import { TwoFactorLoginKvStoreKey } from '#/modules/auth/two-factor-login-kv-store';
 
 @Injectable()
 @CommandHandler(LoginCommand)

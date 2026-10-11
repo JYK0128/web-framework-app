@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { type IKvStoreAdapter, type IncrementWithBlockResult, KV_STORE_ADAPTER } from './kv-store.interface';
+import { type IncrementWithBlockResult, KV_ADAPTER, type KvAdapter } from './kv-store.interface';
 
 @Injectable()
-export class KvStore implements IKvStoreAdapter {
+export class KvStore implements KvAdapter {
   constructor(
-    @Inject(KV_STORE_ADAPTER)
-    private readonly adapter: IKvStoreAdapter,
+    @Inject(KV_ADAPTER)
+    private readonly adapter: KvAdapter,
   ) {}
 
   get name(): string {

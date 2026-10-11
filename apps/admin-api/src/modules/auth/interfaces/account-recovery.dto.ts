@@ -4,7 +4,7 @@ import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-valid
 
 import { SECURITY_CONFIG } from '#/app.config';
 import { BaseDto } from '#/core/http/dto/base/base.dto';
-import { OkResponseDto } from '#/core/http/dto/response';
+import { OkResponseDto } from '#/core/http/dto/response/ok.response.dto';
 
 const trimLowercase = ({ value }: { value: unknown }) => typeof value === 'string' ? value.trim().toLowerCase() : value;
 const compactPhoneNumber = ({ value }: { value: unknown }) => typeof value === 'string' ? value.replace(/[^0-9+]/g, '') : value;

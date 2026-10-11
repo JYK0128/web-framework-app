@@ -1,4 +1,4 @@
-import type { SocketIoAdapterOptions } from '#/core/realtime/adapters/socket-io/socket-io.interface';
+import type { SocketIoAdapterOptions } from '#/core/realtime/adapters/socket-io.interface';
 
 export const REALTIME_MODULE_OPTIONS = Symbol('REALTIME_MODULE_OPTIONS');
 

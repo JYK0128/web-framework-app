@@ -1,9 +1,10 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { jsonSafeParse, uuid, when } from '@pkg/shared/common';
+import axios from 'axios';
 import { Observable } from 'rxjs';
 
-import { LOG_DEFAULT_LOOKBACK_MS, LOG_QUERY_DEFAULT_LIMIT, LOG_QUERY_MAX_LIMIT, LOG_QUERY_RANGE_LIMIT, LOG_WATCH_LOOKBACK_MS, LOG_WATCH_MAX_SEEN_IDS, LOG_WATCH_POLL_INTERVAL_MS, LOG_WATCH_TRIM_SEEN_IDS } from '#/core/log-telemetry/adapters/loki.config';
 import { type ILogTelemetryAdapter, LOG_TELEMETRY_MODULE_OPTIONS, type LogEntry, type LogStatsResult, type LogTelemetryModuleOptions, type QueryLogOptions, type QueryLogResult } from '#/core/log-telemetry/log-telemetry.interface';
+import { LOG_DEFAULT_LOOKBACK_MS, LOG_QUERY_DEFAULT_LIMIT, LOG_QUERY_MAX_LIMIT, LOG_QUERY_RANGE_LIMIT, LOG_WATCH_LOOKBACK_MS, LOG_WATCH_MAX_SEEN_IDS, LOG_WATCH_POLL_INTERVAL_MS, LOG_WATCH_TRIM_SEEN_IDS } from '#/core/log-telemetry/loki.config';
 import { LogErrorInfoDto } from '#/modules/logs/dto';
 
 export interface LokiStreamEntry {
@@ -169,6 +170,8 @@ function resolveCursorBoundary(cursor?: string): { queryEnd?: string, skipLogId:
 
 @Injectable()
 export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
+  private readonly client = axios.create({ validateStatus: () => true });
+
   readonly providerName = 'loki';
   private readonly logger = new Logger(LokiLogTelemetryAdapter.name);
   private readonly lokiBaseUrl: string;
@@ -204,17 +207,13 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
       url.searchParams.set('end', toNanosecondsString(end));
     }
 
-    const response = await fetch(url.toString(), {
-      method: 'GET',
-      headers: { Accept: 'application/json' },
-      signal: AbortSignal.timeout(this.timeoutMs),
-    });
+    const response = await this.client.get<LokiQueryResponse>(url.toString(), { headers: { Accept: 'application/json' }, timeout: this.timeoutMs });
 
-    if (!response.ok) {
-      throw new Error(`Loki query responded with ${response.status}: ${await response.text()}`);
+    if (response.status < 200 || response.status >= 300) {
+      throw new Error(`Loki query responded with ${response.status}: ${JSON.stringify(response.data)}`);
     }
 
-    const body = (await response.json()) as LokiQueryResponse;
+    const body = response.data;
     if (body.status !== 'success' || !body.data?.result) {
       throw new Error('Loki query returned an invalid response');
     }
@@ -236,17 +235,13 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
     url.searchParams.set('query', metricQuery);
     url.searchParams.set('time', String(Math.floor(endMs / 1000)));
 
-    const response = await fetch(url.toString(), {
-      method: 'GET',
-      headers: { Accept: 'application/json' },
-      signal: AbortSignal.timeout(this.timeoutMs),
-    });
+    const response = await this.client.get<LokiQueryResponse>(url.toString(), { headers: { Accept: 'application/json' }, timeout: this.timeoutMs });
 
-    if (!response.ok) {
-      throw new Error(`Loki metric query responded with ${response.status}: ${await response.text()}`);
+    if (response.status < 200 || response.status >= 300) {
+      throw new Error(`Loki metric query responded with ${response.status}: ${JSON.stringify(response.data)}`);
     }
 
-    const body = (await response.json()) as LokiQueryResponse;
+    const body = response.data;
     if (body.status !== 'success' || !Array.isArray(body.data?.result)) {
       throw new Error('Loki metric query returned an invalid response');
     }

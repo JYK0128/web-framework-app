@@ -15,7 +15,7 @@ import { serveStorageFiles } from '#/core/file-storage/storage.http';
 import { ApiErrorResponseDto } from '#/core/http/dto/response/api.response.dto';
 import { createI18nMiddleware } from '#/core/http/middlewares/i18n.middleware';
 import { LoggerService } from '#/core/logger/logger.service';
-import { SocketIoAdapter } from '#/core/realtime/adapters/socket-io/socket-io.adapter';
+import { SocketIoAdapter } from '#/core/realtime/adapters/socket-io.adapter';
 
 import { AppModule } from './app.module';
 import { env } from './env';

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
-import { SmtpAdapter } from '#/core/notification/adapters/email/smtp.adapter';
-import { MessengerAdapter } from '#/core/notification/adapters/messenger/messenger.adapter';
-import { PushAdapter } from '#/core/notification/adapters/push/push.adapter';
-import { SmsAdapter } from '#/core/notification/adapters/sms/sms.adapter';
-import { WebhookAdapter } from '#/core/notification/adapters/webhook/webhook.adapter';
+import { MessengerAdapter } from '#/core/notification/adapters/messenger.adapter';
+import { PushAdapter } from '#/core/notification/adapters/push.adapter';
+import { SmsAdapter } from '#/core/notification/adapters/sms.adapter';
+import { SmtpAdapter } from '#/core/notification/adapters/smtp.adapter';
+import { WebhookAdapter } from '#/core/notification/adapters/webhook.adapter';
 
 import type { SendMessageInput } from './message.interface';
 import { MessageTemplateService } from './message-template.service';

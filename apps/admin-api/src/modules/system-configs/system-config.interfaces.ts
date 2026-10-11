@@ -5,7 +5,7 @@ import { Type } from 'class-transformer';
 import { IsObject, IsOptional, ValidateNested } from 'class-validator';
 
 import { BaseDto } from '#/core/http/dto/base/base.dto';
-import { OkResponseDto } from '#/core/http/dto/response';
+import { OkResponseDto } from '#/core/http/dto/response/ok.response.dto';
 
 import { AdminEmailConfigResponseDto, UpdateAdminEmailConfigRequestDto } from './dto/admin-email/admin-email-config.dto';
 import { InquiryConfigDto } from './dto/inquiry/inquiry-config.dto';

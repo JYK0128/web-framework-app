@@ -6,7 +6,6 @@ import { decrypt, encrypt, hmac, isEncrypted } from '@pkg/shared/server';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { OAuthKvStoreKey } from '#/modules/auth/oauth-kv-store';
 import { type IUserAuthService, type TokenPairResult, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
 import { Role } from '#/core/database/entities/auth.extensions/role.entity';
 import { Account } from '#/core/database/entities/auth/account.entity';
@@ -16,6 +15,7 @@ import { SystemConfig } from '#/core/database/entities/system-configs/system-con
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { KvStore } from '#/core/kv-store/kv-store.service';
 import { env } from '#/env';
+import { OAuthKvStoreKey } from '#/modules/auth/oauth-kv-store';
 import { getOAuthProviderConfigurationIssues } from '#/modules/system-configs/oauth-provider-validation';
 
 interface OAuthProviderConfig {

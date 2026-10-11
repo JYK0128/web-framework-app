@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
-import { NotificationService } from '#/core/notification';
+import { NotificationService } from '#/core/notification/notification.service';
 import { TestEmailCommand } from '#/modules/system-configs/commands/test-email.command';
 import { TestEmailResponseDto } from '#/modules/system-configs/dto/delivery/test-email.dto';
 import { ServiceSystemConfigClient } from '#/modules/system-configs/service-system-config.client';

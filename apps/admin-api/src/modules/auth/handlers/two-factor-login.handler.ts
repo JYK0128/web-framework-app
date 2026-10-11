@@ -4,7 +4,6 @@ import { ApplicationError } from '@pkg/shared/common';
 import { decrypt } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { TwoFactorLoginKvStoreKey } from '#/modules/auth/two-factor-login-kv-store';
 import { verifyTotp } from '#/core/auth/user/policy/totp.policy';
 import { type IUserAuthService, type TokenPairResult, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
 import { TwoFactor } from '#/core/database/entities/auth.extensions/two-factor.entity';
@@ -13,6 +12,7 @@ import { AppEntityManager } from '#/core/database/entity-manager';
 import { KvStore } from '#/core/kv-store/kv-store.service';
 import { env } from '#/env';
 import { TwoFactorLoginCommand } from '#/modules/auth/commands';
+import { TwoFactorLoginKvStoreKey } from '#/modules/auth/two-factor-login-kv-store';
 
 interface TwoFactorLoginChallenge {
   userId: string

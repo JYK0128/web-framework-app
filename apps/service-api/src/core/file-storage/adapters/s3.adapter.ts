@@ -2,6 +2,7 @@ import { createHash, createHmac } from 'node:crypto';
 
 import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
+import axios from 'axios';
 
 import { type FileAdapter, type PresignedUploadUrlResult, type S3Options, type SaveFileResult, STORAGE_MODULE_OPTIONS, type StorageModuleOptions } from '#/core/file-storage/storage.interface';
 
@@ -11,6 +12,8 @@ import { type FileAdapter, type PresignedUploadUrlResult, type S3Options, type S
  */
 @Injectable()
 export class S3Adapter implements FileAdapter {
+  private readonly client = axios.create({ validateStatus: () => true });
+
   readonly name = 's3';
   private readonly logger = new Logger(S3Adapter.name);
   private readonly s3Config?: S3Options;
@@ -38,14 +41,10 @@ export class S3Adapter implements FileAdapter {
     const signedHeaders = this.signRequest('PUT', `/${key}`, headers, config);
 
     try {
-      const response = await fetch(url, {
-        method: 'PUT',
-        headers: signedHeaders,
-        body: buffer,
-      });
+      const response = await this.client.put<string>(url, buffer, { headers: signedHeaders });
 
-      if (!response.ok) {
-        const errorText = await response.text();
+      if (response.status < 200 || response.status >= 300) {
+        const errorText = response.data;
         this.logger.error(`[S3] Upload failed (${response.status}): ${errorText}`);
         throw new ApplicationError({
           code: 'STORAGE_UPLOAD_FAILED',
@@ -77,15 +76,15 @@ export class S3Adapter implements FileAdapter {
     };
 
     try {
-      const response = await fetch(`https://${host}/${key}`, {
-        method: 'GET',
+      const response = await this.client.get<ArrayBuffer>(`https://${host}/${key}`, {
         headers: this.signRequest('GET', `/${key}`, headers, config),
+        responseType: 'arraybuffer',
       });
-      if (!response.ok) {
-        this.logger.error(`[S3] Download failed (${response.status}): ${await response.text()}`);
+      if (response.status < 200 || response.status >= 300) {
+        this.logger.error(`[S3] Download failed (${response.status}): ${Buffer.from(response.data).toString()}`);
         throw new ApplicationError({ code: 'STORAGE_READ_FAILED', status: 502 });
       }
-      return Buffer.from(await response.arrayBuffer());
+      return Buffer.from(response.data);
     }
     catch (error) {
       if (error instanceof ApplicationError) throw error;

@@ -7,7 +7,7 @@ import { Profile } from '#/core/database/entities/auth/profile.entity';
 import { User } from '#/core/database/entities/auth/user.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { PrincipalContext } from '#/core/http/contexts/principal.context';
-import { PortoneIdentityService } from '#/core/phone-identity/portone-identity.service';
+import { PhoneIdentityService } from '#/core/phone-identity/phone-identity.service';
 import { env } from '#/env';
 import { VerifyPhoneNumberCommand } from '#/modules/auth/commands/verify-phone-number.command';
 import { VerifyPhoneNumberResponseDto } from '#/modules/auth/dto/verify-phone-number.dto';
@@ -18,7 +18,7 @@ export class VerifyPhoneNumberHandler implements ICommandHandler<VerifyPhoneNumb
   constructor(
     private readonly em: AppEntityManager,
     private readonly principal: PrincipalContext,
-    private readonly portone: PortoneIdentityService,
+    private readonly phoneIdentity: PhoneIdentityService,
   ) {}
 
   async execute(command: VerifyPhoneNumberCommand): Promise<VerifyPhoneNumberResponseDto> {
@@ -26,7 +26,7 @@ export class VerifyPhoneNumberHandler implements ICommandHandler<VerifyPhoneNumb
     if (!user) throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     const profile = user.profile;
     if (!profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
-    const verified = await this.portone.verify(command.input.identityVerificationId);
+    const verified = await this.phoneIdentity.verify(command.input.identityVerificationId);
     const phoneHash = hmac(verified.phoneNumber, env.PII_HASH_KEY);
     const existing = await this.em.findOne(Profile, { phoneNumberHash: phoneHash, user: { id: { $ne: user.id } } }, { filters: false });
     if (existing) {
@@ -42,7 +42,7 @@ export class VerifyPhoneNumberHandler implements ICommandHandler<VerifyPhoneNumb
     return VerifyPhoneNumberResponseDto.fromPlain({ ok: true });
   }
 
-  private async processIdentityProfile(user: User, profile: Profile, identity: Awaited<ReturnType<PortoneIdentityService['verify']>>): Promise<void> {
+  private async processIdentityProfile(user: User, profile: Profile, identity: Awaited<ReturnType<PhoneIdentityService['verify']>>): Promise<void> {
     const ciHash = identity.ci ? hmac(identity.ci, env.PII_HASH_KEY) : undefined;
     const diHash = identity.di ? hmac(identity.di, env.PII_HASH_KEY) : undefined;
     if (user.phoneNumberVerified && !ciHash && !diHash) {

@@ -2,12 +2,12 @@ import { type DynamicModule, HttpStatus, Module, type Provider } from '@nestjs/c
 import { CqrsModule } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { InMemoryAdapter } from './adapters/in-memory/in-memory.adapter';
-import { KAFKA_ADAPTER_OPTIONS, KafkaAdapter } from './adapters/kafka/kafka.adapter';
-import { RABBITMQ_ADAPTER_OPTIONS, RabbitMQAdapter } from './adapters/rabbitmq/rabbitmq.adapter';
-import { REDIS_PUBSUB_ADAPTER_OPTIONS, RedisPubSubAdapter } from './adapters/redis-pubsub/redis-pubsub.adapter';
-import { REDIS_STREAMS_ADAPTER_OPTIONS, RedisStreamsAdapter } from './adapters/redis-streams/redis-streams.adapter';
-import { EVENT_BROKER, type EventBrokerModuleOptions, type BrokerAdapter } from './event-broker.interface';
+import { InMemoryAdapter } from './adapters/in-memory.adapter';
+import { KAFKA_ADAPTER_OPTIONS, KafkaAdapter } from './adapters/kafka.adapter';
+import { RABBITMQ_ADAPTER_OPTIONS, RabbitMQAdapter } from './adapters/rabbitmq.adapter';
+import { REDIS_PUBSUB_ADAPTER_OPTIONS, RedisPubSubAdapter } from './adapters/redis-pubsub.adapter';
+import { REDIS_STREAMS_ADAPTER_OPTIONS, RedisStreamsAdapter } from './adapters/redis-streams.adapter';
+import { type BrokerAdapter, EVENT_BROKER, type EventBrokerModuleOptions } from './event-broker.interface';
 import { EventBroker } from './event-broker.service';
 
 @Module({})

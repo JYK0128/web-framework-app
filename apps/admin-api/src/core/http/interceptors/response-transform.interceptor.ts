@@ -3,7 +3,7 @@ import { SSE_METADATA } from '@nestjs/common/constants';
 import type { Request, Response } from 'express';
 import { map, type Observable, tap } from 'rxjs';
 
-import { ApiResponse } from '#/core/http';
+import { ApiResponse } from '#/core/http/api.response';
 import { type ApiResponseDto } from '#/core/http/dto/response/api.response.dto';
 
 @Injectable()

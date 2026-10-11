@@ -3,7 +3,7 @@ import { ApiExcludeController } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 
 import { ADMIN_RUNTIME_CONFIG, SECURITY_CONFIG } from '#/app.config';
-import { InternalClient } from '#/core/auth/machine/internal-client.service';
+import { InternalClient } from '#/core/auth/machine/internal-client';
 import { Public } from '#/core/http/decorators/auth-mode.decorator';
 
 @ApiExcludeController()

@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
 import { BaseDto } from '#/core/http/dto/base/base.dto';
-import { ListResponseDto } from '#/core/http/dto/response';
+import { ListResponseDto } from '#/core/http/dto/response/list.response.dto';
 
 export class MembershipItemDto {
   @ApiProperty() id!: string;

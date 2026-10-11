@@ -2,7 +2,7 @@ import { type DynamicModule, Module, type Type } from '@nestjs/common';
 
 import { LocalAdapter } from '#/core/file-storage/adapters/local.adapter';
 import { S3Adapter } from '#/core/file-storage/adapters/s3.adapter';
-import { type FileAdapter, FILE_ADAPTER, STORAGE_MODULE_OPTIONS, type StorageModuleOptions } from '#/core/file-storage/storage.interface';
+import { FILE_ADAPTER, type FileAdapter, STORAGE_MODULE_OPTIONS, type StorageModuleOptions } from '#/core/file-storage/storage.interface';
 import { StorageService } from '#/core/file-storage/storage.service';
 
 @Module({})

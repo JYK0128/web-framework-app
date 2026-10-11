@@ -3,8 +3,9 @@ import { Type } from 'class-transformer';
 import { IsEnum, IsIn, IsOptional, IsString } from 'class-validator';
 
 import type { BaseEntity } from '#/core/database/entities/common/base.entity';
-import { PageRequestDto } from '#/core/http/dto/request';
-import { OkResponseDto, PageResponseDto } from '#/core/http/dto/response';
+import { PageRequestDto } from '#/core/http/dto/request/page.request.dto';
+import { OkResponseDto } from '#/core/http/dto/response/ok.response.dto';
+import { PageResponseDto } from '#/core/http/dto/response/page.response.dto';
 
 export const QnaStatus = { OPEN: 'open', IN_PROGRESS: 'in_progress', ANSWERED: 'answered', CLOSED: 'closed' } as const;
 export type QnaStatus = (typeof QnaStatus)[keyof typeof QnaStatus];

@@ -3,7 +3,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AdminPermission } from '@pkg/shared';
 import { maskEmail, maskName } from '@pkg/shared/common';
 
-import { InternalClient } from '#/core/auth/machine/internal-client.service';
+import { InternalClient } from '#/core/auth/machine/internal-client';
 import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';

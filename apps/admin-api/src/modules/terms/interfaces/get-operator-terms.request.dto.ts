@@ -2,7 +2,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
 
 import { Term } from '#/core/database/entities/terms/term.entity';
-import { PageRequestDto } from '#/core/http/dto/request';
+import { PageRequestDto } from '#/core/http/dto/request/page.request.dto';
 
 export class GetOperatorTermsRequestDto extends PageRequestDto<Term> {
   override get searchFields(): (keyof Term)[] {

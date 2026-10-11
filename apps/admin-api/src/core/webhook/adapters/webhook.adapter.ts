@@ -1,27 +1,27 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { ChannelTalkWebhookAdapter } from '#/core/webhook/adapters/channel-talk-webhook.adapter';
-import { DiscordWebhookAdapter } from '#/core/webhook/adapters/discord-webhook.adapter';
-import { SlackWebhookAdapter } from '#/core/webhook/adapters/slack-webhook.adapter';
-import { TeamsWebhookAdapter } from '#/core/webhook/adapters/teams-webhook.adapter';
+import { ChannelTalkAdapter } from '#/core/webhook/adapters/channel-talk.adapter';
+import { DiscordAdapter } from '#/core/webhook/adapters/discord.adapter';
+import { SlackAdapter } from '#/core/webhook/adapters/slack.adapter';
+import { TeamsAdapter } from '#/core/webhook/adapters/teams.adapter';
 import { type IWebhookAdapter, WEBHOOK_MODULE_OPTIONS, type WebhookMessage, type WebhookModuleOptions } from '#/core/webhook/webhook.interface';
 
 @Injectable()
 export class WebhookAdapter implements IWebhookAdapter {
   readonly providerName = 'webhook';
-  private readonly slackAdapter: SlackWebhookAdapter;
-  private readonly discordAdapter: DiscordWebhookAdapter;
-  private readonly channelTalkAdapter: ChannelTalkWebhookAdapter;
-  private readonly teamsAdapter: TeamsWebhookAdapter;
+  private readonly slackAdapter: SlackAdapter;
+  private readonly discordAdapter: DiscordAdapter;
+  private readonly channelTalkAdapter: ChannelTalkAdapter;
+  private readonly teamsAdapter: TeamsAdapter;
 
   constructor(
     @Inject(WEBHOOK_MODULE_OPTIONS)
     options: WebhookModuleOptions,
   ) {
-    this.slackAdapter = new SlackWebhookAdapter();
-    this.discordAdapter = new DiscordWebhookAdapter(options);
-    this.channelTalkAdapter = new ChannelTalkWebhookAdapter(options);
-    this.teamsAdapter = new TeamsWebhookAdapter(options);
+    this.slackAdapter = new SlackAdapter();
+    this.discordAdapter = new DiscordAdapter(options);
+    this.channelTalkAdapter = new ChannelTalkAdapter(options);
+    this.teamsAdapter = new TeamsAdapter(options);
   }
 
   async send(message: WebhookMessage): Promise<void> {

@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
-import { NotificationService } from '#/core/notification';
+import { NotificationService } from '#/core/notification/notification.service';
 import { TestMessengerCommand, TestPushCommand, TestSmsCommand } from '#/modules/system-configs/commands/test-channel.command';
 import { TestChannelResponseDto } from '#/modules/system-configs/dto/delivery/test-channel.dto';
 import { ServiceSystemConfigClient } from '#/modules/system-configs/service-system-config.client';

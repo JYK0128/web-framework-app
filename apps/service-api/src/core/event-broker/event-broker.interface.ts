@@ -1,9 +1,9 @@
 import type { IEvent } from '@nestjs/cqrs';
 
-import type { KafkaAdapterOptions } from './adapters/kafka/kafka.adapter';
-import type { RabbitMQAdapterOptions } from './adapters/rabbitmq/rabbitmq.adapter';
-import type { RedisPubSubAdapterOptions } from './adapters/redis-pubsub/redis-pubsub.adapter';
-import type { RedisStreamsAdapterOptions } from './adapters/redis-streams/redis-streams.adapter';
+import type { KafkaAdapterOptions } from './adapters/kafka.adapter';
+import type { RabbitMQAdapterOptions } from './adapters/rabbitmq.adapter';
+import type { RedisPubSubAdapterOptions } from './adapters/redis-pubsub.adapter';
+import type { RedisStreamsAdapterOptions } from './adapters/redis-streams.adapter';
 
 export const EVENT_BROKER = {
   IN_MEMORY: Symbol('EVENT_BROKER.IN_MEMORY'),

@@ -4,7 +4,7 @@ import { decrypt, encrypt } from '@pkg/shared/server';
 
 import { AdminSystemConfigCode, SystemConfig } from '#/core/database/entities/system-configs/system-config.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { NotificationService } from '#/core/notification';
+import { NotificationService } from '#/core/notification/notification.service';
 import { env } from '#/env';
 import { AdminEmailConfigResponseDto, UpdateAdminEmailConfigRequestDto } from '#/modules/system-configs/dto/admin-email/admin-email-config.dto';
 import { TestAdminEmailResponseDto } from '#/modules/system-configs/dto/admin-email/test-email.dto';

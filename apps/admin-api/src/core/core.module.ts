@@ -6,7 +6,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsModule } from 'nestjs-cls';
 
-import { ADMIN_RUNTIME_CONFIG, SECURITY_CONFIG, SERVICE_ID } from '#/app.config';
+import { ADMIN_RUNTIME_CONFIG, SECURITY_CONFIG } from '#/app.config';
 import { AuthenticationGuard } from '#/core/auth/authentication.guard';
 import { MachineModule } from '#/core/auth/machine/machine.module';
 import { UserAuthModule } from '#/core/auth/user/user.module';
@@ -22,14 +22,13 @@ import { PermissionGuard } from '#/core/http/guards/permission.guard';
 import { ResponseTransformInterceptor } from '#/core/http/interceptors/response-transform.interceptor';
 import { RequestContextMiddleware } from '#/core/http/middlewares/request-context.middleware';
 import { RequestLoggingMiddleware } from '#/core/http/middlewares/request-logging.middleware';
-import { SanitizeHtmlPipe, TrimStringPipe } from '#/core/http/pipes/index';
+import { SanitizeHtmlPipe } from '#/core/http/pipes/sanitize-html.pipe';
+import { TrimStringPipe } from '#/core/http/pipes/trim-string.pipe';
 import { KvStoreModule } from '#/core/kv-store/kv-store.module';
-import { KvStore } from '#/core/kv-store/kv-store.service';
-import { KvStoreThrottlerStorage } from '#/core/kv-store/kv-store-throttler-storage';
-import { LogTelemetryModule } from '#/core/log-telemetry';
-import { LoggerModule } from '#/core/logger';
+import { LogTelemetryModule } from '#/core/log-telemetry/log-telemetry.module';
+import { LoggerModule } from '#/core/logger/logger.module';
 import { NotificationModule } from '#/core/notification/notification.module';
-import { IdentityModule } from '#/core/phone-identity/identity.module';
+import { PhoneIdentityModule } from '#/core/phone-identity/phone-identity.module';
 import { RealtimeModule } from '#/core/realtime/realtime.module';
 import { WebhookModule } from '#/core/webhook/webhook.module';
 import { env } from '#/env';
@@ -40,7 +39,7 @@ const RESOURCE_MODULES = [
   UserAuthModule.forRoot({ driver: 'jwt', refreshTokenStore: 'redis' }),
   NotificationModule,
   WebhookModule.forRoot(),
-  IdentityModule,
+  PhoneIdentityModule,
   MachineModule.forRoot({ driver: 'jwt', connection: { targetService: 'service-api', baseUrl: env.SERVICE_API_URL } }),
   RealtimeModule.forRoot({ socketIo: { redis: { url: env.REDIS_URL } } }),
   StorageModule.forRoot({
@@ -65,17 +64,11 @@ const RESOURCE_MODULES = [
   }),
   DatabaseModule,
   KvStoreModule.forRoot({ driver: 'redis', redis: { url: env.REDIS_URL } }),
-  ThrottlerModule.forRootAsync({
-    inject: [KvStore],
-    useFactory: (kvStore: KvStore) => ({
-      throttlers: [{
-        ttl: SECURITY_CONFIG.rateLimit.windowMs,
-        limit: SECURITY_CONFIG.rateLimit.maxRequests,
-        blockDuration: SECURITY_CONFIG.rateLimit.blockDurationMilliseconds,
-      }],
-      storage: new KvStoreThrottlerStorage(kvStore, SERVICE_ID),
-    }),
-  }),
+  ThrottlerModule.forRoot([{
+    ttl: SECURITY_CONFIG.rateLimit.windowMs,
+    limit: SECURITY_CONFIG.rateLimit.maxRequests,
+    blockDuration: SECURITY_CONFIG.rateLimit.blockDurationMilliseconds,
+  }]),
   EventBrokerModule.forRoot({ defaultAdapter: 'redis-pubsub', redisPubSub: { url: env.REDIS_URL, topic: 'events' } }),
   LoggerModule.forRoot({ appName: 'admin-api' }),
   telemetryModule,
@@ -86,7 +79,7 @@ const RESOURCE_MODULE_EXPORTS = [
   MachineModule,
   NotificationModule,
   WebhookModule,
-  IdentityModule,
+  PhoneIdentityModule,
   RealtimeModule,
   StorageModule,
   DatabaseModule,

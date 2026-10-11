@@ -3,8 +3,9 @@ import { Type } from 'class-transformer';
 import { IsEnum, IsIn, IsOptional, IsString } from 'class-validator';
 
 import type { BaseEntity } from '#/core/database/entities/common/base.entity';
-import { PageRequestDto } from '#/core/http/dto/request';
-import { ListResponseDto, PageResponseDto } from '#/core/http/dto/response';
+import { PageRequestDto } from '#/core/http/dto/request/page.request.dto';
+import { ListResponseDto } from '#/core/http/dto/response/list.response.dto';
+import { PageResponseDto } from '#/core/http/dto/response/page.response.dto';
 
 export const SupportRoomStatus = { OPEN: 'open', IN_PROGRESS: 'in_progress', CLOSED: 'closed' } as const;
 export type SupportRoomStatus = (typeof SupportRoomStatus)[keyof typeof SupportRoomStatus];

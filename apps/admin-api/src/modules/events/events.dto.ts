@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 import { IsDate, IsIn, IsNotEmpty, IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
 
 import type { BaseEntity } from '#/core/database/entities/common/base.entity';
-import { PageRequestDto } from '#/core/http/dto/request';
+import { PageRequestDto } from '#/core/http/dto/request/page.request.dto';
 import { PageResponseDto } from '#/core/http/dto/response/page.response.dto';
 
 export const EVENT_PUBLICATION_STATUS = ['draft', 'published'] as const;

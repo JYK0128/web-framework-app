@@ -1,5 +1,6 @@
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
+import axios from 'axios';
 
 import { ALERT_HTTP_TIMEOUT_MS } from '#/core/alert/alert.config';
 import { ALERT_MODULE_OPTIONS, type AlertMessage, type AlertModuleOptions, type AlertNotificationLevel, type IAlertAdapter } from '#/core/alert/alert.interface';
@@ -22,6 +23,8 @@ function createPayload(message: AlertMessage): { text: string } {
 
 @Injectable()
 export class ChannelTalkAlertAdapter implements IAlertAdapter {
+  private readonly client = axios.create({ validateStatus: () => true });
+
   readonly providerName = 'channel-talk';
   private readonly logger = new Logger(ChannelTalkAlertAdapter.name);
   private readonly defaultWebhookUrl?: string;
@@ -40,22 +43,17 @@ export class ChannelTalkAlertAdapter implements IAlertAdapter {
     const payload = createPayload(message);
 
     this.logger.log('[Channel Talk Alert] 웹훅 전송 요청');
-    let res: Response;
+    let res: { status: number, data: unknown };
     try {
-      res = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(ALERT_HTTP_TIMEOUT_MS),
-      });
+      res = await this.client.post(webhookUrl, payload, { timeout: ALERT_HTTP_TIMEOUT_MS });
     }
     catch (err) {
       this.logger.error('Channel Talk webhook request failed.', err instanceof Error ? err.stack : String(err));
       throw ApplicationError.from(err, { code: 'ALERT_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
 
-    if (!res.ok) {
-      this.logger.warn(`Channel Talk webhook responded with ${res.status}: ${await res.text()}`);
+    if (res.status < 200 || res.status >= 300) {
+      this.logger.warn(`Channel Talk webhook responded with ${res.status}: ${typeof res.data === 'string' ? res.data : JSON.stringify(res.data)}`);
       throw new ApplicationError({ code: 'ALERT_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
 
