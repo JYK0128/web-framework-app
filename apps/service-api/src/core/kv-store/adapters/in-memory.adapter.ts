@@ -1,5 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { jsonSafeParse, valueIf } from '@pkg/shared/common';
+import { Injectable } from '@nestjs/common';
+import { ApplicationError, jsonSafeParse, valueIf } from '@pkg/shared/common';
 
 import type { IncrementWithBlockResult, KvAdapter } from '#/core/kv-store/kv-store.interface';
 
@@ -11,7 +11,6 @@ interface MemoryStoreItem {
 @Injectable()
 export class InMemoryAdapter implements KvAdapter {
   readonly name = 'in-memory';
-  private readonly logger = new Logger(InMemoryAdapter.name);
   private readonly store = new Map<string, MemoryStoreItem>();
   private readonly hashStore = new Map<string, Map<string, string>>();
 
@@ -46,7 +45,7 @@ export class InMemoryAdapter implements KvAdapter {
   async setOrThrow(key: string, value: string, ttlSeconds?: number): Promise<void> {
     const acquired = await this.setIfAbsent(key, value, ttlSeconds ?? 0);
     if (!acquired) {
-      throw new Error(`KV key already exists: ${key}`);
+      throw new ApplicationError({ code: 'CONFLICT', status: 409 });
     }
   }
 
@@ -168,7 +167,7 @@ export class InMemoryAdapter implements KvAdapter {
   private serialize(value: unknown): string {
     const serialized = JSON.stringify(value);
     if (typeof serialized !== 'string') {
-      throw new Error('KV value cannot be serialized');
+      throw new ApplicationError({ code: 'BAD_REQUEST', status: 400 });
     }
     return serialized;
   }

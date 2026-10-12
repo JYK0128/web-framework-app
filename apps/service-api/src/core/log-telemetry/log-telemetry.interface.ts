@@ -1,6 +1,6 @@
 import type { Observable } from 'rxjs';
 
-import type { LogErrorInfoDto } from '#/modules/logs/dto';
+import type { NormalizedLogError } from '#/core/log-telemetry/log-normalizer';
 
 export interface LokiConfig {
   url: string
@@ -26,15 +26,17 @@ export interface LogEntry {
   requestId: string
   requestBody: Record<string, unknown> | null
   responseBody: Record<string, unknown> | null
-  errorInfo: LogErrorInfoDto | null
+  errorInfo: NormalizedLogError | null
   nanoTimestamp?: string
 }
 
 export interface QueryLogOptions {
   method?: string
   statusCode?: number | string
+  status?: 'error' | 'success'
   search?: string
   limit?: number
+  offset?: number
   startDate?: string | Date
   endDate?: string | Date
   cursor?: string

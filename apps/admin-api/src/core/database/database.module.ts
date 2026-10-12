@@ -6,7 +6,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AppEntityManager } from './entity-manager';
 import mikroOrmConfig from './mikro-orm.config';
 import { AuditSubscriber } from './subscribers/audit.subscriber';
-import { UnitOfWorkInterceptor } from './unit-of-work.interceptor';
+import { UnitOfWorkInterceptor } from './http/unit-of-work.interceptor';
 
 @Global()
 @Module({

@@ -3,9 +3,9 @@ import { maskUrl } from '@pkg/shared';
 import { hmac } from '@pkg/shared/server';
 import type { NextFunction, Request, Response } from 'express';
 
+import { normalizeLogError } from '#/core/log-telemetry/log-normalizer';
 import { LoggerService } from '#/core/logger/logger.service';
 import { env } from '#/env';
-import { LogErrorInfoDto } from '#/modules/logs/dto';
 
 function isEventStreamResponse(response: Response): boolean {
   const contentType = response.getHeader('content-type');
@@ -20,16 +20,21 @@ export class RequestLoggingMiddleware implements NestMiddleware {
   use(request: Request, response: Response, next: NextFunction): void {
     const startedAt = Date.now();
     const responseContext = response as Response & { body?: unknown };
+
     const originalJson = response.json.bind(response);
     response.json = function (body: unknown): Response {
       responseContext.body = body;
       return originalJson(body);
     };
+
     const originalSend = response.send.bind(response);
     response.send = function (chunk: unknown): Response {
-      if (responseContext.body === undefined) responseContext.body = Buffer.isBuffer(chunk) ? chunk.toString('utf-8') : chunk;
+      if (responseContext.body === undefined) {
+        responseContext.body = Buffer.isBuffer(chunk) ? chunk.toString('utf-8') : chunk;
+      }
       return originalSend(chunk);
     };
+
     const originalEnd = response.end.bind(response);
     response.end = function (...args: unknown[]): Response {
       const [chunk] = args;
@@ -73,7 +78,7 @@ export class RequestLoggingMiddleware implements NestMiddleware {
     const user = (request.session as (typeof request.session & { user?: { email?: string } }) | undefined)?.user;
     const requestBody = request.body as Record<string, unknown> | undefined;
     const hasRequestBody = Boolean(requestBody) && Object.keys(requestBody ?? {}).length > 0;
-    const errorInfo = isError ? LogErrorInfoDto.from(requestContext.rawError, responseBody) : null;
+    const errorInfo = isError ? normalizeLogError(requestContext.rawError, responseBody) : null;
     let level = 'info';
     if (statusCode >= 400 && statusCode < 500) level = 'warn';
     if (statusCode >= 500 || aborted) level = 'error';
@@ -96,6 +101,7 @@ export class RequestLoggingMiddleware implements NestMiddleware {
       errorInfo,
     };
     const message = `${request.method} ${url} ${statusCode} (${duration}ms)${aborted ? ' [aborted]' : ''}`;
+
     if (isError) this.logger.error(message, meta, 'HTTP');
     else this.logger.log(message, meta, 'HTTP');
   }

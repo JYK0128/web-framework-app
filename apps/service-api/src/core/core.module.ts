@@ -22,7 +22,6 @@ import { HttpExceptionFilter } from '#/core/http/filters/http-exception.filter';
 import { UnexpectedExceptionFilter } from '#/core/http/filters/unexpected-exception.filter';
 import { PermissionGuard } from '#/core/http/guards/permission.guard';
 import { ResponseTransformInterceptor } from '#/core/http/interceptors/response-transform.interceptor';
-import { UnitOfWorkInterceptor } from '#/core/http/interceptors/unit-of-work.interceptor';
 import { RequestContextMiddleware } from '#/core/http/middlewares/request-context.middleware';
 import { RequestLoggingMiddleware } from '#/core/http/middlewares/request-logging.middleware';
 import { SanitizeHtmlPipe, TrimStringPipe } from '#/core/http/pipes/index';
@@ -105,7 +104,6 @@ const GLOBAL_FILTERS = [
 ].map((useClass) => ({ provide: APP_FILTER, useClass }));
 
 const GLOBAL_INTERCEPTORS = [
-  UnitOfWorkInterceptor,
   ResponseTransformInterceptor,
 ].map((useClass) => ({ provide: APP_INTERCEPTOR, useClass }));
 

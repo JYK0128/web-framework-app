@@ -2,18 +2,17 @@ import type { QueryOrderMap } from '@mikro-orm/core';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsInt, IsOptional, Min } from 'class-validator';
 
-import { BaseEntity } from '#/core/database/entities/common/base.entity';
 import { ToNumber } from '#/core/http/decorators/to-number.decorator';
 
 import { SearchableRequestDto } from './searchable.request.dto';
 import { type SortKey } from './sortable.request.dto';
 
-export type PageRequestOptions<TEntity extends BaseEntity> = {
+export type PageRequestOptions<TEntity extends object> = {
   orderBy?: QueryOrderMap<TEntity> | QueryOrderMap<TEntity>[]
   page: number
   limit: number
 };
-export class PageRequestDto<TEntity extends BaseEntity, TSortKey extends string = SortKey<TEntity>> extends SearchableRequestDto<TEntity, TSortKey> {
+export class PageRequestDto<TEntity extends object, TSortKey extends string = SortKey<TEntity>> extends SearchableRequestDto<TEntity, TSortKey> {
   @ApiPropertyOptional({ type: 'number', default: 1 })
   @IsOptional()
   @ToNumber()

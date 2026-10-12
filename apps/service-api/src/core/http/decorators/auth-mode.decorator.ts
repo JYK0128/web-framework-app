@@ -13,7 +13,7 @@ export type AuthMode = 'public' | 'user' | 'machine';
 
 export const AuthMode = (mode: AuthMode) => SetMetadata(AUTH_MODE_KEY, mode);
 
-const PublicSwagger = (): MethodDecorator => (target, propertyKey, descriptor) => {
+const PublicSwagger = (): MethodDecorator => (_target, _propertyKey, descriptor) => {
   if (!descriptor?.value) return descriptor;
 
   const operationMetadata = Reflect.getMetadata(SWAGGER_API_OPERATION_KEY, descriptor.value) as Record<string, unknown> | undefined ?? {};

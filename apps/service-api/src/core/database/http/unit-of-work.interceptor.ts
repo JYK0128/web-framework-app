@@ -1,7 +1,7 @@
 import { type CallHandler, type ExecutionContext, Injectable, type NestInterceptor } from '@nestjs/common';
 import { mergeMap, type Observable } from 'rxjs';
 
-import { AppEntityManager } from './entity-manager';
+import { AppEntityManager } from '#/core/database/entity-manager';
 
 @Injectable()
 export class UnitOfWorkInterceptor<T> implements NestInterceptor<T, T> {

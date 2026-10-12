@@ -3,12 +3,10 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { parseSearchTokens } from '@pkg/shared/common';
 import { IsOptional, IsString } from 'class-validator';
 
-import { BaseEntity } from '#/core/database/entities/common/base.entity';
-
 import { FilterableRequestDto } from './filterable.request.dto';
 import { SortableRequestDto, type SortKey } from './sortable.request.dto';
 
-export abstract class SearchableRequestDto<TEntity extends BaseEntity, TSortKey extends string = SortKey<TEntity>> extends SortableRequestDto<TEntity, TSortKey> {
+export abstract class SearchableRequestDto<TEntity extends object, TSortKey extends string = SortKey<TEntity>> extends SortableRequestDto<TEntity, TSortKey> {
   @IsOptional()
   filters: FilterableRequestDto<TEntity> = new FilterableRequestDto<TEntity>();
 

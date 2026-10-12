@@ -1,5 +1,5 @@
-import { Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
-import { jsonSafeParse } from '@pkg/shared/common';
+import { HttpStatus, Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
+import { ApplicationError, jsonSafeParse } from '@pkg/shared/common';
 import { createClient } from 'redis';
 
 import { type IncrementWithBlockResult, KV_STORE_MODULE_OPTIONS, type KvAdapter, type KvStoreModuleOptions } from '#/core/kv-store/kv-store.interface';
@@ -45,7 +45,7 @@ export class RedisAdapter implements KvAdapter, OnModuleInit, OnModuleDestroy {
   async onModuleInit(): Promise<void> {
     if (this.client?.isOpen) return;
     if (!this.options.redis) {
-      throw new Error('Redis options must be provided when using RedisAdapter');
+      throw new ApplicationError({ code: 'INTERNAL_SERVER_ERROR', status: HttpStatus.INTERNAL_SERVER_ERROR });
     }
 
     const client = createClient(this.options.redis);
@@ -118,7 +118,7 @@ export class RedisAdapter implements KvAdapter, OnModuleInit, OnModuleDestroy {
       NX: true,
     });
     if (result !== 'OK') {
-      throw new Error(`Redis key already exists: ${key}`);
+      throw new ApplicationError({ code: 'CONFLICT', status: HttpStatus.CONFLICT });
     }
   }
 
@@ -191,7 +191,7 @@ export class RedisAdapter implements KvAdapter, OnModuleInit, OnModuleDestroy {
   private serialize(value: unknown): string {
     const serialized = JSON.stringify(value);
     if (typeof serialized !== 'string') {
-      throw new Error('KV value cannot be serialized');
+      throw new ApplicationError({ code: 'BAD_REQUEST', status: HttpStatus.BAD_REQUEST });
     }
     return serialized;
   }
@@ -203,7 +203,7 @@ export class RedisAdapter implements KvAdapter, OnModuleInit, OnModuleDestroy {
   private getReadyClient(): ReturnType<typeof createClient> {
     const client = this.client;
     if (!client?.isReady) {
-      throw new Error('Redis client is not ready');
+      throw new ApplicationError({ code: 'INTERNAL_SERVICE_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
     }
     return client;
   }

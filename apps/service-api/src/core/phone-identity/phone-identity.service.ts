@@ -4,24 +4,13 @@ import { ApplicationError } from '@pkg/shared/common';
 import { PortOneAdapter } from '#/core/phone-identity/adapters/portone.adapter';
 import { env } from '#/env';
 
-export interface VerifiedIdentity {
-  name: string
-  phoneNumber: string
-  ci?: string
-  di?: string
-}
-
 @Injectable()
 export class PhoneIdentityService {
   constructor(private readonly adapter: PortOneAdapter) {}
 
-  async verify(identityVerificationId: string): Promise<VerifiedIdentity> {
-    if (!env.PORTONE_API_SECRET) {
-      throw new ApplicationError({ code: 'IDENTITY_VERIFICATION_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
-    }
-    if (!identityVerificationId.trim()) {
-      throw new ApplicationError({ code: 'INVALID_IDENTITY_VERIFICATION_ID', status: HttpStatus.BAD_REQUEST });
-    }
+  async verify(identityVerificationId: string): Promise<{ name: string, phoneNumber: string, ci?: string, di?: string }> {
+    if (!env.PORTONE_API_SECRET) throw new ApplicationError({ code: 'IDENTITY_VERIFICATION_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
+    if (!identityVerificationId.trim()) throw new ApplicationError({ code: 'INVALID_IDENTITY_VERIFICATION_ID', status: HttpStatus.BAD_REQUEST });
 
     const result = await this.adapter.fetchVerification(identityVerificationId);
     const customer = result.verifiedCustomer;

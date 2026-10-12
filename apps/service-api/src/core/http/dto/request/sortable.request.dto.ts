@@ -1,7 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 
-import { BaseEntity } from '#/core/database/entities/common/base.entity';
 import { ApiEnumOptional } from '#/core/http/decorators/api-enum.decorator';
 import { defineEnum } from '#/core/schema/enum';
 
@@ -12,8 +11,8 @@ export const SortDirection = defineEnum('SortDirection', {
   DESC: 'desc',
 } as const);
 export type SortDirection = (typeof SortDirection)[keyof typeof SortDirection];
-export type SortKey<TEntity extends BaseEntity> = Extract<keyof TEntity, string>;
-export abstract class SortableRequestDto<TEntity extends BaseEntity, TSortKey extends string = SortKey<TEntity>> extends FilterableRequestDto<TEntity> {
+export type SortKey<TEntity extends object> = Extract<keyof TEntity, string>;
+export abstract class SortableRequestDto<TEntity extends object, TSortKey extends string = SortKey<TEntity>> extends FilterableRequestDto<TEntity> {
   @ApiPropertyOptional({ isArray: true })
   @IsOptional()
   @IsString({ each: true })

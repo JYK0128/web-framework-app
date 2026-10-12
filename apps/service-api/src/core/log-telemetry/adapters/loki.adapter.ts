@@ -1,11 +1,11 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
-import { jsonSafeParse, uuid, when } from '@pkg/shared/common';
+import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
+import { ApplicationError, jsonSafeParse, uuid, when } from '@pkg/shared/common';
 import axios from 'axios';
 import { Observable } from 'rxjs';
 
+import { normalizeLogError } from '#/core/log-telemetry/log-normalizer';
 import { type ILogTelemetryAdapter, LOG_TELEMETRY_MODULE_OPTIONS, type LogEntry, type LogStatsResult, type LogTelemetryModuleOptions, type QueryLogOptions, type QueryLogResult } from '#/core/log-telemetry/log-telemetry.interface';
 import { LOG_DEFAULT_LOOKBACK_MS, LOG_QUERY_DEFAULT_LIMIT, LOG_QUERY_MAX_LIMIT, LOG_QUERY_RANGE_LIMIT, LOG_WATCH_LOOKBACK_MS, LOG_WATCH_MAX_SEEN_IDS, LOG_WATCH_POLL_INTERVAL_MS, LOG_WATCH_TRIM_SEEN_IDS } from '#/core/log-telemetry/loki.config';
-import { LogErrorInfoDto } from '#/modules/logs/dto';
 
 export interface LokiStreamEntry {
   stream: Record<string, string>
@@ -101,7 +101,7 @@ function parseLogItem(rawJson: string, nanoTimestamp?: string): LogEntry | null 
   const isError = statusCode >= 400 || level === 'error';
   const responseBody = extractPayloadObject(obj.responseBody ?? obj.response);
   const errorInfo = isError
-    ? LogErrorInfoDto.from(obj.errorInfo ?? obj.errorDetail ?? obj.error, responseBody)
+    ? normalizeLogError(obj.errorInfo ?? obj.errorDetail ?? obj.error, responseBody)
     : null;
 
   return {
@@ -210,12 +210,12 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
     const response = await this.client.get<LokiQueryResponse>(url.toString(), { headers: { Accept: 'application/json' }, timeout: this.timeoutMs });
 
     if (response.status < 200 || response.status >= 300) {
-      throw new Error(`Loki query responded with ${response.status}: ${JSON.stringify(response.data)}`);
+      throw ApplicationError.from(new Error(`Loki query responded with HTTP ${response.status}`), { code: 'INTERNAL_SERVICE_CALL_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
 
     const body = response.data;
     if (body.status !== 'success' || !body.data?.result) {
-      throw new Error('Loki query returned an invalid response');
+      throw ApplicationError.from(new Error('Loki query returned an invalid response'), { code: 'INTERNAL_SERVICE_CALL_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
 
     return parseStreamEntries(body.data.result);
@@ -238,26 +238,26 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
     const response = await this.client.get<LokiQueryResponse>(url.toString(), { headers: { Accept: 'application/json' }, timeout: this.timeoutMs });
 
     if (response.status < 200 || response.status >= 300) {
-      throw new Error(`Loki metric query responded with ${response.status}: ${JSON.stringify(response.data)}`);
+      throw ApplicationError.from(new Error(`Loki metric query responded with HTTP ${response.status}`), { code: 'INTERNAL_SERVICE_CALL_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
 
     const body = response.data;
     if (body.status !== 'success' || !Array.isArray(body.data?.result)) {
-      throw new Error('Loki metric query returned an invalid response');
+      throw ApplicationError.from(new Error('Loki metric query returned an invalid response'), { code: 'INTERNAL_SERVICE_CALL_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
 
     const firstResult = body.data.result[0];
     if (!firstResult) return 0;
     if (!('value' in firstResult) || !Array.isArray(firstResult.value)) {
-      throw new Error('Loki metric query returned an invalid value');
+      throw ApplicationError.from(new Error('Loki metric query returned an invalid value'), { code: 'INTERNAL_SERVICE_CALL_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
 
     const parsed = Number(firstResult.value[1]);
-    if (!Number.isFinite(parsed)) throw new Error('Loki metric query returned a non-numeric value');
+    if (!Number.isFinite(parsed)) throw ApplicationError.from(new Error('Loki metric query returned a non-numeric value'), { code: 'INTERNAL_SERVICE_CALL_FAILED', status: HttpStatus.BAD_GATEWAY });
     return parsed;
   }
 
-  buildLogQL(query?: Partial<Pick<QueryLogOptions, 'method' | 'statusCode' | 'search'>>): string {
+  buildLogQL(query?: Partial<Pick<QueryLogOptions, 'method' | 'statusCode' | 'status' | 'search'>>): string {
     let logQL = `{tag="${this.httpTag}"} | json | url !~ ".*health.*"`;
 
     if (query?.method?.trim()) {
@@ -286,6 +286,13 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
       }
     }
 
+    if (query?.status === 'error') {
+      logQL += ' | statusCode >= 400';
+    }
+    else if (query?.status === 'success') {
+      logQL += ' | statusCode < 400';
+    }
+
     if (query?.search?.trim()) {
       const escaped = escapeLogQLString(escapeLogQLRegex(query.search.trim()));
       logQL += ` |~ "(?i)${escaped}"`;
@@ -295,16 +302,18 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
   }
 
   async getLogs(query: QueryLogOptions): Promise<QueryLogResult> {
+    const offset = Math.max(query.offset ?? 0, 0);
     const limit = Math.min(Math.max(query.limit ?? LOG_QUERY_DEFAULT_LIMIT, 1), LOG_QUERY_MAX_LIMIT);
-    const startMs = when((value): value is string => Boolean(value), (startDate) => new Date(startDate).getTime())(query.startDate);
-    const userEndMs = when((value): value is string => Boolean(value), (endDate) => new Date(endDate).getTime())(query.endDate);
+    const now = Date.now();
+    const startMs = when((value): value is string | Date => Boolean(value), (startDate) => new Date(startDate).getTime())(query.startDate) ?? now - LOG_DEFAULT_LOOKBACK_MS;
+    const userEndMs = when((value): value is string | Date => Boolean(value), (endDate) => new Date(endDate).getTime())(query.endDate) ?? now;
     const logQL = this.buildLogQL(query);
 
     const { queryEnd = userEndMs, skipLogId } = resolveCursorBoundary(query.cursor);
     const fetchLimit = skipLogId ? limit + 20 : limit + 1;
 
     const [rawPage, totalCount] = await Promise.all([
-      this.queryRange(logQL, fetchLimit, startMs, queryEnd),
+      this.queryRange(logQL, Math.min(offset + fetchLimit, 5000), startMs, queryEnd),
       this.countOverTime(logQL, startMs, userEndMs),
     ]);
 
@@ -316,8 +325,8 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
       }
     }
 
-    const hasNextPage = filteredLogs.length > limit;
-    const pageItems = filteredLogs.slice(0, limit);
+    const hasNextPage = filteredLogs.length > offset + limit;
+    const pageItems = filteredLogs.slice(offset, offset + limit);
 
     const firstItem = pageItems.at(0);
     const lastItem = pageItems.at(-1);
