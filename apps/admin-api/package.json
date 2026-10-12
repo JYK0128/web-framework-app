@@ -18,8 +18,10 @@
     "db:migrate": "mikro-orm migration:up",
     "db:seed": "mikro-orm seeder:run",
     "test:event-broker": "node tests/event-broker.integration.mjs",
+    "test:system-config": "node tests/system-config.regression.mjs",
     "test:alimtalk": "node tests/alimtalk.integration.mjs",
-    "test:terms": "node tests/terms.regression.mjs"
+    "test:terms": "node tests/terms.regression.mjs",
+    "test:service-terms": "node tests/service-terms.regression.mjs"
   },
   "mikro-orm": {
     "tsConfigPath": "./tsconfig.app.json",

@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 
-import { ServiceTermsController } from './service-terms.controller';
+import { ServiceTermDocumentsModule } from './documents/documents.module';
+import { ServiceTermGroupsModule } from './groups/groups.module';
+import { ServiceTermRevisionsModule } from './revisions/revisions.module';
 
-@Module({ controllers: [ServiceTermsController] })
+@Module({ imports: [ServiceTermDocumentsModule, ServiceTermGroupsModule, ServiceTermRevisionsModule] })
 export class ServiceTermsModule {}

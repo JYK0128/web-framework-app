@@ -496,7 +496,7 @@
           "length": null,
           "precision": null,
           "scale": null,
-          "default": null,
+          "default": "'info'",
           "comment": null,
           "collation": null,
           "enumItems": [
@@ -942,6 +942,23 @@
       "name": "profile",
       "schema": "public",
       "columns": {
+        "ciHash": {
+          "name": "ciHash",
+          "type": "varchar(64)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": true,
+          "length": 64,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
         "createdAt": {
           "name": "createdAt",
           "type": "timestamptz(6)",
@@ -1010,15 +1027,15 @@
           "enumItems": [],
           "mappedType": "string"
         },
-        "department": {
-          "name": "department",
-          "type": "varchar(100)",
+        "diHash": {
+          "name": "diHash",
+          "type": "varchar(64)",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "unique": false,
-          "length": 100,
+          "unique": true,
+          "length": 64,
           "precision": null,
           "scale": null,
           "default": null,
@@ -1027,15 +1044,32 @@
           "enumItems": [],
           "mappedType": "string"
         },
-        "employeeNo": {
-          "name": "employeeNo",
-          "type": "varchar(50)",
+        "emailEncrypted": {
+          "name": "emailEncrypted",
+          "type": "text",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "emailHash": {
+          "name": "emailHash",
+          "type": "varchar(64)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
           "unique": true,
-          "length": 50,
+          "length": 64,
           "precision": null,
           "scale": null,
           "default": null,
@@ -1051,6 +1085,23 @@
           "autoincrement": false,
           "primary": true,
           "nullable": false,
+          "unique": false,
+          "length": 255,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "image": {
+          "name": "image",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
           "unique": false,
           "length": 255,
           "precision": null,
@@ -1077,6 +1128,57 @@
           "collation": null,
           "enumItems": [],
           "mappedType": "json"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(120)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 120,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "phoneNumberEncrypted": {
+          "name": "phoneNumberEncrypted",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "phoneNumberHash": {
+          "name": "phoneNumberHash",
+          "type": "varchar(64)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": true,
+          "length": 64,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
         },
         "updatedAt": {
           "name": "updatedAt",
@@ -1133,14 +1235,47 @@
       "indexes": [
         {
           "columnNames": [
-            "employeeNo"
+            "ciHash"
           ],
           "composite": false,
           "constraint": true,
-          "keyName": "profile_employeeNo_unique",
+          "keyName": "profile_ciHash_unique",
           "primary": false,
           "unique": true,
-          "expression": "CREATE UNIQUE INDEX \"profile_employeeNo_unique\" ON public.profile USING btree (\"employeeNo\")"
+          "expression": "CREATE UNIQUE INDEX \"profile_ciHash_unique\" ON public.profile USING btree (\"ciHash\")"
+        },
+        {
+          "columnNames": [
+            "diHash"
+          ],
+          "composite": false,
+          "constraint": true,
+          "keyName": "profile_diHash_unique",
+          "primary": false,
+          "unique": true,
+          "expression": "CREATE UNIQUE INDEX \"profile_diHash_unique\" ON public.profile USING btree (\"diHash\")"
+        },
+        {
+          "columnNames": [
+            "emailHash"
+          ],
+          "composite": false,
+          "constraint": true,
+          "keyName": "profile_emailHash_unique",
+          "primary": false,
+          "unique": true,
+          "expression": "CREATE UNIQUE INDEX \"profile_emailHash_unique\" ON public.profile USING btree (\"emailHash\")"
+        },
+        {
+          "columnNames": [
+            "phoneNumberHash"
+          ],
+          "composite": false,
+          "constraint": true,
+          "keyName": "profile_phoneNumberHash_unique",
+          "primary": false,
+          "unique": true,
+          "expression": "CREATE UNIQUE INDEX \"profile_phoneNumberHash_unique\" ON public.profile USING btree (\"phoneNumberHash\")"
         },
         {
           "columnNames": [
@@ -1253,6 +1388,23 @@
           "enumItems": [],
           "mappedType": "string"
         },
+        "idleExpiresAt": {
+          "name": "idleExpiresAt",
+          "type": "timestamptz(6)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
         "rememberMe": {
           "name": "rememberMe",
           "type": "boolean",
@@ -1340,28 +1492,6 @@
         }
       },
       "indexes": [
-        {
-          "columnNames": [
-            "expiresAt"
-          ],
-          "composite": false,
-          "constraint": false,
-          "keyName": "refresh_token_expiresAt_index",
-          "primary": false,
-          "unique": false,
-          "expression": "CREATE INDEX \"refresh_token_expiresAt_index\" ON public.refresh_token USING btree (\"expiresAt\")"
-        },
-        {
-          "columnNames": [
-            "familyId"
-          ],
-          "composite": false,
-          "constraint": false,
-          "keyName": "refresh_token_familyId_index",
-          "primary": false,
-          "unique": false,
-          "expression": "CREATE INDEX \"refresh_token_familyId_index\" ON public.refresh_token USING btree (\"familyId\")"
-        },
         {
           "columnNames": [
             "id"
@@ -1799,17 +1929,6 @@
       "indexes": [
         {
           "columnNames": [
-            "expiresAt"
-          ],
-          "composite": false,
-          "constraint": false,
-          "keyName": "session_expiresAt_index",
-          "primary": false,
-          "unique": false,
-          "expression": "CREATE INDEX \"session_expiresAt_index\" ON public.session USING btree (\"expiresAt\")"
-        },
-        {
-          "columnNames": [
             "id"
           ],
           "composite": false,
@@ -1853,7 +1972,7 @@
       "columns": {
         "code": {
           "name": "code",
-          "type": "varchar(100)",
+          "type": "text",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -1867,7 +1986,8 @@
           "collation": null,
           "enumItems": [
             "email",
-            "webhook"
+            "webhook",
+            "oauth"
           ],
           "mappedType": "enum"
         },
@@ -2067,8 +2187,8 @@
       "checks": [
         {
           "name": "system_config_code_check",
-          "expression": "\"code\" in ('email', 'webhook')",
-          "definition": "check (\"code\" in ('email', 'webhook'))",
+          "expression": "\"code\" in ('email', 'webhook', 'oauth')",
+          "definition": "check (\"code\" in ('email', 'webhook', 'oauth'))",
           "columnName": "code"
         }
       ],
@@ -2983,40 +3103,6 @@
           "enumItems": [],
           "mappedType": "string"
         },
-        "emailEncrypted": {
-          "name": "emailEncrypted",
-          "type": "text",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "text"
-        },
-        "emailHash": {
-          "name": "emailHash",
-          "type": "varchar(64)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": true,
-          "length": 64,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
         "emailVerified": {
           "name": "emailVerified",
           "type": "boolean",
@@ -3051,23 +3137,6 @@
           "enumItems": [],
           "mappedType": "string"
         },
-        "image": {
-          "name": "image",
-          "type": "varchar(255)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": 255,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
         "metadata": {
           "name": "metadata",
           "type": "jsonb",
@@ -3084,57 +3153,6 @@
           "collation": null,
           "enumItems": [],
           "mappedType": "json"
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(120)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": 120,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "phoneNumberEncrypted": {
-          "name": "phoneNumberEncrypted",
-          "type": "text",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "text"
-        },
-        "phoneNumberHash": {
-          "name": "phoneNumberHash",
-          "type": "varchar(64)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": true,
-          "length": 64,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
         },
         "phoneNumberVerified": {
           "name": "phoneNumberVerified",
@@ -3223,28 +3241,6 @@
         }
       },
       "indexes": [
-        {
-          "columnNames": [
-            "emailHash"
-          ],
-          "composite": false,
-          "constraint": true,
-          "keyName": "user_emailHash_unique",
-          "primary": false,
-          "unique": true,
-          "expression": "CREATE UNIQUE INDEX \"user_emailHash_unique\" ON public.\"user\" USING btree (\"emailHash\")"
-        },
-        {
-          "columnNames": [
-            "phoneNumberHash"
-          ],
-          "composite": false,
-          "constraint": true,
-          "keyName": "user_phoneNumberHash_unique",
-          "primary": false,
-          "unique": true,
-          "expression": "CREATE UNIQUE INDEX \"user_phoneNumberHash_unique\" ON public.\"user\" USING btree (\"phoneNumberHash\")"
-        },
         {
           "columnNames": [
             "id"

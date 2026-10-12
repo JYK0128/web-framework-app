@@ -17,7 +17,7 @@ export class CheckAdminEmailConfigHandler implements IQueryHandler<CheckAdminEma
   async execute(): Promise<CheckAdminEmailConfigResponseDto> {
     const entity = await this.em.findOne(SystemConfig, { code: AdminSystemConfigCode.EMAIL }, { filters: false });
     if (!entity) throw new NotFoundException('Admin 이메일 설정을 찾을 수 없습니다.');
-    if (!AdminEmailConfigDto.parseEntity(entity).isConfigured()) throw new ApplicationError({ code: 'EMAIL_DELIVERY_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
+    if (!AdminEmailConfigDto.parseEntity(entity).isConfigured()) throw new ApplicationError({ code: 'EMAIL_NOTIFICATION_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
     return CheckAdminEmailConfigResponseDto.parse({ ok: true });
   }
 }

@@ -2,12 +2,12 @@
 
 `admin-api`와 `service-api`의 `core/services/message`에서 같은 계약을 사용한다.
 `MessageService.send({ channel: 'alimtalk', message, config })`를 호출하면 `MessengerAdapter`가 `AlimtalkAdapter`로 전달한다.
-대행사는 기존 `delivery.messenger.kakao.agency` 설정으로 선택한다. 인프라 모듈 변경은 없다.
+대행사는 `notification.messenger.kakao.agency` 설정으로 선택한다. 인프라 모듈 변경은 없다.
 
 ```ts
 await messages.send({
   channel: 'alimtalk',
-  config: delivery.messenger, // enabled: true, provider: KAKAO 및 복호화된 대행사 설정
+  config: notification.messenger, // enabled: true, provider: KAKAO 및 복호화된 대행사 설정
   message: {
     recipient: '01012345678',
     templateCode: 'APPROVED_TEMPLATE', // SOLAPI: templateId

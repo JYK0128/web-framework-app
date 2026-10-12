@@ -11,7 +11,7 @@ const MAINTENANCE_EXEMPT_PATHS = [
   '/api/v1/health/live',
   '/api/v1/health/ready',
   '/api/v1/service-configs',
-  '/api/v1/internal/system-configs',
+  '/api/v1/internal/system-config',
 ];
 
 @Injectable()

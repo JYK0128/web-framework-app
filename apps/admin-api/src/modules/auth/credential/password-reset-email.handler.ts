@@ -30,7 +30,7 @@ export class PasswordResetEmailHandler implements IEventHandler<PasswordResetEma
     this.unsubscribe = await this.eventBroker.subscribe<PasswordResetEmailEvent>(
       PasswordResetEmailEvent.name,
       (event) => this.handle(event),
-      { group: 'admin-auth-email-delivery' },
+      { group: 'admin-auth-email-notification' },
     );
   }
 

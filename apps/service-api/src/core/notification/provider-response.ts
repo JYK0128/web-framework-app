@@ -8,13 +8,13 @@ export interface ProviderHttpResponse {
   body: unknown
 }
 
-export type DeliveryProvider = 'NHN' | 'SOLAPI' | 'FCM' | 'LINE' | 'WHATSAPP' | 'TELEGRAM' | 'WECHAT';
+export type NotificationProvider = 'NHN' | 'SOLAPI' | 'FCM' | 'LINE' | 'WHATSAPP' | 'TELEGRAM' | 'WECHAT';
 
 const recordSchema = z.record(z.string(), z.unknown());
 
-export function parseDeliveryResult(provider: DeliveryProvider, response: ProviderHttpResponse): string | undefined {
+export function parseNotificationResult(provider: NotificationProvider, response: ProviderHttpResponse): string | undefined {
   const parsed = recordSchema.safeParse(response.body);
-  if (!parsed.success) throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', message: `${provider}: Invalid provider response`, status: HttpStatus.BAD_GATEWAY });
+  if (!parsed.success) throw new ApplicationError({ code: 'NOTIFICATION_SEND_FAILED', message: `${provider}: Invalid provider response`, status: HttpStatus.BAD_GATEWAY });
   const data = parsed.data;
   const header = recordSchema.safeParse(data.header).data;
   const body = recordSchema.safeParse(data.body).data;
@@ -45,6 +45,6 @@ export function parseDeliveryResult(provider: DeliveryProvider, response: Provid
   const failedRecipient = recipientResults?.find((item) => item.resultCode !== 0);
   const rawError = failedRecipient?.resultMessage ?? (header?.isSuccessful === false ? header.resultMessage : undefined) ?? data.errorMessage ?? data.message ?? data.description ?? data.errmsg;
   const errorMessage = typeof rawError === 'string' ? rawError : `Provider rejected request (HTTP ${response.status})`;
-  if (!response.ok || !accepted) throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+  if (!response.ok || !accepted) throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_SEND_FAILED', status: HttpStatus.BAD_GATEWAY });
   return messageId;
 }

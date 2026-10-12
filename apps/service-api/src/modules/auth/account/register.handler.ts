@@ -14,7 +14,7 @@ import { MessageService } from '#/core/notification';
 import { env } from '#/env';
 import { RegisterCommand } from '#/modules/auth/account/register.command';
 import { RegisterResponseDto } from '#/modules/auth/account/register.response.dto';
-import { ensureEmailDeliveryConfigured } from '#/modules/auth/auth-email.helper';
+import { ensureEmailNotificationConfigured } from '#/modules/auth/auth-email.helper';
 import { sendEmailVerificationChallenge } from '#/modules/auth/email-verification/email-verification.helper';
 
 @Injectable()
@@ -28,7 +28,7 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
     if (!SECURITY_CONFIG.registration.allowRegistration) throw new ApplicationError({ code: 'REGISTRATION_DISABLED', status: HttpStatus.FORBIDDEN });
     if (!SECURITY_CONFIG.credentialAvailable) throw new ApplicationError({ code: 'CREDENTIAL_AUTH_UNAVAILABLE', status: HttpStatus.FORBIDDEN });
     assertPasswordPolicy(command.input.password);
-    if (SECURITY_CONFIG.registration.requireEmailVerification) await ensureEmailDeliveryConfigured(this.em);
+    if (SECURITY_CONFIG.registration.requireEmailVerification) await ensureEmailNotificationConfigured(this.em);
 
     const email = command.input.email.trim().toLowerCase();
     const emailHash = hashWithSecret(email, env.PII_HASH_KEY);

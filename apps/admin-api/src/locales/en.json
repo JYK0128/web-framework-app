@@ -16,9 +16,10 @@
     "matches": "Has an invalid format."
   },
   "error": {
+    "SYSTEM_CONFIG_UPDATE_INCOMPLETE": "Some configuration updates could not be confirmed. Review the saved changes and retry.",
     "INTERNAL_SERVER_ERROR": "Internal server error.",
-    "NOTIFICATION_DELIVERY_FAILED": "Notification delivery failed.",
-    "WEBHOOK_DELIVERY_FAILED": "Webhook delivery failed.",
+    "NOTIFICATION_SEND_FAILED": "Notification notification failed.",
+    "WEBHOOK_SEND_FAILED": "Webhook notification failed.",
     "UNKNOWN_ERROR": "An unknown error occurred.",
     "VALIDATION_ERROR": "Please check your input.",
     "BAD_REQUEST": "The request is invalid.",
@@ -51,7 +52,7 @@
     "INTERNAL_SERVICE_CALL_FAILED": "The internal service request failed.",
     "INTERNAL_SERVICE_UNAVAILABLE": "The internal service is unavailable.",
     "ADMIN_EMAIL_CONFIG_INCOMPLETE": "Configure the SMTP server, credentials, and a valid sender email address.",
-    "EMAIL_DELIVERY_UNAVAILABLE": "Email delivery is unavailable. Check the email settings.",
+    "EMAIL_NOTIFICATION_UNAVAILABLE": "Email notification is unavailable. Check the email settings.",
     "ACCOUNT_RECOVERY_EMAIL_CONFIG_INCOMPLETE": "The admin email relay is disabled or incomplete.",
     "ACCOUNT_RECOVERY_EMAIL_CONFIG_INVALID": "The admin email settings could not be loaded.",
     "PASSWORD_EXPIRED": "Your password has expired. Reset it and sign in again.",
@@ -118,6 +119,13 @@
     "TWO_FACTOR_DISABLED": "Two-factor authentication is disabled.",
     "TWO_FACTOR_SETUP_LOCKED": "Two-factor setup is locked. Try again later.",
     "USER_PROFILE_NOT_FOUND": "The user profile could not be found.",
-    "CREDENTIAL_AUTH_UNAVAILABLE": "Email and password authentication is unavailable."
+    "CREDENTIAL_AUTH_UNAVAILABLE": "Email and password authentication is unavailable.",
+    "SERVICE_TERM_NOT_FOUND": "The service terms could not be found.",
+    "SERVICE_TERM_ALREADY_PUBLISHED": "These service terms are already published.",
+    "SERVICE_TERM_VERSION_ALREADY_EXISTS": "This version already exists in the terms group.",
+    "SERVICE_TERM_GROUP_HAS_PUBLISHED_TERMS": "This group contains published service terms.",
+    "SERVICE_TERM_GROUP_MISMATCH": "The service terms group does not match.",
+    "SERVICE_TERM_GROUP_NOT_FOUND": "The service terms group could not be found.",
+    "SERVICE_TERM_PUBLISH_DATE_MUST_BE_FUTURE": "The service terms publication date must be in the future."
   }
 }

@@ -9,6 +9,7 @@ import { type ApiResponseDto } from '#/core/http/dto/response/api.response.dto';
 @Injectable()
 export class ResponseTransformInterceptor<T> implements NestInterceptor<T, ApiResponseDto<T> | T> {
   intercept(context: ExecutionContext, next: CallHandler<T>): Observable<ApiResponseDto<T> | T> {
+    if (context.getType() !== 'http') return next.handle();
     if (Reflect.getMetadata(SSE_METADATA, context.getHandler())) return next.handle();
 
     const ctx = context.switchToHttp();

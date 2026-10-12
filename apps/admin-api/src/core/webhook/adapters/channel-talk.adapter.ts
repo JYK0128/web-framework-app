@@ -36,7 +36,7 @@ export class ChannelTalkAdapter implements IWebhookAdapter {
   async send(message: WebhookMessage): Promise<void> {
     const webhookUrl = message.webhookUrl || this.defaultWebhookUrl;
     if (!webhookUrl) {
-      throw new ApplicationError({ code: 'WEBHOOK_DELIVERY_FAILED', message: `Channel Talk: webhook URL is required`, status: HttpStatus.BAD_GATEWAY });
+      throw new ApplicationError({ code: 'WEBHOOK_SEND_FAILED', message: `Channel Talk: webhook URL is required`, status: HttpStatus.BAD_GATEWAY });
     }
 
     const payload = createPayload(message);
@@ -48,12 +48,12 @@ export class ChannelTalkAdapter implements IWebhookAdapter {
     }
     catch (error) {
       this.logger.error('Channel Talk webhook request failed.', error instanceof Error ? error.stack : String(error));
-      throw ApplicationError.from(error, { code: 'WEBHOOK_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+      throw ApplicationError.from(error, { code: 'WEBHOOK_SEND_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
 
     if (res.status < 200 || res.status >= 300) {
       this.logger.warn(`Channel Talk webhook responded with ${res.status}: ${typeof res.data === 'string' ? res.data : JSON.stringify(res.data)}`);
-      throw new ApplicationError({ code: 'WEBHOOK_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+      throw new ApplicationError({ code: 'WEBHOOK_SEND_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
 
     this.logger.log('[Channel Talk Webhook] 웹훅 전송 성공');

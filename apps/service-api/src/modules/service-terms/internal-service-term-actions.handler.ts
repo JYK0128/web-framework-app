@@ -1,3 +1,4 @@
+import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
@@ -29,6 +30,7 @@ export class CreateInternalServiceTermHandler implements ICommandHandler<CreateI
       metadata: input.metadata ? { options: input.metadata.options ?? {} } : null,
     });
     this.em.persist(term);
+    await flushServiceTerm(this.em);
     return InternalServiceTermItemDto.parseEntity(term);
   }
 }
@@ -40,18 +42,19 @@ export class UpdateInternalServiceTermHandler implements ICommandHandler<UpdateI
   async execute({ input }: UpdateInternalServiceTermCommand): Promise<InternalServiceTermItemDto> {
     const term = await findServiceTerm(this.em, input.termId);
     assertEditable(term);
-    if (input.dto.groupId !== term.termGroup.id) {
+    if (input.dto.groupId !== undefined && input.dto.groupId !== term.termGroup.id) {
       throw new ApplicationError({ code: 'SERVICE_TERM_GROUP_MISMATCH', status: HttpStatus.BAD_REQUEST });
     }
-    await assertVersionAvailable(this.em, term.termGroup, input.dto.version, term.id);
+    if (input.dto.version !== undefined) await assertVersionAvailable(this.em, term.termGroup, input.dto.version, term.id);
     const publishedAt = parseFuturePublishDate(input.dto.publishedAt);
-    term.version = input.dto.version.trim();
-    term.content = input.dto.content.trim();
-    term.reason = input.dto.reason.trim();
-    term.summary = input.dto.summary.trim();
-    term.isNoticeRequired = input.dto.isNoticeRequired;
+    if (input.dto.version !== undefined) term.version = input.dto.version.trim();
+    if (input.dto.content !== undefined) term.content = input.dto.content.trim();
+    if (input.dto.reason !== undefined) term.reason = input.dto.reason.trim();
+    if (input.dto.summary !== undefined) term.summary = input.dto.summary.trim();
+    if (input.dto.isNoticeRequired !== undefined) term.isNoticeRequired = input.dto.isNoticeRequired;
     if (input.dto.metadata !== undefined) term.metadata = input.dto.metadata ? { options: input.dto.metadata.options ?? {} } : null;
     if (input.dto.publishedAt !== undefined) term.publishedAt = publishedAt;
+    await flushServiceTerm(this.em);
     return InternalServiceTermItemDto.parseEntity(term);
   }
 }
@@ -113,4 +116,16 @@ function parseFuturePublishDate(value?: string | null): Date | null {
     throw new ApplicationError({ code: 'SERVICE_TERM_PUBLISH_DATE_MUST_BE_FUTURE', status: HttpStatus.BAD_REQUEST });
   }
   return publishedAt;
+}
+
+async function flushServiceTerm(em: AppEntityManager): Promise<void> {
+  try {
+    await em.flush();
+  }
+  catch (error) {
+    if (error instanceof UniqueConstraintViolationException && error.message.includes('service_term_group_version_unique')) {
+      throw ApplicationError.from(error, { code: 'SERVICE_TERM_VERSION_ALREADY_EXISTS', status: HttpStatus.CONFLICT });
+    }
+    throw error;
+  }
 }

@@ -19,7 +19,7 @@ export const SECURITY_CONFIG = {
     oauthProviderRequestTimeoutSeconds: 5,
     holidayCalendarRequestTimeoutSeconds: 6,
     webhookRequestTimeoutSeconds: 5,
-    deliveryProviderRequestTimeoutSeconds: 10,
+    notificationProviderRequestTimeoutSeconds: 10,
     oauthIconMaxSizeBytes: 2 * 1024 * 1024,
     oauthIconPresignedUrlTtlSeconds: 300,
     pushMessageTtlMinutes: 60,

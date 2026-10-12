@@ -28,7 +28,7 @@ export class TeamsAlertAdapter implements IAlertAdapter {
 
   async send(message: AlertMessage): Promise<void> {
     const webhookUrl = message.webhookUrl || this.defaultWebhookUrl;
-    if (!webhookUrl) throw new ApplicationError({ code: 'ALERT_DELIVERY_FAILED', message: `Microsoft Teams: webhook URL is required`, status: HttpStatus.BAD_GATEWAY });
+    if (!webhookUrl) throw new ApplicationError({ code: 'ALERT_SEND_FAILED', message: `Microsoft Teams: webhook URL is required`, status: HttpStatus.BAD_GATEWAY });
 
     const level = message.level ?? 'info';
     const themeColor = LEVEL_THEME_COLORS[level];
@@ -84,12 +84,12 @@ export class TeamsAlertAdapter implements IAlertAdapter {
     }
     catch (err) {
       this.logger.error('Teams webhook request failed.', err instanceof Error ? err.stack : String(err));
-      throw ApplicationError.from(err, { code: 'ALERT_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+      throw ApplicationError.from(err, { code: 'ALERT_SEND_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
 
     if (res.status < 200 || res.status >= 300) {
       this.logger.warn(`Teams webhook responded with ${res.status}: ${typeof res.data === 'string' ? res.data : JSON.stringify(res.data)}`);
-      throw new ApplicationError({ code: 'ALERT_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+      throw new ApplicationError({ code: 'ALERT_SEND_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
 
     this.logger.log('[Teams Alert] 웹훅 전송 성공');

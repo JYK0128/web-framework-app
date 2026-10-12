@@ -50,11 +50,14 @@ export default defineConfig({
     minify: false,
     sourceMap: true,
     module: true,
+    externals: {
+      '@nestjs/common': '@nestjs/common',
+    },
     autoExternal: {
       dependencies: true,
       optionalDependencies: true,
       peerDependencies: true,
-      exclude: [/^@pkg\//],
+      exclude: [/^@pkg\//, '@nestjs/common'],
     },
   },
 });

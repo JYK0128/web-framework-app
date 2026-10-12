@@ -26,7 +26,7 @@ export class AlimtalkAdapter {
   constructor(private readonly templates: MessageTemplateService) {}
 
   async send(message: Message, config?: MessengerConfigDto): Promise<string | undefined> {
-    if (!config?.enabled || config.provider !== 'KAKAO') throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', message: `카카오 알림톡: 발송 설정이 비활성화되었거나 유효하지 않습니다.`, status: HttpStatus.BAD_GATEWAY });
+    if (!config?.enabled || config.provider !== 'KAKAO') throw new ApplicationError({ code: 'NOTIFICATION_SEND_FAILED', message: `카카오 알림톡: 발송 설정이 비활성화되었거나 유효하지 않습니다.`, status: HttpStatus.BAD_GATEWAY });
     try {
       const rendered = this.prepareMessage(message);
       switch (config.kakao?.agency) {
@@ -37,7 +37,7 @@ export class AlimtalkAdapter {
       }
     }
     catch (error) {
-      throw ApplicationError.from(error, { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+      throw ApplicationError.from(error, { code: 'NOTIFICATION_SEND_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
   }
 
@@ -65,7 +65,7 @@ export class AlimtalkAdapter {
   }
 
   private async request(url: string, headers: Record<string, string>, body: string): Promise<ProviderResponse> {
-    const response = await this.client.post<ProviderResponse>(url, body, { headers, timeout: SECURITY_CONFIG.integrations.deliveryProviderRequestTimeoutSeconds * 1000 });
+    const response = await this.client.post<ProviderResponse>(url, body, { headers, timeout: SECURITY_CONFIG.integrations.notificationProviderRequestTimeoutSeconds * 1000 });
     if (response.status < 200 || response.status >= 300) throw new Error(`알림톡 요청 실패: HTTP ${response.status}`);
     return response.data;
   }
@@ -81,8 +81,8 @@ export class AlimtalkAdapter {
     const response = typeof data.message === 'object' ? data.message : undefined;
     const sent = response?.sendResults?.[0];
     if (!data.header?.isSuccessful || sent?.resultCode !== 0 || !response?.requestId) {
-      const errorMessage = sent?.resultMessage ?? data.header?.resultMessage ?? 'Provider rejected Alimtalk delivery';
-      throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+      const errorMessage = sent?.resultMessage ?? data.header?.resultMessage ?? 'Provider rejected Alimtalk notification';
+      throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_SEND_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
     return response.requestId;
   }
@@ -111,8 +111,8 @@ export class AlimtalkAdapter {
     }));
     const sent = data.messageList?.[0];
     if (data.failedMessageList?.length || sent?.statusCode !== '2000' || !sent.messageId) {
-      const errorMessage = data.failedMessageList?.[0]?.statusMessage ?? sent?.statusMessage ?? data.errorMessage ?? 'Provider rejected Alimtalk delivery';
-      throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+      const errorMessage = data.failedMessageList?.[0]?.statusMessage ?? sent?.statusMessage ?? data.errorMessage ?? 'Provider rejected Alimtalk notification';
+      throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_SEND_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
     return sent.messageId;
   }
@@ -124,8 +124,8 @@ export class AlimtalkAdapter {
     if (message.buttons?.length) body.set('button_1', JSON.stringify({ button: message.buttons.map(({ type, name, schemeIos, schemeAndroid, ...links }) => ({ name, linkType: type, linkTypeName: { WL: '웹링크', AL: '앱링크', DS: '배송조회', BK: '봇키워드', MD: '메시지전달', AC: '채널 추가' }[type], ...links, linkIos: schemeIos, linkAnd: schemeAndroid })) }));
     const data = await this.request('https://kakaoapi.aligo.in/akv10/alimtalk/send/', { 'Content-Type': 'application/x-www-form-urlencoded' }, body.toString());
     if (data.code !== 0 || !data.info?.mid || data.info.scnt !== 1 || data.info.fcnt !== 0) {
-      const errorMessage = typeof data.message === 'string' ? data.message : 'Provider rejected Alimtalk delivery';
-      throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+      const errorMessage = typeof data.message === 'string' ? data.message : 'Provider rejected Alimtalk notification';
+      throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_SEND_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
     return String(data.info.mid);
   }

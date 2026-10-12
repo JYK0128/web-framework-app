@@ -15,7 +15,7 @@ const recordSchema = z.record(z.string(), z.unknown());
 
 function parseMessengerResponse(provider: MessengerProvider, response: AxiosResponse<unknown>): string | undefined {
   const parsed = recordSchema.safeParse(response.data);
-  if (!parsed.success) throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', message: `${provider}: Invalid provider response`, status: HttpStatus.BAD_GATEWAY });
+  if (!parsed.success) throw new ApplicationError({ code: 'NOTIFICATION_SEND_FAILED', message: `${provider}: Invalid provider response`, status: HttpStatus.BAD_GATEWAY });
 
   const data = parsed.data;
   let accepted: boolean;
@@ -43,7 +43,7 @@ function parseMessengerResponse(provider: MessengerProvider, response: AxiosResp
   const rawError = failedRecipient?.resultMessage ?? (header?.isSuccessful === false ? header.resultMessage : undefined) ?? data.errorMessage ?? data.message ?? data.description ?? data.errmsg;
 
   const errorMessage = typeof rawError === 'string' ? rawError : `Provider rejected request (HTTP ${response.status})`;
-  if ((response.status < 200 || response.status >= 300) || !accepted) throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+  if ((response.status < 200 || response.status >= 300) || !accepted) throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_SEND_FAILED', status: HttpStatus.BAD_GATEWAY });
   return messageId;
 }
 
@@ -54,7 +54,7 @@ export class MessengerAdapter {
       return await postNotificationJson(url, headers, body);
     }
     catch (error) {
-      throw ApplicationError.from(error, { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+      throw ApplicationError.from(error, { code: 'NOTIFICATION_SEND_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
   }
 
@@ -67,39 +67,39 @@ export class MessengerAdapter {
   // Provider-specific payloads are intentionally dispatched in one place.
 
   async send(message: MessengerMessage, providerConfig?: MessengerConfigDto): Promise<string | undefined> {
-    if (!providerConfig?.enabled) throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', message: `메신저: 발송이 비활성화되어 있습니다.`, status: HttpStatus.BAD_GATEWAY });
+    if (!providerConfig?.enabled) throw new ApplicationError({ code: 'NOTIFICATION_SEND_FAILED', message: `메신저: 발송이 비활성화되어 있습니다.`, status: HttpStatus.BAD_GATEWAY });
     switch (providerConfig.provider) {
       case 'LINE': {
-        if (!providerConfig.line?.accessToken) throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', message: `LINE: Access Token이 필요합니다.`, status: HttpStatus.BAD_GATEWAY });
+        if (!providerConfig.line?.accessToken) throw new ApplicationError({ code: 'NOTIFICATION_SEND_FAILED', message: `LINE: Access Token이 필요합니다.`, status: HttpStatus.BAD_GATEWAY });
         const result = await this.postProviderJson('https://api.line.me/v2/bot/message/push', { Authorization: `Bearer ${providerConfig.line.accessToken}` }, { to: message.recipient, messages: [{ type: 'text', text: message.body }] });
         return parseMessengerResponse('LINE', result);
       }
       case 'WHATSAPP': {
-        if (!providerConfig.whatsapp?.phoneNumberId || !providerConfig.whatsapp.accessToken) throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', message: `WhatsApp: 설정이 완전하지 않습니다.`, status: HttpStatus.BAD_GATEWAY });
+        if (!providerConfig.whatsapp?.phoneNumberId || !providerConfig.whatsapp.accessToken) throw new ApplicationError({ code: 'NOTIFICATION_SEND_FAILED', message: `WhatsApp: 설정이 완전하지 않습니다.`, status: HttpStatus.BAD_GATEWAY });
         const result = await this.postProviderJson(`https://graph.facebook.com/v20.0/${providerConfig.whatsapp.phoneNumberId}/messages`, { Authorization: `Bearer ${providerConfig.whatsapp.accessToken}` }, { messaging_product: 'whatsapp', to: message.recipient, type: 'text', text: { body: message.body } });
         return parseMessengerResponse('WHATSAPP', result);
       }
       case 'TELEGRAM': {
-        if (!providerConfig.telegram?.botToken) throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', message: `Telegram: Bot Token이 필요합니다.`, status: HttpStatus.BAD_GATEWAY });
+        if (!providerConfig.telegram?.botToken) throw new ApplicationError({ code: 'NOTIFICATION_SEND_FAILED', message: `Telegram: Bot Token이 필요합니다.`, status: HttpStatus.BAD_GATEWAY });
         const result = await this.postProviderJson(`https://api.telegram.org/bot${providerConfig.telegram.botToken}/sendMessage`, {}, { chat_id: message.recipient || providerConfig.telegram.chatId, text: message.body });
         return parseMessengerResponse('TELEGRAM', result);
       }
       case 'WECHAT': {
-        if (!providerConfig.wechat?.appId || !providerConfig.wechat.appSecret) throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', message: `WeChat: 설정이 완전하지 않습니다.`, status: HttpStatus.BAD_GATEWAY });
+        if (!providerConfig.wechat?.appId || !providerConfig.wechat.appSecret) throw new ApplicationError({ code: 'NOTIFICATION_SEND_FAILED', message: `WeChat: 설정이 완전하지 않습니다.`, status: HttpStatus.BAD_GATEWAY });
         try {
           const tokenResponse = await getNotification<{ access_token?: string, errmsg?: string }>(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${encodeURIComponent(providerConfig.wechat.appId)}&secret=${encodeURIComponent(providerConfig.wechat.appSecret)}`);
           const token = tokenResponse.data;
           const errorMessage = token.errmsg ?? `access token 발급에 실패했습니다. HTTP ${tokenResponse.status}`;
-          if (tokenResponse.status < 200 || tokenResponse.status >= 300 || !token.access_token) throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+          if (tokenResponse.status < 200 || tokenResponse.status >= 300 || !token.access_token) throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_SEND_FAILED', status: HttpStatus.BAD_GATEWAY });
           const result = await this.postProviderJson(`https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=${encodeURIComponent(token.access_token)}`, {}, { touser: message.recipient, msgtype: 'text', text: { content: message.body } });
           return parseMessengerResponse('WECHAT', result);
         }
         catch (error) {
-          throw ApplicationError.from(error, { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+          throw ApplicationError.from(error, { code: 'NOTIFICATION_SEND_FAILED', status: HttpStatus.BAD_GATEWAY });
         }
       }
       case 'KAKAO':
-        throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', message: `카카오 알림톡: 승인 템플릿 발송은 alimtalk 채널을 사용해야 합니다.`, status: HttpStatus.BAD_GATEWAY });
+        throw new ApplicationError({ code: 'NOTIFICATION_SEND_FAILED', message: `카카오 알림톡: 승인 템플릿 발송은 alimtalk 채널을 사용해야 합니다.`, status: HttpStatus.BAD_GATEWAY });
     }
   }
 }

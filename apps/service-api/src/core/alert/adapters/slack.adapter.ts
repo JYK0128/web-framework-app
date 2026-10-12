@@ -34,7 +34,7 @@ export class SlackAlertAdapter implements IAlertAdapter {
   private readonly logger = new Logger(SlackAlertAdapter.name);
   async send(message: AlertMessage): Promise<void> {
     const webhookUrl = message.webhookUrl;
-    if (!webhookUrl) throw new ApplicationError({ code: 'ALERT_DELIVERY_FAILED', message: `Slack: webhook URL is not configured`, status: HttpStatus.BAD_GATEWAY });
+    if (!webhookUrl) throw new ApplicationError({ code: 'ALERT_SEND_FAILED', message: `Slack: webhook URL is not configured`, status: HttpStatus.BAD_GATEWAY });
 
     const level = message.level ?? 'info';
     const icon = LEVEL_ICONS[level];
@@ -47,12 +47,12 @@ export class SlackAlertAdapter implements IAlertAdapter {
     }
     catch (err) {
       this.logger.error('Slack webhook request failed.', err instanceof Error ? err.stack : String(err));
-      throw ApplicationError.from(err, { code: 'ALERT_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+      throw ApplicationError.from(err, { code: 'ALERT_SEND_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
 
     if (res.status < 200 || res.status >= 300) {
       this.logger.warn(`Slack webhook responded with ${res.status}: ${typeof res.data === 'string' ? res.data : JSON.stringify(res.data)}`);
-      throw new ApplicationError({ code: 'ALERT_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+      throw new ApplicationError({ code: 'ALERT_SEND_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
 
     this.logger.log('[Slack Alert] 웹훅 전송 성공');

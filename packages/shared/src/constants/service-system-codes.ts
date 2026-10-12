@@ -3,7 +3,7 @@ export const ServiceSystemConfigCode = {
   MAINTENANCE: 'maintenance',
   INQUIRY: 'inquiry',
   WEBHOOK: 'webhook',
-  DELIVERY: 'delivery',
+  NOTIFICATION: 'notification',
   OAUTH: 'oauth',
 } as const;
 

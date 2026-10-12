@@ -14,7 +14,7 @@ export class SmtpAdapter implements EmailAdapter {
     const providerConfig = rawProviderConfig as SmtpConfig | undefined;
     const smtp = providerConfig?.smtp;
     if (!providerConfig?.from || !smtp?.host || !smtp.port || !smtp.user || !smtp.pass) {
-      throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', message: `이메일: SMTP 발송 설정이 완전하지 않습니다.`, status: HttpStatus.BAD_GATEWAY });
+      throw new ApplicationError({ code: 'NOTIFICATION_SEND_FAILED', message: `이메일: SMTP 발송 설정이 완전하지 않습니다.`, status: HttpStatus.BAD_GATEWAY });
     }
 
     let transporter: ReturnType<typeof createTransport> | undefined;
@@ -32,7 +32,7 @@ export class SmtpAdapter implements EmailAdapter {
       return info.messageId;
     }
     catch (error) {
-      throw ApplicationError.from(error, { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+      throw ApplicationError.from(error, { code: 'NOTIFICATION_SEND_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
     finally {
       transporter?.close();

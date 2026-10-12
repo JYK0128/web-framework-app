@@ -12,11 +12,11 @@ export class WebhookAdapter implements IWebhookAdapter {
   async send(message: WebhookMessage): Promise<void> {
     try {
       const response = await this.client.post(message.url, message.payload, { timeout: TimeUtil.ms.second(SECURITY_CONFIG.integrations.webhookRequestTimeoutSeconds) });
-      if (response.status < 200 || response.status >= 300) throw new ApplicationError({ code: 'WEBHOOK_DELIVERY_FAILED', message: `HTTP ${response.status}`, status: HttpStatus.BAD_GATEWAY });
+      if (response.status < 200 || response.status >= 300) throw new ApplicationError({ code: 'WEBHOOK_SEND_FAILED', message: `HTTP ${response.status}`, status: HttpStatus.BAD_GATEWAY });
     }
     catch (error) {
       if (error instanceof ApplicationError) throw error;
-      throw new ApplicationError({ code: 'WEBHOOK_DELIVERY_FAILED', message: 'Webhook request failed', status: HttpStatus.BAD_GATEWAY });
+      throw new ApplicationError({ code: 'WEBHOOK_SEND_FAILED', message: 'Webhook request failed', status: HttpStatus.BAD_GATEWAY });
     }
   }
 }

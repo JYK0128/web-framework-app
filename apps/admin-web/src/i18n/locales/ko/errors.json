@@ -33,7 +33,7 @@
     "INTERNAL_SERVICE_CALL_FAILED": "내부 서비스 요청에 실패했습니다.",
     "INTERNAL_SERVICE_UNAVAILABLE": "내부 서비스를 사용할 수 없습니다.",
     "ADMIN_EMAIL_CONFIG_INCOMPLETE": "SMTP 서버, 계정, 비밀번호 및 올바른 발신 이메일 주소를 모두 설정해 주세요.",
-    "EMAIL_DELIVERY_UNAVAILABLE": "관리자 이메일 발송 설정을 확인해 주세요.",
+    "EMAIL_NOTIFICATION_UNAVAILABLE": "관리자 이메일 발송 설정을 확인해 주세요.",
     "ACCOUNT_RECOVERY_EMAIL_CONFIG_INCOMPLETE": "Admin 메일 릴레이 설정이 완전하지 않거나 비활성화되어 있습니다.",
     "ACCOUNT_RECOVERY_EMAIL_CONFIG_INVALID": "Admin 운영 설정을 확인할 수 없습니다.",
     "PASSWORD_EXPIRED": "비밀번호가 만료됐습니다. 비밀번호 재설정 후 다시 로그인해 주세요.",
@@ -106,6 +106,13 @@
     "SESSION_TOKEN_RESPONSE_INVALID": "로그인 정보를 확인하지 못했습니다. 다시 로그인해 주세요.",
     "SESSION_REFRESH_FAILED": "로그인 정보를 갱신하지 못했습니다. 다시 로그인해 주세요.",
     "SESSION_OAUTH_EXCHANGE_FAILED": "소셜 로그인을 완료하지 못했습니다. 다시 시도해 주세요.",
-    "SESSION_LOGOUT_FAILED": "로그아웃을 완료하지 못했습니다. 잠시 후 다시 시도해 주세요."
+    "SESSION_LOGOUT_FAILED": "로그아웃을 완료하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    "SERVICE_TERM_NOT_FOUND": "게시된 서비스 약관을 찾을 수 없습니다.",
+    "SERVICE_TERM_ALREADY_PUBLISHED": "이미 게시된 서비스 약관입니다.",
+    "SERVICE_TERM_VERSION_ALREADY_EXISTS": "같은 약관 그룹에 동일한 버전이 이미 존재합니다.",
+    "SERVICE_TERM_GROUP_HAS_PUBLISHED_TERMS": "게시된 서비스 약관이 있는 그룹입니다.",
+    "SERVICE_TERM_GROUP_MISMATCH": "서비스 약관 그룹이 일치하지 않습니다.",
+    "SERVICE_TERM_GROUP_NOT_FOUND": "서비스 약관 그룹을 찾을 수 없습니다.",
+    "SERVICE_TERM_PUBLISH_DATE_MUST_BE_FUTURE": "서비스 약관 게시일은 미래여야 합니다."
   }
 }

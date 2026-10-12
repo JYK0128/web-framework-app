@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 
 import { getTermsControllerGetAgreementHistoryV1QueryKey, getTermsControllerGetAgreementsV1QueryKey, useTermsControllerSetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
-import type { TermAgreementItemDto, GetAgreementsResponseDto } from '#/.generated/api/model';
+import type { GetAgreementsResponseDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Button, Checkbox } from '#/.generated/shadcn/components/ui';
 import { ActionCard, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';

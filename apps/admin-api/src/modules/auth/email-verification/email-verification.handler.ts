@@ -30,7 +30,7 @@ export class EmailVerificationHandler implements IEventHandler<EmailVerification
     this.unsubscribe = await this.eventBroker.subscribe<EmailVerificationEvent>(
       EmailVerificationEvent.name,
       (event) => this.handle(event),
-      { group: 'admin-auth-email-delivery' },
+      { group: 'admin-auth-email-notification' },
     );
   }
 

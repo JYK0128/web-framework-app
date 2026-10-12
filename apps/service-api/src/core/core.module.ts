@@ -153,7 +153,6 @@ const GLOBAL_PIPES = [
     MachineAuthGuard,
     RequestContextMiddleware,
     RequestLoggingMiddleware,
-    ...RESOURCE_MODULE_EXPORTS,
     ...GLOBAL_GUARDS,
     ...GLOBAL_FILTERS,
     ...GLOBAL_INTERCEPTORS,
@@ -164,6 +163,7 @@ const GLOBAL_PIPES = [
     RequestContext,
     RequestContextMiddleware,
     RequestLoggingMiddleware,
+    ...RESOURCE_MODULE_EXPORTS,
   ],
 })
 export class CoreModule {}

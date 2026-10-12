@@ -9,7 +9,7 @@ import { AppEntityManager } from '#/core/database/entity-manager';
 import { KvStore } from '#/core/kv-store/kv-store.service';
 import { MessageService } from '#/core/notification';
 import { env } from '#/env';
-import { ensureEmailDeliveryConfigured } from '#/modules/auth/auth-email.helper';
+import { ensureEmailNotificationConfigured } from '#/modules/auth/auth-email.helper';
 import { sendEmailVerificationChallenge } from '#/modules/auth/email-verification/email-verification.helper';
 import { RequestEmailVerificationCommand } from '#/modules/auth/email-verification/request-email-verification.command';
 import { RequestEmailVerificationResponseDto } from '#/modules/auth/email-verification/request-email-verification.response.dto';
@@ -20,7 +20,7 @@ export class RequestEmailVerificationHandler implements ICommandHandler<RequestE
   constructor(private readonly em: AppEntityManager, private readonly kv: KvStore, private readonly messages: MessageService) {}
   async execute(command: RequestEmailVerificationCommand): Promise<RequestEmailVerificationResponseDto> {
     if (!SECURITY_CONFIG.registration.requireEmailVerification) return RequestEmailVerificationResponseDto.parse({ accepted: true });
-    await ensureEmailDeliveryConfigured(this.em);
+    await ensureEmailNotificationConfigured(this.em);
     const user = await this.em.findOne(User, { profile: { emailHash: hashWithSecret(command.input.email, env.PII_HASH_KEY) } }, { populate: ['profile'], filters: false });
     if (user && !user.isDeleted && !user.emailVerified) {
       if (!user.profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });

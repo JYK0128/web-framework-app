@@ -26,15 +26,7 @@ export class InternalClient {
         ...(options.body === undefined ? {} : { data: options.body }),
       });
       if (!isSuccessful(response.status)) {
-        const details = parseResponseBody(response.data);
-        if (isForwardableServiceConfigFailure(details)) {
-          throw new ApplicationError({
-            code: details.errorCode,
-            status: HttpStatus.BAD_GATEWAY,
-            details: details.details,
-          });
-        }
-        throw new ApplicationError({ code: 'INTERNAL_SERVICE_CALL_FAILED', status: response.status >= 500 ? HttpStatus.BAD_GATEWAY : response.status, details });
+        throw upstreamError(response.status, response.data);
       }
       return response.data.data;
     }
@@ -60,8 +52,7 @@ export class InternalClient {
         data: body,
       });
       if (!isSuccessful(response.status)) {
-        const details = parseResponseBody(response.data);
-        throw new ApplicationError({ code: 'INTERNAL_SERVICE_CALL_FAILED', status: response.status >= 500 ? HttpStatus.BAD_GATEWAY : response.status, details });
+        throw upstreamError(response.status, response.data);
       }
     }
     catch (err: unknown) {
@@ -83,8 +74,7 @@ export class InternalClient {
         },
       });
       if (!isSuccessful(response.status)) {
-        const details = parseResponseBody(response.data);
-        throw new ApplicationError({ code: 'INTERNAL_SERVICE_CALL_FAILED', status: response.status >= 500 ? HttpStatus.BAD_GATEWAY : response.status, details });
+        throw upstreamError(response.status, response.data);
       }
       const contentType = response.headers['content-type'];
       return { body: Buffer.from(response.data), contentType: typeof contentType === 'string' ? contentType : 'application/octet-stream' };
@@ -109,6 +99,8 @@ export class InternalClient {
 }
 
 function parseResponseBody(value: unknown): unknown {
+  if (Buffer.isBuffer(value)) value = value.toString('utf8');
+  else if (value instanceof ArrayBuffer) value = Buffer.from(value).toString('utf8');
   if (typeof value !== 'string') return value;
   try {
     return JSON.parse(value);
@@ -122,8 +114,19 @@ function isSuccessful(status: number): boolean {
   return status >= 200 && status < 300;
 }
 
-function isForwardableServiceConfigFailure(value: unknown): value is { errorCode: 'SYSTEM_CONFIG_RUNTIME_SYNC_FAILED' | 'OAUTH_PROVIDER_CONFIG_INVALID', details?: unknown } {
-  if (typeof value !== 'object' || value === null) return false;
-  const body = value as Record<string, unknown>;
-  return (body.errorCode === 'SYSTEM_CONFIG_RUNTIME_SYNC_FAILED' || body.errorCode === 'OAUTH_PROVIDER_CONFIG_INVALID');
+function upstreamError(status: number, value: unknown): ApplicationError {
+  const body = parseResponseBody(value);
+  const response = isRecord(body) ? body : undefined;
+  const code = typeof response?.errorCode === 'string' && response.errorCode.trim() ? response.errorCode : 'INTERNAL_SERVICE_CALL_FAILED';
+  const meta = isRecord(response?.meta) ? response.meta : undefined;
+  return new ApplicationError({
+    code,
+    status: status >= 500 ? HttpStatus.BAD_GATEWAY : status,
+    details: code === 'INTERNAL_SERVICE_CALL_FAILED' ? body : response?.details,
+    params: isRecord(meta?.params) ? meta.params : undefined,
+  });
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }

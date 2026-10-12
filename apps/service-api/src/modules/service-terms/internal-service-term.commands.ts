@@ -1,13 +1,14 @@
 import { Command } from '@nestjs/cqrs';
 
-import { type DeleteInternalServiceTermResponseDto, type InternalServiceTermItemDto, type InternalServiceTermRequestDto } from '#/modules/service-terms';
+import { type CreateInternalServiceTermRequestDto, type DeleteInternalServiceTermResponseDto, type InternalServiceTermItemDto } from '#/modules/service-terms';
+import type { UpdateInternalServiceTermRequestDto } from '#/modules/service-terms/update-internal-service-term.request.dto';
 
 export class CreateInternalServiceTermCommand extends Command<InternalServiceTermItemDto> {
-  constructor(public readonly input: InternalServiceTermRequestDto) { super(); }
+  constructor(public readonly input: CreateInternalServiceTermRequestDto) { super(); }
 }
 
 export class UpdateInternalServiceTermCommand extends Command<InternalServiceTermItemDto> {
-  constructor(public readonly input: { termId: string, dto: InternalServiceTermRequestDto }) { super(); }
+  constructor(public readonly input: { termId: string, dto: UpdateInternalServiceTermRequestDto }) { super(); }
 }
 
 export class DeleteInternalServiceTermCommand extends Command<DeleteInternalServiceTermResponseDto> {

@@ -25,9 +25,9 @@ export class UpdateInternalServiceTermGroupHandler implements ICommandHandler<Up
   async execute({ input }: UpdateInternalServiceTermGroupCommand): Promise<InternalServiceTermGroupItemDto> {
     const group = await this.em.findOne(TermGroup, { id: input.groupId }, { filters: false });
     if (!group || group.deletedAt) throw new ApplicationError({ code: 'SERVICE_TERM_GROUP_NOT_FOUND', status: HttpStatus.NOT_FOUND });
-    group.title = input.dto.title.trim();
-    group.isRequired = input.dto.isRequired;
-    group.sortOrder = input.dto.sortOrder;
+    if (input.dto.title !== undefined) group.title = input.dto.title.trim();
+    if (input.dto.isRequired !== undefined) group.isRequired = input.dto.isRequired;
+    if (input.dto.sortOrder !== undefined) group.sortOrder = input.dto.sortOrder;
     return InternalServiceTermGroupItemDto.parseEntity(group);
   }
 }

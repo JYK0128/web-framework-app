@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
+import { GetServiceConfigHandler } from './get-service-config.handler';
+import { ServiceConfigOperationModule } from './operation/operation.module';
 import { ServiceConfigController } from './service-config.controller';
-import { SERVICE_CONFIG_HANDLERS } from './service-config.handlers';
+import { UpdateServiceConfigHandler } from './update-service-config.handler';
 
 @Module({
-  imports: [CqrsModule],
+  imports: [CqrsModule, ServiceConfigOperationModule],
   controllers: [ServiceConfigController],
-  providers: [...SERVICE_CONFIG_HANDLERS],
+  providers: [GetServiceConfigHandler, UpdateServiceConfigHandler],
 })
 export class ServiceConfigModule {}

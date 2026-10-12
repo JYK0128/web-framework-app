@@ -15,7 +15,7 @@ const recordSchema = z.record(z.string(), z.unknown());
 
 function parseNhnPushResponse(response: AxiosResponse<unknown>): string | undefined {
   const parsed = recordSchema.safeParse(response.data);
-  if (!parsed.success) throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', message: `NHN Push: Invalid provider response`, status: HttpStatus.BAD_GATEWAY });
+  if (!parsed.success) throw new ApplicationError({ code: 'NOTIFICATION_SEND_FAILED', message: `NHN Push: Invalid provider response`, status: HttpStatus.BAD_GATEWAY });
 
   const data = parsed.data;
   const header = recordSchema.safeParse(data.header).data;
@@ -31,18 +31,18 @@ function parseNhnPushResponse(response: AxiosResponse<unknown>): string | undefi
   const rawError = failedRecipient?.resultMessage ?? (header?.isSuccessful === false ? header.resultMessage : undefined) ?? data.errorMessage ?? data.message ?? data.description ?? data.errmsg;
 
   const errorMessage = typeof rawError === 'string' ? rawError : `Provider rejected request (HTTP ${response.status})`;
-  if ((response.status < 200 || response.status >= 300) || !accepted) throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+  if ((response.status < 200 || response.status >= 300) || !accepted) throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_SEND_FAILED', status: HttpStatus.BAD_GATEWAY });
   return typeof rawId === 'string' || typeof rawId === 'number' ? String(rawId) : undefined;
 }
 
 function parseFcmResponse(response: AxiosResponse<unknown>): string | undefined {
   const parsed = recordSchema.safeParse(response.data);
-  if (!parsed.success) throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', message: `FCM Push: Invalid provider response`, status: HttpStatus.BAD_GATEWAY });
+  if (!parsed.success) throw new ApplicationError({ code: 'NOTIFICATION_SEND_FAILED', message: `FCM Push: Invalid provider response`, status: HttpStatus.BAD_GATEWAY });
 
   const data = parsed.data;
   const rawError = [data.error, data.message, data.description, data.errmsg].find((value): value is string => typeof value === 'string');
   const errorMessage = rawError ?? `Provider rejected request (HTTP ${response.status})`;
-  if ((response.status < 200 || response.status >= 300) || typeof data.name !== 'string' || data.error) throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+  if ((response.status < 200 || response.status >= 300) || typeof data.name !== 'string' || data.error) throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_SEND_FAILED', status: HttpStatus.BAD_GATEWAY });
   return data.name;
 }
 
@@ -53,7 +53,7 @@ export class PushAdapter {
       return await postNotificationJson(url, headers, body);
     }
     catch (error) {
-      throw ApplicationError.from(error, { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+      throw ApplicationError.from(error, { code: 'NOTIFICATION_SEND_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
   }
 
@@ -61,12 +61,12 @@ export class PushAdapter {
   private pendingToken?: { fingerprint: string, promise: Promise<string> };
 
   async send(message: PushMessage, providerConfig?: PushConfigDto): Promise<string | undefined> {
-    if (!providerConfig?.enabled) throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', message: `푸시: 발송이 비활성화되어 있습니다.`, status: HttpStatus.BAD_GATEWAY });
+    if (!providerConfig?.enabled) throw new ApplicationError({ code: 'NOTIFICATION_SEND_FAILED', message: `푸시: 발송이 비활성화되어 있습니다.`, status: HttpStatus.BAD_GATEWAY });
     const ttlSeconds = TimeUtil.s.minute(SECURITY_CONFIG.integrations.pushMessageTtlMinutes);
     if (providerConfig.provider === 'NHN_PUSH') {
       const detail = providerConfig.nhn;
       if (!detail?.appKey || !detail.userAccessKeyId || !detail.secretAccessKey) {
-        throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', message: `NHN Push: 설정이 완전하지 않습니다.`, status: HttpStatus.BAD_GATEWAY });
+        throw new ApplicationError({ code: 'NOTIFICATION_SEND_FAILED', message: `NHN Push: 설정이 완전하지 않습니다.`, status: HttpStatus.BAD_GATEWAY });
       }
       const result = await this.postProviderJson(`https://api-push.cloud.toast.com/push/v2.2/appkeys/${encodeURIComponent(detail.appKey)}/messages`, {
         'X-User-Access-Key-ID': detail.userAccessKeyId,
@@ -82,7 +82,7 @@ export class PushAdapter {
 
     const detail = providerConfig.fcm;
     if (!detail?.projectId || !detail.clientEmail || !detail.privateKey) {
-      throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', message: `FCM Push: projectId, clientEmail, privateKey 설정이 필요합니다.`, status: HttpStatus.BAD_GATEWAY });
+      throw new ApplicationError({ code: 'NOTIFICATION_SEND_FAILED', message: `FCM Push: projectId, clientEmail, privateKey 설정이 필요합니다.`, status: HttpStatus.BAD_GATEWAY });
     }
     try {
       const accessToken = await this.getAccessToken({ projectId: detail.projectId, clientEmail: detail.clientEmail, privateKey: detail.privateKey });
@@ -98,7 +98,7 @@ export class PushAdapter {
       return parseFcmResponse(result);
     }
     catch (error) {
-      throw ApplicationError.from(error, { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+      throw ApplicationError.from(error, { code: 'NOTIFICATION_SEND_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
   }
 
@@ -118,7 +118,7 @@ export class PushAdapter {
       const tokenResponse = await postNotificationForm<unknown>('https://oauth2.googleapis.com/token', { 'content-type': 'application/x-www-form-urlencoded' }, new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion }));
       const token = z.object({ access_token: z.string().min(1), expires_in: z.number().positive() }).parse(tokenResponse.data);
       if (tokenResponse.status < 200 || tokenResponse.status >= 300) {
-        throw ApplicationError.from(new Error(`FCM token endpoint responded with HTTP ${tokenResponse.status}`), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+        throw ApplicationError.from(new Error(`FCM token endpoint responded with HTTP ${tokenResponse.status}`), { code: 'NOTIFICATION_SEND_FAILED', status: HttpStatus.BAD_GATEWAY });
       }
       this.cachedToken = { fingerprint, token: token.access_token, expiresAt: Date.now() + Math.max(0, token.expires_in - 60) * 1000 };
       return token.access_token;

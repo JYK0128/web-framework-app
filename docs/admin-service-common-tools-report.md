@@ -20,8 +20,8 @@
 | 고객·멤버십 | `/customers`의 목록·상세·PII·차단·삭제·역할·메모·세션 관리; `/memberships`의 목록·권한·생성·수정·삭제 | 공개 고객 프로필 경로 없음; 머신 인증 내부 경로 `/internal/customers/*`로 관리 기능 제공 | Admin 공개 경로가 Service 내부 API를 호출 |
 | 운영자·RBAC | `/operators`, `/roles`, `/permissions`의 목록·상세·생성·수정·삭제 및 운영자 차단·복구·역할·2FA 관리 | 해당 컨트롤러 없음 | Admin 전용 |
 | 로그 | `GET /logs`, `/logs/stats` | 해당 컨트롤러 없음 | Admin 전용 |
-| 시스템·서비스 설정 | `GET/PATCH /system-config`; `/system-config/test-email`; `/service-config`, `/service-config/holidays` 및 테스트·동기화 경로 | 공개 설정 `GET /service-configs`; 머신 인증 `/internal/system-configs`의 조회·수정·동기화·아이콘 경로 | Service가 설정 원장을 소유하고 Admin이 관리 요청을 중계 |
-| OAuth 아이콘 | 공개 업로드·조회 `PUT/GET /uploads/oauth-icons/:filename`; 설정용 presigned URL 요청 | 내부 머신 API `/internal/system-configs/oauth-icons/*` | 실제 아이콘 파일 저장·조회는 Service가 담당 |
+| 시스템·서비스 설정 | `GET/PATCH /system-config`; `/system-config/test-email`; `/service-config`, `/service-config/holidays` 및 테스트·동기화 경로 | 공개 설정 `GET /service-configs`; 머신 인증 `/internal/system-config`의 조회·수정·동기화·아이콘 경로 | Service가 설정 원장을 소유하고 Admin이 관리 요청을 중계 |
+| OAuth 아이콘 | 공개 업로드·조회 `PUT/GET /uploads/oauth-icons/:filename`; 설정용 presigned URL 요청 | 내부 머신 API `/internal/system-config/oauth-icons/*` | 실제 아이콘 파일 저장·조회는 Service가 담당 |
 
 공통 메서드·경로 형태는 총 32개다. `POST /auth/account/find`는 두 앱 모두 `{ name, phoneNumber }`를 받고 `{ items: [{ maskedEmail, provider }] }`를 반환한다. 가입은 두 앱에 같은 입력·응답 계약을 제공하지만 허용 여부와 기본 역할이 다르다. 탈퇴는 로그인한 사용자 본인 요청이며 양쪽 모두 기본 허용이다.
 

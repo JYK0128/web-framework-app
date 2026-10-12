@@ -9,7 +9,7 @@ import { AppEntityManager } from '#/core/database/entity-manager';
 import { KvStore } from '#/core/kv-store/kv-store.service';
 import { MessageService } from '#/core/notification';
 import { env } from '#/env';
-import { ensureEmailDeliveryConfigured } from '#/modules/auth/auth-email.helper';
+import { ensureEmailNotificationConfigured } from '#/modules/auth/auth-email.helper';
 import { sendPasswordResetChallenge } from '#/modules/auth/credential/password-reset.helper';
 import { RequestPasswordResetCommand } from '#/modules/auth/credential/request-password-reset.command';
 import { RequestPasswordResetResponseDto } from '#/modules/auth/credential/request-password-reset.response.dto';
@@ -21,7 +21,7 @@ export class RequestPasswordResetHandler implements ICommandHandler<RequestPassw
 
   async execute(command: RequestPasswordResetCommand): Promise<RequestPasswordResetResponseDto> {
     if (!SECURITY_CONFIG.credentialAvailable) return RequestPasswordResetResponseDto.parse({ accepted: true });
-    await ensureEmailDeliveryConfigured(this.em);
+    await ensureEmailNotificationConfigured(this.em);
     const email = command.input.email.trim().toLowerCase();
     const user = await this.em.findOne(User, { profile: { emailHash: hashWithSecret(email, env.PII_HASH_KEY), phoneNumberHash: hashWithSecret(command.input.phoneNumber, env.PII_HASH_KEY) } }, { populate: ['profile'], filters: false });
     if (user && !user.isDeleted) {

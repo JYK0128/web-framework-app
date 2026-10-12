@@ -87,7 +87,7 @@ e2e/machine-customers.spec.ts
 e2e/membership-management.spec.ts
 e2e/onboarding-terms.spec.ts
 e2e/operator-role-management.spec.ts
-e2e/operator-term-options.spec.ts
+e2e/term-options.spec.ts
 e2e/role-management.spec.ts
 playwright.service-settings.config.ts
 src/lib/cache-patcher.ts
@@ -114,7 +114,7 @@ src/routes/_protected/_app/operators/index.tsx
 src/routes/_protected/_app/qna/-components/qna-editor-modal.tsx
 src/routes/_protected/_app/roles/-components/role-editor-modal.tsx
 src/routes/_protected/_app/roles/index.tsx
-src/routes/_protected/_app/service-settings/-components/delivery-tab.tsx
+src/routes/_protected/_app/service-settings/-components/notification-tab.tsx
 src/routes/_protected/_app/service-settings/-components/holiday-detail-modal.tsx
 src/routes/_protected/_app/service-settings/-components/inquiry-tab.tsx
 src/routes/_protected/_app/service-settings/-components/maintenance-tab.tsx

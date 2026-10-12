@@ -2,7 +2,7 @@ import { Bell, BellRing, KeyRound } from 'lucide-react';
 
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 
-export type SystemSettingKey = 'delivery' | 'oauth' | 'notifications';
+export type SystemSettingKey = 'notification' | 'oauth' | 'notifications';
 
 export function SystemSettingTabs({ activeTab, setActiveTab }: { activeTab: SystemSettingKey, setActiveTab: (tab: SystemSettingKey) => void }) {
   return (
@@ -16,7 +16,7 @@ export function SystemSettingTabs({ activeTab, setActiveTab }: { activeTab: Syst
         className="flex w-full items-center justify-start border-b"
       >
         <TabsTrigger
-          value="delivery"
+          value="notification"
           className="flex items-center gap-2 cursor-pointer"
         >
           <BellRing className="size-4 shrink-0" />

@@ -33,7 +33,7 @@ try {
   reply = { header: { isSuccessful: true }, message: { requestId: 'nhn-id', sendResults: [{ resultCode: 0 }] } };
   assert.equal(await adapter.send(message, config), 'nhn-id');
   reply = { header: { isSuccessful: true }, message: { requestId: 'id', sendResults: [{ resultCode: -1, resultMessage: 'rejected' }] } };
-  await assert.rejects(adapter.send(message, config), (error: unknown) => error instanceof ApplicationError && error.code === 'NOTIFICATION_DELIVERY_FAILED');
+  await assert.rejects(adapter.send(message, config), (error: unknown) => error instanceof ApplicationError && error.code === 'NOTIFICATION_SEND_FAILED');
   config.kakao!.agency = 'SOLAPI';
   inspect = (url, options) => {
     assert.equal(url, 'https://api.solapi.com/messages/v4/send-many/detail');
@@ -61,23 +61,23 @@ try {
   reply = { code: 0, info: { mid: 123, scnt: 1, fcnt: 0 } };
   assert.equal(await adapter.send(message, config), '123');
   reply = { code: 0, info: { mid: 123, scnt: 0, fcnt: 1 } };
-  await assert.rejects(adapter.send(message, config), (error: unknown) => error instanceof ApplicationError && error.code === 'NOTIFICATION_DELIVERY_FAILED');
+  await assert.rejects(adapter.send(message, config), (error: unknown) => error instanceof ApplicationError && error.code === 'NOTIFICATION_SEND_FAILED');
   inspect = () => {};
   reply = {};
-  await assert.rejects(adapter.send(message, config), (error: unknown) => error instanceof ApplicationError && error.code === 'NOTIFICATION_DELIVERY_FAILED');
+  await assert.rejects(adapter.send(message, config), (error: unknown) => error instanceof ApplicationError && error.code === 'NOTIFICATION_SEND_FAILED');
   status = 500;
-  await assert.rejects(adapter.send(message, config), (error: unknown) => error instanceof ApplicationError && error.code === 'NOTIFICATION_DELIVERY_FAILED');
+  await assert.rejects(adapter.send(message, config), (error: unknown) => error instanceof ApplicationError && error.code === 'NOTIFICATION_SEND_FAILED');
   const invalid = plainToInstance(AlimtalkMessageDto, { ...message, variables: { 이름: 123 }, buttons: [{ type: 'INVALID', name: '' }] });
   assert.ok((await validate(invalid)).length >= 2);
   assert.equal((await validate(plainToInstance(AlimtalkMessageDto, message))).length, 0);
   const before = calls;
-  await assert.rejects(adapter.send({ ...message, buttons: [{ type: 'WL', name: '확인' }] }, config), (error: unknown) => error instanceof ApplicationError && error.code === 'NOTIFICATION_DELIVERY_FAILED');
-  await assert.rejects(adapter.send({ ...message, buttons: [{ type: 'AL', name: '앱 열기' }] }, config), (error: unknown) => error instanceof ApplicationError && error.code === 'NOTIFICATION_DELIVERY_FAILED');
-  await assert.rejects(adapter.send({ ...message, variables: {} }, config), (error: unknown) => error instanceof ApplicationError && error.code === 'NOTIFICATION_DELIVERY_FAILED');
-  await assert.rejects(adapter.send({ ...message, content: 'x'.repeat(1001) }, config), (error: unknown) => error instanceof ApplicationError && error.code === 'NOTIFICATION_DELIVERY_FAILED');
-  await assert.rejects(adapter.send({ ...message, templateCode: '' }, config), (error: unknown) => error instanceof ApplicationError && error.code === 'NOTIFICATION_DELIVERY_FAILED');
-  await assert.rejects(adapter.send({ ...message, recipient: 'invalid' }, config), (error: unknown) => error instanceof ApplicationError && error.code === 'NOTIFICATION_DELIVERY_FAILED');
-  await assert.rejects(adapter.send(message, { ...config, enabled: false }), (error: unknown) => error instanceof ApplicationError && error.code === 'NOTIFICATION_DELIVERY_FAILED');
+  await assert.rejects(adapter.send({ ...message, buttons: [{ type: 'WL', name: '확인' }] }, config), (error: unknown) => error instanceof ApplicationError && error.code === 'NOTIFICATION_SEND_FAILED');
+  await assert.rejects(adapter.send({ ...message, buttons: [{ type: 'AL', name: '앱 열기' }] }, config), (error: unknown) => error instanceof ApplicationError && error.code === 'NOTIFICATION_SEND_FAILED');
+  await assert.rejects(adapter.send({ ...message, variables: {} }, config), (error: unknown) => error instanceof ApplicationError && error.code === 'NOTIFICATION_SEND_FAILED');
+  await assert.rejects(adapter.send({ ...message, content: 'x'.repeat(1001) }, config), (error: unknown) => error instanceof ApplicationError && error.code === 'NOTIFICATION_SEND_FAILED');
+  await assert.rejects(adapter.send({ ...message, templateCode: '' }, config), (error: unknown) => error instanceof ApplicationError && error.code === 'NOTIFICATION_SEND_FAILED');
+  await assert.rejects(adapter.send({ ...message, recipient: 'invalid' }, config), (error: unknown) => error instanceof ApplicationError && error.code === 'NOTIFICATION_SEND_FAILED');
+  await assert.rejects(adapter.send(message, { ...config, enabled: false }), (error: unknown) => error instanceof ApplicationError && error.code === 'NOTIFICATION_SEND_FAILED');
   assert.equal(calls, before);
   console.log('Alimtalk: provider requests, signatures, rendering, rejection and validation passed.');
 }

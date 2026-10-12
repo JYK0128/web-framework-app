@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 
-import { InternalSystemConfigsController } from './internal-system-configs.controller';
+import { InternalSystemConfigController } from './internal-system-config.controller';
 import { SystemMaintenanceGuard } from './maintenance/system-maintenance.guard';
 import { SystemContext } from './system.context';
 import { SystemConfigService } from './system-config.service';
 import { SystemConfigsController } from './system-configs.controller';
 
 @Module({
-  controllers: [SystemConfigsController, InternalSystemConfigsController],
+  controllers: [SystemConfigsController, InternalSystemConfigController],
   providers: [
     SystemContext,
     SystemConfigService,

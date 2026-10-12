@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { HttpStatus, Injectable, NotFoundException, type OnModuleInit } from '@nestjs/common';
 import { ApplicationError, TimeUtil, z } from '@pkg/shared/common';
 import { ServiceSystemConfigCode } from '@pkg/shared/constants';
-import { decrypt, type DeliveryConfigDto, encrypt, isEncrypted } from '@pkg/shared/server';
+import { decrypt, encrypt, isEncrypted, type NotificationConfigDto } from '@pkg/shared/server';
 import { cloneDeep, isPlainObject, merge } from 'lodash-es';
 
 import { SECURITY_CONFIG } from '#/app.config';
@@ -15,7 +15,7 @@ import { KvStore } from '#/core/kv-store/kv-store.service';
 import { assertEnabledOAuthProvidersAreConfigured } from '#/core/oauth/oauth-provider-validation';
 import { env } from '#/env';
 
-import { assertEnabledDeliveryProvidersAreConfigured } from './delivery/delivery-provider-validation';
+import { assertEnabledNotificationProvidersAreConfigured } from './notification/notification-provider-validation';
 import { CreateOAuthIconPresignedUrlRequestDto, CreateOAuthIconPresignedUrlResponseDto, OAUTH_ICON_SUBDIR } from './oauth/oauth-icon.dto';
 import { SystemConfigSnapshotSchema, SystemContext } from './system.context';
 import { SERVICE_SYSTEM_CONFIGS_REDIS_KEY } from './system-config.constants';
@@ -32,7 +32,7 @@ const UPDATE_SCHEMA = z.object(Object.fromEntries(
   CONFIG_CODES.map((code) => [code, CONFIG_VALUE_SCHEMA]),
 )).strict();
 
-type DeliveryConfigValue = Record<string, unknown>;
+type NotificationConfigValue = Record<string, unknown>;
 type ParsedSystemConfigUpdates = z.infer<typeof UPDATE_SCHEMA>;
 
 const NOTIFICATION_SECRET_PATHS = [
@@ -58,10 +58,10 @@ const NOTIFICATION_SECRET_PATHS = [
   'push.nhn.secretAccessKey',
 ] as const;
 const NOTIFICATION_ENCRYPTION_KEYS = {
-  email: env.DELIVERY_EMAIL_ENCRYPTION_KEY,
-  messenger: env.DELIVERY_MESSENGER_ENCRYPTION_KEY,
-  sms: env.DELIVERY_SMS_ENCRYPTION_KEY,
-  push: env.DELIVERY_PUSH_ENCRYPTION_KEY,
+  email: env.NOTIFICATION_EMAIL_ENCRYPTION_KEY,
+  messenger: env.NOTIFICATION_MESSENGER_ENCRYPTION_KEY,
+  sms: env.NOTIFICATION_SMS_ENCRYPTION_KEY,
+  push: env.NOTIFICATION_PUSH_ENCRYPTION_KEY,
 } as const;
 
 function readPath(value: unknown, path: string[]): unknown {
@@ -115,13 +115,13 @@ export class SystemConfigService implements OnModuleInit {
     return Object.fromEntries(configs.map((config) => [config.code, this.toPublicValue(config.code, config.value)]));
   }
 
-  async getDeliveryConfigForTest(overrides: unknown): Promise<DeliveryConfigDto> {
-    const entity = await this.em.findOne(SystemConfig, { code: ServiceSystemConfigCode.DELIVERY }, { filters: false });
-    if (!entity) throw new NotFoundException('서비스 발송 설정을 찾을 수 없습니다.');
-    return this.withPreservedDeliverySecrets(entity.value, overrides) as DeliveryConfigDto;
+  async getNotificationConfigForTest(overrides: unknown): Promise<NotificationConfigDto> {
+    const entity = await this.em.findOne(SystemConfig, { code: ServiceSystemConfigCode.NOTIFICATION }, { filters: false });
+    if (!entity) throw new NotFoundException('서비스 노티피케이션 설정을 찾을 수 없습니다.');
+    return this.withPreservedNotificationSecrets(entity.value, overrides) as NotificationConfigDto;
   }
 
-  async update(input: unknown): Promise<ServiceSystemConfigCode[]> {
+  async update(input: unknown): Promise<string[]> {
     const updates = this.parseUpdates(input);
     const configs = await this.getConfigMap();
     this.validateUpdateTargets(updates, configs);
@@ -158,6 +158,9 @@ export class SystemConfigService implements OnModuleInit {
   async uploadOAuthIcon(filename: string, contentType: string, buffer: Buffer): Promise<void> {
     const upload = await this.em.findOne(Upload, { storedName: filename, subDir: OAUTH_ICON_SUBDIR }, { filters: false });
     if (!upload) throw new NotFoundException('OAuth 아이콘 업로드 요청을 찾을 수 없습니다.');
+    if (upload.status !== UploadStatus.PENDING || Date.now() >= upload.createdAt.getTime() + TimeUtil.ms.second(SECURITY_CONFIG.integrations.oauthIconPresignedUrlTtlSeconds)) {
+      throw new ApplicationError({ code: 'OAUTH_ICON_UPLOAD_INVALID', status: HttpStatus.BAD_REQUEST });
+    }
     if (upload.mimeType !== contentType || buffer.length > SECURITY_CONFIG.integrations.oauthIconMaxSizeBytes || buffer.length > upload.size) {
       throw new ApplicationError({ code: 'OAUTH_ICON_UPLOAD_INVALID', status: HttpStatus.BAD_REQUEST });
     }
@@ -195,7 +198,7 @@ export class SystemConfigService implements OnModuleInit {
 
   private toStoredValue(code: SystemConfig['code'], value: unknown): unknown {
     if (!isPlainObject(value)) return value;
-    const next = cloneDeep(value) as DeliveryConfigValue;
+    const next = cloneDeep(value) as NotificationConfigValue;
     if (code === ServiceSystemConfigCode.OAUTH) {
       for (const provider of Object.values(next)) {
         if (!isPlainObject(provider)) continue;
@@ -205,14 +208,14 @@ export class SystemConfigService implements OnModuleInit {
       }
       return next;
     }
-    if (code !== ServiceSystemConfigCode.DELIVERY) return value;
+    if (code !== ServiceSystemConfigCode.NOTIFICATION) return value;
     transformNotificationSecrets(next, (secret, key) => isEncrypted(secret) ? secret : encrypt(secret, key));
     return next;
   }
 
   private fromStoredValue(code: SystemConfig['code'], value: unknown): unknown {
-    if (code !== ServiceSystemConfigCode.DELIVERY || !isPlainObject(value)) return value;
-    const next = cloneDeep(value) as DeliveryConfigValue;
+    if (code !== ServiceSystemConfigCode.NOTIFICATION || !isPlainObject(value)) return value;
+    const next = cloneDeep(value) as NotificationConfigValue;
     transformNotificationSecrets(next, (secret, key) => isEncrypted(secret) ? decrypt(secret, key) : secret);
     return next;
   }
@@ -227,16 +230,16 @@ export class SystemConfigService implements OnModuleInit {
       }
       return publicValue;
     }
-    if (code !== ServiceSystemConfigCode.DELIVERY || !isPlainObject(value)) return value;
-    const publicValue = cloneDeep(value) as DeliveryConfigValue;
+    if (code !== ServiceSystemConfigCode.NOTIFICATION || !isPlainObject(value)) return value;
+    const publicValue = cloneDeep(value) as NotificationConfigValue;
     for (const secretPath of NOTIFICATION_SECRET_PATHS) {
       writePath(publicValue, secretPath.split('.'), '');
     }
     return publicValue;
   }
 
-  private withPreservedDeliverySecrets(current: unknown, incoming: unknown): unknown {
-    const currentValue = isPlainObject(current) ? this.fromStoredValue(ServiceSystemConfigCode.DELIVERY, current) : {};
+  private withPreservedNotificationSecrets(current: unknown, incoming: unknown): unknown {
+    const currentValue = isPlainObject(current) ? this.fromStoredValue(ServiceSystemConfigCode.NOTIFICATION, current) : {};
     const incomingValue = isObjectRecord(incoming) ? incoming : {};
     const merged = merge({}, currentValue, incomingValue);
     for (const secretPath of NOTIFICATION_SECRET_PATHS) {
@@ -308,9 +311,9 @@ export class SystemConfigService implements OnModuleInit {
   }
 
   private prepareConfigValue(code: SystemConfig['code'], current: unknown, incoming: unknown): unknown {
-    if (code === ServiceSystemConfigCode.DELIVERY) {
-      const next = this.withPreservedDeliverySecrets(current, incoming);
-      assertEnabledDeliveryProvidersAreConfigured(next);
+    if (code === ServiceSystemConfigCode.NOTIFICATION) {
+      const next = this.withPreservedNotificationSecrets(current, incoming);
+      assertEnabledNotificationProvidersAreConfigured(next);
       return next;
     }
     if (code !== ServiceSystemConfigCode.OAUTH) return incoming;
