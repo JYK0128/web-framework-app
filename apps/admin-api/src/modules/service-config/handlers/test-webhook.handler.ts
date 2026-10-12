@@ -3,7 +3,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
 import { WebhookService } from '#/core/webhook/webhook.service';
 import { TestWebhookCommand } from '#/modules/service-config/commands/test-webhook.command';
-import { TestWebhookResponseDto } from '#/modules/service-config/dto/webhook/test-webhook.response.dto';
+import { TestWebhookResponseDto } from '#/modules/service-config/dto/test-webhook.response.dto';
 
 @Injectable()
 @CommandHandler(TestWebhookCommand)

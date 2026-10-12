@@ -5,7 +5,7 @@ import type { DeliveryConfigDto } from '@pkg/shared/server';
 import { InternalClient } from '#/core/http/internal-client';
 import { NotificationService } from '#/core/notification/notification.service';
 import { TestEmailCommand } from '#/modules/service-config/commands/test-email.command';
-import { TestEmailResponseDto } from '#/modules/service-config/dto/delivery/test-email.response.dto';
+import { TestEmailResponseDto } from '#/modules/service-config/dto/test-email.response.dto';
 
 @Injectable()
 @CommandHandler(TestEmailCommand)

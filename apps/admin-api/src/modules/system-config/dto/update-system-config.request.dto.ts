@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 import { IsObject, IsOptional, ValidateNested } from 'class-validator';
 
 import { BaseDto } from '#/core/http/dto/base/base.dto';
-import { InquiryConfigDto } from '#/modules/service-config/dto/inquiry/inquiry-config.dto';
+import { InquiryConfigDto } from '#/modules/service-config/dto/inquiry-config.dto';
 import { MaintenanceConfigDto } from '#/modules/service-config/dto/maintenance-config.dto';
 import { OperationConfigDto } from '#/modules/service-config/dto/operation-config.dto';
 import { OAuthConfigDto } from '#/modules/system-config/dto/oauth-config.dto';

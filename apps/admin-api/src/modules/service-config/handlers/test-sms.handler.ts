@@ -5,7 +5,7 @@ import type { DeliveryConfigDto } from '@pkg/shared/server';
 import { InternalClient } from '#/core/http/internal-client';
 import { NotificationService } from '#/core/notification/notification.service';
 import { TestSmsCommand } from '#/modules/service-config/commands/test-sms.command';
-import { TestChannelResponseDto } from '#/modules/service-config/dto/delivery/test-channel.response.dto';
+import { TestChannelResponseDto } from '#/modules/service-config/dto/test-channel.response.dto';
 import { result } from '#/modules/service-config/handlers/test-channel.helpers';
 
 @Injectable()
