@@ -987,8 +987,32 @@ export const SystemConfigControllerTestPushV1Response = zod.object({
 /**
  * @summary 메신저 테스트 전송
  */
+
+
+export const systemConfigControllerTestMessengerV1BodyAlimtalkOneButtonsItemNameMax = 28;
+
+export const systemConfigControllerTestMessengerV1BodyAlimtalkOneButtonsMax = 5;
+
+
+
 export const SystemConfigControllerTestMessengerV1Body = zod.object({
   "recipient": zod.string(),
+  "alimtalk": zod.object({
+  "templateCode": zod.string().min(1).describe('대행사에 등록된 승인 템플릿 코드. SOLAPI는 templateId.'),
+  "content": zod.string().min(1).describe('승인된 템플릿 원문. #{변수명} 치환 지원.'),
+  "title": zod.string().optional().describe('알리고 발송 제목'),
+  "sender": zod.string().optional().describe('알리고에 등록된 발신번호'),
+  "pfId": zod.string().optional().describe('SOLAPI 채널 pfId. 발신 프로필 키 대신 지정 가능.'),
+  "variables": zod.record(zod.string(), zod.string()).optional().describe('변수명: 치환값. 예: {\"이름\":\"홍길동\"}'),
+  "buttons": zod.array(zod.object({
+  "type": zod.enum(['WL', 'AL', 'DS', 'BK', 'MD', 'AC']),
+  "name": zod.string().min(1).max(systemConfigControllerTestMessengerV1BodyAlimtalkOneButtonsItemNameMax),
+  "linkMo": zod.string().optional(),
+  "linkPc": zod.string().optional(),
+  "schemeIos": zod.string().optional(),
+  "schemeAndroid": zod.string().optional()
+})).max(systemConfigControllerTestMessengerV1BodyAlimtalkOneButtonsMax).optional()
+}).optional().describe('카카오 알림톡 테스트 시 필수'),
   "config": zod.object({
   "enabled": zod.boolean().describe('비즈니스 메신저 발송 활성화 여부'),
   "provider": zod.enum(['KAKAO', 'LINE', 'WHATSAPP', 'TELEGRAM', 'WECHAT']).describe('선택된 메신저 프로바이더 (단일 선택)'),

@@ -5,9 +5,12 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { AlimtalkMessageDto } from './alimtalkMessageDto';
 import type { MessengerConfigDto } from './messengerConfigDto';
 
 export interface TestMessengerRequestDto {
   recipient: string;
+  /** 카카오 알림톡 테스트 시 필수 */
+  alimtalk?: AlimtalkMessageDto;
   config?: MessengerConfigDto;
 }
