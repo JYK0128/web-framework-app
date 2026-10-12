@@ -2,9 +2,11 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { isWithinOperatingHours } from '@pkg/shared/policy';
+import { UserNotificationCreatedEvent } from '@pkg/shared/server';
 
 import { SupportMessage, SupportMessageSenderType, SupportRoom, SupportRoomStatus } from '#/core/database/entities/support';
 import { AppEntityManager } from '#/core/database/entity-manager';
+import { EventBroker } from '#/core/event-broker/event-broker.service';
 import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { KvStore } from '#/core/kv-store/kv-store.service';
 import { RealtimeService } from '#/core/realtime/realtime.service';
@@ -22,6 +24,7 @@ export class SupportService {
     private readonly systemContext: SystemContext,
     private readonly kvStore: KvStore,
     private readonly realtime: RealtimeService,
+    private readonly eventBroker: EventBroker,
   ) {}
 
   async listRooms(input: GetSupportRoomsRequestDto, mine: boolean): Promise<SupportRoomPageResponseDto> {
@@ -154,6 +157,15 @@ export class SupportService {
     room.status = SupportRoomStatus.IN_PROGRESS;
     await this.em.flush();
     await this.publishRoomEvent(room.id, 'support.message.created');
+    const user = room.user;
+    const userId = typeof user === 'string' ? user : user.id;
+    await this.eventBroker.publish(new UserNotificationCreatedEvent(userId, {
+      id: message.id,
+      kind: 'support.reply',
+      roomId: room.id,
+      message: message.content,
+      createdAt: message.createdAt.toISOString(),
+    }));
     return message;
   }
 

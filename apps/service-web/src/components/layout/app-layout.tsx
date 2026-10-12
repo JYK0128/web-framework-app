@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Link, useLocation, useNavigate, useRouter } from '@tanstack/react-router';
 import { Bell, Check, Globe, LogIn, LogOut, Menu, Moon, Sun, User } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import type { ReactNode } from 'react';
+import { type ReactNode, useState } from 'react';
 
 import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
 import type { MeResponse } from '#/.generated/api/model';
@@ -10,7 +10,9 @@ import { Button, buttonVariants, DropdownMenu, DropdownMenuContent, DropdownMenu
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { BrandLogo, LocaleSwitcher, ThemeToggle } from '#/components/app';
 import { useI18n } from '#/hooks';
+import { useSSE } from '#/hooks/use-sse';
 import { type AppLocale, locales } from '#/i18n/i18n';
+import { isSupportChatOpen } from '#/lib/support-chat-state';
 
 const navigation = [
   { label: 'service.navigation.home', to: '/' as const },
@@ -21,6 +23,21 @@ const navigation = [
   { label: 'service.navigation.faq', to: '/faq' as const },
 ];
 
+type UserNotification = {
+  id: string
+  kind: 'support.reply'
+  roomId: string
+  message: string
+  createdAt: string
+} | {
+  id: string
+  kind: 'qna.answer'
+  qnaId: string
+  questionTitle: string
+  message: string
+  createdAt: string
+};
+
 export function AppLayout({ children, user }: { children: ReactNode, user: MeResponse | null }) {
   const { i18n, t } = useI18n();
   const location = useLocation();
@@ -28,12 +45,28 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
   const router = useRouter();
   const queryClient = useQueryClient();
   const logoutMutation = useAuthControllerLogoutV1();
+  const [notificationState, setNotificationState] = useState<{ userId: string | null, items: UserNotification[] }>({ userId: user?.id ?? null, items: [] });
+  const currentUserId = user?.id ?? null;
+  const notifications = notificationState.userId === currentUserId ? notificationState.items : [];
   const { resolvedTheme, setTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
   const currentLocale = i18n.language;
   const hasLocalePath
     = location.pathname === '/'
       || locales.some(({ code }) => location.pathname === `/${code}` || location.pathname === `/${code}/`);
+
+  useSSE<UserNotification>({
+    url: user ? '/api/v1/notifications/events' : null,
+    onEvent: (event) => {
+      if (event.type !== 'notification.created') return;
+      if (event.data.kind === 'support.reply' && isSupportChatOpen(event.data.roomId)) return;
+      if (!currentUserId) return;
+      setNotificationState((current) => ({
+        userId: currentUserId,
+        items: [event.data, ...(current.userId === currentUserId ? current.items : []).filter(({ id }) => id !== event.data.id)].slice(0, 10),
+      }));
+    },
+  });
 
   const changeLocale = (nextLocale: AppLocale) => {
     if (nextLocale === currentLocale) return;
@@ -105,17 +138,53 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
                       variant="outline"
                       size="icon"
                       className="
-                        hidden
+                        relative hidden
                         lg:inline-flex
                       "
                       aria-label={t('app.alertBell.openAlerts')}
                     >
                       <Bell className="size-4" />
+                      {notifications.length > 0 && (
+                        <span className="
+                          absolute -right-1 -top-1 flex size-4 items-center
+                          justify-center rounded-full bg-destructive text-[10px]
+                          text-destructive-foreground
+                        "
+                        >
+                          {Math.min(notifications.length, 9)}
+                        </span>
+                      )}
                     </Button>
                   )}
                 />
                 <DropdownMenuContent align="end" className="w-64">
-                  <p className="p-4 text-sm text-muted-foreground">{t('app.alertBell.noAlerts')}</p>
+                  {notifications.length === 0
+                    ? <p className="p-4 text-sm text-muted-foreground">{t('app.alertBell.noAlerts')}</p>
+                    : notifications.map((notification) => (
+                      <DropdownMenuItem
+                        key={notification.id}
+                        className="
+                          flex h-auto cursor-pointer flex-col items-start gap-1
+                          whitespace-normal px-4 py-3
+                        "
+                        onClick={() => void navigate({ to: notification.kind === 'support.reply' ? '/support' : '/qna' })}
+                      >
+                        <p className="text-sm font-medium">
+                          {t(notification.kind === 'support.reply' ? 'app.alertBell.supportReply' : 'app.alertBell.qnaAnswer')}
+                        </p>
+                        {notification.kind === 'qna.answer' && (
+                          <p className="text-sm text-muted-foreground">
+                            {notification.questionTitle}
+                          </p>
+                        )}
+                        <p className="
+                          mt-1 line-clamp-3 text-sm text-muted-foreground
+                        "
+                        >
+                          {notification.message}
+                        </p>
+                      </DropdownMenuItem>
+                    ))}
                 </DropdownMenuContent>
               </DropdownMenu>
             )}

@@ -3,6 +3,8 @@
     "title": "Notifications",
     "openAlerts": "Open notifications",
     "noAlerts": "There are no new notifications.",
+    "supportReply": "You have a new customer support reply.",
+    "qnaAnswer": "You have a new Q&A answer.",
     "markAllAsRead": "Mark all as read",
     "delete": "Delete"
   }

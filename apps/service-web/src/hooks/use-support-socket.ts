@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 
 import { axios } from '#/lib/axios';
+import { closeSupportChat, openSupportChat } from '#/lib/support-chat-state';
 
 async function joinSupportRoom(socket: ReturnType<typeof io>, roomId: string, isCancelled: () => boolean, onJoined: () => void): Promise<void> {
   try {
@@ -21,6 +22,7 @@ export function useSupportSocket(roomId: string | null, enabled: boolean, onEven
   onEventRef.current = onEvent;
   useEffect(() => {
     if (!enabled || !roomId) return;
+    openSupportChat(roomId);
     const socket = io('/support', { path: '/api/v1/socket.io', withCredentials: true, transports: ['websocket'], autoConnect: false });
     let cancelled = false;
     socket.on('connect', () => void joinSupportRoom(socket, roomId, () => cancelled, () => onEventRef.current('support.connected')));
@@ -30,6 +32,7 @@ export function useSupportSocket(roomId: string | null, enabled: boolean, onEven
     return () => {
       cancelled = true;
       socket.disconnect();
+      closeSupportChat(roomId);
     };
   }, [roomId, enabled]);
 }

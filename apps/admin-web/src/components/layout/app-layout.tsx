@@ -10,10 +10,22 @@ import { Button } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { BrandLogo, LocaleSwitcher, ThemeToggle } from '#/components/app';
 import { useSSE } from '#/hooks/use-sse';
+import { isSupportChatOpen } from '#/lib/support-chat-state';
 
 import { LinkCard } from './link-card';
 
-type UnansweredAlert = { roomId: string, elapsedMinutes: number, createdAt: string };
+type AdminAlert = {
+  kind: 'support.unanswered'
+  roomId: string
+  elapsedMinutes: number
+  createdAt: string
+} | {
+  kind: 'qna.created'
+  qnaId: string
+  title: string
+  priority: 'low' | 'normal' | 'high' | 'urgent'
+  createdAt: string
+};
 
 type NavigationItem = {
   title: string
@@ -107,7 +119,7 @@ export function AppLayout({ user, children }: AppLayoutProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState<'alerts' | 'profile' | null>(null);
-  const [alerts, setAlerts] = useState<UnansweredAlert[]>([]);
+  const [alerts, setAlerts] = useState<AdminAlert[]>([]);
   const location = useLocation();
   const navigate = useNavigate();
   const router = useRouter();
@@ -124,10 +136,23 @@ export function AppLayout({ user, children }: AppLayoutProps) {
     .filter((item) => location.pathname === item.href || location.pathname.startsWith(`${item.href}/`))
     .sort((left, right) => right.href.length - left.href.length)[0];
 
-  useSSE<UnansweredAlert>({
+  useSSE<Omit<AdminAlert & { kind: 'support.unanswered' }, 'kind'>>({
     url: user.permissions.includes('support:read') ? '/api/v1/support/notifications/events' : null,
     onEvent: (event) => {
-      if (event.type === 'support.unanswered') setAlerts((current) => [event.data, ...current].slice(0, 10));
+      if (event.type === 'support.unanswered' && !isSupportChatOpen(event.data.roomId)) {
+        const alert: AdminAlert = { ...event.data, kind: 'support.unanswered' };
+        setAlerts((current) => [alert, ...current].slice(0, 10));
+      }
+    },
+  });
+
+  useSSE<Omit<AdminAlert & { kind: 'qna.created' }, 'kind'>>({
+    url: user.permissions.includes('qna:read') ? '/api/v1/qna/notifications/events' : null,
+    onEvent: (event) => {
+      if (event.type === 'qna.created') {
+        const alert: AdminAlert = { ...event.data, kind: 'qna.created' };
+        setAlerts((current) => [alert, ...current].slice(0, 10));
+      }
     },
   });
 
@@ -249,7 +274,7 @@ export function AppLayout({ user, children }: AppLayoutProps) {
                       <div className="grid gap-2">
                         {alerts.map((alert) => (
                           <button
-                            key={`${alert.roomId}:${alert.createdAt}`}
+                            key={alert.kind === 'support.unanswered' ? `${alert.roomId}:${alert.createdAt}` : alert.qnaId}
                             type="button"
                             className="
                               text-left text-foreground
@@ -257,13 +282,25 @@ export function AppLayout({ user, children }: AppLayoutProps) {
                             "
                             onClick={() => {
                               setOpenMenu(null);
-                              void navigate({ to: '/support' });
+                              void navigate({ to: alert.kind === 'support.unanswered' ? '/support' : '/qna' });
                             }}
                           >
-                            미응답 문의 ·
-                            {' '}
-                            {alert.elapsedMinutes}
-                            분 경과
+                            {alert.kind === 'support.unanswered'
+                              ? (
+                                <>
+                                  미응답 문의 ·
+                                  {' '}
+                                  {alert.elapsedMinutes}
+                                  분 경과
+                                </>
+                              )
+                              : (
+                                <>
+                                  새 Q&A 문의 ·
+                                  {' '}
+                                  {alert.title}
+                                </>
+                              )}
                           </button>
                         ))}
                       </div>

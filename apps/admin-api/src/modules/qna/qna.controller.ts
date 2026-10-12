@@ -1,17 +1,26 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, type MessageEvent, Param, Patch, Query, Sse } from '@nestjs/common';
+import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { AdminPermission } from '@pkg/shared';
+import type { Observable } from 'rxjs';
 
 import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 import { InternalClient } from '#/core/http/internal-client';
+import { RealtimeService } from '#/core/realtime/realtime.service';
 
 import { GetQnaRequestDto, QnaActionResponseDto, QnaItemDto, QnaPageResponseDto, UpdateQnaRequestDto } from '.';
+import { QNA_CREATED_TOPIC } from './qna-notification.service';
 
 @ApiTags('qna') @UserAuth() @Controller('qna')
 export class QnaController {
-  constructor(private readonly internalClient: InternalClient) {}
+  constructor(private readonly internalClient: InternalClient, private readonly realtime: RealtimeService) {}
+
+  @Sse('notifications/events') @Permissions(AdminPermission.qna.read) @ApiExcludeEndpoint()
+  notifications(): Observable<MessageEvent> {
+    return this.realtime.streamSSE(QNA_CREATED_TOPIC);
+  }
+
   @Get()
   @Permissions(AdminPermission.qna.read)
   @SwaggerApiResponse(QnaPageResponseDto)
