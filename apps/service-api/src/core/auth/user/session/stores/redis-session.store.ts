@@ -1,21 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { type SessionData, Store } from 'express-session';
 
-import { SECURITY_CONFIG } from '#/app.config';
-import { SessionKvStoreKey } from '#/core/auth/user/session/session-kv-store';
+import { SECURITY_CONFIG, SERVICE_ID } from '#/app.config';
 import { KvStore } from '#/core/kv-store/kv-store.service';
+
+const sessionKey = (id: string) => `${SERVICE_ID}:auth_session:${id}`;
 
 @Injectable()
 export class RedisSessionStore extends Store {
   constructor(private readonly kvStore: KvStore) { super(); }
 
   override get(sessionId: string, callback: (error: unknown, session?: SessionData | null) => void): void {
-    void this.kvStore.get<SessionData>(SessionKvStoreKey.session(sessionId))
+    void this.kvStore.get<SessionData>(sessionKey(sessionId))
       .then((session) => callback(null, session ? this.restoreCookie(session) : null), (error) => callback(error));
   }
 
   override set(sessionId: string, session: SessionData, callback?: (error?: unknown) => void): void {
-    void this.kvStore.set(SessionKvStoreKey.session(sessionId), session, this.ttl(session))
+    void this.kvStore.set(sessionKey(sessionId), session, this.ttl(session))
       .then(() => callback?.(), (error) => callback?.(error));
   }
 
@@ -24,7 +25,7 @@ export class RedisSessionStore extends Store {
   }
 
   override destroy(sessionId: string, callback?: (error?: unknown) => void): void {
-    void this.kvStore.del(SessionKvStoreKey.session(sessionId)).then(() => callback?.(), (error) => callback?.(error));
+    void this.kvStore.del(sessionKey(sessionId)).then(() => callback?.(), (error) => callback?.(error));
   }
 
   private ttl(session: SessionData): number {
