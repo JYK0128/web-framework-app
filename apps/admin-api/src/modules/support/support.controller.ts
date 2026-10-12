@@ -11,7 +11,7 @@ import { InternalClient } from '#/core/http/internal-client';
 import { KvStore } from '#/core/kv-store/kv-store.service';
 import { RealtimeService } from '#/core/realtime/realtime.service';
 
-import { CreateSupportMessageRequestDto, GetSupportRoomsRequestDto, SupportMessageItemDto, SupportMessageListResponseDto, SupportRoomItemDto, SupportRoomPageResponseDto, SupportSocketTicketResponseDto, UpdateSupportRoomRequestDto } from './dto';
+import { CreateSupportMessageRequestDto, GetSupportRoomsRequestDto, SupportMessageItemDto, SupportMessageListResponseDto, SupportRoomItemDto, SupportRoomPageResponseDto, SupportSocketTicketResponseDto, UpdateSupportRoomRequestDto } from '.';
 import { SupportKvStoreKey } from './support.key';
 
 const SUPPORT_UNANSWERED_TOPIC = 'support:unanswered';

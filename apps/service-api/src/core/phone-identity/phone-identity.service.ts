@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { ApplicationError } from '@pkg/shared/common';
+import { ApplicationError, normalizePhoneNumber } from '@pkg/shared/common';
 
 import { PortOneAdapter } from '#/core/phone-identity/adapters/portone.adapter';
 import { env } from '#/env';
@@ -24,10 +24,4 @@ export class PhoneIdentityService {
       ...(customer.di ? { di: customer.di } : {}),
     };
   }
-}
-
-function normalizePhoneNumber(value: string): string {
-  const digits = value.replace(/\D/gu, '');
-  if (digits.startsWith('82')) return `0${digits.slice(2)}`;
-  return digits;
 }

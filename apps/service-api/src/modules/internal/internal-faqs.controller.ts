@@ -4,9 +4,9 @@ import { ApiExcludeController, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { MachineAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-import { CreateFaqCommand, DeleteFaqCommand, UpdateFaqCommand } from '#/modules/faqs/commands';
-import { CreateFaqRequestDto, FaqActionResponseDto, FaqItemDto, FaqPageResponseDto, GetFaqsRequestDto, UpdateFaqRequestDto } from '#/modules/faqs/dto';
-import { GetInternalFaqsQuery } from '#/modules/faqs/queries/get-internal-faqs.query';
+import { CreateFaqRequestDto, FaqActionResponseDto, FaqItemDto, FaqPageResponseDto, GetFaqsRequestDto, UpdateFaqRequestDto } from '#/modules/faqs';
+import { GetInternalFaqsQuery } from '#/modules/faqs/get-internal-faqs.query';
+import { CreateFaqCommand, DeleteFaqCommand, UpdateFaqCommand } from '#/modules/faqs/internal-faq-actions.command';
 
 @ApiTags('Internal (Machine)')
 @ApiExcludeController()

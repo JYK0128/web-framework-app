@@ -5,7 +5,7 @@ import { ApiExcludeController, ApiTags } from '@nestjs/swagger';
 import { MachineAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 
-import { CreateEventRequestDto, EventActionResponseDto, EventItemDto, EventPageResponseDto, GetEventsRequestDto, UpdateEventRequestDto } from './dto';
+import { CreateEventRequestDto, EventActionResponseDto, EventItemDto, EventPageResponseDto, GetEventsRequestDto, UpdateEventRequestDto } from '.';
 import { CreateEventCommand, DeleteEventCommand, GetEventsQuery, UpdateEventCommand } from './events.messages';
 
 @ApiTags('Internal (Machine)')

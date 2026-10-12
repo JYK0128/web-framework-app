@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { GetLogStatsHandler } from './handlers/get-log-stats.handler';
-import { GetLogsHandler } from './handlers/get-logs.handler';
+import { GetLogStatsHandler } from './get-log-stats.handler';
+import { GetLogsHandler } from './get-logs.handler';
 import { LogsController } from './logs.controller';
 import { LogsService } from './logs.service';
 

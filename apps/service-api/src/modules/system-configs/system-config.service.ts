@@ -15,8 +15,8 @@ import { KvStore } from '#/core/kv-store/kv-store.service';
 import { assertEnabledOAuthProvidersAreConfigured } from '#/core/oauth/oauth-provider-validation';
 import { env } from '#/env';
 
-import { assertEnabledDeliveryProvidersAreConfigured } from './delivery-provider-validation';
-import { CreateOAuthIconPresignedUrlRequestDto, CreateOAuthIconPresignedUrlResponseDto, OAUTH_ICON_SUBDIR } from './oauth-icon.dto';
+import { assertEnabledDeliveryProvidersAreConfigured } from './delivery/delivery-provider-validation';
+import { CreateOAuthIconPresignedUrlRequestDto, CreateOAuthIconPresignedUrlResponseDto, OAUTH_ICON_SUBDIR } from './oauth/oauth-icon.dto';
 import { SystemConfigSnapshotSchema, SystemContext } from './system.context';
 import { SERVICE_SYSTEM_CONFIGS_REDIS_KEY } from './system-config.constants';
 

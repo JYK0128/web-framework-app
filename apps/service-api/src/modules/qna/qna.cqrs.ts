@@ -1,6 +1,6 @@
 import { Command, Query } from '@nestjs/cqrs';
 
-import type { CreateQnaRequestDto, GetQnaRequestDto, QnaActionResponseDto, QnaItemDto, QnaPageResponseDto, UpdateOwnQnaRequestDto, UpdateQnaRequestDto } from './dto/qna.dto';
+import type { CreateQnaRequestDto, GetQnaRequestDto, QnaActionResponseDto, QnaItemDto, QnaPageResponseDto, UpdateOwnQnaRequestDto, UpdateQnaRequestDto } from './qna.dto';
 
 export class GetOwnQnasQuery extends Query<QnaPageResponseDto> {
   constructor(public readonly input: GetQnaRequestDto) { super(); }

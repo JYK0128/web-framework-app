@@ -1,0 +1,36 @@
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { ApplicationError } from '@pkg/shared/common';
+import { decrypt, hashWithSecret } from '@pkg/shared/server';
+
+import { SECURITY_CONFIG } from '#/app.config';
+import { Account, User } from '#/core/database/entities/auth';
+import { AppEntityManager } from '#/core/database/entity-manager';
+import { KvStore } from '#/core/kv-store/kv-store.service';
+import { MessageService } from '#/core/notification';
+import { env } from '#/env';
+import { ensureEmailDeliveryConfigured } from '#/modules/auth/auth-email.helper';
+import { sendPasswordResetChallenge } from '#/modules/auth/credential/password-reset.helper';
+import { RequestPasswordResetCommand } from '#/modules/auth/credential/request-password-reset.command';
+import { RequestPasswordResetResponseDto } from '#/modules/auth/credential/request-password-reset.response.dto';
+
+@Injectable()
+@CommandHandler(RequestPasswordResetCommand)
+export class RequestPasswordResetHandler implements ICommandHandler<RequestPasswordResetCommand, RequestPasswordResetResponseDto> {
+  constructor(private readonly em: AppEntityManager, private readonly kv: KvStore, private readonly messages: MessageService) {}
+
+  async execute(command: RequestPasswordResetCommand): Promise<RequestPasswordResetResponseDto> {
+    if (!SECURITY_CONFIG.credentialAvailable) return RequestPasswordResetResponseDto.parse({ accepted: true });
+    await ensureEmailDeliveryConfigured(this.em);
+    const email = command.input.email.trim().toLowerCase();
+    const user = await this.em.findOne(User, { profile: { emailHash: hashWithSecret(email, env.PII_HASH_KEY), phoneNumberHash: hashWithSecret(command.input.phoneNumber, env.PII_HASH_KEY) } }, { populate: ['profile'], filters: false });
+    if (user && !user.isDeleted) {
+      if (!user.profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
+      const account = await this.em.findOne(Account, { user: user.id, providerId: Account.PROVIDER_CREDENTIAL });
+      if (account?.password) {
+        await sendPasswordResetChallenge(this.em, this.kv, this.messages, user, user.profile, decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY));
+      }
+    }
+    return RequestPasswordResetResponseDto.parse({ accepted: true });
+  }
+}

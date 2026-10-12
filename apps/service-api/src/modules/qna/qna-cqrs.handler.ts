@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler, type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { QnaActionResponseDto, QnaItemDto, QnaPageResponseDto } from './dto/qna.dto';
 import { CreateOwnQnaCommand, DeleteOwnQnaCommand, DeleteQnaCommand, GetAllQnaQuery, GetAllQnasQuery, GetOwnQnaQuery, GetOwnQnasQuery, UpdateOwnQnaCommand, UpdateQnaCommand } from './qna.cqrs';
+import { QnaActionResponseDto, QnaItemDto, QnaPageResponseDto } from './qna.dto';
 import { QnaService } from './qna.service';
 
 @Injectable()

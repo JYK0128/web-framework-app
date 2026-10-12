@@ -123,6 +123,7 @@ export * from './noticesControllerListV1200';
 export * from './noticesControllerListV1200Meta';
 export * from './oAuthCallbackRequest';
 export * from './oAuthCallbackResponse';
+export * from './oAuthControllerBeginV1Params';
 export * from './oAuthControllerCallbackV1200';
 export * from './oAuthControllerCallbackV1200Meta';
 export * from './oAuthControllerProvidersV1200';

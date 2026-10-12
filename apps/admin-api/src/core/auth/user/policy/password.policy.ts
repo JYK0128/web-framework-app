@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
-import { hash, verify } from '@pkg/shared/server';
+import { hashPassword, verifyPassword } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
 import { Account } from '#/core/database/entities/auth';
@@ -27,7 +27,7 @@ export async function updateCredentialPassword(account: Account, password: strin
   const history = account.password
     ? [account.password, ...priorHistory].slice(0, SECURITY_CONFIG.password.historyLimit)
     : priorHistory.slice(0, SECURITY_CONFIG.password.historyLimit);
-  account.password = await hash(password);
+  account.password = await hashPassword(password);
   account.updateMetadata({ passwordUpdatedAt: new Date(), passwordHistory: history });
 }
 
@@ -40,7 +40,7 @@ export async function assertPasswordCanBeUsed(account: Account, password: string
     .filter((value): value is string => typeof value === 'string')
     .slice(0, 1 + historyLimit);
   for (const previousHash of previousHashes) {
-    if (await verify(password, previousHash)) {
+    if (await verifyPassword(password, previousHash)) {
       throw new ApplicationError({ code: 'PASSWORD_REUSED', status: HttpStatus.BAD_REQUEST });
     }
   }

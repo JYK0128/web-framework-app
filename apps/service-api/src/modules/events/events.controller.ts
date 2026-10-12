@@ -5,7 +5,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from '#/core/http/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 
-import { EventCursorResponseDto, EventItemDto, GetPublicEventsRequestDto } from './dto';
+import { EventCursorResponseDto, EventItemDto, GetPublicEventsRequestDto } from '.';
 import { GetEventQuery, GetPublicEventsQuery } from './events.messages';
 
 @ApiTags('events')

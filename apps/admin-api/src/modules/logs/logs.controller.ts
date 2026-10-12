@@ -6,10 +6,10 @@ import { AdminPermission } from '@pkg/shared';
 import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-import { GetLogsRequestDto, GetLogStatsRequestDto, LogPageResponseDto, LogStatsResponseDto } from '#/modules/logs/dto';
+import { GetLogsRequestDto, GetLogStatsRequestDto, LogPageResponseDto, LogStatsResponseDto } from '#/modules/logs';
 
-import { GetLogStatsQuery } from './queries/get-log-stats.query';
-import { GetLogsQuery } from './queries/get-logs.query';
+import { GetLogStatsQuery } from './get-log-stats.query';
+import { GetLogsQuery } from './get-logs.query';
 
 @ApiTags('logs')
 @UserAuth()

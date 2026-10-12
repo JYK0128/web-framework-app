@@ -5,7 +5,7 @@ import type { UserPrincipal } from '#/core/http/types/principal.type';
 
 export interface CreateTokenPairOptions { rememberMe?: boolean, familyId?: string }
 export interface TokenPairResult { accessToken?: string, refreshToken?: string, refreshTokenTtlSeconds?: number }
-export interface RefreshInput { refreshToken?: string, cookieRefreshToken?: string }
+export interface RefreshInput { refreshToken?: string }
 export interface AuthenticatedUser {
   user: Pick<User, 'id' | 'phoneNumberVerified'> & { twoFactorSetupRequired: boolean }
   passwordExpiresAt?: number | null

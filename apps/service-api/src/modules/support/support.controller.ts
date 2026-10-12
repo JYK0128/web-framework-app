@@ -4,7 +4,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 
-import { CreateSupportMessageRequestDto, CreateSupportRoomRequestDto, GetSupportRoomsCursorRequestDto, SupportMessageItemDto, SupportMessageListResponseDto, SupportRoomCursorResponseDto, SupportRoomItemDto, SupportSocketTicketResponseDto, UpdateSupportRoomRequestDto } from './dto';
+import { CreateSupportMessageRequestDto, CreateSupportRoomRequestDto, GetSupportRoomsCursorRequestDto, SupportMessageItemDto, SupportMessageListResponseDto, SupportRoomCursorResponseDto, SupportRoomItemDto, SupportSocketTicketResponseDto, UpdateSupportRoomRequestDto } from '.';
 import { SupportService } from './support.service';
 
 @ApiTags('support') @UserAuth() @Controller('support')

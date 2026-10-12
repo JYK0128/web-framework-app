@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
 import { FaqsController } from './faqs.controller';
-import { faqHandlers } from './handlers';
+import { faqHandlers } from './faqs.handlers';
 
 @Module({
   imports: [CqrsModule],

@@ -1,0 +1,95 @@
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { CommandHandler, type ICommandHandler, type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { ApplicationError } from '@pkg/shared/common';
+
+import { type IUserAuthService, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
+import { User } from '#/core/database/entities/auth';
+import { Permission, Role } from '#/core/database/entities/auth.extensions';
+import { AppEntityManager } from '#/core/database/entity-manager';
+import { CreateCustomerMembershipCommand, DeleteCustomerMembershipCommand, GetCustomerMembershipPermissionsQuery, GetCustomerMembershipsQuery, UpdateCustomerMembershipCommand } from '#/modules/internal/memberships/customer-membership.commands';
+import { CustomerMembershipItemDto, CustomerMembershipListResponseDto, CustomerMembershipPermissionItemDto, CustomerMembershipPermissionListResponseDto, DeleteCustomerMembershipResponseDto } from '#/modules/internal/memberships/customer-membership.dto';
+
+@Injectable()
+@QueryHandler(GetCustomerMembershipsQuery)
+export class GetCustomerMembershipsHandler implements IQueryHandler<GetCustomerMembershipsQuery, CustomerMembershipListResponseDto> {
+  constructor(private readonly em: AppEntityManager) {}
+  async execute(): Promise<CustomerMembershipListResponseDto> {
+    const roles = await this.em.find(Role, {}, { orderBy: { code: 'ASC' } });
+    return CustomerMembershipListResponseDto.parse({ items: await Promise.all(roles.map(async (role) => CustomerMembershipItemDto.parseEntity(role, await this.em.count(User, { role: role.id, deletedAt: null }, { filters: false })))) });
+  }
+}
+
+@Injectable()
+@QueryHandler(GetCustomerMembershipPermissionsQuery)
+export class GetCustomerMembershipPermissionsHandler implements IQueryHandler<GetCustomerMembershipPermissionsQuery, CustomerMembershipPermissionListResponseDto> {
+  constructor(private readonly em: AppEntityManager) {}
+
+  async execute(): Promise<CustomerMembershipPermissionListResponseDto> {
+    const permissions = await this.em.find(Permission, {}, { orderBy: { code: 'ASC' } });
+    return CustomerMembershipPermissionListResponseDto.parse({
+      items: permissions.map((permission) => CustomerMembershipPermissionItemDto.parseEntity(permission)),
+    });
+  }
+}
+
+@Injectable()
+@CommandHandler(CreateCustomerMembershipCommand)
+export class CreateCustomerMembershipHandler implements ICommandHandler<CreateCustomerMembershipCommand, CustomerMembershipItemDto> {
+  constructor(private readonly em: AppEntityManager) {}
+  async execute(command: CreateCustomerMembershipCommand): Promise<CustomerMembershipItemDto> {
+    const input = command.input;
+    const code = input.code.trim().toLowerCase();
+    if (await this.em.findOne(Role, { code }, { filters: false })) throw new ApplicationError({ code: 'CUSTOMER_MEMBERSHIP_CODE_ALREADY_EXISTS', status: HttpStatus.CONFLICT });
+    const role = this.em.create(Role, { code, label: input.label.trim(), description: input.description?.trim() || null, isSystem: false, permissions: await normalizePermissions(this.em, input.permissions) });
+    this.em.persist(role);
+    return CustomerMembershipItemDto.parseEntity(role, await this.em.count(User, { role: role.id, deletedAt: null }, { filters: false }));
+  }
+}
+
+@Injectable()
+@CommandHandler(UpdateCustomerMembershipCommand)
+export class UpdateCustomerMembershipHandler implements ICommandHandler<UpdateCustomerMembershipCommand, CustomerMembershipItemDto> {
+  constructor(private readonly em: AppEntityManager, @Inject(USER_AUTH_SERVICE) private readonly userAuthService: IUserAuthService) {}
+  async execute(command: UpdateCustomerMembershipCommand): Promise<CustomerMembershipItemDto> {
+    const role = await this.em.findOne(Role, { id: command.input.membershipId }, { filters: false });
+    if (!role || role.deletedAt) throw new ApplicationError({ code: 'CUSTOMER_MEMBERSHIP_NOT_FOUND', status: HttpStatus.NOT_FOUND });
+    if (command.input.dto.label !== undefined) role.label = command.input.dto.label.trim();
+    if (command.input.dto.description !== undefined) role.description = command.input.dto.description.trim() || null;
+    if (command.input.dto.permissions !== undefined) {
+      role.permissions = await normalizePermissions(this.em, command.input.dto.permissions);
+      await this.userAuthService.revokeRoleUsersTokens?.(role.id);
+    }
+    role.updatedAt = new Date();
+    return CustomerMembershipItemDto.parseEntity(role, await this.em.count(User, { role: role.id, deletedAt: null }, { filters: false }));
+  }
+}
+
+async function normalizePermissions(em: AppEntityManager, permissions?: string[]): Promise<string[]> {
+  const normalized = [...new Set((permissions ?? []).map((permission) => permission.trim().toLowerCase()).filter(Boolean))];
+
+  if (normalized.length === 0) return [];
+
+  const storedPermissions = await em.find(
+    Permission,
+    { code: { $in: normalized }, deletedAt: null },
+    { filters: false },
+  );
+  const known = new Set(storedPermissions.map(({ code }) => code));
+  const invalid = normalized.filter((permission) => !known.has(permission));
+  if (invalid.length > 0) throw new ApplicationError({ code: 'CUSTOMER_MEMBERSHIP_PERMISSIONS_INVALID', status: HttpStatus.BAD_REQUEST, details: { permissions: invalid } });
+  return normalized;
+}
+
+@Injectable()
+@CommandHandler(DeleteCustomerMembershipCommand)
+export class DeleteCustomerMembershipHandler implements ICommandHandler<DeleteCustomerMembershipCommand, DeleteCustomerMembershipResponseDto> {
+  constructor(private readonly em: AppEntityManager) {}
+  async execute(command: DeleteCustomerMembershipCommand): Promise<DeleteCustomerMembershipResponseDto> {
+    const role = await this.em.findOne(Role, { id: command.membershipId }, { filters: false });
+    if (!role || role.deletedAt) throw new ApplicationError({ code: 'CUSTOMER_MEMBERSHIP_NOT_FOUND', status: HttpStatus.NOT_FOUND });
+    if (role.isSystem) throw new ApplicationError({ code: 'SYSTEM_CUSTOMER_MEMBERSHIP_CANNOT_BE_DELETED', status: HttpStatus.CONFLICT });
+    if (await this.em.count(User, { role: role.id, deletedAt: null }, { filters: false })) throw new ApplicationError({ code: 'CUSTOMER_MEMBERSHIP_IN_USE', status: HttpStatus.CONFLICT });
+    role.deletedAt = new Date();
+    return DeleteCustomerMembershipResponseDto.parseEntity(role);
+  }
+}

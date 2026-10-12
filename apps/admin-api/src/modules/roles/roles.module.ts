@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { CreateRoleHandler, DeleteRoleHandler, GetRolesHandler, UpdateRoleHandler } from './handlers';
+import { CreateRoleHandler } from './create-role.handler';
+import { DeleteRoleHandler } from './delete-role.handler';
+import { GetRolesHandler } from './get-roles.handler';
 import { RolesController } from './roles.controller';
+import { UpdateRoleHandler } from './update-role.handler';
 
 @Module({
   imports: [CqrsModule],

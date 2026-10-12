@@ -1,10 +1,6 @@
-import { createHash } from 'node:crypto';
+import { hash } from '@pkg/shared/server';
 
 import { SERVICE_ID } from '#/app.config';
-
-function hash(value: string): string {
-  return createHash('sha256').update(value).digest('hex');
-}
 
 export const AuthKvStoreKey = {
   emailVerificationChallenge: (challengeId: string) => `${SERVICE_ID}:auth_email_verification:${challengeId}`,

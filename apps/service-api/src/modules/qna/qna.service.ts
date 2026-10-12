@@ -7,7 +7,7 @@ import { Qna, QnaPriority, QnaStatus } from '#/core/database/entities/qna';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { PrincipalContext } from '#/core/http/contexts/principal.context';
 
-import { CreateQnaRequestDto, GetQnaRequestDto, QnaItemDto, QnaPageResponseDto, UpdateQnaRequestDto } from './dto/qna.dto';
+import { CreateQnaRequestDto, GetQnaRequestDto, QnaItemDto, QnaPageResponseDto, UpdateQnaRequestDto } from './qna.dto';
 import { QnaCreatedEvent } from './qna-created.event';
 
 @Injectable()

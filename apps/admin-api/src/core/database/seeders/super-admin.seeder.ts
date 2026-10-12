@@ -1,7 +1,7 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 import { AdminPermission, ALL_ADMIN_PERMISSIONS } from '@pkg/shared';
-import { encrypt, hash, hmac } from '@pkg/shared/server';
+import { encrypt, hashPassword, hashWithSecret } from '@pkg/shared/server';
 
 import { Account, Profile, User } from '#/core/database/entities/auth';
 import { Role, RoleCode } from '#/core/database/entities/auth.extensions';
@@ -57,7 +57,7 @@ export class SuperAdminSeeder extends Seeder {
     const initialPassword = ADMIN_INIT_PASSWORD;
     const email = {
       encrypted: encrypt(initialEmail, env.PII_ENCRYPTION_KEY),
-      hash: hmac(initialEmail, env.PII_HASH_KEY),
+      hash: hashWithSecret(initialEmail, env.PII_HASH_KEY),
     };
     const existingSuperAdmin = await em.findOne(User, { profile: { emailHash: email.hash } }, { filters: false });
 
@@ -76,7 +76,7 @@ export class SuperAdminSeeder extends Seeder {
       name: 'Super Admin',
     });
 
-    const hashedPassword = await hash(initialPassword);
+    const hashedPassword = await hashPassword(initialPassword);
 
     const account = em.create(Account, {
       user,

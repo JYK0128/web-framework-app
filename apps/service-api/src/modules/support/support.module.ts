@@ -3,13 +3,13 @@ import { CqrsModule } from '@nestjs/cqrs';
 
 import { SystemConfigsModule } from '#/modules/system-configs/system-configs.module';
 
-import { InquiryAlertService } from './inquiry-alert.service';
+import { InquiryAlertService } from './notification/inquiry-alert.service';
+import { SupportInquiryScheduler } from './notification/support-inquiry.scheduler';
+import { SupportRoomCreatedHandler } from './rooms/support-room-created.handler';
 import { SupportController } from './support.controller';
 import { SupportGateway } from './support.gateway';
 import { SupportService } from './support.service';
-import { SupportInquiryScheduler } from './support-inquiry.scheduler';
 import { SupportInternalController } from './support-internal.controller';
-import { SupportRoomCreatedHandler } from './support-room-created.handler';
 
 @Module({
   imports: [CqrsModule, SystemConfigsModule],

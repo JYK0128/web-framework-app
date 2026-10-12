@@ -4,9 +4,11 @@ import { ApiExcludeController, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { MachineAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-import { CreateInternalServiceTermCommand, CreateInternalServiceTermGroupCommand, DeleteInternalServiceTermCommand, DeleteInternalServiceTermGroupCommand, PublishInternalServiceTermCommand, UpdateInternalServiceTermCommand, UpdateInternalServiceTermGroupCommand } from '#/modules/service-terms/commands';
-import { DeleteInternalServiceTermGroupResponseDto, DeleteInternalServiceTermResponseDto, GetInternalServiceTermsRequestDto, InternalServiceTermGroupItemDto, InternalServiceTermGroupListResponseDto, InternalServiceTermGroupRequestDto, InternalServiceTermItemDto, InternalServiceTermPageResponseDto, InternalServiceTermRequestDto } from '#/modules/service-terms/dto';
-import { GetInternalServiceTermGroupsQuery, GetInternalServiceTermsQuery } from '#/modules/service-terms/queries';
+import { DeleteInternalServiceTermGroupResponseDto, DeleteInternalServiceTermResponseDto, GetInternalServiceTermsRequestDto, InternalServiceTermGroupItemDto, InternalServiceTermGroupListResponseDto, InternalServiceTermGroupRequestDto, InternalServiceTermItemDto, InternalServiceTermPageResponseDto, InternalServiceTermRequestDto } from '#/modules/service-terms';
+import { GetInternalServiceTermsQuery } from '#/modules/service-terms/get-internal-service-terms.query';
+import { GetInternalServiceTermGroupsQuery } from '#/modules/service-terms/groups/get-internal-service-term-groups.query';
+import { CreateInternalServiceTermGroupCommand, DeleteInternalServiceTermGroupCommand, UpdateInternalServiceTermGroupCommand } from '#/modules/service-terms/groups/internal-service-term-group.commands';
+import { CreateInternalServiceTermCommand, DeleteInternalServiceTermCommand, PublishInternalServiceTermCommand, UpdateInternalServiceTermCommand } from '#/modules/service-terms/internal-service-term.commands';
 
 @ApiTags('Internal (Machine)')
 @ApiExcludeController()

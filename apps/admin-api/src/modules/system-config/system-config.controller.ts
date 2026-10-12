@@ -6,13 +6,13 @@ import { AdminPermission } from '@pkg/shared';
 import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-import { SystemSettingsResponseDto, TestAdminEmailRequestDto, TestAdminEmailResponseDto, UpdateSystemConfigResponseDto, UpdateSystemSettingsRequestDto } from '#/modules/system-config/dto';
+import { SystemSettingsResponseDto, TestAdminEmailRequestDto, TestAdminEmailResponseDto, UpdateSystemConfigResponseDto, UpdateSystemSettingsRequestDto } from '#/modules/system-config';
 
-import { TestAdminEmailCommand } from './commands/test-admin-email.command';
-import { UpdateSystemSettingsCommand } from './commands/update-system-settings.command';
-import { GetAdminEmailConfigQuery } from './queries/get-admin-email-config.query';
-import { GetAdminWebhookConfigQuery } from './queries/get-admin-webhook-config.query';
-import { GetSystemConfigQuery } from './queries/get-system-config.query';
+import { GetAdminEmailConfigQuery } from './email/get-admin-email-config.query';
+import { TestAdminEmailCommand } from './email/test-admin-email.command';
+import { GetSystemConfigQuery } from './get-system-config.query';
+import { UpdateSystemSettingsCommand } from './update-system-settings.command';
+import { GetAdminWebhookConfigQuery } from './webhook/get-admin-webhook-config.query';
 
 @ApiTags('system-configs')
 @UserAuth()

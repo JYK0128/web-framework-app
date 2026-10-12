@@ -1,19 +1,24 @@
 import { Module } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
 
-import { SystemConfigModule } from '#/modules/system-config/system-config.module';
-
-import { AuthController } from './auth.controller';
-import { authHandlers } from './handlers';
-import { OAuthController } from './oauth.controller';
-import { OAuthService } from './oauth.service';
+import { AuthAccountModule } from './account/account.module';
+import { AuthCredentialModule } from './credential/credential.module';
+import { AuthEmailVerificationModule } from './email-verification/email-verification.module';
+import { AuthOAuthModule } from './oauth/oauth.module';
+import { AuthPhoneVerificationModule } from './phone-verification/phone-verification.module';
+import { AuthProfileModule } from './profile/profile.module';
+import { AuthSessionModule } from './session/session.module';
+import { AuthTwoFactorModule } from './two-factor/two-factor.module';
 
 @Module({
-  imports: [CqrsModule, SystemConfigModule],
-  controllers: [AuthController, OAuthController],
-  providers: [
-    OAuthService,
-    ...authHandlers,
+  imports: [
+    AuthAccountModule,
+    AuthCredentialModule,
+    AuthEmailVerificationModule,
+    AuthPhoneVerificationModule,
+    AuthProfileModule,
+    AuthSessionModule,
+    AuthTwoFactorModule,
+    AuthOAuthModule,
   ],
 })
 export class AuthModule {}

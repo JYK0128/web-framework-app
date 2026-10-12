@@ -6,11 +6,13 @@ import { ApplicationError } from '@pkg/shared/common';
 import { TOKEN_STORE, type TokenStore } from '#/core/auth/user/token/stores/token.store';
 import { MachineAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-import { CustomerDetailResponseDto, CustomerPageResponseDto, GetCustomersRequestDto } from '#/modules/customers/dto';
-import { GetCustomerByIdQuery, GetCustomersQuery } from '#/modules/customers/queries';
+import { CustomerDetailResponseDto, CustomerPageResponseDto, GetCustomersRequestDto } from '#/modules/customers';
+import { GetCustomerByIdQuery } from '#/modules/customers/get-customer-by-id.query';
+import { GetCustomersQuery } from '#/modules/customers/get-customers.query';
 
-import { BanCustomerCommand, CreateCustomerMembershipCommand, DeleteCustomerCommand, DeleteCustomerMembershipCommand, GetCustomerMembershipPermissionsQuery, GetCustomerMembershipsQuery, UnbanCustomerCommand, UpdateCustomerMembershipCommand, UpdateCustomerMemoCommand, UpdateCustomerRoleCommand } from './commands';
-import { BanCustomerRequestDto, CreateCustomerMembershipRequestDto, CustomerActionResponseDto, CustomerMembershipItemDto, CustomerMembershipListResponseDto, CustomerMembershipPermissionListResponseDto, CustomerSessionListResponseDto, DeleteCustomerMembershipResponseDto, UpdateCustomerMembershipRequestDto, UpdateCustomerMemoRequestDto, UpdateCustomerRoleRequestDto } from './dto';
+import { BanCustomerRequestDto, CreateCustomerMembershipRequestDto, CustomerActionResponseDto, CustomerMembershipItemDto, CustomerMembershipListResponseDto, CustomerMembershipPermissionListResponseDto, CustomerSessionListResponseDto, DeleteCustomerMembershipResponseDto, UpdateCustomerMembershipRequestDto, UpdateCustomerMemoRequestDto, UpdateCustomerRoleRequestDto } from '.';
+import { BanCustomerCommand, DeleteCustomerCommand, UnbanCustomerCommand, UpdateCustomerMemoCommand, UpdateCustomerRoleCommand } from './customers/customer-actions.command';
+import { CreateCustomerMembershipCommand, DeleteCustomerMembershipCommand, GetCustomerMembershipPermissionsQuery, GetCustomerMembershipsQuery, UpdateCustomerMembershipCommand } from './memberships/customer-membership.commands';
 
 @ApiTags('Internal (Machine)')
 @ApiExcludeController()

@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { customerHandlers } from '#/modules/customers/handlers';
-import { GetInternalFaqsHandler } from '#/modules/faqs/handlers/get-internal-faqs.handler';
-import { CreateFaqHandler, DeleteFaqHandler, UpdateFaqHandler } from '#/modules/faqs/handlers/internal-faq-actions.handler';
+import { customerHandlers } from '#/modules/customers/customers.handlers';
+import { GetInternalFaqsHandler } from '#/modules/faqs/get-internal-faqs.handler';
+import { CreateFaqHandler, DeleteFaqHandler, UpdateFaqHandler } from '#/modules/faqs/internal-faq-actions.handler';
 
-import { BanCustomerHandler, DeleteCustomerHandler, UnbanCustomerHandler, UpdateCustomerMemoHandler, UpdateCustomerRoleHandler } from './handlers/customer-actions.handler';
-import { CreateCustomerMembershipHandler, DeleteCustomerMembershipHandler, GetCustomerMembershipPermissionsHandler, GetCustomerMembershipsHandler, UpdateCustomerMembershipHandler } from './handlers/customer-membership.handlers';
+import { BanCustomerHandler, DeleteCustomerHandler, UnbanCustomerHandler, UpdateCustomerMemoHandler, UpdateCustomerRoleHandler } from './customers/customer-actions.handler';
 import { InternalCustomersController } from './internal-customers.controller';
 import { InternalFaqsController } from './internal-faqs.controller';
 import { InternalServiceTermsController } from './internal-service-terms.controller';
+import { CreateCustomerMembershipHandler, DeleteCustomerMembershipHandler, GetCustomerMembershipPermissionsHandler, GetCustomerMembershipsHandler, UpdateCustomerMembershipHandler } from './memberships/customer-membership.handlers';
 
 @Module({
   controllers: [InternalCustomersController, InternalFaqsController, InternalServiceTermsController],

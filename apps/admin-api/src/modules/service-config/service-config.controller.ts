@@ -9,18 +9,18 @@ import { Public, UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 import { InternalClient } from '#/core/http/internal-client';
-import { CreateOAuthIconPresignedUrlCommand } from '#/modules/service-config/commands/create-oauth-icon-presigned-url.command';
-import { SyncSystemConfigCommand } from '#/modules/service-config/commands/sync-system-config.command';
-import { TestEmailCommand } from '#/modules/service-config/commands/test-email.command';
-import { TestMessengerCommand } from '#/modules/service-config/commands/test-messenger.command';
-import { TestPushCommand } from '#/modules/service-config/commands/test-push.command';
-import { TestSmsCommand } from '#/modules/service-config/commands/test-sms.command';
-import { TestWebhookCommand } from '#/modules/service-config/commands/test-webhook.command';
-import { UpdateSystemConfigCommand } from '#/modules/service-config/commands/update-system-config.command';
-import { CreateOAuthIconPresignedUrlRequestDto, CreateOAuthIconPresignedUrlResponseDto, GetHolidaysRequestDto, OperatingHolidayListResponseDto, ServiceConfigResponseDto, SyncSystemConfigRequestDto, SyncSystemConfigResponseDto, TestChannelResponseDto, TestEmailRequestDto, TestEmailResponseDto, TestMessengerRequestDto, TestPushRequestDto, TestSmsRequestDto, TestWebhookRequestDto, TestWebhookResponseDto, UpdateServiceConfigRequestDto } from '#/modules/service-config/dto';
-import { GetHolidaysQuery } from '#/modules/service-config/queries/get-holidays.query';
-import { UpdateSystemConfigResponseDto } from '#/modules/system-config/dto';
-import { GetSystemConfigQuery } from '#/modules/system-config/queries/get-system-config.query';
+import { CreateOAuthIconPresignedUrlRequestDto, CreateOAuthIconPresignedUrlResponseDto, GetHolidaysRequestDto, OperatingHolidayListResponseDto, ServiceConfigResponseDto, SyncSystemConfigRequestDto, SyncSystemConfigResponseDto, TestChannelResponseDto, TestEmailRequestDto, TestEmailResponseDto, TestMessengerRequestDto, TestPushRequestDto, TestSmsRequestDto, TestWebhookRequestDto, TestWebhookResponseDto, UpdateServiceConfigRequestDto } from '#/modules/service-config';
+import { TestEmailCommand } from '#/modules/service-config/delivery/test-email.command';
+import { TestMessengerCommand } from '#/modules/service-config/delivery/test-messenger.command';
+import { TestPushCommand } from '#/modules/service-config/delivery/test-push.command';
+import { TestSmsCommand } from '#/modules/service-config/delivery/test-sms.command';
+import { TestWebhookCommand } from '#/modules/service-config/delivery/test-webhook.command';
+import { CreateOAuthIconPresignedUrlCommand } from '#/modules/service-config/oauth/create-oauth-icon-presigned-url.command';
+import { GetHolidaysQuery } from '#/modules/service-config/operation/get-holidays.query';
+import { SyncSystemConfigCommand } from '#/modules/service-config/sync-system-config.command';
+import { UpdateSystemConfigCommand } from '#/modules/service-config/update-system-config.command';
+import { UpdateSystemConfigResponseDto } from '#/modules/system-config';
+import { GetSystemConfigQuery } from '#/modules/system-config/get-system-config.query';
 
 @UserAuth()
 @Controller()

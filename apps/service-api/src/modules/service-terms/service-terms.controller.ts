@@ -6,9 +6,13 @@ import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { Public, SkipPasswordExpiry, UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 
-import { SetServiceTermAgreementsCommand } from './commands';
-import { GetServiceAgreementHistoryRequestDto, GetServiceTermsRequestDto, GetTermRevisionsRequestDto, ServiceAgreementHistoryCursorResponseDto, ServiceTermAgreementListResponseDto, ServiceTermDetailResponseDto, ServiceTermPageResponseDto, SetServiceTermAgreementsRequestDto, SetServiceTermAgreementsResponseDto, TermRevisionPageResponseDto } from './dto';
-import { GetServiceAgreementHistoryQuery, GetServiceTermAgreementsQuery, GetServiceTermQuery, GetServiceTermsQuery, GetTermRevisionsQuery } from './queries';
+import { GetServiceAgreementHistoryRequestDto, GetServiceTermsRequestDto, GetTermRevisionsRequestDto, ServiceAgreementHistoryCursorResponseDto, ServiceTermAgreementListResponseDto, ServiceTermDetailResponseDto, ServiceTermPageResponseDto, SetServiceTermAgreementsRequestDto, SetServiceTermAgreementsResponseDto, TermRevisionPageResponseDto } from '.';
+import { GetServiceAgreementHistoryQuery } from './agreements/get-service-agreement-history.query';
+import { GetServiceTermAgreementsQuery } from './agreements/get-service-term-agreements.query';
+import { SetServiceTermAgreementsCommand } from './agreements/set-service-term-agreements.command';
+import { GetServiceTermQuery } from './get-service-term.query';
+import { GetServiceTermsQuery } from './get-service-terms.query';
+import { GetTermRevisionsQuery } from './revisions/get-term-revisions.query';
 
 @ApiTags('service-terms')
 @Controller('service-terms')

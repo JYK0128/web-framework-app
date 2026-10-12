@@ -1,0 +1,22 @@
+import { Injectable } from '@nestjs/common';
+import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+
+import { WebhookService } from '#/core/webhook/webhook.service';
+import { TestWebhookCommand } from '#/modules/service-config/delivery/test-webhook.command';
+import { TestWebhookResponseDto } from '#/modules/service-config/delivery/test-webhook.response.dto';
+
+@Injectable()
+@CommandHandler(TestWebhookCommand)
+export class TestWebhookHandler implements ICommandHandler<TestWebhookCommand, TestWebhookResponseDto> {
+  constructor(private readonly webhooks: WebhookService) {}
+
+  async execute(command: TestWebhookCommand): Promise<TestWebhookResponseDto> {
+    const { webhookUrl, type } = command.input;
+    await this.webhooks.send({
+      title: '시스템 테스트 알림',
+      text: `${type} 웹훅 연동이 정상적으로 확인되었습니다.`,
+      webhookUrl,
+    });
+    return TestWebhookResponseDto.parse({ ok: true });
+  }
+}

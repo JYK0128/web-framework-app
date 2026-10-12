@@ -49,6 +49,7 @@ import type {
   LoginRequest,
   LogoutRequest,
   OAuthCallbackRequest,
+  OAuthControllerBeginV1Params,
   OAuthControllerCallbackV1200,
   OAuthControllerProvidersV1200,
   PasswordResetRequestDto,
@@ -1289,12 +1290,14 @@ export function useOAuthControllerProvidersV1<TData = Awaited<ReturnType<typeof 
  */
 export const oAuthControllerBeginV1 = (
     providerId: string,
+    params?: OAuthControllerBeginV1Params,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
       return axios<void>(
-      {url: `/api/v1/auth/oauth/${providerId}`, method: 'GET', signal
+      {url: `/api/v1/auth/oauth/${providerId}`, method: 'GET',
+        params, signal
     },
       options);
     }
@@ -1302,23 +1305,25 @@ export const oAuthControllerBeginV1 = (
 
 
 
-export const getOAuthControllerBeginV1QueryKey = (providerId: string,) => {
+export const getOAuthControllerBeginV1QueryKey = (providerId: string,
+    params?: OAuthControllerBeginV1Params,) => {
     return [
-    `/api/v1/auth/oauth/${providerId}`
+    `/api/v1/auth/oauth/${providerId}`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getOAuthControllerBeginV1QueryOptions = <TData = Awaited<ReturnType<typeof oAuthControllerBeginV1>>, TError = unknown>(providerId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oAuthControllerBeginV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export const getOAuthControllerBeginV1QueryOptions = <TData = Awaited<ReturnType<typeof oAuthControllerBeginV1>>, TError = unknown>(providerId: string,
+    params?: OAuthControllerBeginV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oAuthControllerBeginV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getOAuthControllerBeginV1QueryKey(providerId);
+  const queryKey =  queryOptions?.queryKey ?? getOAuthControllerBeginV1QueryKey(providerId,params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof oAuthControllerBeginV1>>> = ({ signal }) => oAuthControllerBeginV1(providerId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof oAuthControllerBeginV1>>> = ({ signal }) => oAuthControllerBeginV1(providerId,params, requestOptions, signal);
 
 
 
@@ -1332,7 +1337,8 @@ export type OAuthControllerBeginV1QueryError = unknown
 
 
 export function useOAuthControllerBeginV1<TData = Awaited<ReturnType<typeof oAuthControllerBeginV1>>, TError = unknown>(
- providerId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof oAuthControllerBeginV1>>, TError, TData>> & Pick<
+ providerId: string,
+    params: undefined |  OAuthControllerBeginV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof oAuthControllerBeginV1>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof oAuthControllerBeginV1>>,
           TError,
@@ -1342,7 +1348,8 @@ export function useOAuthControllerBeginV1<TData = Awaited<ReturnType<typeof oAut
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useOAuthControllerBeginV1<TData = Awaited<ReturnType<typeof oAuthControllerBeginV1>>, TError = unknown>(
- providerId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oAuthControllerBeginV1>>, TError, TData>> & Pick<
+ providerId: string,
+    params?: OAuthControllerBeginV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oAuthControllerBeginV1>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof oAuthControllerBeginV1>>,
           TError,
@@ -1352,7 +1359,8 @@ export function useOAuthControllerBeginV1<TData = Awaited<ReturnType<typeof oAut
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useOAuthControllerBeginV1<TData = Awaited<ReturnType<typeof oAuthControllerBeginV1>>, TError = unknown>(
- providerId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oAuthControllerBeginV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ providerId: string,
+    params?: OAuthControllerBeginV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oAuthControllerBeginV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -1360,11 +1368,12 @@ export function useOAuthControllerBeginV1<TData = Awaited<ReturnType<typeof oAut
  */
 
 export function useOAuthControllerBeginV1<TData = Awaited<ReturnType<typeof oAuthControllerBeginV1>>, TError = unknown>(
- providerId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oAuthControllerBeginV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ providerId: string,
+    params?: OAuthControllerBeginV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oAuthControllerBeginV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getOAuthControllerBeginV1QueryOptions(providerId,options)
+  const queryOptions = getOAuthControllerBeginV1QueryOptions(providerId,params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

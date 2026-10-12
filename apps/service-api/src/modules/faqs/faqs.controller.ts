@@ -5,8 +5,9 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from '#/core/http/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 
-import { FaqCursorResponseDto, FaqDetailResponseDto, GetPublicFaqsRequestDto } from './dto';
-import { GetFaqQuery, GetFaqsQuery } from './queries';
+import { FaqCursorResponseDto, FaqDetailResponseDto, GetPublicFaqsRequestDto } from '.';
+import { GetFaqQuery } from './get-faq.query';
+import { GetFaqsQuery } from './get-faqs.query';
 
 @ApiTags('faqs')
 @Public()

@@ -62,7 +62,7 @@ export class UserJwtService implements IUserAuthService {
   }
 
   async refresh(input: RefreshInput): Promise<TokenPairResult> {
-    const refreshToken = input.refreshToken || input.cookieRefreshToken;
+    const refreshToken = input.refreshToken;
     if (!refreshToken) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }

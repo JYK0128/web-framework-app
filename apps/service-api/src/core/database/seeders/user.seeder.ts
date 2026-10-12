@@ -1,7 +1,7 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 import { ALL_SERVICE_PERMISSIONS, ServicePermission } from '@pkg/shared';
-import { encrypt, hash, hmac } from '@pkg/shared/server';
+import { encrypt, hashPassword, hashWithSecret } from '@pkg/shared/server';
 
 import { Account, Profile, User } from '#/core/database/entities/auth';
 import { Role, RoleCode } from '#/core/database/entities/auth.extensions';
@@ -54,7 +54,7 @@ export class UserSeeder extends Seeder {
     const initialPassword = SUPER_USER_INIT_PASSWORD;
     const protectedEmail = {
       encrypted: encrypt(initialEmail, env.PII_ENCRYPTION_KEY),
-      hash: hmac(initialEmail, env.PII_HASH_KEY),
+      hash: hashWithSecret(initialEmail, env.PII_HASH_KEY),
     };
 
     const user = em.create(User, {
@@ -68,7 +68,7 @@ export class UserSeeder extends Seeder {
       name: 'Super User',
     });
 
-    const hashedPassword = await hash(initialPassword);
+    const hashedPassword = await hashPassword(initialPassword);
 
     const account = em.create(Account, {
       user,

@@ -7,7 +7,7 @@ import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 import { InternalClient } from '#/core/http/internal-client';
 
-import { GetServiceTermsRequestDto, ServiceTermActionResponseDto, ServiceTermGroupItemDto, ServiceTermGroupListResponseDto, ServiceTermGroupRequestDto, ServiceTermItemDto, ServiceTermPageResponseDto, ServiceTermRequestDto } from './dto';
+import { GetServiceTermsRequestDto, ServiceTermActionResponseDto, ServiceTermGroupItemDto, ServiceTermGroupListResponseDto, ServiceTermGroupRequestDto, ServiceTermItemDto, ServiceTermPageResponseDto, ServiceTermRequestDto } from '.';
 
 @ApiTags('service-terms') @UserAuth() @Controller('service-terms')
 export class ServiceTermsController {

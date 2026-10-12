@@ -7,9 +7,11 @@ import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 
-import { CreateRoleCommand, DeleteRoleCommand, UpdateRoleCommand } from './commands';
-import { CreateRoleRequestDto, CreateRoleResponseDto, DeleteRoleResponseDto, GetRolesRequestDto, RoleListResponseDto, UpdateRoleRequestDto, UpdateRoleResponseDto } from './dto';
-import { GetRolesQuery } from './queries';
+import { CreateRoleRequestDto, CreateRoleResponseDto, DeleteRoleResponseDto, GetRolesRequestDto, RoleListResponseDto, UpdateRoleRequestDto, UpdateRoleResponseDto } from '.';
+import { CreateRoleCommand } from './create-role.command';
+import { DeleteRoleCommand } from './delete-role.command';
+import { GetRolesQuery } from './get-roles.query';
+import { UpdateRoleCommand } from './update-role.command';
 
 @ApiTags('roles')
 @UserAuth()

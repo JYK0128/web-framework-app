@@ -7,6 +7,15 @@ description: >-
 
 # CQRS and DTO integration
 
+## Module layout
+
+- Organize backend modules as `modules/<domain>/<subdomain>/<file>`. Group files by a real business responsibility, such as authentication sessions or service delivery settings; do not create a folder per action.
+- Keep each subdomain flat: commands, queries, handlers, DTOs, events, and helpers live together. Distinguish roles with file suffixes, not `commands/`, `queries/`, `handlers/`, `dto/`, or `events/` directories.
+- Keep domain-level Nest module wiring and files composing multiple subdomains at the domain root. When subdomains own Nest modules, put their focused controllers in those subdomains and register them in the owning child module. Subdomains owning providers or runtime dependencies may define their own `<subdomain>.module.ts`, registering their handlers directly and importing their dependencies. The parent imports these modules; export only providers consumed outside the child (for example a service used by another module). Do not add Nest modules for DTO-only folders. A small domain with one responsibility may remain entirely flat without artificial subdomains.
+- Prefer direct DTO imports in focused subdomain controllers and internal files. Keep a domain DTO barrel only where a controller composing multiple responsibilities benefits from it; do not create one for auth now that its controllers are split by subdomain. Import commands, queries, events, and individual handlers directly from their implementation files; do not add re-export barrels for them. Keep handler registration arrays in `<domain>.handlers.ts` when needed, exporting only the registration arrays. Do not re-export handlers or runtime providers through the DTO barrel.
+- Apply the same responsibility names to corresponding admin/service features where their responsibilities match. Keep implementation ownership and existing public API contracts unchanged when moving files.
+- Classify auth subdomains by what they manage: `account` (registration, withdrawal, ID lookup), `credential` (password changes and resets), `email-verification`, `two-factor` (setup and two-factor login), `session` (login, logout, refresh), `profile` (current user), `phone-verification` (phone identity verification), and `oauth`. Do not mix lifecycle folders such as `registration`/`recovery` with purpose folders such as `security`. Split multi-responsibility handler files so implementations live with their owning subdomain; keep genuinely shared auth helpers at the auth root.
+
 ## CQRS boundaries
 
 - Preserve `Controller → Command/Query → Handler → Response DTO`.

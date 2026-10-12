@@ -6,9 +6,21 @@ import { AdminPermission } from '@pkg/shared';
 import { SkipPasswordExpiry, UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-import { CreateTermCommand, CreateTermGroupCommand, DeleteTermCommand, DeleteTermGroupCommand, PublishTermCommand, SetAgreementsCommand, UpdateTermCommand, UpdateTermGroupCommand } from '#/modules/terms/commands';
-import { AgreementHistoryCursorResponseDto, CreateTermGroupRequestDto, CreateTermGroupResponseDto, CreateTermRequestDto, CreateTermResponseDto, DeleteTermGroupResponseDto, DeleteTermResponseDto, GetAgreementHistoryRequestDto, GetAgreementsRequestDto, GetOperatorTermsRequestDto, GetTermRevisionsRequestDto, OperatorTermDetailResponseDto, OperatorTermGroupListResponseDto, OperatorTermPageResponseDto, PublishTermResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto, TermAgreementListResponseDto, TermRevisionPageResponseDto, UpdateTermGroupRequestDto, UpdateTermGroupResponseDto, UpdateTermRequestDto, UpdateTermResponseDto } from '#/modules/terms/dto';
-import { GetAgreementHistoryQuery, GetAgreementsQuery, GetOperatorTermGroupsQuery, GetOperatorTermQuery, GetOperatorTermsQuery, GetTermRevisionsQuery } from '#/modules/terms/queries';
+import { AgreementHistoryCursorResponseDto, CreateTermGroupRequestDto, CreateTermGroupResponseDto, CreateTermRequestDto, CreateTermResponseDto, DeleteTermGroupResponseDto, DeleteTermResponseDto, GetAgreementHistoryRequestDto, GetAgreementsRequestDto, GetOperatorTermsRequestDto, GetTermRevisionsRequestDto, OperatorTermDetailResponseDto, OperatorTermGroupListResponseDto, OperatorTermPageResponseDto, PublishTermResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto, TermAgreementListResponseDto, TermRevisionPageResponseDto, UpdateTermGroupRequestDto, UpdateTermGroupResponseDto, UpdateTermRequestDto, UpdateTermResponseDto } from '#/modules/terms';
+import { GetAgreementHistoryQuery } from '#/modules/terms/agreements/get-agreement-history.query';
+import { GetAgreementsQuery } from '#/modules/terms/agreements/get-agreements.query';
+import { SetAgreementsCommand } from '#/modules/terms/agreements/set-agreements.command';
+import { CreateTermCommand } from '#/modules/terms/create-term.command';
+import { DeleteTermCommand } from '#/modules/terms/delete-term.command';
+import { GetOperatorTermQuery } from '#/modules/terms/get-operator-term.query';
+import { GetOperatorTermsQuery } from '#/modules/terms/get-operator-terms.query';
+import { CreateTermGroupCommand } from '#/modules/terms/groups/create-term-group.command';
+import { DeleteTermGroupCommand } from '#/modules/terms/groups/delete-term-group.command';
+import { GetOperatorTermGroupsQuery } from '#/modules/terms/groups/get-operator-term-groups.query';
+import { UpdateTermGroupCommand } from '#/modules/terms/groups/update-term-group.command';
+import { PublishTermCommand } from '#/modules/terms/publish-term.command';
+import { GetTermRevisionsQuery } from '#/modules/terms/revisions/get-term-revisions.query';
+import { UpdateTermCommand } from '#/modules/terms/update-term.command';
 
 @ApiTags('operator-terms')
 @UserAuth()

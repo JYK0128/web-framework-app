@@ -7,9 +7,17 @@ import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 
-import { BanOperatorCommand, CreateOperatorCommand, DeleteOperatorCommand, ResetOperatorTwoFactorCommand, RestoreOperatorCommand, UnbanOperatorCommand, UpdateOperatorRoleCommand } from './commands';
-import { BanOperatorRequestDto, CreateOperatorRequestDto, CreateOperatorResponseDto, GetOperatorByIdResponseDto, GetOperatorOverviewResponseDto, GetOperatorsRequestDto, OperatorActionResponseDto, OperatorPageResponseDto, UpdateOperatorRoleRequestDto } from './dto';
-import { GetOperatorByIdQuery, GetOperatorOverviewQuery, GetOperatorsQuery } from './queries';
+import { BanOperatorRequestDto, CreateOperatorRequestDto, CreateOperatorResponseDto, GetOperatorByIdResponseDto, GetOperatorOverviewResponseDto, GetOperatorsRequestDto, OperatorActionResponseDto, OperatorPageResponseDto, UpdateOperatorRoleRequestDto } from '.';
+import { BanOperatorCommand } from './ban-operator.command';
+import { CreateOperatorCommand } from './create-operator.command';
+import { DeleteOperatorCommand } from './delete-operator.command';
+import { GetOperatorByIdQuery } from './get-operator-by-id.query';
+import { GetOperatorOverviewQuery } from './get-operator-overview.query';
+import { GetOperatorsQuery } from './get-operators.query';
+import { ResetOperatorTwoFactorCommand } from './reset-operator-two-factor.command';
+import { RestoreOperatorCommand } from './restore-operator.command';
+import { UnbanOperatorCommand } from './unban-operator.command';
+import { UpdateOperatorRoleCommand } from './update-operator-role.command';
 
 @ApiTags('operators')
 @UserAuth()

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { GetPermissionsHandler } from './handlers';
+import { GetPermissionsHandler } from './get-permissions.handler';
 import { PermissionsController } from './permissions.controller';
 
 @Module({

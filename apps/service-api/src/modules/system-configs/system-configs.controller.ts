@@ -6,7 +6,7 @@ import { Public, UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { NoStore } from '#/core/http/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 
-import { PublicSystemConfigsResponseDto } from './dto';
+import { PublicSystemConfigsResponseDto } from '.';
 import { SystemContext } from './system.context';
 
 @ApiTags('System Configs')

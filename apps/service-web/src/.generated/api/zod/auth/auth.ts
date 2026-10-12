@@ -432,6 +432,10 @@ export const OAuthControllerBeginV1Params = zod.object({
   "providerId": zod.string()
 })
 
+export const OAuthControllerBeginV1QueryParams = zod.object({
+  "callback": zod.string().optional().describe('로그인 완료 후 이동할 경로 또는 같은 출처의 URL')
+})
+
 export const OAuthControllerBeginV1Response = zod.unknown()
 
 /**
@@ -460,4 +464,3 @@ export const OAuthControllerCallbackV1Response = zod.object({
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
-

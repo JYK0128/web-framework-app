@@ -40,7 +40,7 @@ admin은 OnboardingLayout으로 md 카드·제목·하단 액션·로그아웃 �
 
 ### F05 — P2: admin 약관 동의 이력은 전체 최신 100건에서 현재 약관만 필터링함 (정적 확인)
 
-위치: admin `src/routes/_protected/_app/profile/-components/agreement-history-modal.tsx:17` 및 `apps/admin-api/src/modules/terms/handlers/get-agreement-history.handler.ts`.
+위치: admin `src/routes/_protected/_app/profile/-components/agreement-history-modal.tsx:17` 및 `apps/admin-api/src/modules/terms/agreements/get-agreement-history.handler.ts`.
 API는 현재 사용자 전체 이력을 cursor로 제공한다. UI는 첫 100건만 조회해 groupId로 필터링하며 다음 페이지를 읽지 않는다. 다른 약관 이력이 많으면 해당 약관의 과거 이력을 누락하거나 이력이 없다고 표시한다. service는 서버 groupId 필터와 cursor 더 보기를 사용한다.
 수정: admin도 cursor를 끝까지 조회할 수 있게 하고, 필요한 경우 API에 groupId 필터를 추가한다. service 구현을 그대로 복사하면 현재 admin 계약과 맞지 않는다.
 

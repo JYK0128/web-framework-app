@@ -1,6 +1,6 @@
 import { Injectable, type NestMiddleware } from '@nestjs/common';
 import { maskUrl } from '@pkg/shared';
-import { hmac } from '@pkg/shared/server';
+import { hashWithSecret } from '@pkg/shared/server';
 import type { NextFunction, Request, Response } from 'express';
 
 import { normalizeLogError } from '#/core/log-telemetry/log-normalizer';
@@ -95,7 +95,7 @@ export class RequestLoggingMiddleware implements NestMiddleware {
       aborted,
       ip: (request.headers['x-forwarded-for'] as string) || request.socket.remoteAddress || null,
       userAgent: (request.headers['user-agent'] as string) || null,
-      emailHash: user?.email ? hmac(user.email, env.PII_HASH_KEY) : null,
+      emailHash: user?.email ? hashWithSecret(user.email, env.PII_HASH_KEY) : null,
       request: hasRequestBody ? requestBody : null,
       response: responseBody ?? null,
       errorInfo,
