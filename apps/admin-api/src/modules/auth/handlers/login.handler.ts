@@ -7,14 +7,13 @@ import { hmac, verify } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
 import { type IUserAuthService, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
-import { TwoFactor } from '#/core/database/entities/auth.extensions/two-factor.entity';
-import { Account } from '#/core/database/entities/auth/account.entity';
-import { User } from '#/core/database/entities/auth/user.entity';
+import { Account, User } from '#/core/database/entities/auth';
+import { TwoFactor } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { KvStore } from '#/core/kv-store/kv-store.service';
 import { env } from '#/env';
-import { LoginCommand } from '#/modules/auth/commands/login.command';
-import { LoginResponseDto } from '#/modules/auth/dto/login.response.dto';
+import { LoginCommand } from '#/modules/auth/commands';
+import { LoginResponseDto } from '#/modules/auth/dto';
 import { TwoFactorLoginKvStoreKey } from '#/modules/auth/two-factor-login-kv-store';
 
 @Injectable()

@@ -3,9 +3,8 @@ import { CommandHandler, type ICommandHandler, type IQueryHandler, QueryHandler 
 import { ApplicationError } from '@pkg/shared/common';
 
 import { type IUserAuthService, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
-import { Permission } from '#/core/database/entities/auth.extensions/permission.entity';
-import { Role } from '#/core/database/entities/auth.extensions/role.entity';
-import { User } from '#/core/database/entities/auth/user.entity';
+import { User } from '#/core/database/entities/auth';
+import { Permission, Role } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { CreateCustomerMembershipCommand, DeleteCustomerMembershipCommand, GetCustomerMembershipPermissionsQuery, GetCustomerMembershipsQuery, UpdateCustomerMembershipCommand } from '#/modules/internal/commands/customer-membership.commands';
 import { CustomerMembershipItemDto, CustomerMembershipListResponseDto, CustomerMembershipPermissionListResponseDto, DeleteCustomerMembershipResponseDto } from '#/modules/internal/dto/customer-membership.dto';

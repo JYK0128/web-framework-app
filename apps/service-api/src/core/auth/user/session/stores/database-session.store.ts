@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { type Cookie, type SessionData, Store } from 'express-session';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { Session } from '#/core/database/entities/auth/session.entity';
+import { Session } from '#/core/database/entities/auth';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { RequestContext } from '#/core/http/contexts/request.context';
 import type { UserPrincipal } from '#/core/http/types/principal.type';

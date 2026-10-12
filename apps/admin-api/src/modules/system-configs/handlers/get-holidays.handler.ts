@@ -1,8 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { ApplicationError, DEFAULT_TIMEZONE, TimeUtil } from '@pkg/shared/common';
+import { ApplicationError, DEFAULT_TIMEZONE } from '@pkg/shared/common';
 
-import { SECURITY_CONFIG } from '#/app.config';
+import { httpClient } from '#/core/http/http-client';
 import type { OperatingHolidayItemDto } from '#/modules/system-configs/dto/operating-holiday-item.dto';
 import type { OperatingHolidayListResponseDto } from '#/modules/system-configs/dto/operating-holiday-list.response.dto';
 import { GetHolidaysQuery } from '#/modules/system-configs/queries/get-holidays.query';
@@ -31,11 +31,9 @@ function parseEvent(block: string, year: string): OperatingHolidayItemDto | null
 export class GetHolidaysHandler implements IQueryHandler<GetHolidaysQuery, OperatingHolidayListResponseDto> {
   async execute(query: GetHolidaysQuery): Promise<OperatingHolidayListResponseDto> {
     const year = query.input.query.year ?? getCurrentBusinessYear(new Date());
-    const response = await fetch(HOLIDAY_CALENDAR_URL, {
-      signal: AbortSignal.timeout(TimeUtil.ms.second(SECURITY_CONFIG.integrations.holidayCalendarRequestTimeoutSeconds)),
-    });
-    if (!response.ok) throw ApplicationError.from(new Error(`Holiday calendar responded with HTTP ${response.status}`), { code: 'INTERNAL_SERVICE_CALL_FAILED', status: HttpStatus.BAD_GATEWAY });
-    const text = await response.text();
+    const response = await httpClient.get<string>(HOLIDAY_CALENDAR_URL, { responseType: 'text' });
+    if (response.status < 200 || response.status >= 300) throw ApplicationError.from(new Error(`Holiday calendar responded with HTTP ${response.status}`), { code: 'INTERNAL_SERVICE_CALL_FAILED', status: HttpStatus.BAD_GATEWAY });
+    const text = response.data;
     const holidays = text.split('BEGIN:VEVENT').map((block) => parseEvent(block, String(year))).filter((holiday): holiday is OperatingHolidayItemDto => Boolean(holiday));
     const unique = Array.from(new Map(holidays.map((holiday) => [holiday.date, holiday])).values()).sort((a, b) => a.date.localeCompare(b.date));
     return { year, count: unique.length, items: unique };

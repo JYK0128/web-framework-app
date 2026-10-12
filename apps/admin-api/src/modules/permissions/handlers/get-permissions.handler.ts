@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { Permission } from '#/core/database/entities/auth.extensions/permission.entity';
+import { Permission } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { PermissionItemDto, PermissionListResponseDto } from '#/modules/permissions/dto';
 import { GetPermissionsQuery } from '#/modules/permissions/queries';

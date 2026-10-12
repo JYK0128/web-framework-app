@@ -1,10 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { ApplicationError, TimeUtil } from '@pkg/shared/common';
+import { ApplicationError } from '@pkg/shared/common';
 import type { AlimtalkMessageDto, MessengerConfigDto } from '@pkg/shared/server';
-import axios from 'axios';
 import { z } from 'zod';
 
-import { SECURITY_CONFIG } from '#/app.config';
+import { getNotification, postNotificationJson } from '#/core/notification/notification.http';
 import type { MessengerMessage } from '#/core/notification/notification.interface';
 import type { ProviderHttpResponse } from '#/core/notification/provider-response';
 
@@ -52,15 +51,12 @@ function parseMessengerResponse(provider: MessengerProvider, response: ProviderH
 export class MessengerAdapter {
   private async postProviderJson(url: string, headers: Record<string, string>, body: Record<string, unknown>): Promise<ProviderHttpResponse> {
     try {
-      const response = await this.client.post<unknown>(url, body, { headers, timeout: TimeUtil.ms.second(SECURITY_CONFIG.integrations.deliveryProviderRequestTimeoutSeconds) });
-      return { ok: response.status >= 200 && response.status < 300, status: response.status, body: response.data };
+      return await postNotificationJson(url, headers, body);
     }
     catch (error) {
       throw ApplicationError.from(error, { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
   }
-
-  private readonly client = axios.create({ validateStatus: () => true });
 
   constructor(private readonly alimtalk: AlimtalkAdapter) {}
 
@@ -91,7 +87,7 @@ export class MessengerAdapter {
       case 'WECHAT': {
         if (!providerConfig.wechat?.appId || !providerConfig.wechat.appSecret) throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', message: `WeChat: 설정이 완전하지 않습니다.`, status: HttpStatus.BAD_GATEWAY });
         try {
-          const tokenResponse = await this.client.get<{ access_token?: string, errmsg?: string }>(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${encodeURIComponent(providerConfig.wechat.appId)}&secret=${encodeURIComponent(providerConfig.wechat.appSecret)}`, { timeout: TimeUtil.ms.second(SECURITY_CONFIG.integrations.deliveryProviderRequestTimeoutSeconds) });
+          const tokenResponse = await getNotification<{ access_token?: string, errmsg?: string }>(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${encodeURIComponent(providerConfig.wechat.appId)}&secret=${encodeURIComponent(providerConfig.wechat.appSecret)}`);
           const token = tokenResponse.data;
           const errorMessage = token.errmsg ?? `access token 발급에 실패했습니다. HTTP ${tokenResponse.status}`;
           if (tokenResponse.status < 200 || tokenResponse.status >= 300 || !token.access_token) throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });

@@ -1,8 +1,7 @@
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
-import axios from 'axios';
 
-import { WEBHOOK_HTTP_TIMEOUT_MS } from '#/core/webhook/webhook.config';
+import { postWebhook } from '#/core/webhook/webhook.http';
 import { type IWebhookAdapter, WEBHOOK_MODULE_OPTIONS, type WebhookMessage, type WebhookModuleOptions, type WebhookNotificationLevel } from '#/core/webhook/webhook.interface';
 
 const LEVEL_THEME_COLORS: Record<WebhookNotificationLevel, string> = {
@@ -13,8 +12,6 @@ const LEVEL_THEME_COLORS: Record<WebhookNotificationLevel, string> = {
 
 @Injectable()
 export class TeamsAdapter implements IWebhookAdapter {
-  private readonly client = axios.create({ validateStatus: () => true });
-
   readonly providerName = 'teams';
   private readonly logger = new Logger(TeamsAdapter.name);
   private readonly defaultWebhookUrl?: string;
@@ -82,7 +79,7 @@ export class TeamsAdapter implements IWebhookAdapter {
     this.logger.log('[Teams Webhook] 웹훅 전송 요청');
     let res: { status: number, data: unknown };
     try {
-      res = await this.client.post(webhookUrl, payload, { timeout: WEBHOOK_HTTP_TIMEOUT_MS });
+      res = await postWebhook(webhookUrl, payload);
     }
     catch (error) {
       this.logger.error('Microsoft Teams webhook request failed.', error instanceof Error ? error.stack : String(error));

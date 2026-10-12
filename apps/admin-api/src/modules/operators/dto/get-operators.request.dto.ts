@@ -4,7 +4,7 @@ import { parseSearchTokens } from '@pkg/shared/common';
 import { hmac } from '@pkg/shared/server';
 import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
 
-import { User } from '#/core/database/entities/auth/user.entity';
+import { User } from '#/core/database/entities/auth';
 import { ApiEnumOptional } from '#/core/http/decorators/api-enum.decorator';
 import { ToBoolean } from '#/core/http/decorators/to-boolean.decorator';
 import { PageRequestDto, type PageRequestOptions } from '#/core/http/dto/request/page.request.dto';

@@ -2,8 +2,7 @@ import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-import { Account } from '#/core/database/entities/auth/account.entity';
-import { User } from '#/core/database/entities/auth/user.entity';
+import { Account, User } from '#/core/database/entities/auth';
 import { EntityDto } from '#/core/http/dto/base/entity.dto';
 
 @ApiSchema({ name: 'LoginRequest' })

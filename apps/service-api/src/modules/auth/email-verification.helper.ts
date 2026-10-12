@@ -5,9 +5,8 @@ import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { decrypt, isEncrypted } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { Profile } from '#/core/database/entities/auth/profile.entity';
-import { User } from '#/core/database/entities/auth/user.entity';
-import { SystemConfig } from '#/core/database/entities/system-configs/system-config.entity';
+import { Profile, User } from '#/core/database/entities/auth';
+import { SystemConfig } from '#/core/database/entities/system-configs';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { KvStore } from '#/core/kv-store/kv-store.service';
 import { MessageService } from '#/core/notification';

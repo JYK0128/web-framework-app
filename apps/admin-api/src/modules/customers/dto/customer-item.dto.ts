@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 
-import { User } from '#/core/database/entities/auth/user.entity';
+import { User } from '#/core/database/entities/auth';
 import { EntityDto } from '#/core/http/dto/base/entity.dto';
 
 @ApiSchema({ name: 'AdminCustomerItem' })

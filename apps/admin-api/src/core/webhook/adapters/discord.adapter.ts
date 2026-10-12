@@ -1,8 +1,7 @@
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
-import axios from 'axios';
 
-import { WEBHOOK_HTTP_TIMEOUT_MS } from '#/core/webhook/webhook.config';
+import { postWebhook } from '#/core/webhook/webhook.http';
 import { type IWebhookAdapter, WEBHOOK_MODULE_OPTIONS, type WebhookMessage, type WebhookModuleOptions, type WebhookNotificationLevel } from '#/core/webhook/webhook.interface';
 
 const LEVEL_COLORS: Record<WebhookNotificationLevel, number> = {
@@ -13,8 +12,6 @@ const LEVEL_COLORS: Record<WebhookNotificationLevel, number> = {
 
 @Injectable()
 export class DiscordAdapter implements IWebhookAdapter {
-  private readonly client = axios.create({ validateStatus: () => true });
-
   readonly providerName = 'discord';
   private readonly logger = new Logger(DiscordAdapter.name);
   private readonly defaultWebhookUrl?: string;
@@ -67,7 +64,7 @@ export class DiscordAdapter implements IWebhookAdapter {
     this.logger.log('[Discord Webhook] 웹훅 전송 요청');
     let res: { status: number, data: unknown };
     try {
-      res = await this.client.post(webhookUrl, { embeds: [embed] }, { timeout: WEBHOOK_HTTP_TIMEOUT_MS });
+      res = await postWebhook(webhookUrl, { embeds: [embed] });
     }
     catch (error) {
       this.logger.error('Discord webhook request failed.', error instanceof Error ? error.stack : String(error));

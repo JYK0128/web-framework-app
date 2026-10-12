@@ -1,10 +1,9 @@
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
-import { ApplicationError, TimeUtil } from '@pkg/shared/common';
-import axios from 'axios';
+import { ApplicationError } from '@pkg/shared/common';
 
-import { SECURITY_CONFIG } from '#/app.config';
 import { MACHINE_AUTH_ISSUER, MACHINE_CONNECTION, type MachineAuthIssuer, type MachineConnection } from '#/core/auth/machine/machine-auth.interface';
 import { RequestContext } from '#/core/http/contexts/request.context';
+import { httpClient } from '#/core/http/http-client';
 
 interface InternalApiResponse<T> {
   data: T
@@ -12,8 +11,6 @@ interface InternalApiResponse<T> {
 
 @Injectable()
 export class InternalClient {
-  private readonly client = axios.create({ validateStatus: () => true });
-
   private readonly logger = new Logger(InternalClient.name);
 
   constructor(@Inject(MACHINE_AUTH_ISSUER) private readonly authIssuer: MachineAuthIssuer, private readonly requestContext: RequestContext, @Inject(MACHINE_CONNECTION) private readonly connection: MachineConnection) {}
@@ -22,10 +19,9 @@ export class InternalClient {
     const credential = await this.authIssuer.issue({ targetService: this.connection.targetService });
     const url = this.targetUrl(path);
     try {
-      const response = await this.client.request<InternalApiResponse<T>>({
+      const response = await httpClient.request<InternalApiResponse<T>>({
         url,
         method: options.method ?? 'GET',
-        timeout: TimeUtil.ms.second(SECURITY_CONFIG.integrations.internalServiceRequestTimeoutSeconds),
         headers: { ...(credential.type === 'bearer' ? { Authorization: `Bearer ${credential.value}` } : { 'x-api-key': credential.value }), 'Content-Type': 'application/json', ...this.forwardedHeaders() },
         ...(options.body === undefined ? {} : { data: options.body }),
       });
@@ -53,10 +49,9 @@ export class InternalClient {
     const credential = await this.authIssuer.issue({ targetService: this.connection.targetService });
     const url = this.targetUrl(path);
     try {
-      const response = await this.client.request({
+      const response = await httpClient.request({
         url,
         method: 'PUT',
-        timeout: TimeUtil.ms.second(SECURITY_CONFIG.integrations.internalServiceRequestTimeoutSeconds),
         headers: {
           ...(credential.type === 'bearer' ? { Authorization: `Bearer ${credential.value}` } : { 'x-api-key': credential.value }),
           'Content-Type': contentType,
@@ -80,8 +75,7 @@ export class InternalClient {
     const credential = await this.authIssuer.issue({ targetService: this.connection.targetService });
     const url = this.targetUrl(path);
     try {
-      const response = await this.client.get<ArrayBuffer>(url, {
-        timeout: TimeUtil.ms.second(SECURITY_CONFIG.integrations.internalServiceRequestTimeoutSeconds),
+      const response = await httpClient.get<ArrayBuffer>(url, {
         responseType: 'arraybuffer',
         headers: {
           ...(credential.type === 'bearer' ? { Authorization: `Bearer ${credential.value}` } : { 'x-api-key': credential.value }),

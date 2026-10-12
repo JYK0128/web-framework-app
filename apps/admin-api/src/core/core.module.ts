@@ -33,7 +33,7 @@ import { RealtimeModule } from '#/core/realtime/realtime.module';
 import { WebhookModule } from '#/core/webhook/webhook.module';
 import { env } from '#/env';
 
-const telemetryModule = LogTelemetryModule.forRoot({ appName: 'admin-api', loki: { url: env.LOKI_URL, timeoutMs: 5000 } });
+const telemetryModule = LogTelemetryModule.forRoot({ appName: 'admin-api', loki: { url: env.LOKI_URL } });
 
 const RESOURCE_MODULES = [
   UserAuthModule.forRoot({ driver: 'jwt', refreshTokenStore: 'redis' }),

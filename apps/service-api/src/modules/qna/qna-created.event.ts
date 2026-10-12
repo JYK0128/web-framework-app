@@ -1,4 +1,4 @@
-import { QnaPriority } from '#/core/database/entities/qna/qna.entity';
+import { QnaPriority } from '#/core/database/entities/qna';
 
 export class QnaCreatedEvent {
   constructor(

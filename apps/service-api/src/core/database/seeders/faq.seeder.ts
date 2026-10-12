@@ -1,7 +1,7 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 
-import { Faq, FaqCategory } from '#/core/database/entities/faqs/faq.entity';
+import { Faq, FaqCategory } from '#/core/database/entities/faqs';
 
 const FAQ_SEEDS = [
   { category: FaqCategory.ACCOUNT, question: '비밀번호를 잊어버렸어요.', answer: '로그인 화면의 비밀번호 찾기에서 계정 이메일을 입력해 주세요.', sortOrder: 1, isPublished: true },

@@ -12,24 +12,8 @@ import { Public, SkipPasswordExpiry, SkipPhoneVerification, SkipTwoFactorSetup, 
 import { Cookie } from '#/core/http/decorators/cookie.decorator';
 import { NoStore } from '#/core/http/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, FindIdCommand, GenerateTwoFactorCommand, LoginCommand, LogoutCommand, RefreshCommand, RegisterCommand, RequestEmailVerificationCommand, RequestPasswordResetCommand, ResetPasswordCommand, TwoFactorLoginCommand, UnregisterCommand, VerifyEmailCommand } from '#/modules/auth/commands';
-import { VerifyPhoneNumberCommand } from '#/modules/auth/commands/verify-phone-number.command';
-import { ChangePasswordRequestDto, ChangePasswordResponseDto, DisableTwoFactorRequestDto, DisableTwoFactorResponseDto, EnableTwoFactorRequestDto, EnableTwoFactorResponseDto, GenerateTwoFactorRequestDto, GenerateTwoFactorResponseDto, LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, RefreshRequestDto, RefreshResponseDto, TwoFactorLoginRequestDto, UnregisterRequestDto, UnregisterResponseDto } from '#/modules/auth/dto';
-import { FindIdRequestDto } from '#/modules/auth/dto/find-id.request.dto';
-import { FindIdResponseDto } from '#/modules/auth/dto/find-id.response.dto';
-import { RegisterRequestDto } from '#/modules/auth/dto/register.request.dto';
-import { RegisterResponseDto } from '#/modules/auth/dto/register.response.dto';
-import { RequestEmailVerificationRequestDto } from '#/modules/auth/dto/request-email-verification.request.dto';
-import { RequestEmailVerificationResponseDto } from '#/modules/auth/dto/request-email-verification.response.dto';
-import { RequestPasswordResetRequestDto } from '#/modules/auth/dto/request-password-reset.request.dto';
-import { RequestPasswordResetResponseDto } from '#/modules/auth/dto/request-password-reset.response.dto';
-import { ResetPasswordRequestDto } from '#/modules/auth/dto/reset-password.request.dto';
-import { ResetPasswordResponseDto } from '#/modules/auth/dto/reset-password.response.dto';
-import { TwoFactorLoginResponseDto } from '#/modules/auth/dto/two-factor-login.response.dto';
-import { VerifyEmailRequestDto } from '#/modules/auth/dto/verify-email.request.dto';
-import { VerifyEmailResponseDto } from '#/modules/auth/dto/verify-email.response.dto';
-import { VerifyPhoneNumberRequestDto } from '#/modules/auth/dto/verify-phone-number.request.dto';
-import { VerifyPhoneNumberResponseDto } from '#/modules/auth/dto/verify-phone-number.response.dto';
+import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, FindIdCommand, GenerateTwoFactorCommand, LoginCommand, LogoutCommand, RefreshCommand, RegisterCommand, RequestEmailVerificationCommand, RequestPasswordResetCommand, ResetPasswordCommand, TwoFactorLoginCommand, UnregisterCommand, VerifyEmailCommand, VerifyPhoneNumberCommand } from '#/modules/auth/commands';
+import { ChangePasswordRequestDto, ChangePasswordResponseDto, DisableTwoFactorRequestDto, DisableTwoFactorResponseDto, EnableTwoFactorRequestDto, EnableTwoFactorResponseDto, FindIdRequestDto, FindIdResponseDto, GenerateTwoFactorRequestDto, GenerateTwoFactorResponseDto, LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, RefreshRequestDto, RefreshResponseDto, RegisterRequestDto, RegisterResponseDto, RequestEmailVerificationRequestDto, RequestEmailVerificationResponseDto, RequestPasswordResetRequestDto, RequestPasswordResetResponseDto, ResetPasswordRequestDto, ResetPasswordResponseDto, TwoFactorLoginRequestDto, TwoFactorLoginResponseDto, UnregisterRequestDto, UnregisterResponseDto, VerifyEmailRequestDto, VerifyEmailResponseDto, VerifyPhoneNumberRequestDto, VerifyPhoneNumberResponseDto } from '#/modules/auth/dto';
 import { MeQuery } from '#/modules/auth/queries';
 
 @ApiTags('Auth')

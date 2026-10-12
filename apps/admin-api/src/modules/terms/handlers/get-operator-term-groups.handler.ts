@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { TermGroup } from '#/core/database/entities/terms/term-group.entity';
+import { TermGroup } from '#/core/database/entities/terms';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { OperatorTermGroupItemDto, OperatorTermGroupListResponseDto } from '#/modules/terms/dto';
 import { GetOperatorTermGroupsQuery } from '#/modules/terms/queries';

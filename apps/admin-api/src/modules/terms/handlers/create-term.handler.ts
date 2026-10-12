@@ -2,8 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Term } from '#/core/database/entities/terms/term.entity';
-import { TermGroup } from '#/core/database/entities/terms/term-group.entity';
+import { Term, TermGroup } from '#/core/database/entities/terms';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { CreateTermCommand } from '#/modules/terms/commands';
 import { CreateTermResponseDto, OperatorTermItemDto } from '#/modules/terms/dto';

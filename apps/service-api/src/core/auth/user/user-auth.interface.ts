@@ -1,6 +1,6 @@
 import type { Request } from 'express';
 
-import type { User } from '#/core/database/entities/auth/user.entity';
+import type { User } from '#/core/database/entities/auth';
 import type { UserPrincipal } from '#/core/http/types/principal.type';
 
 export interface CreateTokenPairOptions { rememberMe?: boolean, familyId?: string }

@@ -3,10 +3,8 @@ import { Seeder } from '@mikro-orm/seeder';
 import { AdminPermission, ALL_ADMIN_PERMISSIONS } from '@pkg/shared';
 import { encrypt, hash, hmac } from '@pkg/shared/server';
 
-import { Role, RoleCode } from '#/core/database/entities/auth.extensions/role.entity';
-import { Account } from '#/core/database/entities/auth/account.entity';
-import { Profile } from '#/core/database/entities/auth/profile.entity';
-import { User } from '#/core/database/entities/auth/user.entity';
+import { Account, Profile, User } from '#/core/database/entities/auth';
+import { Role, RoleCode } from '#/core/database/entities/auth.extensions';
 import { env } from '#/env';
 
 const ADMIN_INIT_EMAIL = 'admin@test.com';

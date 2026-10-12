@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
 import { AccountRecoveryService } from '#/modules/auth/account-recovery.service';
-import { FindIdCommand } from '#/modules/auth/commands/find-id.command';
-import { FindIdResponseDto } from '#/modules/auth/dto/find-id.response.dto';
+import { FindIdCommand } from '#/modules/auth/commands';
+import { FindIdResponseDto } from '#/modules/auth/dto';
 
 @Injectable()
 @CommandHandler(FindIdCommand)

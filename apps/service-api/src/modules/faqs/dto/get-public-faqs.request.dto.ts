@@ -1,7 +1,7 @@
 import { ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { IsEnum, IsIn, IsOptional } from 'class-validator';
 
-import { Faq, FaqCategory } from '#/core/database/entities/faqs/faq.entity';
+import { Faq, FaqCategory } from '#/core/database/entities/faqs';
 import { ApiEnumOptional } from '#/core/http/decorators/api-enum.decorator';
 import { CursorRequestDto } from '#/core/http/dto/request/cursor.request.dto';
 import { SortDirection } from '#/core/http/dto/request/sortable.request.dto';

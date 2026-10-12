@@ -2,7 +2,7 @@ import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { ApplicationError, z } from '@pkg/shared/common';
 import { decrypt, encrypt } from '@pkg/shared/server';
 
-import { AdminSystemConfigCode, SystemConfig } from '#/core/database/entities/system-configs/system-config.entity';
+import { AdminSystemConfigCode, SystemConfig } from '#/core/database/entities/system-configs';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { NotificationService } from '#/core/notification/notification.service';
 import { env } from '#/env';

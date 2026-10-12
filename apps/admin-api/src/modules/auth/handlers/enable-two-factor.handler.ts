@@ -5,12 +5,12 @@ import { decrypt } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
 import { verifyTotp } from '#/core/auth/user/policy/totp.policy';
-import { TwoFactor } from '#/core/database/entities/auth.extensions/two-factor.entity';
+import { TwoFactor } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { env } from '#/env';
 import { EnableTwoFactorCommand } from '#/modules/auth/commands';
-import { EnableTwoFactorResponseDto } from '#/modules/auth/dto/enable-two-factor.response.dto';
+import { EnableTwoFactorResponseDto } from '#/modules/auth/dto';
 import { assertVerificationUnlocked, identifyUser } from '#/modules/auth/handlers/profile-security.helpers';
 
 @Injectable()

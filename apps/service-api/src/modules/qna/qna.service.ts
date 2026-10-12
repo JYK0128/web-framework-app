@@ -2,8 +2,8 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { User } from '#/core/database/entities/auth/user.entity';
-import { Qna, QnaPriority, QnaStatus } from '#/core/database/entities/qna/qna.entity';
+import { User } from '#/core/database/entities/auth';
+import { Qna, QnaPriority, QnaStatus } from '#/core/database/entities/qna';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { PrincipalContext } from '#/core/http/contexts/principal.context';
 

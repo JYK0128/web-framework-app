@@ -3,7 +3,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler, type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Notice, PublicationStatus } from '#/core/database/entities/notices/notice.entity';
+import { Notice, PublicationStatus } from '#/core/database/entities/notices';
 import { AppEntityManager } from '#/core/database/entity-manager';
 
 import { NoticeActionResponseDto, NoticeCursorResponseDto, NoticeItemDto, NoticePageResponseDto } from './notices.dto';

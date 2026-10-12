@@ -3,11 +3,11 @@ import { createHash } from 'node:crypto';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import type { PushConfigDto } from '@pkg/shared/server';
-import axios from 'axios';
 import { importPKCS8, SignJWT } from 'jose';
 import { z } from 'zod';
 
 import { SECURITY_CONFIG } from '#/app.config';
+import { postNotificationForm, postNotificationJson } from '#/core/notification/notification.http';
 import type { PushMessage } from '#/core/notification/notification.interface';
 import type { ProviderHttpResponse } from '#/core/notification/provider-response';
 
@@ -50,15 +50,12 @@ function parseFcmResponse(response: ProviderHttpResponse): string | undefined {
 export class PushAdapter {
   private async postProviderJson(url: string, headers: Record<string, string>, body: Record<string, unknown>): Promise<ProviderHttpResponse> {
     try {
-      const response = await this.client.post<unknown>(url, body, { headers, timeout: TimeUtil.ms.second(SECURITY_CONFIG.integrations.deliveryProviderRequestTimeoutSeconds) });
-      return { ok: response.status >= 200 && response.status < 300, status: response.status, body: response.data };
+      return await postNotificationJson(url, headers, body);
     }
     catch (error) {
       throw ApplicationError.from(error, { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
   }
-
-  private readonly client = axios.create({ validateStatus: () => true });
 
   private cachedToken?: { fingerprint: string, token: string, expiresAt: number };
   private pendingToken?: { fingerprint: string, promise: Promise<string> };
@@ -118,10 +115,7 @@ export class PushAdapter {
         .setIssuedAt()
         .setExpirationTime('1h')
         .sign(key);
-      const tokenResponse = await this.client.post<unknown>('https://oauth2.googleapis.com/token', new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion }), {
-        headers: { 'content-type': 'application/x-www-form-urlencoded' },
-        timeout: TimeUtil.ms.second(SECURITY_CONFIG.integrations.deliveryProviderRequestTimeoutSeconds),
-      });
+      const tokenResponse = await postNotificationForm<unknown>('https://oauth2.googleapis.com/token', { 'content-type': 'application/x-www-form-urlencoded' }, new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion }));
       const token = z.object({ access_token: z.string().min(1), expires_in: z.number().positive() }).parse(tokenResponse.data);
       if (tokenResponse.status < 200 || tokenResponse.status >= 300) {
         throw ApplicationError.from(new Error(`FCM token endpoint responded with HTTP ${tokenResponse.status}`), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });

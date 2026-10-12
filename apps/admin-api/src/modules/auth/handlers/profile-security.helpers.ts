@@ -1,8 +1,8 @@
 import { HttpStatus } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { TwoFactor } from '#/core/database/entities/auth.extensions/two-factor.entity';
-import { User } from '#/core/database/entities/auth/user.entity';
+import { User } from '#/core/database/entities/auth';
+import { TwoFactor } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { PrincipalContext } from '#/core/http/contexts/principal.context';
 

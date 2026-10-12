@@ -3,9 +3,8 @@ import { EventBus } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { isWithinOperatingHours } from '@pkg/shared/policy';
 
-import { User } from '#/core/database/entities/auth/user.entity';
-import { SupportMessage, SupportMessageSenderType } from '#/core/database/entities/support/support-message.entity';
-import { SupportRoom, SupportRoomStatus } from '#/core/database/entities/support/support-room.entity';
+import { User } from '#/core/database/entities/auth';
+import { SupportMessage, SupportMessageSenderType, SupportRoom, SupportRoomStatus } from '#/core/database/entities/support';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { KvStore } from '#/core/kv-store/kv-store.service';

@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
 import { AccountRecoveryService } from '#/modules/auth/account-recovery.service';
-import { RequestEmailVerificationCommand } from '#/modules/auth/commands/request-email-verification.command';
-import { RequestEmailVerificationResponseDto } from '#/modules/auth/dto/request-email-verification.response.dto';
+import { RequestEmailVerificationCommand } from '#/modules/auth/commands';
+import { RequestEmailVerificationResponseDto } from '#/modules/auth/dto';
 
 @Injectable()
 @CommandHandler(RequestEmailVerificationCommand)

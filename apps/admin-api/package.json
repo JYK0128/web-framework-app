@@ -13,7 +13,7 @@
     "start": "node --env-file-if-exists=.env dist/main.js",
     "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.node.json --noEmit",
     "lint": "eslint \"src/**/*.ts\" \"*.config.{js,mjs,cjs,ts,mts,cts}\" --fix",
-    "codegen:entities": "mikro-orm discovery:export --path './src/core/database/entities/**/*.entity.ts' --out ./src/entities.generated.ts",
+    "codegen:entities": "MIKRO_ORM_CLI_PREFER_TS=true mikro-orm discovery:export --path './src/core/database/entities/**/*.entity.ts' --out ./src/entities.generated.ts",
     "codegen:migration": "mikro-orm migration:create",
     "db:migrate": "mikro-orm migration:up",
     "db:seed": "mikro-orm seeder:run",
@@ -21,6 +21,8 @@
     "test:alimtalk": "node tests/alimtalk.integration.mjs"
   },
   "mikro-orm": {
+    "tsConfigPath": "./tsconfig.app.json",
+    "tsLoader": "tsx",
     "configPaths": [
       "./dist/core/database/mikro-orm.config.js"
     ],
@@ -79,6 +81,7 @@
     "concurrently": "10.0.5",
     "eslint": "9.39.5",
     "nodemon": "3.1.14",
+    "tsx": "4.21.0",
     "typescript": "5.9.3"
   }
 }

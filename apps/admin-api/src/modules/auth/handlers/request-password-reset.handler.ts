@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
 import { AccountRecoveryService } from '#/modules/auth/account-recovery.service';
-import { RequestPasswordResetCommand } from '#/modules/auth/commands/request-password-reset.command';
-import { RequestPasswordResetResponseDto } from '#/modules/auth/dto/request-password-reset.response.dto';
+import { RequestPasswordResetCommand } from '#/modules/auth/commands';
+import { RequestPasswordResetResponseDto } from '#/modules/auth/dto';
 
 @Injectable()
 @CommandHandler(RequestPasswordResetCommand)

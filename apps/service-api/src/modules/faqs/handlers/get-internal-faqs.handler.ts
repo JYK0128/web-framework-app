@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { Faq } from '#/core/database/entities/faqs/faq.entity';
+import { Faq } from '#/core/database/entities/faqs';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { FaqItemDto, FaqPageResponseDto } from '#/modules/faqs/dto';
 import { GetInternalFaqsQuery } from '#/modules/faqs/queries/get-internal-faqs.query';

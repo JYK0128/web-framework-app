@@ -1,11 +1,11 @@
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { ApplicationError, jsonSafeParse, uuid, when } from '@pkg/shared/common';
-import axios from 'axios';
 import { Observable } from 'rxjs';
 
 import { normalizeLogError } from '#/core/log-telemetry/log-normalizer';
 import { type ILogTelemetryAdapter, LOG_TELEMETRY_MODULE_OPTIONS, type LogEntry, type LogStatsResult, type LogTelemetryModuleOptions, type QueryLogOptions, type QueryLogResult } from '#/core/log-telemetry/log-telemetry.interface';
 import { LOG_DEFAULT_LOOKBACK_MS, LOG_QUERY_DEFAULT_LIMIT, LOG_QUERY_MAX_LIMIT, LOG_QUERY_RANGE_LIMIT, LOG_WATCH_LOOKBACK_MS, LOG_WATCH_MAX_SEEN_IDS, LOG_WATCH_POLL_INTERVAL_MS, LOG_WATCH_TRIM_SEEN_IDS } from '#/core/log-telemetry/loki.config';
+import { queryLoki } from '#/core/log-telemetry/loki.http';
 
 export interface LokiStreamEntry {
   stream: Record<string, string>
@@ -170,13 +170,10 @@ function resolveCursorBoundary(cursor?: string): { queryEnd?: string, skipLogId:
 
 @Injectable()
 export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
-  private readonly client = axios.create({ validateStatus: () => true });
-
   readonly providerName = 'loki';
   private readonly logger = new Logger(LokiLogTelemetryAdapter.name);
   private readonly lokiBaseUrl: string;
   private readonly appName: string;
-  private readonly timeoutMs: number;
 
   constructor(
     @Inject(LOG_TELEMETRY_MODULE_OPTIONS)
@@ -184,7 +181,6 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
   ) {
     this.lokiBaseUrl = options.loki.url.replace(/\/$/, '');
     this.appName = options.appName;
-    this.timeoutMs = options.loki.timeoutMs;
   }
 
   private get httpTag(): string {
@@ -207,7 +203,7 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
       url.searchParams.set('end', toNanosecondsString(end));
     }
 
-    const response = await this.client.get<LokiQueryResponse>(url.toString(), { headers: { Accept: 'application/json' }, timeout: this.timeoutMs });
+    const response = await queryLoki<LokiQueryResponse>(url.toString());
 
     if (response.status < 200 || response.status >= 300) {
       throw ApplicationError.from(new Error(`Loki query responded with HTTP ${response.status}`), { code: 'INTERNAL_SERVICE_CALL_FAILED', status: HttpStatus.BAD_GATEWAY });
@@ -235,7 +231,7 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
     url.searchParams.set('query', metricQuery);
     url.searchParams.set('time', String(Math.floor(endMs / 1000)));
 
-    const response = await this.client.get<LokiQueryResponse>(url.toString(), { headers: { Accept: 'application/json' }, timeout: this.timeoutMs });
+    const response = await queryLoki<LokiQueryResponse>(url.toString());
 
     if (response.status < 200 || response.status >= 300) {
       throw ApplicationError.from(new Error(`Loki metric query responded with HTTP ${response.status}`), { code: 'INTERNAL_SERVICE_CALL_FAILED', status: HttpStatus.BAD_GATEWAY });

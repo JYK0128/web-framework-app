@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional, ApiSchema, PartialType } from '@nestj
 import { Type } from 'class-transformer';
 import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
-import { Notice, NoticeImportance, PublicationStatus } from '#/core/database/entities/notices/notice.entity';
+import { Notice, NoticeImportance, PublicationStatus } from '#/core/database/entities/notices';
 import { EntityDto } from '#/core/http/dto/base/entity.dto';
 import { CursorRequestDto } from '#/core/http/dto/request/cursor.request.dto';
 import { PageRequestDto } from '#/core/http/dto/request/page.request.dto';

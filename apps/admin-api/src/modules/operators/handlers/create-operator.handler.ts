@@ -5,10 +5,8 @@ import { encrypt, hmac } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
 import { assertPasswordPolicy, updateCredentialPassword } from '#/core/auth/user/policy/password.policy';
-import { Role } from '#/core/database/entities/auth.extensions/role.entity';
-import { Account } from '#/core/database/entities/auth/account.entity';
-import { Profile } from '#/core/database/entities/auth/profile.entity';
-import { User } from '#/core/database/entities/auth/user.entity';
+import { Account, Profile, User } from '#/core/database/entities/auth';
+import { Role } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { env } from '#/env';

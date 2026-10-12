@@ -4,7 +4,7 @@ import type { Request, Response } from 'express';
 
 import { SECURITY_CONFIG } from '#/app.config';
 import { type AuthenticatedUser, type CreateTokenPairOptions, type IUserAuthService, type RefreshInput, type TokenPairResult } from '#/core/auth/user/user-auth.interface';
-import { User } from '#/core/database/entities/auth/user.entity';
+import { User } from '#/core/database/entities/auth';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { RequestContext } from '#/core/http/contexts/request.context';
 import type { UserPrincipal } from '#/core/http/types/principal.type';

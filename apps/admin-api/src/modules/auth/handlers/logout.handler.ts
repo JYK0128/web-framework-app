@@ -2,8 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
 import { type IUserAuthService, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
-import { LogoutCommand } from '#/modules/auth/commands/logout.command';
-import { LogoutResponseDto } from '#/modules/auth/dto/logout.response.dto';
+import { LogoutCommand } from '#/modules/auth/commands';
+import { LogoutResponseDto } from '#/modules/auth/dto';
 
 @Injectable()
 @CommandHandler(LogoutCommand)

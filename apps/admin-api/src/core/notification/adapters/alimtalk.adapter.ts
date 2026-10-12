@@ -3,9 +3,8 @@ import { createHmac, randomBytes } from 'node:crypto';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 import type { AlimtalkMessageDto, MessengerConfigDto } from '@pkg/shared/server';
-import axios from 'axios';
 
-import { SECURITY_CONFIG } from '#/app.config';
+import { postNotificationForm } from '#/core/notification/notification.http';
 
 type Message = AlimtalkMessageDto & { recipient: string };
 type ProviderResponse = {
@@ -20,8 +19,6 @@ type ProviderResponse = {
 
 @Injectable()
 export class AlimtalkAdapter {
-  private readonly client = axios.create({ validateStatus: () => true });
-
   async send(message: Message, config?: MessengerConfigDto): Promise<string | undefined> {
     if (!config?.enabled || config.provider !== 'KAKAO') throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', message: `카카오 알림톡: 발송 설정이 비활성화되었거나 유효하지 않습니다.`, status: HttpStatus.BAD_GATEWAY });
     try {
@@ -70,7 +67,7 @@ export class AlimtalkAdapter {
   }
 
   private async request(url: string, headers: Record<string, string>, body: string): Promise<ProviderResponse> {
-    const response = await this.client.post<ProviderResponse>(url, body, { headers, timeout: SECURITY_CONFIG.integrations.deliveryProviderRequestTimeoutSeconds * 1000 });
+    const response = await postNotificationForm<ProviderResponse>(url, headers, body);
     if (response.status < 200 || response.status >= 300) throw ApplicationError.from(new Error(`Alimtalk provider responded with HTTP ${response.status}`), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
     return response.data;
   }

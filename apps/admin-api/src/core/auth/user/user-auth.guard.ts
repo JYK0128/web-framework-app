@@ -6,7 +6,7 @@ import type { Request } from 'express';
 import { SECURITY_CONFIG } from '#/app.config';
 import { isCredentialPasswordExpired } from '#/core/auth/user/policy/password.policy';
 import { type IUserAuthService, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
-import { Account } from '#/core/database/entities/auth/account.entity';
+import { Account } from '#/core/database/entities/auth';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { SKIP_PASSWORD_EXPIRY_KEY, SKIP_PHONE_VERIFICATION_KEY, SKIP_TWO_FACTOR_SETUP_KEY } from '#/core/http/decorators/auth-mode.decorator';

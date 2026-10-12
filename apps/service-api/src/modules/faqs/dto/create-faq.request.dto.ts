@@ -1,7 +1,7 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { IsBoolean, IsEnum, IsInt, IsNotEmpty, IsString, Max, Min } from 'class-validator';
 
-import { FaqCategory } from '#/core/database/entities/faqs/faq.entity';
+import { FaqCategory } from '#/core/database/entities/faqs';
 
 @ApiSchema({ name: 'CreateFaqRequest' })
 export class CreateFaqRequestDto {

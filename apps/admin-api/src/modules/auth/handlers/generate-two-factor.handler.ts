@@ -6,13 +6,13 @@ import { ApplicationError } from '@pkg/shared/common';
 import { encrypt } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { TwoFactor } from '#/core/database/entities/auth.extensions/two-factor.entity';
-import { User } from '#/core/database/entities/auth/user.entity';
+import { User } from '#/core/database/entities/auth';
+import { TwoFactor } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { env } from '#/env';
 import { GenerateTwoFactorCommand } from '#/modules/auth/commands';
-import { GenerateTwoFactorResponseDto } from '#/modules/auth/dto/generate-two-factor.response.dto';
+import { GenerateTwoFactorResponseDto } from '#/modules/auth/dto';
 import { assertVerificationUnlocked, identifyUser } from '#/modules/auth/handlers/profile-security.helpers';
 
 @Injectable()

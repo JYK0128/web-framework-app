@@ -7,8 +7,7 @@ import { SECURITY_CONFIG, SERVICE_ID } from '#/app.config';
 import { getCredentialPasswordExpiresAt } from '#/core/auth/user/policy/password.policy';
 import { TOKEN_STORE, type TokenStore } from '#/core/auth/user/token/stores/token.store';
 import { type AuthenticatedUser, type CreateTokenPairOptions, type IUserAuthService, type RefreshInput, type TokenPairResult } from '#/core/auth/user/user-auth.interface';
-import { Account } from '#/core/database/entities/auth/account.entity';
-import { User } from '#/core/database/entities/auth/user.entity';
+import { Account, User } from '#/core/database/entities/auth';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { env } from '#/env';
 

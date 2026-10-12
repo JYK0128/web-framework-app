@@ -1,12 +1,11 @@
 import { createHmac, randomBytes } from 'node:crypto';
 
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { ApplicationError, TimeUtil } from '@pkg/shared/common';
+import { ApplicationError } from '@pkg/shared/common';
 import type { SmsConfigDto } from '@pkg/shared/server';
-import axios from 'axios';
 import { z } from 'zod';
 
-import { SECURITY_CONFIG } from '#/app.config';
+import { postNotificationForm, postNotificationJson } from '#/core/notification/notification.http';
 import type { SmsMessage } from '#/core/notification/notification.interface';
 import type { ProviderHttpResponse } from '#/core/notification/provider-response';
 
@@ -52,15 +51,12 @@ function parseSolapiSmsResponse(response: ProviderHttpResponse): string | undefi
 export class SmsAdapter {
   private async postProviderJson(url: string, headers: Record<string, string>, body: Record<string, unknown>): Promise<ProviderHttpResponse> {
     try {
-      const response = await this.client.post<unknown>(url, body, { headers, timeout: TimeUtil.ms.second(SECURITY_CONFIG.integrations.deliveryProviderRequestTimeoutSeconds) });
-      return { ok: response.status >= 200 && response.status < 300, status: response.status, body: response.data };
+      return await postNotificationJson(url, headers, body);
     }
     catch (error) {
       throw ApplicationError.from(error, { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
   }
-
-  private readonly client = axios.create({ validateStatus: () => true });
 
   async send(message: SmsMessage, providerConfig?: SmsConfigDto): Promise<string | undefined> {
     if (!providerConfig?.enabled) throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', message: `SMS: 발송이 비활성화되어 있습니다.`, status: HttpStatus.BAD_GATEWAY });
@@ -93,7 +89,7 @@ export class SmsAdapter {
     const sender = message.from ?? config.sender!;
     const body = new URLSearchParams({ key: config.apiKey, user_id: config.userId, sender: sender.replace(/\D/g, ''), receiver: message.to.replace(/\D/g, ''), msg: message.body });
     try {
-      const response = await this.client.post<{ result_code?: string | number, message?: string, msg_id?: string | number }>('https://apis.aligo.in/send/', body, { timeout: TimeUtil.ms.second(SECURITY_CONFIG.integrations.deliveryProviderRequestTimeoutSeconds) });
+      const response = await postNotificationForm<{ result_code?: string | number, message?: string, msg_id?: string | number }>('https://apis.aligo.in/send/', {}, body);
       const result = response.data;
       const errorMessage = result.message ?? `HTTP ${response.status}`;
       if (response.status < 200 || response.status >= 300 || String(result.result_code) !== '1') throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });

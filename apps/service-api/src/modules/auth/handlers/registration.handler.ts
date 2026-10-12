@@ -6,10 +6,8 @@ import { decrypt, encrypt, hash, hmac } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
 import { assertPasswordPolicy } from '#/core/auth/user/policy/password.policy';
-import { Role, RoleCode } from '#/core/database/entities/auth.extensions/role.entity';
-import { Account } from '#/core/database/entities/auth/account.entity';
-import { Profile } from '#/core/database/entities/auth/profile.entity';
-import { User } from '#/core/database/entities/auth/user.entity';
+import { Account, Profile, User } from '#/core/database/entities/auth';
+import { Role, RoleCode } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { KvStore } from '#/core/kv-store/kv-store.service';
 import { MessageService } from '#/core/notification';

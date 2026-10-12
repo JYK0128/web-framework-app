@@ -1,8 +1,7 @@
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
-import axios from 'axios';
 
-import { WEBHOOK_HTTP_TIMEOUT_MS } from '#/core/webhook/webhook.config';
+import { postWebhook } from '#/core/webhook/webhook.http';
 import { type IWebhookAdapter, WEBHOOK_MODULE_OPTIONS, type WebhookMessage, type WebhookModuleOptions, type WebhookNotificationLevel } from '#/core/webhook/webhook.interface';
 
 const LEVEL_ICONS: Record<WebhookNotificationLevel, string> = {
@@ -23,8 +22,6 @@ function createPayload(message: WebhookMessage): { text: string } {
 
 @Injectable()
 export class ChannelTalkAdapter implements IWebhookAdapter {
-  private readonly client = axios.create({ validateStatus: () => true });
-
   readonly providerName = 'channel-talk';
   private readonly logger = new Logger(ChannelTalkAdapter.name);
   private readonly defaultWebhookUrl?: string;
@@ -47,7 +44,7 @@ export class ChannelTalkAdapter implements IWebhookAdapter {
     this.logger.log('[Channel Talk Webhook] 웹훅 전송 요청');
     let res: { status: number, data: unknown };
     try {
-      res = await this.client.post(webhookUrl, payload, { timeout: WEBHOOK_HTTP_TIMEOUT_MS });
+      res = await postWebhook(webhookUrl, payload);
     }
     catch (error) {
       this.logger.error('Channel Talk webhook request failed.', error instanceof Error ? error.stack : String(error));

@@ -2,8 +2,8 @@ import { createHash, createHmac } from 'node:crypto';
 
 import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
-import axios from 'axios';
 
+import { getS3Object, putS3Object } from '#/core/file-storage/s3.http';
 import { type FileAdapter, type PresignedUploadUrlResult, type S3Options, type SaveFileResult, STORAGE_MODULE_OPTIONS, type StorageModuleOptions } from '#/core/file-storage/storage.interface';
 
 /**
@@ -12,8 +12,6 @@ import { type FileAdapter, type PresignedUploadUrlResult, type S3Options, type S
  */
 @Injectable()
 export class S3Adapter implements FileAdapter {
-  private readonly client = axios.create({ validateStatus: () => true });
-
   readonly name = 's3';
   private readonly logger = new Logger(S3Adapter.name);
   private readonly s3Config?: S3Options;
@@ -41,7 +39,7 @@ export class S3Adapter implements FileAdapter {
     const signedHeaders = this.signRequest('PUT', `/${key}`, headers, config);
 
     try {
-      const response = await this.client.put<string>(url, buffer, { headers: signedHeaders });
+      const response = await putS3Object(url, buffer, signedHeaders);
 
       if (response.status < 200 || response.status >= 300) {
         const errorText = response.data;
@@ -76,10 +74,7 @@ export class S3Adapter implements FileAdapter {
     };
 
     try {
-      const response = await this.client.get<ArrayBuffer>(`https://${host}/${key}`, {
-        headers: this.signRequest('GET', `/${key}`, headers, config),
-        responseType: 'arraybuffer',
-      });
+      const response = await getS3Object(`https://${host}/${key}`, this.signRequest('GET', `/${key}`, headers, config));
       if (response.status < 200 || response.status >= 300) {
         this.logger.error(`[S3] Download failed (${response.status}): ${Buffer.from(response.data).toString()}`);
         throw new ApplicationError({ code: 'STORAGE_READ_FAILED', status: 502 });

@@ -4,10 +4,10 @@ import { AdminPermission } from '@pkg/shared';
 import { maskEmail, maskName, maskPhone } from '@pkg/shared/common';
 import type { Observable } from 'rxjs';
 
-import { InternalClient } from '#/core/auth/machine/internal-client';
 import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
+import { InternalClient } from '#/core/http/internal-client';
 import { KvStore } from '#/core/kv-store/kv-store.service';
 import { RealtimeService } from '#/core/realtime/realtime.service';
 

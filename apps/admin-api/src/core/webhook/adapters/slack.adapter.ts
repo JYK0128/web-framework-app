@@ -1,8 +1,7 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
-import axios from 'axios';
 
-import { WEBHOOK_HTTP_TIMEOUT_MS } from '#/core/webhook/webhook.config';
+import { postWebhook } from '#/core/webhook/webhook.http';
 import { type IWebhookAdapter, type WebhookMessage, type WebhookNotificationLevel } from '#/core/webhook/webhook.interface';
 
 const LEVEL_ICONS: Record<WebhookNotificationLevel, string> = {
@@ -28,8 +27,6 @@ function buildSlackBlocks(message: WebhookMessage, icon: string): unknown[] {
 
 @Injectable()
 export class SlackAdapter implements IWebhookAdapter {
-  private readonly client = axios.create({ validateStatus: () => true });
-
   readonly providerName = 'slack';
   private readonly logger = new Logger(SlackAdapter.name);
   async send(message: WebhookMessage): Promise<void> {
@@ -45,7 +42,7 @@ export class SlackAdapter implements IWebhookAdapter {
     this.logger.log('[Slack Webhook] 웹훅 전송 요청');
     let res: { status: number, data: unknown };
     try {
-      res = await this.client.post(webhookUrl, { blocks }, { timeout: WEBHOOK_HTTP_TIMEOUT_MS });
+      res = await postWebhook(webhookUrl, { blocks });
     }
     catch (error) {
       this.logger.error('Slack webhook request failed.', error instanceof Error ? error.stack : String(error));

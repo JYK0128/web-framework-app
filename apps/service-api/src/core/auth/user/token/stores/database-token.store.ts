@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
 
 import { type RefreshToken, type TokenConsumeResult, type TokenStore } from '#/core/auth/user/token/stores/token.store';
-import { RefreshToken as RefreshTokenEntity } from '#/core/database/entities/auth/refresh-token.entity';
+import { RefreshToken as RefreshTokenEntity } from '#/core/database/entities/auth';
 import { AppEntityManager } from '#/core/database/entity-manager';
 
 @Injectable()

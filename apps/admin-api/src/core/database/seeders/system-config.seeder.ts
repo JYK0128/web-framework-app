@@ -1,7 +1,7 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 
-import { AdminSystemConfigCode, SystemConfig } from '#/core/database/entities/system-configs/system-config.entity';
+import { AdminSystemConfigCode, SystemConfig } from '#/core/database/entities/system-configs';
 
 export class SystemConfigSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {

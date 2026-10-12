@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsIn, IsOptional } from 'class-validator';
 
-import type { BaseEntity } from '#/core/database/entities/common/base.entity';
+import type { BaseEntity } from '#/core/database/entities/common';
 import { PageRequestDto } from '#/core/http/dto/request/page.request.dto';
 import { QnaPriority, QnaStatus } from '#/modules/qna/dto/qna.constants';
 

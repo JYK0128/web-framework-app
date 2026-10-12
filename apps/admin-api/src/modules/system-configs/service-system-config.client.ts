@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import type { ServiceSystemConfigCode } from '@pkg/shared/constants';
 import { type DeliveryConfigDto } from '@pkg/shared/server';
 
-import { InternalClient } from '#/core/auth/machine/internal-client';
+import { InternalClient } from '#/core/http/internal-client';
 import type { CreateOAuthIconPresignedUrlRequestDto } from '#/modules/system-configs/dto/create-oauth-icon-presigned-url.request.dto';
 import type { CreateOAuthIconPresignedUrlResponseDto } from '#/modules/system-configs/dto/create-oauth-icon-presigned-url.response.dto';
 import type { SystemConfigResponseDto } from '#/modules/system-configs/dto/system-config.response.dto';

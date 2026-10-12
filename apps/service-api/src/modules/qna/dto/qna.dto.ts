@@ -5,8 +5,8 @@ import { decrypt } from '@pkg/shared/server';
 import { Type } from 'class-transformer';
 import { IsEnum, IsIn, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
-import { type User } from '#/core/database/entities/auth/user.entity';
-import { Qna, QnaCategory, QnaPriority, QnaStatus } from '#/core/database/entities/qna/qna.entity';
+import { type User } from '#/core/database/entities/auth';
+import { Qna, QnaCategory, QnaPriority, QnaStatus } from '#/core/database/entities/qna';
 import { MaskEmail } from '#/core/http/decorators/mask-email.decorator';
 import { MaskName } from '#/core/http/decorators/mask-name.decorator';
 import { EntityDto } from '#/core/http/dto/base/entity.dto';

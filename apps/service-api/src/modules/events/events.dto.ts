@@ -2,8 +2,8 @@ import { ApiProperty, ApiPropertyOptional, ApiSchema, PartialType } from '@nestj
 import { Type } from 'class-transformer';
 import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
 
-import { Event } from '#/core/database/entities/events/event.entity';
-import { PublicationStatus } from '#/core/database/entities/notices/notice.entity';
+import { Event } from '#/core/database/entities/events';
+import { PublicationStatus } from '#/core/database/entities/notices';
 import { EntityDto } from '#/core/http/dto/base/entity.dto';
 import { CursorRequestDto } from '#/core/http/dto/request/cursor.request.dto';
 import { PageRequestDto } from '#/core/http/dto/request/page.request.dto';

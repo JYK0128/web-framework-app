@@ -1,7 +1,7 @@
 import { ChangeSetType, type EventArgs, type EventSubscriber, type FlushEventArgs } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
-import { BaseEntity } from '#/core/database/entities/common/base.entity';
+import { BaseEntity } from '#/core/database/entities/common';
 import { PrincipalContext } from '#/core/http/contexts/principal.context';
 
 @Injectable()

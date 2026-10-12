@@ -5,8 +5,8 @@ import { Migrator } from '@mikro-orm/migrations';
 import { defineConfig, PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { SeedManager } from '@mikro-orm/seeder';
 
-import { Event } from '#/core/database/entities/events/event.entity';
-import { Notice } from '#/core/database/entities/notices/notice.entity';
+import { Event } from '#/core/database/entities/events';
+import { Notice } from '#/core/database/entities/notices';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { entities } from '#/entities.generated';
 import { env } from '#/env';

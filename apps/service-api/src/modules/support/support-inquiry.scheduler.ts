@@ -6,8 +6,7 @@ import { isWithinOperatingHours } from '@pkg/shared/policy';
 import { SupportUnansweredAlertEvent } from '@pkg/shared/server';
 
 import { SERVICE_RUNTIME_CONFIG } from '#/app.config';
-import { SupportMessage, SupportMessageSenderType } from '#/core/database/entities/support/support-message.entity';
-import { SupportRoom, SupportRoomStatus } from '#/core/database/entities/support/support-room.entity';
+import { SupportMessage, SupportMessageSenderType, SupportRoom, SupportRoomStatus } from '#/core/database/entities/support';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { EVENT_BROKER } from '#/core/event-broker/event-broker.interface';
 import { EventBroker } from '#/core/event-broker/event-broker.service';

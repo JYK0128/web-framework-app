@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsUUID } from 'class-validator';
 
-import { Term } from '#/core/database/entities/terms/term.entity';
+import { Term } from '#/core/database/entities/terms';
 import { PageRequestDto } from '#/core/http/dto/request/page.request.dto';
 
 export class GetServiceTermsRequestDto extends PageRequestDto<Term> {

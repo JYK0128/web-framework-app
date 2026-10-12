@@ -4,9 +4,9 @@ import { Global, Module } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 
 import { AppEntityManager } from './entity-manager';
+import { UnitOfWorkInterceptor } from './http/unit-of-work.interceptor';
 import mikroOrmConfig from './mikro-orm.config';
 import { AuditSubscriber } from './subscribers/audit.subscriber';
-import { UnitOfWorkInterceptor } from './http/unit-of-work.interceptor';
 
 @Global()
 @Module({

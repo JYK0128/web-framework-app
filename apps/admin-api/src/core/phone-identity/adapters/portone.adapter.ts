@@ -1,10 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { ApplicationError, TimeUtil, withRetry } from '@pkg/shared/common';
-import axios from 'axios';
+import { ApplicationError, withRetry } from '@pkg/shared/common';
 import { z } from 'zod';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { env } from '#/env';
+import { getPortOneVerification } from '#/core/phone-identity/portone.http';
 
 const verificationSchema = z.object({
   id: z.string(),
@@ -19,16 +18,11 @@ const verificationSchema = z.object({
 
 @Injectable()
 export class PortOneAdapter {
-  private readonly client = axios.create({ validateStatus: () => true });
-
   async fetchVerification(identityVerificationId: string) {
     let result: z.infer<typeof verificationSchema>;
     try {
       result = await withRetry(async () => {
-        const response = await this.client.get<unknown>(`https://api.portone.io/identity-verifications/${encodeURIComponent(identityVerificationId)}`, {
-          headers: { Authorization: `PortOne ${env.PORTONE_API_SECRET}` },
-          timeout: TimeUtil.ms.second(SECURITY_CONFIG.identityVerification.requestTimeoutSeconds),
-        });
+        const response = await getPortOneVerification(identityVerificationId);
         if (response.status >= 500) throw new Error(`PortOne server error: ${response.status}`);
         if (response.status < 200 || response.status >= 300) throw new ApplicationError({ code: 'IDENTITY_VERIFICATION_FAILED', status: HttpStatus.BAD_REQUEST });
         return verificationSchema.parse(response.data);

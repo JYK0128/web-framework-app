@@ -4,7 +4,6 @@ import type { NormalizedLogError } from '#/core/log-telemetry/log-normalizer';
 
 export interface LokiConfig {
   url: string
-  timeoutMs: number
 }
 
 export interface LogTelemetryModuleOptions {
