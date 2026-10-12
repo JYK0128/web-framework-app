@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { SystemConfigModule } from '#/modules/system-config/system-config.module';
+import { SystemConfigAdminEmailModule } from '#/modules/system-config/admin-email/admin-email.module';
 
 import { ChangePasswordHandler } from './change-password.handler';
 import { AuthCredentialController } from './credential.controller';
@@ -11,7 +11,7 @@ import { ResetPasswordHandler } from './reset-password.handler';
 
 @Module({
   controllers: [AuthCredentialController],
-  imports: [CqrsModule, SystemConfigModule],
+  imports: [CqrsModule, SystemConfigAdminEmailModule],
   providers: [ChangePasswordHandler, PasswordResetEmailHandler, RequestPasswordResetHandler, ResetPasswordHandler],
 })
 export class AuthCredentialModule {}

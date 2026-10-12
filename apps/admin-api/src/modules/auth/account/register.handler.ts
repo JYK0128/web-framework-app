@@ -1,6 +1,6 @@
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
-import { CommandBus, CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { CommandBus, CommandHandler, type ICommandHandler, QueryBus } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { encrypt, hashPassword, hashWithSecret } from '@pkg/shared/server';
 
@@ -14,7 +14,7 @@ import { RegisterCommand } from '#/modules/auth/account/register.command';
 import { RegisterResponseDto } from '#/modules/auth/account/register.response.dto';
 import { RequestEmailVerificationCommand } from '#/modules/auth/email-verification/request-email-verification.command';
 import { RequestEmailVerificationRequestDto } from '#/modules/auth/email-verification/request-email-verification.request.dto';
-import { EnsureAdminEmailDeliveryConfiguredCommand } from '#/modules/system-config/email/ensure-admin-email-delivery-configured.command';
+import { CheckAdminEmailConfigQuery } from '#/modules/system-config/admin-email/check-admin-email-config.query';
 
 @Injectable()
 @CommandHandler(RegisterCommand)
@@ -24,13 +24,14 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
   constructor(
     private readonly em: AppEntityManager,
     private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
   ) {}
 
   async execute(command: RegisterCommand): Promise<RegisterResponseDto> {
     if (!SECURITY_CONFIG.registration.allowRegistration) throw new ApplicationError({ code: 'REGISTRATION_DISABLED', status: HttpStatus.FORBIDDEN });
     if (!SECURITY_CONFIG.credentialAvailable) throw new ApplicationError({ code: 'CREDENTIAL_AUTH_UNAVAILABLE', status: HttpStatus.FORBIDDEN });
     assertPasswordPolicy(command.input.password);
-    if (SECURITY_CONFIG.registration.requireEmailVerification) await this.commandBus.execute(new EnsureAdminEmailDeliveryConfiguredCommand());
+    if (SECURITY_CONFIG.registration.requireEmailVerification) await this.queryBus.execute(new CheckAdminEmailConfigQuery());
 
     const email = command.input.email.trim().toLowerCase();
     const emailHash = hashWithSecret(email, env.PII_HASH_KEY);

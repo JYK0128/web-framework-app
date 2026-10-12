@@ -9,7 +9,7 @@ import { NotificationService } from '#/core/notification/notification.service';
 import { env } from '#/env';
 import { AuthKvStoreKey } from '#/modules/auth/auth.key';
 import { EmailVerificationEvent } from '#/modules/auth/email-verification/email-verification.event';
-import { GetAdminEmailDeliveryConfigQuery } from '#/modules/system-config/email/get-admin-email-delivery-config.query';
+import { GetAdminSmtpConfigQuery } from '#/modules/system-config/admin-email/get-admin-smtp-config.query';
 
 type EmailVerificationRecord = { emailEncrypted: string, token: string };
 
@@ -46,7 +46,7 @@ export class EmailVerificationHandler implements IEventHandler<EmailVerification
     verificationUrl.searchParams.set('challengeId', event.challengeId);
     verificationUrl.searchParams.set('token', record.token);
     try {
-      const config = await this.queryBus.execute(new GetAdminEmailDeliveryConfigQuery());
+      const config = await this.queryBus.execute(new GetAdminSmtpConfigQuery());
       await this.notifications.send({
         channel: 'email',
         message: {

@@ -1,7 +1,7 @@
 import { randomBytes, randomUUID } from 'node:crypto';
 
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { CommandBus, CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, type ICommandHandler, QueryBus } from '@nestjs/cqrs';
 import { TimeUtil } from '@pkg/shared/common';
 import { encrypt, hashWithSecret } from '@pkg/shared/server';
 
@@ -16,7 +16,7 @@ import { AuthKvStoreKey } from '#/modules/auth/auth.key';
 import { PasswordResetEmailEvent } from '#/modules/auth/credential/password-reset-email.event';
 import { RequestPasswordResetCommand } from '#/modules/auth/credential/request-password-reset.command';
 import { RequestPasswordResetResponseDto } from '#/modules/auth/credential/request-password-reset.response.dto';
-import { EnsureAdminEmailDeliveryConfiguredCommand } from '#/modules/system-config/email/ensure-admin-email-delivery-configured.command';
+import { CheckAdminEmailConfigQuery } from '#/modules/system-config/admin-email/check-admin-email-config.query';
 
 @Injectable()
 @CommandHandler(RequestPasswordResetCommand)
@@ -24,7 +24,7 @@ export class RequestPasswordResetHandler implements ICommandHandler<RequestPassw
   private readonly logger = new Logger(RequestPasswordResetHandler.name);
 
   constructor(
-    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
     private readonly em: AppEntityManager,
     private readonly kvStore: KvStore,
     @Inject(EVENT_BROKER.REDIS_STREAMS)
@@ -33,7 +33,7 @@ export class RequestPasswordResetHandler implements ICommandHandler<RequestPassw
 
   async execute({ input }: RequestPasswordResetCommand): Promise<RequestPasswordResetResponseDto> {
     if (!SECURITY_CONFIG.credentialAvailable) return RequestPasswordResetResponseDto.parse({ accepted: true });
-    await this.commandBus.execute(new EnsureAdminEmailDeliveryConfiguredCommand());
+    await this.queryBus.execute(new CheckAdminEmailConfigQuery());
 
     const email = input.email.trim().toLowerCase();
     const user = await this.em.findOne(User, {

@@ -9,18 +9,15 @@ import { Public, UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 import { InternalClient } from '#/core/http/internal-client';
-import { CreateOAuthIconPresignedUrlRequestDto, CreateOAuthIconPresignedUrlResponseDto, GetHolidaysRequestDto, OperatingHolidayListResponseDto, ServiceConfigResponseDto, SyncSystemConfigRequestDto, SyncSystemConfigResponseDto, TestChannelResponseDto, TestEmailRequestDto, TestEmailResponseDto, TestMessengerRequestDto, TestPushRequestDto, TestSmsRequestDto, TestWebhookRequestDto, TestWebhookResponseDto, UpdateServiceConfigRequestDto } from '#/modules/service-config';
-import { TestEmailCommand } from '#/modules/service-config/delivery/test-email.command';
-import { TestMessengerCommand } from '#/modules/service-config/delivery/test-messenger.command';
-import { TestPushCommand } from '#/modules/service-config/delivery/test-push.command';
-import { TestSmsCommand } from '#/modules/service-config/delivery/test-sms.command';
-import { TestWebhookCommand } from '#/modules/service-config/delivery/test-webhook.command';
+import { CreateOAuthIconPresignedUrlRequestDto, CreateOAuthIconPresignedUrlResponseDto, GetHolidaysRequestDto, OperatingHolidayListResponseDto, ServiceConfigResponseDto, SyncSystemConfigRequestDto, SyncSystemConfigResponseDto, UpdateServiceConfigRequestDto } from '#/modules/service-config';
 import { CreateOAuthIconPresignedUrlCommand } from '#/modules/service-config/oauth/create-oauth-icon-presigned-url.command';
 import { GetHolidaysQuery } from '#/modules/service-config/operation/get-holidays.query';
 import { SyncSystemConfigCommand } from '#/modules/service-config/sync-system-config.command';
 import { UpdateSystemConfigCommand } from '#/modules/service-config/update-system-config.command';
-import { UpdateSystemConfigResponseDto } from '#/modules/system-config';
-import { GetSystemConfigQuery } from '#/modules/system-config/get-system-config.query';
+import { UpdateSystemConfigResponseDto } from '#/modules/system-config/update-system-config.response.dto';
+
+import { GetServiceConfigQuery } from './get-service-config.query';
+import { GetServiceConfigRequestDto } from './get-service-config.request.dto';
 
 @UserAuth()
 @Controller()
@@ -36,9 +33,8 @@ export class ServiceConfigController {
   @Permissions(AdminPermission.system.read)
   @SwaggerApiResponse(ServiceConfigResponseDto)
   @ApiOperation({ summary: '서비스 설정 조회' })
-  async getConfigs(): Promise<ServiceConfigResponseDto> {
-    const config = await this.queryBus.execute(new GetSystemConfigQuery());
-    return ServiceConfigResponseDto.parse({ operation: config.operation, maintenance: config.maintenance, inquiry: config.inquiry });
+  async getConfigs(@Query() input: GetServiceConfigRequestDto): Promise<ServiceConfigResponseDto> {
+    return this.queryBus.execute(new GetServiceConfigQuery(input));
   }
 
   @ApiTags('service-config')
@@ -66,51 +62,6 @@ export class ServiceConfigController {
   @ApiOperation({ summary: '서비스 설정을 Redis에 동기화', operationId: 'SystemConfigController_syncConfigs_v1' })
   syncConfigs(): Promise<SyncSystemConfigResponseDto> {
     return this.commandBus.execute(new SyncSystemConfigCommand(new SyncSystemConfigRequestDto()));
-  }
-
-  @ApiTags('system-configs')
-  @Post('service-config/test-webhook')
-  @Permissions(AdminPermission.system.update)
-  @SwaggerApiResponse(TestWebhookResponseDto)
-  @ApiOperation({ summary: '웹훅 테스트 전송', operationId: 'SystemConfigController_testWebhook_v1' })
-  testWebhook(@Body() input: TestWebhookRequestDto): Promise<TestWebhookResponseDto> {
-    return this.commandBus.execute(new TestWebhookCommand(input));
-  }
-
-  @ApiTags('system-configs')
-  @Post('service-config/test-email')
-  @Permissions(AdminPermission.system.update)
-  @SwaggerApiResponse(TestEmailResponseDto)
-  @ApiOperation({ summary: '이메일 테스트 전송', operationId: 'SystemConfigController_testEmail_v1' })
-  testEmail(@Body() input: TestEmailRequestDto): Promise<TestEmailResponseDto> {
-    return this.commandBus.execute(new TestEmailCommand(input));
-  }
-
-  @ApiTags('system-configs')
-  @Post('service-config/test-sms')
-  @Permissions(AdminPermission.system.update)
-  @SwaggerApiResponse(TestChannelResponseDto)
-  @ApiOperation({ summary: 'SMS 테스트 전송', operationId: 'SystemConfigController_testSms_v1' })
-  testSms(@Body() input: TestSmsRequestDto): Promise<TestChannelResponseDto> {
-    return this.commandBus.execute(new TestSmsCommand(input));
-  }
-
-  @ApiTags('system-configs')
-  @Post('service-config/test-push')
-  @Permissions(AdminPermission.system.update)
-  @SwaggerApiResponse(TestChannelResponseDto)
-  @ApiOperation({ summary: '푸시 테스트 전송', operationId: 'SystemConfigController_testPush_v1' })
-  testPush(@Body() input: TestPushRequestDto): Promise<TestChannelResponseDto> {
-    return this.commandBus.execute(new TestPushCommand(input));
-  }
-
-  @ApiTags('system-configs')
-  @Post('service-config/test-messenger')
-  @Permissions(AdminPermission.system.update)
-  @SwaggerApiResponse(TestChannelResponseDto)
-  @ApiOperation({ summary: '메신저 테스트 전송', operationId: 'SystemConfigController_testMessenger_v1' })
-  testMessenger(@Body() input: TestMessengerRequestDto): Promise<TestChannelResponseDto> {
-    return this.commandBus.execute(new TestMessengerCommand(input));
   }
 
   @ApiTags('system-configs')

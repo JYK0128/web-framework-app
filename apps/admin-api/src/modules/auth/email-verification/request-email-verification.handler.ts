@@ -1,7 +1,7 @@
 import { randomBytes, randomUUID } from 'node:crypto';
 
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { CommandBus, CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, type ICommandHandler, QueryBus } from '@nestjs/cqrs';
 import { TimeUtil } from '@pkg/shared/common';
 import { encrypt, hashWithSecret } from '@pkg/shared/server';
 
@@ -16,7 +16,7 @@ import { AuthKvStoreKey } from '#/modules/auth/auth.key';
 import { EmailVerificationEvent } from '#/modules/auth/email-verification/email-verification.event';
 import { RequestEmailVerificationCommand } from '#/modules/auth/email-verification/request-email-verification.command';
 import { RequestEmailVerificationResponseDto } from '#/modules/auth/email-verification/request-email-verification.response.dto';
-import { EnsureAdminEmailDeliveryConfiguredCommand } from '#/modules/system-config/email/ensure-admin-email-delivery-configured.command';
+import { CheckAdminEmailConfigQuery } from '#/modules/system-config/admin-email/check-admin-email-config.query';
 
 @Injectable()
 @CommandHandler(RequestEmailVerificationCommand)
@@ -24,7 +24,7 @@ export class RequestEmailVerificationHandler implements ICommandHandler<RequestE
   private readonly logger = new Logger(RequestEmailVerificationHandler.name);
 
   constructor(
-    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
     private readonly em: AppEntityManager,
     private readonly kvStore: KvStore,
     @Inject(EVENT_BROKER.REDIS_STREAMS)
@@ -33,7 +33,7 @@ export class RequestEmailVerificationHandler implements ICommandHandler<RequestE
 
   async execute({ input }: RequestEmailVerificationCommand): Promise<RequestEmailVerificationResponseDto> {
     if (!SECURITY_CONFIG.registration.requireEmailVerification) return RequestEmailVerificationResponseDto.parse({ accepted: true });
-    await this.commandBus.execute(new EnsureAdminEmailDeliveryConfiguredCommand());
+    await this.queryBus.execute(new CheckAdminEmailConfigQuery());
 
     const email = input.email.trim().toLowerCase();
     const emailHash = hashWithSecret(email, env.PII_HASH_KEY);

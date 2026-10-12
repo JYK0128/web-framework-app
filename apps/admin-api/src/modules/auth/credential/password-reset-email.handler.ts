@@ -9,7 +9,7 @@ import { NotificationService } from '#/core/notification/notification.service';
 import { env } from '#/env';
 import { AuthKvStoreKey } from '#/modules/auth/auth.key';
 import { PasswordResetEmailEvent } from '#/modules/auth/credential/password-reset-email.event';
-import { GetAdminEmailDeliveryConfigQuery } from '#/modules/system-config/email/get-admin-email-delivery-config.query';
+import { GetAdminSmtpConfigQuery } from '#/modules/system-config/admin-email/get-admin-smtp-config.query';
 
 type PasswordResetRecord = { emailEncrypted: string, token: string };
 
@@ -46,7 +46,7 @@ export class PasswordResetEmailHandler implements IEventHandler<PasswordResetEma
     resetUrl.searchParams.set('challengeId', event.challengeId);
     resetUrl.searchParams.set('token', record.token);
     try {
-      const config = await this.queryBus.execute(new GetAdminEmailDeliveryConfigQuery());
+      const config = await this.queryBus.execute(new GetAdminSmtpConfigQuery());
       await this.notifications.send({
         channel: 'email',
         message: {
