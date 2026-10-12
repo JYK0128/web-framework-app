@@ -4,7 +4,7 @@ import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { ArrowRight, Check, ChevronRight, Loader2 } from 'lucide-react';
 import { useMemo } from 'react';
 
-import { getOperatorTermsControllerGetAgreementsV1QueryKey, useOperatorTermsControllerGetAgreementsV1, useOperatorTermsControllerSetOperatorAgreementsV1 } from '#/.generated/api/endpoints/operator-terms/operator-terms';
+import { getTermsControllerGetAgreementsV1QueryKey, useTermsControllerGetAgreementsV1, useTermsControllerSetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
 import type { TermAgreementItemDto } from '#/.generated/api/model';
 import { Button, Checkbox, Field, FieldContent, FieldDescription, FieldLabel, Skeleton } from '#/.generated/shadcn/components/ui';
 import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
@@ -22,10 +22,10 @@ export const Route = createFileRoute('/_protected/_global/onboarding/agree-terms
 function TermsOnboardingPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const agreementsQuery = useOperatorTermsControllerGetAgreementsV1();
+  const agreementsQuery = useTermsControllerGetAgreementsV1();
   const agreementItems = agreementsQuery.data?.items;
   const terms = useMemo(() => (agreementItems ?? []).filter((term) => !term.isAgreed), [agreementItems]);
-  const agreeMutation = useOperatorTermsControllerSetOperatorAgreementsV1();
+  const agreeMutation = useTermsControllerSetAgreementsV1();
   const defaultValues = useMemo(() => ({
     options: Object.fromEntries(terms.map((term) => [term.termId, getOptionDefaults(term)])),
     agreements: Object.fromEntries(terms.map((term) => [term.termId, Object.values(getOptionDefaults(term)).some(Boolean)])),
@@ -43,7 +43,7 @@ function TermsOnboardingPage() {
           })),
         },
       });
-      await queryClient.invalidateQueries({ queryKey: getOperatorTermsControllerGetAgreementsV1QueryKey() });
+      await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAgreementsV1QueryKey() });
       await router.invalidate();
     },
   });

@@ -1,4 +1,4 @@
-import { useOperatorTermsControllerGetTermV1 } from '#/.generated/api/endpoints/operator-terms/operator-terms';
+import { useTermsControllerGetTermV1 } from '#/.generated/api/endpoints/terms/terms';
 import type { TermAgreementItemDto } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
 import { Modal, type ModalComponentProps, openModal } from '#/components/modal';
@@ -9,7 +9,7 @@ type TermDetailModalProps = ModalComponentProps & {
 };
 
 export function ProfileTermDetailModal({ term, open, onOpenChange }: TermDetailModalProps) {
-  const detail = useOperatorTermsControllerGetTermV1(term.termId, { query: { enabled: open } });
+  const detail = useTermsControllerGetTermV1(term.termId, { query: { enabled: open } });
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <Modal.Content size="lg">

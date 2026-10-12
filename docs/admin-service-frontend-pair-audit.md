@@ -196,10 +196,10 @@ Admin 236개, Service 190개. 같은 상대 경로 172쌍: 동일 129쌍, 차이
 - `src/routes/_protected/_app/logs/index.tsx`
 - `src/routes/_protected/_app/memberships/-components/membership-editor-modal.tsx`
 - `src/routes/_protected/_app/memberships/index.tsx`
-- `src/routes/_protected/_app/operator-terms/-components/modals.tsx`
-- `src/routes/_protected/_app/operator-terms/-components/publish-schedule.ts`
-- `src/routes/_protected/_app/operator-terms/-components/term-group-list.tsx`
-- `src/routes/_protected/_app/operator-terms/index.tsx`
+- `src/routes/_protected/_app/terms/-components/modals.tsx`
+- `src/routes/_protected/_app/terms/-components/publish-schedule.ts`
+- `src/routes/_protected/_app/terms/-components/term-group-list.tsx`
+- `src/routes/_protected/_app/terms/index.tsx`
 - `src/routes/_protected/_app/operators/-components/change-operator-role-modal.tsx`
 - `src/routes/_protected/_app/operators/-components/create-operator-modal.tsx`
 - `src/routes/_protected/_app/operators/-components/operator-detail-modal.tsx`

@@ -3,8 +3,8 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
 import { TermGroup } from '#/core/database/entities/terms';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { CreateTermGroupResponseDto } from '#/modules/terms';
 import { CreateTermGroupCommand } from '#/modules/terms/groups/create-term-group.command';
+import { CreateTermGroupResponseDto } from '#/modules/terms/groups/create-term-group.response.dto';
 
 @Injectable()
 @CommandHandler(CreateTermGroupCommand)

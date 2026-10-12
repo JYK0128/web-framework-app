@@ -7,7 +7,7 @@ import { FileText, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import { getAuthControllerMeV1QueryKey, useAuthControllerDisableTwoFactorV1, useAuthControllerUnregisterV1, useAuthControllerVerifyPhoneNumberV1 } from '#/.generated/api/endpoints/auth/auth';
-import { useOperatorTermsControllerGetAgreementsV1 } from '#/.generated/api/endpoints/operator-terms/operator-terms';
+import { useTermsControllerGetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
 import type { MeResponse } from '#/.generated/api/model';
 import { Button, Separator, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
@@ -130,7 +130,7 @@ function ProfilePage() {
   const disableTwoFactor = useAuthControllerDisableTwoFactorV1();
   const unregister = useAuthControllerUnregisterV1();
   const policy = ADMIN_AUTH_POLICY_CONFIG;
-  const agreementsQuery = useOperatorTermsControllerGetAgreementsV1(undefined, {
+  const agreementsQuery = useTermsControllerGetAgreementsV1(undefined, {
     query: {
       enabled: canLoadAgreements(policy, user ?? null),
     },

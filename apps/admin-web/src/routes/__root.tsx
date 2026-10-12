@@ -6,7 +6,7 @@ import { Provider as JotaiProvider } from 'jotai';
 import { type PropsWithChildren, useEffect, useSyncExternalStore } from 'react';
 
 import { getAuthControllerMeV1QueryKey, getAuthControllerMeV1QueryOptions } from '#/.generated/api/endpoints/auth/auth';
-import { getOperatorTermsControllerGetAgreementsV1QueryKey, getOperatorTermsControllerGetAgreementsV1QueryOptions } from '#/.generated/api/endpoints/operator-terms/operator-terms';
+import { getTermsControllerGetAgreementsV1QueryKey, getTermsControllerGetAgreementsV1QueryOptions } from '#/.generated/api/endpoints/terms/terms';
 import { Toaster } from '#/.generated/shadcn/components/ui';
 import { GlobalLoading, RouterError, RouterNotFound, SystemDialog, ThemeProvider } from '#/components/app';
 import { ModalContainer } from '#/components/modal';
@@ -24,13 +24,13 @@ export const Route = createRootRouteWithContext<AppRouterContext>()({
       const user = await context.queryClient.fetchQuery(
         getAuthControllerMeV1QueryOptions(),
       );
-      const terms = await context.queryClient.fetchQuery(getOperatorTermsControllerGetAgreementsV1QueryOptions());
+      const terms = await context.queryClient.fetchQuery(getTermsControllerGetAgreementsV1QueryOptions());
       return { user, terms: terms.items };
     }
     catch (error) {
       if (!(error instanceof ApplicationError) || error.status !== 401) throw error;
       context.queryClient.removeQueries({ queryKey: getAuthControllerMeV1QueryKey() });
-      context.queryClient.removeQueries({ queryKey: getOperatorTermsControllerGetAgreementsV1QueryKey() });
+      context.queryClient.removeQueries({ queryKey: getTermsControllerGetAgreementsV1QueryKey() });
       return { user: null, terms: [] };
     }
   },

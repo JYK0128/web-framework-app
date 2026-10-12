@@ -22,7 +22,7 @@ test.describe('Admin application route/API coverage', () => {
   });
 
   test('redirects an unauthenticated browser away from every protected screen', async ({ context }) => {
-    for (const path of ['/customers', '/faqs', '/qna', '/service-terms', '/roles', '/operators', '/operator-terms', '/logs', '/profile', '/service-settings']) {
+    for (const path of ['/customers', '/faqs', '/qna', '/service-terms', '/roles', '/operators', '/terms', '/logs', '/profile', '/service-settings']) {
       const page = await context.newPage();
       try {
         try {
@@ -48,7 +48,7 @@ test.describe('Admin application route/API coverage', () => {
       { path: '/service-terms', heading: '서비스 약관 관리', api: '/api/v1/service-terms/groups' },
       { path: '/roles', heading: '역할 관리', api: '/api/v1/roles' },
       { path: '/operators', heading: '운영자 관리', api: '/api/v1/operators' },
-      { path: '/operator-terms', heading: '운영자 약관 관리', api: '/api/v1/operator-terms/groups' },
+      { path: '/terms', heading: '약관 관리', api: '/api/v1/terms/groups' },
       { path: '/logs', heading: '로그 관리', api: '/api/v1/logs' },
       { path: '/profile', heading: '내 프로필', api: '/api/v1/auth/me', ssr: true },
       { path: '/service-settings', heading: '서비스 설정', api: '/api/v1/service-config' },

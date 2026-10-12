@@ -4,8 +4,8 @@ import { ApplicationError } from '@pkg/shared/common';
 
 import { Term, TermGroup } from '#/core/database/entities/terms';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { DeleteTermGroupResponseDto } from '#/modules/terms';
 import { DeleteTermGroupCommand } from '#/modules/terms/groups/delete-term-group.command';
+import { DeleteTermGroupResponseDto } from '#/modules/terms/groups/delete-term-group.response.dto';
 
 @Injectable()
 @CommandHandler(DeleteTermGroupCommand)

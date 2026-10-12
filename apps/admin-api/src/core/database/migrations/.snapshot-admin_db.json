@@ -2339,6 +2339,18 @@
       "indexes": [
         {
           "columnNames": [
+            "termGroup",
+            "version"
+          ],
+          "composite": true,
+          "constraint": false,
+          "keyName": "term_group_version_active_unique",
+          "primary": false,
+          "unique": true,
+          "where": "\"deletedAt\" is null"
+        },
+        {
+          "columnNames": [
             "id"
           ],
           "composite": false,

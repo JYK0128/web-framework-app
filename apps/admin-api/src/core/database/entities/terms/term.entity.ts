@@ -1,5 +1,5 @@
 import { Collection, type Opt, type Rel } from '@mikro-orm/core';
-import { Entity, ManyToOne, OneToMany, Property } from '@mikro-orm/decorators/legacy';
+import { Entity, ManyToOne, OneToMany, Property, Unique } from '@mikro-orm/decorators/legacy';
 import { DateUtil } from '@pkg/shared';
 
 import { BaseEntity } from '#/core/database/entities/common/base.entity';
@@ -8,6 +8,7 @@ import { UserTermAgreement } from '#/core/database/entities/terms/user-term-agre
 import { TermGroup } from './term-group.entity';
 
 @Entity({ tableName: 'term' })
+@Unique({ name: 'term_group_version_active_unique', properties: ['termGroup', 'version'], where: { deletedAt: null } })
 export class Term extends BaseEntity {
   @ManyToOne(() => TermGroup, { deleteRule: 'cascade' })
   termGroup!: Rel<TermGroup>;

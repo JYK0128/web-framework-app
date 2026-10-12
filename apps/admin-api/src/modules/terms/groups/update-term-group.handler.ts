@@ -4,8 +4,8 @@ import { ApplicationError } from '@pkg/shared/common';
 
 import { TermGroup } from '#/core/database/entities/terms';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { UpdateTermGroupResponseDto } from '#/modules/terms';
 import { UpdateTermGroupCommand } from '#/modules/terms/groups/update-term-group.command';
+import { UpdateTermGroupResponseDto } from '#/modules/terms/groups/update-term-group.response.dto';
 
 @Injectable()
 @CommandHandler(UpdateTermGroupCommand)

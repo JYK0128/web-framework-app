@@ -29,7 +29,6 @@ import { Route as ProtectedAppFaqsIndexRouteImport } from './routes/_protected/_
 import { Route as ProtectedAppLogsIndexRouteImport } from './routes/_protected/_app/logs/index'
 import { Route as ProtectedAppMembershipsIndexRouteImport } from './routes/_protected/_app/memberships/index'
 import { Route as ProtectedAppNoticesIndexRouteImport } from './routes/_protected/_app/notices/index'
-import { Route as ProtectedAppOperatorTermsIndexRouteImport } from './routes/_protected/_app/operator-terms/index'
 import { Route as ProtectedAppOperatorsIndexRouteImport } from './routes/_protected/_app/operators/index'
 import { Route as ProtectedAppQnaIndexRouteImport } from './routes/_protected/_app/qna/index'
 import { Route as ProtectedAppRolesIndexRouteImport } from './routes/_protected/_app/roles/index'
@@ -37,6 +36,7 @@ import { Route as ProtectedAppServiceSettingsIndexRouteImport } from './routes/_
 import { Route as ProtectedAppServiceTermsIndexRouteImport } from './routes/_protected/_app/service-terms/index'
 import { Route as ProtectedAppSupportIndexRouteImport } from './routes/_protected/_app/support/index'
 import { Route as ProtectedAppSystemSettingsIndexRouteImport } from './routes/_protected/_app/system-settings/index'
+import { Route as ProtectedAppTermsIndexRouteImport } from './routes/_protected/_app/terms/index'
 import { Route as ProtectedGlobalOnboardingAgreeTermsRouteImport } from './routes/_protected/_global/onboarding/agree-terms'
 import { Route as ProtectedGlobalOnboardingChangePasswordRouteImport } from './routes/_protected/_global/onboarding/change-password'
 import { Route as ProtectedGlobalOnboardingSetup2faRouteImport } from './routes/_protected/_global/onboarding/setup-2fa'
@@ -146,12 +146,6 @@ const ProtectedAppNoticesIndexRoute =
     path: '/notices/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
-const ProtectedAppOperatorTermsIndexRoute =
-  ProtectedAppOperatorTermsIndexRouteImport.update({
-    id: '/operator-terms/',
-    path: '/operator-terms/',
-    getParentRoute: () => ProtectedAppRouteRoute,
-  } as any)
 const ProtectedAppOperatorsIndexRoute =
   ProtectedAppOperatorsIndexRouteImport.update({
     id: '/operators/',
@@ -192,6 +186,11 @@ const ProtectedAppSystemSettingsIndexRoute =
     path: '/system-settings/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
+const ProtectedAppTermsIndexRoute = ProtectedAppTermsIndexRouteImport.update({
+  id: '/terms/',
+  path: '/terms/',
+  getParentRoute: () => ProtectedAppRouteRoute,
+} as any)
 const ProtectedGlobalOnboardingAgreeTermsRoute =
   ProtectedGlobalOnboardingAgreeTermsRouteImport.update({
     id: '/agree-terms',
@@ -255,7 +254,6 @@ export interface FileRoutesByFullPath {
   '/logs/': typeof ProtectedAppLogsIndexRoute
   '/memberships/': typeof ProtectedAppMembershipsIndexRoute
   '/notices/': typeof ProtectedAppNoticesIndexRoute
-  '/operator-terms/': typeof ProtectedAppOperatorTermsIndexRoute
   '/operators/': typeof ProtectedAppOperatorsIndexRoute
   '/qna/': typeof ProtectedAppQnaIndexRoute
   '/roles/': typeof ProtectedAppRolesIndexRoute
@@ -263,6 +261,7 @@ export interface FileRoutesByFullPath {
   '/service-terms/': typeof ProtectedAppServiceTermsIndexRoute
   '/support/': typeof ProtectedAppSupportIndexRoute
   '/system-settings/': typeof ProtectedAppSystemSettingsIndexRoute
+  '/terms/': typeof ProtectedAppTermsIndexRoute
   '/login/': typeof PublicGlobalLoginIndexRoute
   '/{-$locale}/': typeof PublicGlobalChar123LocaleChar125IndexRoute
 }
@@ -286,7 +285,6 @@ export interface FileRoutesByTo {
   '/logs': typeof ProtectedAppLogsIndexRoute
   '/memberships': typeof ProtectedAppMembershipsIndexRoute
   '/notices': typeof ProtectedAppNoticesIndexRoute
-  '/operator-terms': typeof ProtectedAppOperatorTermsIndexRoute
   '/operators': typeof ProtectedAppOperatorsIndexRoute
   '/qna': typeof ProtectedAppQnaIndexRoute
   '/roles': typeof ProtectedAppRolesIndexRoute
@@ -294,6 +292,7 @@ export interface FileRoutesByTo {
   '/service-terms': typeof ProtectedAppServiceTermsIndexRoute
   '/support': typeof ProtectedAppSupportIndexRoute
   '/system-settings': typeof ProtectedAppSystemSettingsIndexRoute
+  '/terms': typeof ProtectedAppTermsIndexRoute
   '/login': typeof PublicGlobalLoginIndexRoute
   '/{-$locale}': typeof PublicGlobalChar123LocaleChar125IndexRoute
 }
@@ -324,7 +323,6 @@ export interface FileRoutesById {
   '/_protected/_app/logs/': typeof ProtectedAppLogsIndexRoute
   '/_protected/_app/memberships/': typeof ProtectedAppMembershipsIndexRoute
   '/_protected/_app/notices/': typeof ProtectedAppNoticesIndexRoute
-  '/_protected/_app/operator-terms/': typeof ProtectedAppOperatorTermsIndexRoute
   '/_protected/_app/operators/': typeof ProtectedAppOperatorsIndexRoute
   '/_protected/_app/qna/': typeof ProtectedAppQnaIndexRoute
   '/_protected/_app/roles/': typeof ProtectedAppRolesIndexRoute
@@ -332,6 +330,7 @@ export interface FileRoutesById {
   '/_protected/_app/service-terms/': typeof ProtectedAppServiceTermsIndexRoute
   '/_protected/_app/support/': typeof ProtectedAppSupportIndexRoute
   '/_protected/_app/system-settings/': typeof ProtectedAppSystemSettingsIndexRoute
+  '/_protected/_app/terms/': typeof ProtectedAppTermsIndexRoute
   '/_public/_global/login/': typeof PublicGlobalLoginIndexRoute
   '/_public/_global/{-$locale}/': typeof PublicGlobalChar123LocaleChar125IndexRoute
 }
@@ -359,7 +358,6 @@ export interface FileRouteTypes {
     | '/logs/'
     | '/memberships/'
     | '/notices/'
-    | '/operator-terms/'
     | '/operators/'
     | '/qna/'
     | '/roles/'
@@ -367,6 +365,7 @@ export interface FileRouteTypes {
     | '/service-terms/'
     | '/support/'
     | '/system-settings/'
+    | '/terms/'
     | '/login/'
     | '/{-$locale}/'
   fileRoutesByTo: FileRoutesByTo
@@ -390,7 +389,6 @@ export interface FileRouteTypes {
     | '/logs'
     | '/memberships'
     | '/notices'
-    | '/operator-terms'
     | '/operators'
     | '/qna'
     | '/roles'
@@ -398,6 +396,7 @@ export interface FileRouteTypes {
     | '/service-terms'
     | '/support'
     | '/system-settings'
+    | '/terms'
     | '/login'
     | '/{-$locale}'
   id:
@@ -427,7 +426,6 @@ export interface FileRouteTypes {
     | '/_protected/_app/logs/'
     | '/_protected/_app/memberships/'
     | '/_protected/_app/notices/'
-    | '/_protected/_app/operator-terms/'
     | '/_protected/_app/operators/'
     | '/_protected/_app/qna/'
     | '/_protected/_app/roles/'
@@ -435,6 +433,7 @@ export interface FileRouteTypes {
     | '/_protected/_app/service-terms/'
     | '/_protected/_app/support/'
     | '/_protected/_app/system-settings/'
+    | '/_protected/_app/terms/'
     | '/_public/_global/login/'
     | '/_public/_global/{-$locale}/'
   fileRoutesById: FileRoutesById
@@ -587,13 +586,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAppNoticesIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
-    '/_protected/_app/operator-terms/': {
-      id: '/_protected/_app/operator-terms/'
-      path: '/operator-terms'
-      fullPath: '/operator-terms/'
-      preLoaderRoute: typeof ProtectedAppOperatorTermsIndexRouteImport
-      parentRoute: typeof ProtectedAppRouteRoute
-    }
     '/_protected/_app/operators/': {
       id: '/_protected/_app/operators/'
       path: '/operators'
@@ -641,6 +633,13 @@ declare module '@tanstack/react-router' {
       path: '/system-settings'
       fullPath: '/system-settings/'
       preLoaderRoute: typeof ProtectedAppSystemSettingsIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
+    '/_protected/_app/terms/': {
+      id: '/_protected/_app/terms/'
+      path: '/terms'
+      fullPath: '/terms/'
+      preLoaderRoute: typeof ProtectedAppTermsIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
     '/_protected/_global/onboarding/agree-terms': {
@@ -703,7 +702,6 @@ interface ProtectedAppRouteRouteChildren {
   ProtectedAppLogsIndexRoute: typeof ProtectedAppLogsIndexRoute
   ProtectedAppMembershipsIndexRoute: typeof ProtectedAppMembershipsIndexRoute
   ProtectedAppNoticesIndexRoute: typeof ProtectedAppNoticesIndexRoute
-  ProtectedAppOperatorTermsIndexRoute: typeof ProtectedAppOperatorTermsIndexRoute
   ProtectedAppOperatorsIndexRoute: typeof ProtectedAppOperatorsIndexRoute
   ProtectedAppQnaIndexRoute: typeof ProtectedAppQnaIndexRoute
   ProtectedAppRolesIndexRoute: typeof ProtectedAppRolesIndexRoute
@@ -711,6 +709,7 @@ interface ProtectedAppRouteRouteChildren {
   ProtectedAppServiceTermsIndexRoute: typeof ProtectedAppServiceTermsIndexRoute
   ProtectedAppSupportIndexRoute: typeof ProtectedAppSupportIndexRoute
   ProtectedAppSystemSettingsIndexRoute: typeof ProtectedAppSystemSettingsIndexRoute
+  ProtectedAppTermsIndexRoute: typeof ProtectedAppTermsIndexRoute
 }
 
 const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
@@ -721,7 +720,6 @@ const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
   ProtectedAppLogsIndexRoute: ProtectedAppLogsIndexRoute,
   ProtectedAppMembershipsIndexRoute: ProtectedAppMembershipsIndexRoute,
   ProtectedAppNoticesIndexRoute: ProtectedAppNoticesIndexRoute,
-  ProtectedAppOperatorTermsIndexRoute: ProtectedAppOperatorTermsIndexRoute,
   ProtectedAppOperatorsIndexRoute: ProtectedAppOperatorsIndexRoute,
   ProtectedAppQnaIndexRoute: ProtectedAppQnaIndexRoute,
   ProtectedAppRolesIndexRoute: ProtectedAppRolesIndexRoute,
@@ -729,6 +727,7 @@ const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
   ProtectedAppServiceTermsIndexRoute: ProtectedAppServiceTermsIndexRoute,
   ProtectedAppSupportIndexRoute: ProtectedAppSupportIndexRoute,
   ProtectedAppSystemSettingsIndexRoute: ProtectedAppSystemSettingsIndexRoute,
+  ProtectedAppTermsIndexRoute: ProtectedAppTermsIndexRoute,
 }
 
 const ProtectedAppRouteRouteWithChildren =

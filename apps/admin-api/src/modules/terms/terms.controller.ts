@@ -6,26 +6,26 @@ import { AdminPermission } from '@pkg/shared';
 import { SkipPasswordExpiry, UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-import { AgreementHistoryCursorResponseDto, CreateTermGroupRequestDto, CreateTermGroupResponseDto, CreateTermRequestDto, CreateTermResponseDto, DeleteTermGroupResponseDto, DeleteTermResponseDto, GetAgreementHistoryRequestDto, GetAgreementsRequestDto, GetOperatorTermsRequestDto, GetTermRevisionsRequestDto, OperatorTermDetailResponseDto, OperatorTermGroupListResponseDto, OperatorTermPageResponseDto, PublishTermResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto, TermAgreementListResponseDto, TermRevisionPageResponseDto, UpdateTermGroupRequestDto, UpdateTermGroupResponseDto, UpdateTermRequestDto, UpdateTermResponseDto } from '#/modules/terms';
+import { CreateTermGroupRequestDto, CreateTermGroupResponseDto, CreateTermRequestDto, CreateTermResponseDto, DeleteTermGroupRequestDto, DeleteTermGroupResponseDto, DeleteTermRequestDto, DeleteTermResponseDto, GetAgreementHistoryRequestDto, GetAgreementHistoryResponseDto, GetAgreementsRequestDto, GetAgreementsResponseDto, GetTermGroupsRequestDto, GetTermGroupsResponseDto, GetTermRequestDto, GetTermResponseDto, GetTermRevisionsRequestDto, GetTermRevisionsResponseDto, GetTermsRequestDto, GetTermsResponseDto, PublishTermRequestDto, PublishTermResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto, UpdateTermGroupRequestDto, UpdateTermGroupResponseDto, UpdateTermRequestDto, UpdateTermResponseDto } from '#/modules/terms';
 import { GetAgreementHistoryQuery } from '#/modules/terms/agreements/get-agreement-history.query';
 import { GetAgreementsQuery } from '#/modules/terms/agreements/get-agreements.query';
 import { SetAgreementsCommand } from '#/modules/terms/agreements/set-agreements.command';
-import { CreateTermCommand } from '#/modules/terms/create-term.command';
-import { DeleteTermCommand } from '#/modules/terms/delete-term.command';
-import { GetOperatorTermQuery } from '#/modules/terms/get-operator-term.query';
-import { GetOperatorTermsQuery } from '#/modules/terms/get-operator-terms.query';
+import { CreateTermCommand } from '#/modules/terms/documents/create-term.command';
+import { DeleteTermCommand } from '#/modules/terms/documents/delete-term.command';
+import { GetTermQuery } from '#/modules/terms/documents/get-term.query';
+import { GetTermsQuery } from '#/modules/terms/documents/get-terms.query';
+import { PublishTermCommand } from '#/modules/terms/documents/publish-term.command';
+import { UpdateTermCommand } from '#/modules/terms/documents/update-term.command';
 import { CreateTermGroupCommand } from '#/modules/terms/groups/create-term-group.command';
 import { DeleteTermGroupCommand } from '#/modules/terms/groups/delete-term-group.command';
-import { GetOperatorTermGroupsQuery } from '#/modules/terms/groups/get-operator-term-groups.query';
+import { GetTermGroupsQuery } from '#/modules/terms/groups/get-term-groups.query';
 import { UpdateTermGroupCommand } from '#/modules/terms/groups/update-term-group.command';
-import { PublishTermCommand } from '#/modules/terms/publish-term.command';
 import { GetTermRevisionsQuery } from '#/modules/terms/revisions/get-term-revisions.query';
-import { UpdateTermCommand } from '#/modules/terms/update-term.command';
 
-@ApiTags('operator-terms')
+@ApiTags('terms')
 @UserAuth()
-@Controller('operator-terms')
-export class OperatorTermsController {
+@Controller('terms')
+export class TermsController {
   constructor(
     private readonly queryBus: QueryBus,
     private readonly commandBus: CommandBus,
@@ -33,40 +33,40 @@ export class OperatorTermsController {
 
   @Get('groups/:groupId/revisions')
   @ApiOperation({ summary: '게시된 약관 개정 이력 조회' })
-  @SwaggerApiResponse(TermRevisionPageResponseDto)
-  getRevisions(@Param('groupId') groupId: string, @Query() dto: GetTermRevisionsRequestDto): Promise<TermRevisionPageResponseDto> {
+  @SwaggerApiResponse(GetTermRevisionsResponseDto)
+  getRevisions(@Param('groupId') groupId: string, @Query() dto: GetTermRevisionsRequestDto): Promise<GetTermRevisionsResponseDto> {
     return this.queryBus.execute(new GetTermRevisionsQuery({ groupId, dto }));
   }
 
   @SkipPasswordExpiry()
   @Get('agreements')
   @ApiOperation({ summary: '약관 동의 목록 조회' })
-  @SwaggerApiResponse(TermAgreementListResponseDto)
-  async getAgreements(@Query() query: GetAgreementsRequestDto): Promise<TermAgreementListResponseDto> {
+  @SwaggerApiResponse(GetAgreementsResponseDto)
+  async getAgreements(@Query() query: GetAgreementsRequestDto): Promise<GetAgreementsResponseDto> {
     return this.queryBus.execute(new GetAgreementsQuery(query));
   }
 
   @Get('agreements/history')
   @ApiOperation({ summary: '약관 동의 이력 조회' })
-  @SwaggerApiResponse(AgreementHistoryCursorResponseDto)
-  async getAgreementHistory(@Query() query: GetAgreementHistoryRequestDto): Promise<AgreementHistoryCursorResponseDto> {
+  @SwaggerApiResponse(GetAgreementHistoryResponseDto)
+  async getAgreementHistory(@Query() query: GetAgreementHistoryRequestDto): Promise<GetAgreementHistoryResponseDto> {
     return this.queryBus.execute(new GetAgreementHistoryQuery(query));
   }
 
   @Get()
   @Permissions(AdminPermission.terms.read)
   @ApiOperation({ summary: '약관 목록 조회' })
-  @SwaggerApiResponse(OperatorTermPageResponseDto)
-  async getOperatorTerms(@Query() query: GetOperatorTermsRequestDto): Promise<OperatorTermPageResponseDto> {
-    return this.queryBus.execute(new GetOperatorTermsQuery(query));
+  @SwaggerApiResponse(GetTermsResponseDto)
+  async getTerms(@Query() query: GetTermsRequestDto): Promise<GetTermsResponseDto> {
+    return this.queryBus.execute(new GetTermsQuery(query));
   }
 
   @Get('groups')
   @Permissions(AdminPermission.terms.read)
   @ApiOperation({ summary: '약관 그룹 목록 조회' })
-  @SwaggerApiResponse(OperatorTermGroupListResponseDto)
-  async getOperatorTermGroups(): Promise<OperatorTermGroupListResponseDto> {
-    return this.queryBus.execute(new GetOperatorTermGroupsQuery());
+  @SwaggerApiResponse(GetTermGroupsResponseDto)
+  async getTermGroups(@Query() input: GetTermGroupsRequestDto): Promise<GetTermGroupsResponseDto> {
+    return this.queryBus.execute(new GetTermGroupsQuery(input));
   }
 
   @Post('groups')
@@ -74,7 +74,7 @@ export class OperatorTermsController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: '약관 그룹 생성' })
   @SwaggerApiResponse(CreateTermGroupResponseDto, HttpStatus.CREATED)
-  async createOperatorTermGroup(@Body() input: CreateTermGroupRequestDto): Promise<CreateTermGroupResponseDto> {
+  async createTermGroup(@Body() input: CreateTermGroupRequestDto): Promise<CreateTermGroupResponseDto> {
     return this.commandBus.execute(new CreateTermGroupCommand(input));
   }
 
@@ -82,7 +82,7 @@ export class OperatorTermsController {
   @Permissions(AdminPermission.terms.update)
   @ApiOperation({ summary: '약관 그룹 수정' })
   @SwaggerApiResponse(UpdateTermGroupResponseDto)
-  async updateOperatorTermGroup(@Param('id') id: string, @Body() input: UpdateTermGroupRequestDto): Promise<UpdateTermGroupResponseDto> {
+  async updateTermGroup(@Param('id') id: string, @Body() input: UpdateTermGroupRequestDto): Promise<UpdateTermGroupResponseDto> {
     return this.commandBus.execute(new UpdateTermGroupCommand({ groupId: id, data: input }));
   }
 
@@ -91,8 +91,8 @@ export class OperatorTermsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '약관 그룹 삭제' })
   @SwaggerApiResponse(DeleteTermGroupResponseDto)
-  async deleteOperatorTermGroup(@Param('id') id: string): Promise<DeleteTermGroupResponseDto> {
-    return this.commandBus.execute(new DeleteTermGroupCommand({ groupId: id }));
+  async deleteTermGroup(@Param('id') id: string): Promise<DeleteTermGroupResponseDto> {
+    return this.commandBus.execute(new DeleteTermGroupCommand(DeleteTermGroupRequestDto.parse({ groupId: id }).validate()));
   }
 
   @Post()
@@ -100,7 +100,7 @@ export class OperatorTermsController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: '약관 생성' })
   @SwaggerApiResponse(CreateTermResponseDto, HttpStatus.CREATED)
-  async createOperatorTerm(@Body() input: CreateTermRequestDto): Promise<CreateTermResponseDto> {
+  async createTerm(@Body() input: CreateTermRequestDto): Promise<CreateTermResponseDto> {
     return this.commandBus.execute(new CreateTermCommand(input));
   }
 
@@ -108,7 +108,7 @@ export class OperatorTermsController {
   @Permissions(AdminPermission.terms.update)
   @ApiOperation({ summary: '약관 수정' })
   @SwaggerApiResponse(UpdateTermResponseDto)
-  async updateOperatorTerm(@Param('id') id: string, @Body() input: UpdateTermRequestDto): Promise<UpdateTermResponseDto> {
+  async updateTerm(@Param('id') id: string, @Body() input: UpdateTermRequestDto): Promise<UpdateTermResponseDto> {
     return this.commandBus.execute(new UpdateTermCommand({ termId: id, data: input }));
   }
 
@@ -117,8 +117,8 @@ export class OperatorTermsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '약관 게시' })
   @SwaggerApiResponse(PublishTermResponseDto)
-  async publishOperatorTerm(@Param('id') id: string): Promise<PublishTermResponseDto> {
-    return this.commandBus.execute(new PublishTermCommand({ termId: id }));
+  async publishTerm(@Param('id') id: string): Promise<PublishTermResponseDto> {
+    return this.commandBus.execute(new PublishTermCommand(PublishTermRequestDto.parse({ termId: id }).validate()));
   }
 
   @Delete(':id')
@@ -126,15 +126,15 @@ export class OperatorTermsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '약관 삭제' })
   @SwaggerApiResponse(DeleteTermResponseDto)
-  async deleteOperatorTerm(@Param('id') id: string): Promise<DeleteTermResponseDto> {
-    return this.commandBus.execute(new DeleteTermCommand({ termId: id }));
+  async deleteTerm(@Param('id') id: string): Promise<DeleteTermResponseDto> {
+    return this.commandBus.execute(new DeleteTermCommand(DeleteTermRequestDto.parse({ termId: id }).validate()));
   }
 
   @Get(':termId')
-  @ApiOperation({ summary: '게시된 운영자 약관 상세 조회' })
-  @SwaggerApiResponse(OperatorTermDetailResponseDto)
-  getTerm(@Param('termId') termId: string): Promise<OperatorTermDetailResponseDto> {
-    return this.queryBus.execute(new GetOperatorTermQuery({ termId }));
+  @ApiOperation({ summary: '게시된 약관 상세 조회' })
+  @SwaggerApiResponse(GetTermResponseDto)
+  getTerm(@Param('termId') termId: string): Promise<GetTermResponseDto> {
+    return this.queryBus.execute(new GetTermQuery(GetTermRequestDto.parse({ termId }).validate()));
   }
 
   @SkipPasswordExpiry()
@@ -142,7 +142,7 @@ export class OperatorTermsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '약관 동의 저장' })
   @SwaggerApiResponse(SetAgreementsResponseDto)
-  async setOperatorAgreements(@Body() input: SetAgreementsRequestDto): Promise<SetAgreementsResponseDto> {
+  async setAgreements(@Body() input: SetAgreementsRequestDto): Promise<SetAgreementsResponseDto> {
     return this.commandBus.execute(new SetAgreementsCommand(input));
   }
 }
