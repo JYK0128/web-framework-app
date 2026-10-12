@@ -74,7 +74,7 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
         this.logger.warn(`Registration email verification could not be sent: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
-    return RegisterResponseDto.fromPlain({ emailVerificationRequired: SECURITY_CONFIG.registration.requireEmailVerification, verificationEmailSent });
+    return RegisterResponseDto.parse({ emailVerificationRequired: SECURITY_CONFIG.registration.requireEmailVerification, verificationEmailSent });
   }
 }
 
@@ -84,7 +84,7 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
   constructor(private readonly em: AppEntityManager, private readonly kv: KvStore) {}
   async execute(command: VerifyEmailCommand): Promise<VerifyEmailResponseDto> {
     await verifyEmailChallenge(this.em, this.kv, command.input.challengeId, command.input.token);
-    return VerifyEmailResponseDto.fromPlain({ ok: true });
+    return VerifyEmailResponseDto.parse({ ok: true });
   }
 }
 
@@ -93,13 +93,13 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
 export class RequestEmailVerificationHandler implements ICommandHandler<RequestEmailVerificationCommand, RequestEmailVerificationResponseDto> {
   constructor(private readonly em: AppEntityManager, private readonly kv: KvStore, private readonly messages: MessageService) {}
   async execute(command: RequestEmailVerificationCommand): Promise<RequestEmailVerificationResponseDto> {
-    if (!SECURITY_CONFIG.registration.requireEmailVerification) return RequestEmailVerificationResponseDto.fromPlain({ accepted: true });
+    if (!SECURITY_CONFIG.registration.requireEmailVerification) return RequestEmailVerificationResponseDto.parse({ accepted: true });
     await ensureEmailDeliveryConfigured(this.em);
     const user = await this.em.findOne(User, { profile: { emailHash: hmac(command.input.email, env.PII_HASH_KEY) } }, { populate: ['profile'], filters: false });
     if (user && !user.isDeleted && !user.emailVerified) {
       if (!user.profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
       await sendEmailVerificationChallenge(this.em, this.kv, this.messages, user, user.profile, decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY));
     }
-    return RequestEmailVerificationResponseDto.fromPlain({ accepted: true });
+    return RequestEmailVerificationResponseDto.parse({ accepted: true });
   }
 }

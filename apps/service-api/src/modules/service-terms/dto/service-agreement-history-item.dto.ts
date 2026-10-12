@@ -36,8 +36,8 @@ export class ServiceAgreementHistoryItemDto extends EntityDto(UserTermAgreement)
   @ApiPropertyOptional({ type: () => ServiceAgreementMetadataDto, nullable: true })
   metadata?: ServiceAgreementMetadataDto | null;
 
-  static override from(agreement: UserTermAgreement): ServiceAgreementHistoryItemDto {
-    return ServiceAgreementHistoryItemDto.fromPlain({
+  static override parseEntity(agreement: UserTermAgreement): ServiceAgreementHistoryItemDto {
+    return this.parse({
       id: agreement.id,
       termId: agreement.term.id,
       groupId: agreement.term.termGroup.id,
@@ -47,7 +47,7 @@ export class ServiceAgreementHistoryItemDto extends EntityDto(UserTermAgreement)
       isRequired: agreement.term.termGroup.isRequired,
       isAgreed: agreement.isAgreed,
       createdAt: agreement.createdAt,
-      metadata: ServiceAgreementMetadataDto.fromMetadata(agreement.metadata),
+      metadata: ServiceAgreementMetadataDto.parseMetadata(agreement.metadata),
     });
   }
 }

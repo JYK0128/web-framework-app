@@ -5,7 +5,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 
-import { CreateQnaRequestDto, GetQnaRequestDto, QnaActionResponseDto, QnaItemDto, QnaPageResponseDto, UpdateOwnQnaRequestDto } from './dto/qna.dto';
+import { CreateQnaRequestDto, GetQnaRequestDto, QnaActionResponseDto, QnaItemDto, QnaPageResponseDto, UpdateOwnQnaRequestDto } from './dto';
 import { CreateOwnQnaCommand, DeleteOwnQnaCommand, GetOwnQnaQuery, GetOwnQnasQuery, UpdateOwnQnaCommand } from './qna.cqrs';
 
 @ApiTags('qna') @UserAuth() @Controller('qna')

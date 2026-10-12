@@ -35,8 +35,8 @@ export class NoticeItemDto extends EntityDto(Notice) {
   @ApiProperty({ type: String, format: 'date-time' }) override createdAt!: Date;
   @ApiProperty({ type: String, format: 'date-time' }) override updatedAt!: Date;
 
-  static override from(notice: Notice): NoticeItemDto {
-    return this.fromPlain({ id: notice.id, title: notice.title, content: notice.content, importance: notice.importance, isPinned: notice.isPinned, status: notice.status, publishedAt: notice.publishedAt, createdAt: notice.createdAt, updatedAt: notice.updatedAt });
+  static override parseEntity(notice: Notice): NoticeItemDto {
+    return this.parse({ id: notice.id, title: notice.title, content: notice.content, importance: notice.importance, isPinned: notice.isPinned, status: notice.status, publishedAt: notice.publishedAt, createdAt: notice.createdAt, updatedAt: notice.updatedAt });
   }
 }
 

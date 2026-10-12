@@ -1,13 +1,13 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
-import { decrypt, hmac } from '@pkg/shared/server';
+import { hmac } from '@pkg/shared/server';
 
 import { Account, User } from '#/core/database/entities/auth';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { env } from '#/env';
 import { FindIdCommand } from '#/modules/auth/commands/find-id.command';
-import type { FindIdResponseDto } from '#/modules/auth/dto';
+import { FindIdItemDto, FindIdResponseDto } from '#/modules/auth/dto';
 
 @Injectable()
 @CommandHandler(FindIdCommand)
@@ -21,7 +21,7 @@ export class FindIdHandler implements ICommandHandler<FindIdCommand, FindIdRespo
         phoneNumberHash: hmac(command.input.phoneNumber, env.PII_HASH_KEY),
       },
     }, { populate: ['profile'] });
-    if (users.length === 0) return { items: [] };
+    if (users.length === 0) return FindIdResponseDto.parse({ items: [] });
 
     const accounts = await this.em.find(Account, { user: { $in: users.map(({ id }) => id) } });
     const accountProvidersByUser = new Map<string, string[]>();
@@ -32,15 +32,10 @@ export class FindIdHandler implements ICommandHandler<FindIdCommand, FindIdRespo
     }
 
     const items = users.flatMap((user) => {
-      if (!user.profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
-      const maskedEmail = maskEmail(decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY));
-      return (accountProvidersByUser.get(user.id) ?? []).map((provider) => ({ maskedEmail, provider }));
+      const profile = user.profile;
+      if (!profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
+      return (accountProvidersByUser.get(user.id) ?? []).map((provider) => FindIdItemDto.parseEntity(profile, provider, env.PII_ENCRYPTION_KEY));
     });
-    return { items };
+    return FindIdResponseDto.parse({ items });
   }
-}
-
-function maskEmail(email: string): string {
-  const [name, domain] = email.split('@');
-  return `${name.slice(0, 2)}${'*'.repeat(Math.max(1, name.length - 2))}@${domain}`;
 }

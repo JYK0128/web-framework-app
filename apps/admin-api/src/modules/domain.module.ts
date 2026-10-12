@@ -12,9 +12,10 @@ import { OperatorsModule } from './operators/operators.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { QnaModule } from './qna/qna.module';
 import { RolesModule } from './roles/roles.module';
+import { ServiceConfigModule } from './service-config/service-config.module';
 import { ServiceTermsModule } from './service-terms/service-terms.module';
 import { SupportModule } from './support/support.module';
-import { SystemConfigsModule } from './system-configs/system-configs.module';
+import { SystemConfigModule } from './system-config/system-config.module';
 import { TermsModule } from './terms/terms.module';
 
 const DOMAIN_MODULES = [
@@ -33,7 +34,8 @@ const DOMAIN_MODULES = [
   PermissionsModule,
   LogsModule,
   MembershipsModule,
-  SystemConfigsModule,
+  SystemConfigModule,
+  ServiceConfigModule,
 ];
 
 @Module({

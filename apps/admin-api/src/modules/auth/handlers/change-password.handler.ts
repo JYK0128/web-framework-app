@@ -24,6 +24,6 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
     if (command.input.newPassword !== command.input.confirmPassword) throw new ApplicationError({ code: 'PASSWORD_CONFIRMATION_MISMATCH', status: HttpStatus.BAD_REQUEST });
     if (!await verify(command.input.currentPassword, account.password)) throw new ApplicationError({ code: 'INVALID_CURRENT_PASSWORD', status: HttpStatus.BAD_REQUEST });
     await updateCredentialPassword(account, command.input.newPassword);
-    return ChangePasswordResponseDto.fromPlain({ ok: true });
+    return ChangePasswordResponseDto.parse({ ok: true });
   }
 }

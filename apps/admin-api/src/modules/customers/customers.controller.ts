@@ -11,7 +11,7 @@ import { InternalClient } from '#/core/http/internal-client';
 import { BanCustomerRequestDto, CustomerActionResponseDto, CustomerDetailResponseDto, CustomerItemDto, CustomerPageResponseDto, CustomerPiiResponseDto, CustomerSessionListResponseDto, GetCustomersRequestDto, UpdateCustomerMemoRequestDto, UpdateCustomerRoleRequestDto } from './dto';
 
 function maskCustomer(customer: CustomerItemDto): CustomerItemDto {
-  return { ...customer, name: maskName(customer.name), email: maskEmail(customer.email) };
+  return CustomerItemDto.parse({ ...customer, name: maskName(customer.name), email: maskEmail(customer.email) });
 }
 
 @ApiTags('customers')
@@ -30,7 +30,7 @@ export class CustomersController {
     for (const direction of query.direction) params.append('direction[]', direction);
     if (query.search) params.set('search', query.search);
     const result = await this.internalClient.fetch<CustomerPageResponseDto>(`/internal/customers?${params.toString()}`);
-    return { ...result, items: result.items.map(maskCustomer) };
+    return CustomerPageResponseDto.parse({ ...result, items: result.items.map(maskCustomer) });
   }
 
   @ApiOperation({ summary: '고객 원본 목록 조회' })

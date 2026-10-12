@@ -15,7 +15,7 @@ export class CreateFaqHandler implements ICommandHandler<CreateFaqCommand, FaqIt
   async execute({ input }: CreateFaqCommand): Promise<FaqItemDto> {
     const faq = this.em.create(Faq, normalize(input, true) as { category: FaqCategory, question: string, answer: string, sortOrder?: number, isPublished?: boolean });
     this.em.persist(faq);
-    return FaqItemDto.from(faq);
+    return FaqItemDto.parseEntity(faq);
   }
 }
 
@@ -27,7 +27,7 @@ export class UpdateFaqHandler implements ICommandHandler<UpdateFaqCommand, FaqIt
   async execute({ input }: UpdateFaqCommand): Promise<FaqItemDto> {
     const faq = await findFaq(this.em, input.faqId);
     Object.assign(faq, normalize(input.dto, false));
-    return FaqItemDto.from(faq);
+    return FaqItemDto.parseEntity(faq);
   }
 }
 
@@ -39,7 +39,7 @@ export class DeleteFaqHandler implements ICommandHandler<DeleteFaqCommand, FaqAc
   async execute({ input }: DeleteFaqCommand): Promise<FaqActionResponseDto> {
     const faq = await findFaq(this.em, input.faqId);
     faq.deletedAt = new Date();
-    return FaqActionResponseDto.fromPlain({ ok: true });
+    return FaqActionResponseDto.parse({ ok: true });
   }
 }
 

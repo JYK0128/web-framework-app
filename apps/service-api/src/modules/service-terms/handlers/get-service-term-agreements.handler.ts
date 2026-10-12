@@ -19,7 +19,7 @@ export class GetServiceTermAgreementsHandler implements IQueryHandler<GetService
     for (const agreement of agreements) {
       if (!agreementsByTermId.has(agreement.term.id)) agreementsByTermId.set(agreement.term.id, agreement);
     }
-    const items = terms.map((term) => ServiceTermAgreementItemDto.from(term, agreementsByTermId.get(term.id)));
-    return ServiceTermAgreementListResponseDto.fromPlain({ items });
+    const items = terms.map((term) => ServiceTermAgreementItemDto.parseEntity(term, agreementsByTermId.get(term.id)));
+    return ServiceTermAgreementListResponseDto.parse({ items });
   }
 }

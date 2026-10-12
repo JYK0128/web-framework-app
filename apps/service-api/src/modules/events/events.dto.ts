@@ -39,8 +39,8 @@ export class EventItemDto extends EntityDto(Event) {
   @ApiProperty({ type: String, format: 'date-time', nullable: true }) override publishedAt!: Date | null;
   @ApiProperty({ type: String, format: 'date-time' }) override createdAt!: Date;
   @ApiProperty({ type: String, format: 'date-time' }) override updatedAt!: Date;
-  static override from(event: Event): EventItemDto {
-    return this.fromPlain({ id: event.id, title: event.title, content: event.content, startsAt: event.startsAt, endsAt: event.endsAt, imageUrl: event.imageUrl, linkUrl: event.linkUrl, status: event.status, publishedAt: event.publishedAt, createdAt: event.createdAt, updatedAt: event.updatedAt });
+  static override parseEntity(event: Event): EventItemDto {
+    return this.parse({ id: event.id, title: event.title, content: event.content, startsAt: event.startsAt, endsAt: event.endsAt, imageUrl: event.imageUrl, linkUrl: event.linkUrl, status: event.status, publishedAt: event.publishedAt, createdAt: event.createdAt, updatedAt: event.updatedAt });
   }
 }
 

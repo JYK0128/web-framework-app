@@ -5,7 +5,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { Term } from '#/core/database/entities/terms';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { UpdateTermCommand } from '#/modules/terms/commands';
-import { OperatorTermItemDto, UpdateTermResponseDto } from '#/modules/terms/dto';
+import { UpdateTermResponseDto } from '#/modules/terms/dto';
 
 @Injectable()
 @CommandHandler(UpdateTermCommand)
@@ -29,7 +29,7 @@ export class UpdateTermHandler implements ICommandHandler<UpdateTermCommand, Upd
       term.metadata = command.input.data.metadata ? { options: command.input.data.metadata.options ?? {} } : null;
     }
 
-    return UpdateTermResponseDto.fromPlain(OperatorTermItemDto.from(term));
+    return UpdateTermResponseDto.parseEntity(term);
   }
 }
 

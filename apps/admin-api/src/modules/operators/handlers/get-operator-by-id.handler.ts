@@ -4,7 +4,7 @@ import { ApplicationError } from '@pkg/shared/common';
 
 import { Account, User } from '#/core/database/entities/auth';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { GetOperatorByIdResponseDto, OperatorItemDto } from '#/modules/operators/dto';
+import { GetOperatorByIdResponseDto } from '#/modules/operators/dto';
 import { GetOperatorByIdQuery } from '#/modules/operators/queries';
 
 @Injectable()
@@ -22,14 +22,6 @@ export class GetOperatorByIdHandler implements IQueryHandler<GetOperatorByIdQuer
     }
 
     const accounts = await this.em.find(Account, { user: operator.id }, { filters: false });
-    const passwordAccount = accounts.find((account) => account.providerId === Account.PROVIDER_CREDENTIAL);
-    const item = OperatorItemDto.from(operator);
-
-    return GetOperatorByIdResponseDto.fromPlain({
-      ...item,
-      providers: [...new Set(accounts.map((account) => account.providerId))],
-      passwordUpdatedAt: passwordAccount?.metadata?.passwordUpdatedAt ?? null,
-      lastLoginAt: operator.metadata?.lastLoginAt ? new Date(operator.metadata.lastLoginAt) : null,
-    });
+    return GetOperatorByIdResponseDto.parseEntity(operator, accounts);
   }
 }

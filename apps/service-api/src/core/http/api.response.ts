@@ -9,7 +9,7 @@ export class ApiResponse {
   static from<T>(value: T, req: Request, res?: Response): ApiResponseDto<T> {
     const result = value instanceof ApiBaseResponseDto
       ? value
-      : ApiSuccessResponseDto.fromPlain<ApiSuccessResponseDto<T>>({
+      : ApiSuccessResponseDto.parse<ApiSuccessResponseDto<T>>({
         data: value,
         message: 'success.COMPLETED',
       });
@@ -35,7 +35,7 @@ export class ApiResponse {
       error = ApplicationError.from(exception, { code: 'INTERNAL_SERVER_ERROR', status: HttpStatus.INTERNAL_SERVER_ERROR });
     }
 
-    return ApiErrorResponseDto.fromPlain({
+    return ApiErrorResponseDto.parse({
       ...error.toJSON<ErrorCode>({
         path: req.originalUrl,
         requestId: req.header('x-request-id') ?? (req as unknown as { requestId?: string }).requestId ?? '-',

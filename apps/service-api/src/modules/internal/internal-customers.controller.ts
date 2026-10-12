@@ -98,7 +98,7 @@ export class InternalCustomersController {
   @Get(':id/sessions')
   async listCustomerSessions(@Param('id') id: string): Promise<CustomerSessionListResponseDto> {
     const records = await this.tokenStore.listUserTokens(id);
-    return { items: records.map((record) => ({ familyId: record.familyId, rememberMe: record.rememberMe, expiresAt: new Date(record.expiresAt) })) };
+    return CustomerSessionListResponseDto.parse({ items: records.map((record) => ({ familyId: record.familyId, rememberMe: record.rememberMe, expiresAt: new Date(record.expiresAt) })) });
   }
 
   @ApiOperation({ summary: 'Machine: 고객 특정 세션 해제' })
@@ -110,7 +110,7 @@ export class InternalCustomersController {
       throw new ApplicationError({ code: 'CUSTOMER_SESSION_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
     await this.tokenStore.revokeTokenFamily(familyId);
-    return CustomerActionResponseDto.fromPlain({ ok: true });
+    return CustomerActionResponseDto.parse({ ok: true });
   }
 
   @ApiOperation({ summary: 'Machine: 고객 전체 세션 해제' })
@@ -118,6 +118,6 @@ export class InternalCustomersController {
   @Delete(':id/sessions')
   async revokeCustomerSessions(@Param('id') id: string): Promise<CustomerActionResponseDto> {
     await this.tokenStore.revokeUserTokens(id);
-    return CustomerActionResponseDto.fromPlain({ ok: true });
+    return CustomerActionResponseDto.parse({ ok: true });
   }
 }

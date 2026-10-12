@@ -115,7 +115,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResponse
         JSON.stringify({ userId: user.id, rememberMe: input.rememberMe === true, attempts: 0 }),
         SECURITY_CONFIG.twoFactor.challengeTtlSeconds,
       );
-      return LoginResponseDto.fromPlain({ requiresTwoFactor: true, twoFactorChallengeToken });
+      return LoginResponseDto.parse({ requiresTwoFactor: true, twoFactorChallengeToken });
     }
 
     user.updateMetadata({
@@ -129,7 +129,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResponse
     const tokenPair = await this.authTokenService.login(user, {
       rememberMe: input.rememberMe,
     });
-    return LoginResponseDto.fromPlain({ ...tokenPair, requiresTwoFactor: false });
+    return LoginResponseDto.parse({ ...tokenPair, requiresTwoFactor: false });
   }
 }
 

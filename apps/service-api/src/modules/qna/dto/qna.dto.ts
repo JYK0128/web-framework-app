@@ -30,14 +30,14 @@ export class QnaItemDto extends EntityDto(Qna) {
   @ApiProperty() override createdAt!: Date;
   @ApiProperty() override updatedAt!: Date;
 
-  static override from(qna: Qna): QnaItemDto {
+  static override parseEntity(qna: Qna): QnaItemDto {
     const user = qna.user as User | string;
     const assignee = qna.assignee as User | null | string | undefined;
     const userProfile = typeof user === 'string' ? undefined : user.profile;
     const assigneeProfile = typeof assignee === 'object' && assignee ? assignee.profile : undefined;
     if (typeof user !== 'string' && !userProfile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
     if (typeof assignee === 'object' && assignee && !assigneeProfile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
-    return this.fromPlain({
+    return this.parse({
       id: qna.id,
       category: qna.category,
       title: qna.title,

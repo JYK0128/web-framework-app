@@ -16,7 +16,7 @@ export class GetEventsHandler implements IQueryHandler<GetEventsQuery, EventPage
   constructor(private readonly em: AppEntityManager) {}
   async execute({ input }: GetEventsQuery): Promise<EventPageResponseDto> {
     const result = await this.em.findByPage<Event>(Event, input.toFilterQuery(), input.toPageOptions());
-    return EventPageResponseDto.fromPlain({ ...result, items: result.items.map((item) => EventItemDto.from(item)) });
+    return EventPageResponseDto.parse({ ...result, items: result.items.map((item) => EventItemDto.parseEntity(item)) });
   }
 }
 
@@ -27,7 +27,7 @@ export class GetEventHandler implements IQueryHandler<GetEventQuery, EventItemDt
   async execute({ id, publicOnly }: GetEventQuery): Promise<EventItemDto> {
     const event = await this.em.findOne(Event, { id, ...(publicOnly ? { status: PublicationStatus.published } : {}) });
     if (!event) throw new ApplicationError({ code: 'EVENT_NOT_FOUND', status: HttpStatus.NOT_FOUND });
-    return EventItemDto.from(event);
+    return EventItemDto.parseEntity(event);
   }
 }
 
@@ -39,7 +39,7 @@ export class CreateEventHandler implements ICommandHandler<CreateEventCommand, E
     validateDates(input.startsAt, input.endsAt);
     const event = this.em.create(Event, { ...input, title: input.title.trim(), content: input.content.trim(), imageUrl: input.imageUrl || null, linkUrl: input.linkUrl || null, publishedAt: input.status === PublicationStatus.published ? new Date() : null });
     this.em.persist(event);
-    return EventItemDto.from(event);
+    return EventItemDto.parseEntity(event);
   }
 }
 
@@ -54,7 +54,7 @@ export class UpdateEventHandler implements ICommandHandler<UpdateEventCommand, E
     Object.assign(event, input, input.title === undefined ? {} : { title: input.title.trim() }, input.content === undefined ? {} : { content: input.content.trim() }, input.imageUrl === undefined ? {} : { imageUrl: input.imageUrl || null }, input.linkUrl === undefined ? {} : { linkUrl: input.linkUrl || null });
     if (input.status === PublicationStatus.published && !wasPublished) event.publishedAt = new Date();
     if (input.status === PublicationStatus.draft) event.publishedAt = null;
-    return EventItemDto.from(event);
+    return EventItemDto.parseEntity(event);
   }
 }
 
@@ -93,6 +93,6 @@ export class GetPublicEventsHandler implements IQueryHandler<GetPublicEventsQuer
       where: { $and: filters },
       orderBy: { phaseOrder: 'ASC', timelineOrder: 'ASC', id: 'ASC' },
     });
-    return EventCursorResponseDto.fromPlain({ ...result, startCursor: result.startCursor, endCursor: result.endCursor, items: result.items.map((item) => EventItemDto.from(item)) });
+    return EventCursorResponseDto.parse({ ...result, startCursor: result.startCursor, endCursor: result.endCursor, items: result.items.map((item) => EventItemDto.parseEntity(item)) });
   }
 }

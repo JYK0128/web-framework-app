@@ -7,8 +7,6 @@ import { AppEntityManager } from '#/core/database/entity-manager';
 import { CreateInternalServiceTermGroupCommand, DeleteInternalServiceTermGroupCommand, UpdateInternalServiceTermGroupCommand } from '#/modules/service-terms/commands';
 import { DeleteInternalServiceTermGroupResponseDto, InternalServiceTermGroupItemDto } from '#/modules/service-terms/dto';
 
-import { toGroup } from './get-internal-service-term-groups.handler';
-
 @Injectable()
 @CommandHandler(CreateInternalServiceTermGroupCommand)
 export class CreateInternalServiceTermGroupHandler implements ICommandHandler<CreateInternalServiceTermGroupCommand, InternalServiceTermGroupItemDto> {
@@ -16,7 +14,7 @@ export class CreateInternalServiceTermGroupHandler implements ICommandHandler<Cr
   async execute({ input }: CreateInternalServiceTermGroupCommand): Promise<InternalServiceTermGroupItemDto> {
     const group = this.em.create(TermGroup, { title: input.title.trim(), isRequired: input.isRequired, sortOrder: input.sortOrder });
     this.em.persist(group);
-    return toGroup(group);
+    return InternalServiceTermGroupItemDto.parseEntity(group);
   }
 }
 
@@ -30,7 +28,7 @@ export class UpdateInternalServiceTermGroupHandler implements ICommandHandler<Up
     group.title = input.dto.title.trim();
     group.isRequired = input.dto.isRequired;
     group.sortOrder = input.dto.sortOrder;
-    return toGroup(group);
+    return InternalServiceTermGroupItemDto.parseEntity(group);
   }
 }
 
@@ -43,6 +41,6 @@ export class DeleteInternalServiceTermGroupHandler implements ICommandHandler<De
     if (!group || group.deletedAt) throw new ApplicationError({ code: 'SERVICE_TERM_GROUP_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     if (await this.em.count(Term, { termGroup: group.id, publishedAt: { $lte: new Date() } }) > 0) throw new ApplicationError({ code: 'SERVICE_TERM_GROUP_HAS_PUBLISHED_TERMS', status: HttpStatus.CONFLICT });
     group.deletedAt = new Date();
-    return DeleteInternalServiceTermGroupResponseDto.fromPlain({ ok: true });
+    return DeleteInternalServiceTermGroupResponseDto.parse({ ok: true });
   }
 }

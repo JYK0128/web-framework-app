@@ -17,9 +17,9 @@ export class GetOperatorTermsHandler implements IQueryHandler<GetOperatorTermsQu
       populate: ['termGroup'],
     });
 
-    return OperatorTermPageResponseDto.fromPlain({
+    return OperatorTermPageResponseDto.parse({
       ...result,
-      items: result.items.map((term) => OperatorTermItemDto.from(term)),
+      items: result.items.map((term) => OperatorTermItemDto.parseEntity(term)),
     });
   }
 }

@@ -15,7 +15,7 @@ export class GetNoticesHandler implements IQueryHandler<GetNoticesQuery, NoticeP
   constructor(private readonly em: AppEntityManager) {}
   async execute({ input }: GetNoticesQuery): Promise<NoticePageResponseDto> {
     const result = await this.em.findByPage<Notice>(Notice, input.toFilterQuery(), input.toPageOptions());
-    return NoticePageResponseDto.fromPlain({ ...result, items: result.items.map((item) => NoticeItemDto.from(item)) });
+    return NoticePageResponseDto.parse({ ...result, items: result.items.map((item) => NoticeItemDto.parseEntity(item)) });
   }
 }
 
@@ -26,7 +26,7 @@ export class GetNoticeHandler implements IQueryHandler<GetNoticeQuery, NoticeIte
   async execute({ id, publicOnly }: GetNoticeQuery): Promise<NoticeItemDto> {
     const notice = await this.em.findOne(Notice, { id, ...(publicOnly ? { status: PublicationStatus.published } : {}) });
     if (!notice) throw new ApplicationError({ code: 'NOTICE_NOT_FOUND', status: HttpStatus.NOT_FOUND });
-    return NoticeItemDto.from(notice);
+    return NoticeItemDto.parseEntity(notice);
   }
 }
 
@@ -37,7 +37,7 @@ export class CreateNoticeHandler implements ICommandHandler<CreateNoticeCommand,
   async execute({ input }: CreateNoticeCommand): Promise<NoticeItemDto> {
     const notice = this.em.create(Notice, { ...input, title: input.title.trim(), content: input.content.trim(), publishedAt: input.status === PublicationStatus.published ? new Date() : null });
     this.em.persist(notice);
-    return NoticeItemDto.from(notice);
+    return NoticeItemDto.parseEntity(notice);
   }
 }
 
@@ -51,7 +51,7 @@ export class UpdateNoticeHandler implements ICommandHandler<UpdateNoticeCommand,
     Object.assign(notice, input, input.title === undefined ? {} : { title: input.title.trim() }, input.content === undefined ? {} : { content: input.content.trim() });
     if (input.status === PublicationStatus.published && !wasPublished) notice.publishedAt = new Date();
     if (input.status === PublicationStatus.draft) notice.publishedAt = null;
-    return NoticeItemDto.from(notice);
+    return NoticeItemDto.parseEntity(notice);
   }
 }
 
@@ -83,6 +83,6 @@ export class GetPublicNoticesHandler implements IQueryHandler<GetPublicNoticesQu
       where: { $and: filters },
       orderBy: { isPinned: 'DESC', importanceOrder: 'ASC', publicationOrder: 'DESC', id: 'ASC' },
     });
-    return NoticeCursorResponseDto.fromPlain({ ...result, startCursor: result.startCursor, endCursor: result.endCursor, items: result.items.map((item) => NoticeItemDto.from(item)) });
+    return NoticeCursorResponseDto.parse({ ...result, startCursor: result.startCursor, endCursor: result.endCursor, items: result.items.map((item) => NoticeItemDto.parseEntity(item)) });
   }
 }

@@ -6,7 +6,7 @@ import { Public } from '#/core/http/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 import { KvStore } from '#/core/kv-store/kv-store.service';
 
-import { HealthResponseDto } from './dto/health.response.dto';
+import { HealthResponseDto } from './dto';
 
 /**
  * Health check controller
@@ -29,7 +29,7 @@ export class HealthController {
   @ApiOperation({ summary: 'Liveness Probe (프로세스 생존 여부 확인)' })
   @SwaggerApiResponse(HealthResponseDto)
   async checkLive(): Promise<HealthResponseDto> {
-    return (await this.health.check([])) as HealthResponseDto;
+    return HealthResponseDto.parse((await this.health.check([])));
   }
 
   @Public()
@@ -38,7 +38,7 @@ export class HealthController {
   @ApiOperation({ summary: 'Readiness Probe (DB 및 Redis 연결 상태 종합 점검)' })
   @SwaggerApiResponse(HealthResponseDto)
   async checkReady(): Promise<HealthResponseDto> {
-    return (await this.health.check([
+    return HealthResponseDto.parse((await this.health.check([
       () => this.db.pingCheck('database'),
       () =>
         this.healthIndicatorService
@@ -47,6 +47,6 @@ export class HealthController {
             const isUp = await this.kvStore.ping();
             if (!isUp) throw new Error('Redis connection is down');
           }),
-    ])) as HealthResponseDto;
+    ])));
   }
 }

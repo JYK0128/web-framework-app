@@ -1,3 +1,4 @@
+export * from './account-recovery.transforms';
 export * from './change-password.request.dto';
 export * from './change-password.response.dto';
 export * from './disable-two-factor.request.dto';

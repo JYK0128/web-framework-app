@@ -36,7 +36,7 @@ export class GenerateTwoFactorHandler implements ICommandHandler<GenerateTwoFact
     else {
       this.em.persist(this.em.create(TwoFactor, { user: this.em.getReference(User, user.id), secret: encrypt(secret, env.TWO_FACTOR_ENCRYPTION_KEY), verified: false }));
     }
-    return GenerateTwoFactorResponseDto.fromPlain({ secret, digits: SECURITY_CONFIG.twoFactor.digits, periodSeconds: SECURITY_CONFIG.twoFactor.periodSeconds });
+    return GenerateTwoFactorResponseDto.parse({ secret, digits: SECURITY_CONFIG.twoFactor.digits, periodSeconds: SECURITY_CONFIG.twoFactor.periodSeconds });
   }
 }
 

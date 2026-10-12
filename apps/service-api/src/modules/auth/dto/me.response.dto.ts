@@ -53,9 +53,9 @@ export class MeResponseDto extends EntityResponseDto(User) {
   @ApiPropertyOptional({ type: String, nullable: true, example: '2026-09-18T00:00:00.000Z', description: '최근 로그인 일시' })
   lastLoginAt?: string | null;
 
-  static override from(user: User, profile: Profile, role: Role, accounts: Account[], passwordExpired: boolean): MeResponseDto {
+  static override parseEntity(user: User, profile: Profile, role: Role, accounts: Account[], passwordExpired: boolean): MeResponseDto {
     const credentialAccount = accounts.find((account) => account.providerId === Account.PROVIDER_CREDENTIAL);
-    return this.fromPlain({
+    return this.parse({
       id: user.id,
       email: decrypt(profile.emailEncrypted, env.PII_ENCRYPTION_KEY),
       emailVerified: Boolean(user.emailVerified),

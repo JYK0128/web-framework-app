@@ -10,6 +10,6 @@ import { GetLogsQuery } from '#/modules/logs/queries/get-logs.query';
 export class GetLogsHandler implements IQueryHandler<GetLogsQuery, LogPageResponseDto> {
   constructor(private readonly logs: LogsService) {}
   async execute({ input }: GetLogsQuery): Promise<LogPageResponseDto> {
-    return LogPageResponseDto.fromPlain(await this.logs.list(input));
+    return LogPageResponseDto.parse(await this.logs.list(input));
   }
 }

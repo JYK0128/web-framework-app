@@ -9,9 +9,9 @@ export class CustomerDetailResponseDto extends CustomerItemDto {
   @ApiPropertyOptional({ type: String, nullable: true, maxLength: 5000 })
   memo?: string | null;
 
-  static override from(user: User): CustomerDetailResponseDto {
-    return this.fromPlain({
-      ...CustomerItemDto.from(user),
+  static override parseEntity(user: User): CustomerDetailResponseDto {
+    return this.parse({
+      ...CustomerItemDto.parseEntity(user),
       memo: typeof user.metadata?.memo === 'string' ? user.metadata.memo : null,
     });
   }

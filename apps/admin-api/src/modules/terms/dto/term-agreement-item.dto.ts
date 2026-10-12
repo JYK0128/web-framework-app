@@ -32,8 +32,8 @@ export class TermAgreementItemDto extends EntityDto(Term) {
   @ApiPropertyOptional({ type: () => AgreementMetadataDto, nullable: true })
   agreementMetadata?: AgreementMetadataDto | null;
 
-  static override from(term: Term, isAgreed: boolean, agreementMetadata?: Record<string, unknown> | null): TermAgreementItemDto {
-    return TermAgreementItemDto.fromPlain({
+  static override parseEntity(term: Term, isAgreed: boolean, agreementMetadata?: Record<string, unknown> | null): TermAgreementItemDto {
+    return this.parse({
       termId: term.id,
       groupId: term.termGroup.id,
       title: term.termGroup.title,

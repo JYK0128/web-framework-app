@@ -13,10 +13,6 @@ export class GetInternalServiceTermGroupsHandler implements IQueryHandler<GetInt
 
   async execute(): Promise<InternalServiceTermGroupListResponseDto> {
     const groups = await this.em.find(TermGroup, {}, { orderBy: { sortOrder: 'ASC', createdAt: 'ASC' } });
-    return InternalServiceTermGroupListResponseDto.fromPlain({ items: groups.map((group) => toGroup(group)) });
+    return InternalServiceTermGroupListResponseDto.parse({ items: groups.map((group) => InternalServiceTermGroupItemDto.parseEntity(group)) });
   }
-}
-
-export function toGroup(group: TermGroup): InternalServiceTermGroupItemDto {
-  return InternalServiceTermGroupItemDto.fromPlain({ id: group.id, title: group.title, isRequired: group.isRequired, sortOrder: group.sortOrder, createdAt: group.createdAt, updatedAt: group.updatedAt });
 }

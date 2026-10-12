@@ -12,8 +12,8 @@ export class RoleItemDto extends EntityDto(Role) {
   @ApiProperty({ type: [String] }) override permissions!: string[];
   @ApiProperty() userCount!: number;
 
-  static override from(role: Role, userCount: number): RoleItemDto {
-    return RoleItemDto.fromPlain({
+  static override parseEntity(role: Role, userCount: number): RoleItemDto {
+    return this.parse({
       id: role.id,
       code: role.code,
       label: role.label,

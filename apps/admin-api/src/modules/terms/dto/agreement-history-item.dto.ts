@@ -35,8 +35,8 @@ export class AgreementHistoryItemDto extends EntityDto(UserTermAgreement) {
   @ApiPropertyOptional({ type: () => AgreementMetadataDto, nullable: true })
   metadata?: AgreementMetadataDto | null;
 
-  static override from(agreement: UserTermAgreement): AgreementHistoryItemDto {
-    return AgreementHistoryItemDto.fromPlain({
+  static override parseEntity(agreement: UserTermAgreement): AgreementHistoryItemDto {
+    return this.parse({
       id: agreement.id,
       termId: agreement.term.id,
       groupId: agreement.term.termGroup.id,

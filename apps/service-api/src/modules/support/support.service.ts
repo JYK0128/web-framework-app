@@ -3,7 +3,6 @@ import { EventBus } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { isWithinOperatingHours } from '@pkg/shared/policy';
 
-import { User } from '#/core/database/entities/auth';
 import { SupportMessage, SupportMessageSenderType, SupportRoom, SupportRoomStatus } from '#/core/database/entities/support';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { PrincipalContext } from '#/core/http/contexts/principal.context';
@@ -36,10 +35,10 @@ export class SupportService {
       ...input.toPageOptions(),
       populate: ['user.profile', 'assignee.profile'],
     });
-    return {
+    return SupportRoomPageResponseDto.parse({
       ...result,
-      items: result.items.map((room) => this.toRoomDto(room)),
-    };
+      items: result.items.map((room) => SupportRoomItemDto.parseEntity(room)),
+    });
   }
 
   async listMyRooms(input: GetSupportRoomsCursorRequestDto): Promise<SupportRoomCursorResponseDto> {
@@ -53,8 +52,8 @@ export class SupportService {
       ...input.toCursorOptions(),
       populate: ['user.profile', 'assignee.profile'],
     });
-    return SupportRoomCursorResponseDto.fromPlain({
-      items: result.items.map((room) => this.toRoomDto(room)),
+    return SupportRoomCursorResponseDto.parse({
+      items: result.items.map((room) => SupportRoomItemDto.parseEntity(room)),
       startCursor: result.startCursor,
       endCursor: result.endCursor,
       hasNextPage: result.hasNextPage,
@@ -64,7 +63,7 @@ export class SupportService {
   }
 
   async getRoom(roomId: string, mine: boolean): Promise<SupportRoomItemDto> {
-    return this.toRoomDto(await this.findRoom(roomId, mine));
+    return SupportRoomItemDto.parseEntity(await this.findRoom(roomId, mine));
   }
 
   async createRoom(input: CreateSupportRoomRequestDto): Promise<SupportRoomItemDto> {
@@ -106,7 +105,7 @@ export class SupportService {
     this.em.persist(messages);
     await this.em.flush();
     this.eventBus.publish(new SupportRoomCreatedEvent(room.id));
-    return this.toRoomDto(room);
+    return SupportRoomItemDto.parseEntity(room);
   }
 
   async listMessages(roomId: string, mine: boolean): Promise<SupportMessageItemDto[]> {
@@ -117,7 +116,7 @@ export class SupportService {
         if (message.senderType !== SupportMessageSenderType.USER && !message.readAt) message.readAt = new Date();
       }
     }
-    return messages.map((message) => this.toMessageDto(message));
+    return messages.map((message) => SupportMessageItemDto.parseEntity(message));
   }
 
   async createSocketTicket(roomId: string, mine: boolean): Promise<{ ticket: string }> {
@@ -165,7 +164,7 @@ export class SupportService {
       await this.em.flush();
       await this.publishRoomEvent(room.id, 'support.room.status.changed');
     }
-    return this.toRoomDto(room);
+    return SupportRoomItemDto.parseEntity(room);
   }
 
   private async createMessage(room: SupportRoom, content: string, senderType: SupportMessageSenderType, senderUser?: string): Promise<SupportMessageItemDto> {
@@ -177,7 +176,7 @@ export class SupportService {
     });
     room.lastMessageAt = new Date();
     this.em.persist(message);
-    return this.toMessageDto(message);
+    return SupportMessageItemDto.parseEntity(message);
   }
 
   async publishRoomEvent(roomId: string, event: 'support.message.created' | 'support.room.status.changed'): Promise<void> {
@@ -193,45 +192,5 @@ export class SupportService {
 
   private ensureOpen(room: SupportRoom): void {
     if (room.status === SupportRoomStatus.CLOSED) throw new ApplicationError({ code: 'SUPPORT_ROOM_CLOSED', status: HttpStatus.CONFLICT });
-  }
-
-  private toRoomDto(room: SupportRoom): SupportRoomItemDto {
-    const user = room.user as User | string;
-    const assignee = room.assignee as User | string | null | undefined;
-    const userProfile = typeof user === 'string' ? undefined : user.profile;
-    const assigneeProfile = typeof assignee === 'object' && assignee ? assignee.profile : undefined;
-    if (typeof user !== 'string' && !userProfile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
-    if (typeof assignee === 'object' && assignee && !assigneeProfile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
-    return {
-      id: room.id,
-      title: room.title,
-      status: room.status,
-      userId: typeof user === 'string' ? user : user.id,
-      userName: userProfile?.name ?? '',
-      assigneeName: assigneeProfile?.name ?? null,
-      lastMessageAt: room.lastMessageAt ?? null,
-      createdAt: room.createdAt,
-      updatedAt: room.updatedAt,
-    };
-  }
-
-  private toMessageDto(message: SupportMessage): SupportMessageItemDto {
-    const room = message.room as SupportRoom | string;
-    const sender = message.senderUser as User | string | null | undefined;
-    let senderName = message.senderType === SupportMessageSenderType.AGENT ? '상담원' : '시스템';
-    if (typeof sender === 'object' && sender) {
-      if (!sender.profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
-      senderName = sender.profile.name;
-    }
-    return {
-      id: message.id,
-      roomId: typeof room === 'string' ? room : room.id,
-      senderUserId: typeof sender === 'string' ? sender : sender?.id ?? null,
-      senderName,
-      senderType: message.senderType,
-      content: message.content,
-      readAt: message.readAt ?? null,
-      createdAt: message.createdAt,
-    };
   }
 }

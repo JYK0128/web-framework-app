@@ -6,12 +6,7 @@ import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 import { InternalClient } from '#/core/http/internal-client';
-import { CreateEventRequestDto } from '#/modules/events/dto/create-event.request.dto';
-import { EventActionResponseDto } from '#/modules/events/dto/event-action.response.dto';
-import { EventItemDto } from '#/modules/events/dto/event-item.dto';
-import { EventPageResponseDto } from '#/modules/events/dto/event-page.response.dto';
-import { GetEventsRequestDto } from '#/modules/events/dto/get-events.request.dto';
-import { UpdateEventRequestDto } from '#/modules/events/dto/update-event.request.dto';
+import { CreateEventRequestDto, EventActionResponseDto, EventItemDto, EventPageResponseDto, GetEventsRequestDto, UpdateEventRequestDto } from '#/modules/events/dto';
 
 @ApiTags('events')
 @UserAuth()

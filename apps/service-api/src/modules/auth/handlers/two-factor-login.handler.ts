@@ -80,7 +80,7 @@ export class TwoFactorLoginHandler implements ICommandHandler<TwoFactorLoginComm
     await this.em.flush();
 
     const tokenPair = await this.authTokenService.login(user, { rememberMe: challenge.rememberMe });
-    return TwoFactorLoginResponseDto.fromPlain({ ...tokenPair, requiresTwoFactor: false });
+    return TwoFactorLoginResponseDto.parse({ ...tokenPair, requiresTwoFactor: false });
   }
 
   private async recordFailedAttempt(key: string, rawRecord: string, challenge: TwoFactorLoginChallenge): Promise<void> {

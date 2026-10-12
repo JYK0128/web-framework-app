@@ -10,6 +10,6 @@ export class GetServiceAgreementHistoryHandler implements IQueryHandler<GetServi
   constructor(private readonly em: AppEntityManager) {}
   async execute({ input }: GetServiceAgreementHistoryQuery): Promise<ServiceAgreementHistoryCursorResponseDto> {
     const result = await this.em.findByCursor(UserTermAgreement, { ...input.dto.toCursorOptions(), where: { user: input.userId, term: { termGroup: input.dto.groupId } }, populate: ['term', 'term.termGroup'] });
-    return ServiceAgreementHistoryCursorResponseDto.fromPlain({ startCursor: result.startCursor, endCursor: result.endCursor, hasNextPage: result.hasNextPage, hasPrevPage: result.hasPrevPage, totalCount: result.totalCount, items: result.items.map((agreement) => ServiceAgreementHistoryItemDto.from(agreement)) });
+    return ServiceAgreementHistoryCursorResponseDto.parse({ startCursor: result.startCursor, endCursor: result.endCursor, hasNextPage: result.hasNextPage, hasPrevPage: result.hasPrevPage, totalCount: result.totalCount, items: result.items.map((agreement) => ServiceAgreementHistoryItemDto.parseEntity(agreement)) });
   }
 }

@@ -11,9 +11,9 @@ export class PermissionItemDto extends EntityDto(PermissionEntity) {
   @ApiProperty() override label!: string;
   @ApiProperty({ nullable: true }) override description!: string | null;
 
-  static override from(permission: PermissionEntity): PermissionItemDto {
+  static override parseEntity(permission: PermissionEntity): PermissionItemDto {
     const separatorIndex = permission.code.indexOf(':');
-    return PermissionItemDto.fromPlain({
+    return this.parse({
       id: permission.id,
       code: permission.code,
       resource: separatorIndex > 0 ? permission.code.slice(0, separatorIndex) : permission.code,

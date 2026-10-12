@@ -21,6 +21,6 @@ export class DisableTwoFactorHandler implements ICommandHandler<DisableTwoFactor
     const twoFactor = await this.em.findOne(TwoFactor, { user: user.id }, { filters: false });
     if (twoFactor) this.em.remove(twoFactor);
     user.twoFactorEnabled = false;
-    return DisableTwoFactorResponseDto.fromPlain({ enabled: false });
+    return DisableTwoFactorResponseDto.parse({ enabled: false });
   }
 }

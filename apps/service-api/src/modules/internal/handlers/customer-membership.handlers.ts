@@ -7,17 +7,7 @@ import { User } from '#/core/database/entities/auth';
 import { Permission, Role } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { CreateCustomerMembershipCommand, DeleteCustomerMembershipCommand, GetCustomerMembershipPermissionsQuery, GetCustomerMembershipsQuery, UpdateCustomerMembershipCommand } from '#/modules/internal/commands/customer-membership.commands';
-import { CustomerMembershipItemDto, CustomerMembershipListResponseDto, CustomerMembershipPermissionListResponseDto, DeleteCustomerMembershipResponseDto } from '#/modules/internal/dto/customer-membership.dto';
-
-const item = async (em: AppEntityManager, role: Role): Promise<CustomerMembershipItemDto> => CustomerMembershipItemDto.fromPlain({
-  id: role.id,
-  code: role.code,
-  label: role.label,
-  description: role.description,
-  isSystem: role.isSystem,
-  customerCount: await em.count(User, { role: role.id, deletedAt: null }, { filters: false }),
-  permissions: role.permissions ?? [],
-});
+import { CustomerMembershipItemDto, CustomerMembershipListResponseDto, CustomerMembershipPermissionItemDto, CustomerMembershipPermissionListResponseDto, DeleteCustomerMembershipResponseDto } from '#/modules/internal/dto/customer-membership.dto';
 
 @Injectable()
 @QueryHandler(GetCustomerMembershipsQuery)
@@ -25,7 +15,7 @@ export class GetCustomerMembershipsHandler implements IQueryHandler<GetCustomerM
   constructor(private readonly em: AppEntityManager) {}
   async execute(): Promise<CustomerMembershipListResponseDto> {
     const roles = await this.em.find(Role, {}, { orderBy: { code: 'ASC' } });
-    return CustomerMembershipListResponseDto.fromPlain({ items: await Promise.all(roles.map((role) => item(this.em, role))) });
+    return CustomerMembershipListResponseDto.parse({ items: await Promise.all(roles.map(async (role) => CustomerMembershipItemDto.parseEntity(role, await this.em.count(User, { role: role.id, deletedAt: null }, { filters: false })))) });
   }
 }
 
@@ -36,17 +26,8 @@ export class GetCustomerMembershipPermissionsHandler implements IQueryHandler<Ge
 
   async execute(): Promise<CustomerMembershipPermissionListResponseDto> {
     const permissions = await this.em.find(Permission, {}, { orderBy: { code: 'ASC' } });
-    return CustomerMembershipPermissionListResponseDto.fromPlain({
-      items: permissions.map(({ code, label, description }) => {
-        const separatorIndex = code.indexOf(':');
-        return {
-          code,
-          resource: separatorIndex > 0 ? code.slice(0, separatorIndex) : code,
-          action: separatorIndex > 0 ? code.slice(separatorIndex + 1) : '',
-          label,
-          description,
-        };
-      }),
+    return CustomerMembershipPermissionListResponseDto.parse({
+      items: permissions.map((permission) => CustomerMembershipPermissionItemDto.parseEntity(permission)),
     });
   }
 }
@@ -61,7 +42,7 @@ export class CreateCustomerMembershipHandler implements ICommandHandler<CreateCu
     if (await this.em.findOne(Role, { code }, { filters: false })) throw new ApplicationError({ code: 'CUSTOMER_MEMBERSHIP_CODE_ALREADY_EXISTS', status: HttpStatus.CONFLICT });
     const role = this.em.create(Role, { code, label: input.label.trim(), description: input.description?.trim() || null, isSystem: false, permissions: await normalizePermissions(this.em, input.permissions) });
     this.em.persist(role);
-    return item(this.em, role);
+    return CustomerMembershipItemDto.parseEntity(role, await this.em.count(User, { role: role.id, deletedAt: null }, { filters: false }));
   }
 }
 
@@ -79,7 +60,7 @@ export class UpdateCustomerMembershipHandler implements ICommandHandler<UpdateCu
       await this.userAuthService.revokeRoleUsersTokens?.(role.id);
     }
     role.updatedAt = new Date();
-    return item(this.em, role);
+    return CustomerMembershipItemDto.parseEntity(role, await this.em.count(User, { role: role.id, deletedAt: null }, { filters: false }));
   }
 }
 
@@ -109,6 +90,6 @@ export class DeleteCustomerMembershipHandler implements ICommandHandler<DeleteCu
     if (role.isSystem) throw new ApplicationError({ code: 'SYSTEM_CUSTOMER_MEMBERSHIP_CANNOT_BE_DELETED', status: HttpStatus.CONFLICT });
     if (await this.em.count(User, { role: role.id, deletedAt: null }, { filters: false })) throw new ApplicationError({ code: 'CUSTOMER_MEMBERSHIP_IN_USE', status: HttpStatus.CONFLICT });
     role.deletedAt = new Date();
-    return { id: role.id, deleted: true };
+    return DeleteCustomerMembershipResponseDto.parseEntity(role);
   }
 }

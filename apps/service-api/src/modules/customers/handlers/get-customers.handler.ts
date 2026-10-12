@@ -18,9 +18,9 @@ export class GetCustomersHandler implements IQueryHandler<GetCustomersQuery, Cus
       populate: ['role', 'profile'],
     });
 
-    return CustomerPageResponseDto.fromPlain({
+    return CustomerPageResponseDto.parse({
       ...result,
-      items: result.items.map((user) => CustomerItemDto.from(user)),
+      items: result.items.map((user) => CustomerItemDto.parseEntity(user)),
     });
   }
 }

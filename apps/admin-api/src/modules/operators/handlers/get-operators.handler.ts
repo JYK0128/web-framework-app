@@ -18,9 +18,9 @@ export class GetOperatorsHandler implements IQueryHandler<GetOperatorsQuery, Ope
       filters: query.input.includeDeleted || query.input.status === OperatorStatus.DELETED ? false : undefined,
     });
 
-    return OperatorPageResponseDto.fromPlain({
+    return OperatorPageResponseDto.parse({
       ...result,
-      items: result.items.map((operator) => OperatorItemDto.from(operator)),
+      items: result.items.map((operator) => OperatorItemDto.parseEntity(operator)),
     });
   }
 }

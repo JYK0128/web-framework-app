@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
-import { type IEventHandler } from '@nestjs/cqrs';
+import { type IEventHandler, QueryBus } from '@nestjs/cqrs';
 import { decrypt } from '@pkg/shared/server';
 
 import { EVENT_BROKER } from '#/core/event-broker/event-broker.interface';
@@ -8,9 +8,8 @@ import { KvStore } from '#/core/kv-store/kv-store.service';
 import { NotificationService } from '#/core/notification/notification.service';
 import { env } from '#/env';
 import { AuthKvStoreKey } from '#/modules/auth/auth.key';
-import { AdminEmailConfigService } from '#/modules/system-configs/admin-email-config.service';
-
 import { PasswordResetEmailEvent } from '#/modules/auth/events';
+import { GetAdminEmailDeliveryConfigQuery } from '#/modules/system-config/queries/get-admin-email-delivery-config.query';
 
 type PasswordResetRecord = { emailEncrypted: string, token: string };
 
@@ -20,11 +19,11 @@ export class PasswordResetEmailHandler implements IEventHandler<PasswordResetEma
   private unsubscribe?: () => Promise<void>;
 
   constructor(
+    private readonly queryBus: QueryBus,
     @Inject(EVENT_BROKER.REDIS_STREAMS)
     private readonly eventBroker: EventBroker,
     private readonly kvStore: KvStore,
     private readonly notifications: NotificationService,
-    private readonly emailConfig: AdminEmailConfigService,
   ) {}
 
   async onModuleInit(): Promise<void> {
@@ -47,7 +46,7 @@ export class PasswordResetEmailHandler implements IEventHandler<PasswordResetEma
     resetUrl.searchParams.set('challengeId', event.challengeId);
     resetUrl.searchParams.set('token', record.token);
     try {
-      const config = await this.emailConfig.getEmailDeliveryConfig();
+      const config = await this.queryBus.execute(new GetAdminEmailDeliveryConfigQuery());
       await this.notifications.send({
         channel: 'email',
         message: {

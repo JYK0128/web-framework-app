@@ -60,7 +60,7 @@ export class DeleteOwnQnaHandler implements ICommandHandler<DeleteOwnQnaCommand,
   constructor(private readonly service: QnaService) {}
   async execute({ input }: DeleteOwnQnaCommand) {
     await this.service.remove(input.qnaId, true);
-    return QnaActionResponseDto.fromPlain({ ok: true });
+    return QnaActionResponseDto.parse({ ok: true });
   }
 }
 
@@ -70,6 +70,6 @@ export class DeleteQnaHandler implements ICommandHandler<DeleteQnaCommand, QnaAc
   constructor(private readonly service: QnaService) {}
   async execute({ input }: DeleteQnaCommand) {
     await this.service.remove(input.qnaId, false);
-    return QnaActionResponseDto.fromPlain({ ok: true });
+    return QnaActionResponseDto.parse({ ok: true });
   }
 }

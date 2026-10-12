@@ -12,7 +12,7 @@ import { AppEntityManager } from '#/core/database/entity-manager';
 import { env } from '#/env';
 import { RegisterCommand, RequestEmailVerificationCommand } from '#/modules/auth/commands';
 import { RegisterResponseDto, RequestEmailVerificationRequestDto } from '#/modules/auth/dto';
-import { AdminEmailConfigService } from '#/modules/system-configs/admin-email-config.service';
+import { EnsureAdminEmailDeliveryConfiguredCommand } from '#/modules/system-config/commands/ensure-admin-email-delivery-configured.command';
 
 @Injectable()
 @CommandHandler(RegisterCommand)
@@ -22,14 +22,13 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
   constructor(
     private readonly em: AppEntityManager,
     private readonly commandBus: CommandBus,
-    private readonly emailConfig: AdminEmailConfigService,
   ) {}
 
   async execute(command: RegisterCommand): Promise<RegisterResponseDto> {
     if (!SECURITY_CONFIG.registration.allowRegistration) throw new ApplicationError({ code: 'REGISTRATION_DISABLED', status: HttpStatus.FORBIDDEN });
     if (!SECURITY_CONFIG.credentialAvailable) throw new ApplicationError({ code: 'CREDENTIAL_AUTH_UNAVAILABLE', status: HttpStatus.FORBIDDEN });
     assertPasswordPolicy(command.input.password);
-    if (SECURITY_CONFIG.registration.requireEmailVerification) await this.emailConfig.ensureEmailDeliveryConfigured();
+    if (SECURITY_CONFIG.registration.requireEmailVerification) await this.commandBus.execute(new EnsureAdminEmailDeliveryConfiguredCommand());
 
     const email = command.input.email.trim().toLowerCase();
     const emailHash = hmac(email, env.PII_HASH_KEY);
@@ -66,7 +65,7 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
     if (SECURITY_CONFIG.registration.requireEmailVerification) {
       try {
         const result = await this.commandBus.execute(new RequestEmailVerificationCommand(
-          RequestEmailVerificationRequestDto.fromPlain({ email }),
+          RequestEmailVerificationRequestDto.parse({ email }),
         ));
         verificationEmailQueued = result.accepted;
       }
@@ -74,6 +73,6 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
         this.logger.warn(`Registration email verification could not be queued: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
-    return RegisterResponseDto.fromPlain({ emailVerificationRequired: SECURITY_CONFIG.registration.requireEmailVerification, verificationEmailQueued });
+    return RegisterResponseDto.parse({ emailVerificationRequired: SECURITY_CONFIG.registration.requireEmailVerification, verificationEmailQueued });
   }
 }

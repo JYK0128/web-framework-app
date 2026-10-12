@@ -22,7 +22,7 @@ export class OAuthController {
   @ApiOperation({ summary: '활성화된 OAuth 로그인 공급자 조회' })
   @SwaggerApiResponse(OAuthProviderListResponseDto)
   async providers(): Promise<OAuthProviderListResponseDto> {
-    return { items: await this.oauth.getEnabledProviders() };
+    return OAuthProviderListResponseDto.parse({ items: await this.oauth.getEnabledProviders() });
   }
 
   @Public()
@@ -50,7 +50,7 @@ export class OAuthController {
     const completion = await this.oauth.complete(providerId, input.code, input.state);
     const { accessToken, refreshToken } = completion.tokens;
     if (!accessToken || !refreshToken) throw new ApplicationError({ code: 'OAUTH_LOGIN_FAILED', status: HttpStatus.INTERNAL_SERVER_ERROR });
-    return OAuthCallbackResponseDto.fromPlain({ accessToken, refreshToken, returnTo: completion.returnTo });
+    return OAuthCallbackResponseDto.parse({ accessToken, refreshToken, returnTo: completion.returnTo });
   }
 
   private callbackUrl(providerId: string): string {

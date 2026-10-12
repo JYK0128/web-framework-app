@@ -20,7 +20,7 @@ export class RequestPasswordResetHandler implements ICommandHandler<RequestPassw
   constructor(private readonly em: AppEntityManager, private readonly kv: KvStore, private readonly messages: MessageService) {}
 
   async execute(command: RequestPasswordResetCommand): Promise<RequestPasswordResetResponseDto> {
-    if (!SECURITY_CONFIG.credentialAvailable) return RequestPasswordResetResponseDto.fromPlain({ accepted: true });
+    if (!SECURITY_CONFIG.credentialAvailable) return RequestPasswordResetResponseDto.parse({ accepted: true });
     await ensureEmailDeliveryConfigured(this.em);
     const email = command.input.email.trim().toLowerCase();
     const user = await this.em.findOne(User, { profile: { emailHash: hmac(email, env.PII_HASH_KEY), phoneNumberHash: hmac(command.input.phoneNumber, env.PII_HASH_KEY) } }, { populate: ['profile'], filters: false });
@@ -31,7 +31,7 @@ export class RequestPasswordResetHandler implements ICommandHandler<RequestPassw
         await sendPasswordResetChallenge(this.em, this.kv, this.messages, user, user.profile, decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY));
       }
     }
-    return RequestPasswordResetResponseDto.fromPlain({ accepted: true });
+    return RequestPasswordResetResponseDto.parse({ accepted: true });
   }
 }
 
@@ -56,7 +56,7 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
     await updateCredentialPassword(account, newPassword);
     user.updateMetadata({ failedLoginAttempts: 0, loginFailureWindowStartedAt: null, lockedUntil: null });
     await this.em.flush();
-    return ResetPasswordResponseDto.fromPlain({ ok: true });
+    return ResetPasswordResponseDto.parse({ ok: true });
   }
 }
 

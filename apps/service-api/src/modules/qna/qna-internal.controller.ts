@@ -5,7 +5,7 @@ import { ApiExcludeController, ApiTags } from '@nestjs/swagger';
 import { MachineAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 
-import { GetQnaRequestDto, QnaActionResponseDto, QnaItemDto, QnaPageResponseDto, UpdateQnaRequestDto } from './dto/qna.dto';
+import { GetQnaRequestDto, QnaActionResponseDto, QnaItemDto, QnaPageResponseDto, UpdateQnaRequestDto } from './dto';
 import { DeleteQnaCommand, GetAllQnaQuery, GetAllQnasQuery, UpdateQnaCommand } from './qna.cqrs';
 
 @ApiTags('Internal (Machine)') @ApiExcludeController() @MachineAuth() @Controller('internal/qna')

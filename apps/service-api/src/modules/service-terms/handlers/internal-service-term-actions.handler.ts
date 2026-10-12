@@ -7,8 +7,6 @@ import { AppEntityManager } from '#/core/database/entity-manager';
 import { CreateInternalServiceTermCommand, DeleteInternalServiceTermCommand, PublishInternalServiceTermCommand, UpdateInternalServiceTermCommand } from '#/modules/service-terms/commands';
 import { DeleteInternalServiceTermResponseDto, InternalServiceTermItemDto } from '#/modules/service-terms/dto';
 
-import { toInternalServiceTerm } from './get-internal-service-terms.handler';
-
 @Injectable()
 @CommandHandler(CreateInternalServiceTermCommand)
 export class CreateInternalServiceTermHandler implements ICommandHandler<CreateInternalServiceTermCommand, InternalServiceTermItemDto> {
@@ -31,7 +29,7 @@ export class CreateInternalServiceTermHandler implements ICommandHandler<CreateI
       metadata: input.metadata ? { options: input.metadata.options ?? {} } : null,
     });
     this.em.persist(term);
-    return toInternalServiceTerm(term);
+    return InternalServiceTermItemDto.parseEntity(term);
   }
 }
 
@@ -54,7 +52,7 @@ export class UpdateInternalServiceTermHandler implements ICommandHandler<UpdateI
     term.isNoticeRequired = input.dto.isNoticeRequired;
     if (input.dto.metadata !== undefined) term.metadata = input.dto.metadata ? { options: input.dto.metadata.options ?? {} } : null;
     if (input.dto.publishedAt !== undefined) term.publishedAt = publishedAt;
-    return toInternalServiceTerm(term);
+    return InternalServiceTermItemDto.parseEntity(term);
   }
 }
 
@@ -66,7 +64,7 @@ export class DeleteInternalServiceTermHandler implements ICommandHandler<DeleteI
     const term = await findServiceTerm(this.em, input.termId);
     assertEditable(term);
     term.deletedAt = new Date();
-    return DeleteInternalServiceTermResponseDto.fromPlain({ ok: true });
+    return DeleteInternalServiceTermResponseDto.parse({ ok: true });
   }
 }
 
@@ -80,7 +78,7 @@ export class PublishInternalServiceTermHandler implements ICommandHandler<Publis
       throw new ApplicationError({ code: 'SERVICE_TERM_ALREADY_PUBLISHED', status: HttpStatus.CONFLICT });
     }
     term.publishedAt = new Date();
-    return toInternalServiceTerm(term);
+    return InternalServiceTermItemDto.parseEntity(term);
   }
 }
 

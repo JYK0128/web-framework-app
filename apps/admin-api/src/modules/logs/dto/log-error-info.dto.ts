@@ -22,8 +22,8 @@ export class LogErrorInfoDto extends BaseDto {
   @ApiProperty({ type: String, nullable: true, description: 'DB 예외 시 실행 SQL 쿼리' })
   sql!: string | null;
 
-  static from(rawError?: unknown, responseBody?: unknown): LogErrorInfoDto | null {
+  static parseError(rawError?: unknown, responseBody?: unknown): LogErrorInfoDto | null {
     const errorInfo = normalizeLogError(rawError, responseBody);
-    return errorInfo ? LogErrorInfoDto.fromPlain(errorInfo) : null;
+    return errorInfo ? LogErrorInfoDto.parse(errorInfo) : null;
   }
 }

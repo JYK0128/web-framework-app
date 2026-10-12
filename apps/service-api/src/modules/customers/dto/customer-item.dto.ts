@@ -39,9 +39,9 @@ export class CustomerItemDto extends EntityDto(User) {
   @ApiPropertyOptional({ type: String, nullable: true })
   roleLabel?: string | null;
 
-  static override from(user: User): CustomerItemDto {
+  static override parseEntity(user: User): CustomerItemDto {
     if (!user.profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
-    return this.fromPlain({
+    return this.parse({
       id: user.id,
       name: user.profile.name,
       email: decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY),

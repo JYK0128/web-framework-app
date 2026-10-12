@@ -1,20 +1,4 @@
 import type { Term, UserTermAgreement } from '#/core/database/entities/terms';
-import { ServiceTermItemDto } from '#/modules/service-terms/dto';
-
-export function toServiceTerm(term: Term): ServiceTermItemDto {
-  return ServiceTermItemDto.fromPlain({
-    id: term.id,
-    groupId: term.termGroup.id,
-    title: term.termGroup.title,
-    version: term.version,
-    content: term.content,
-    isRequired: term.termGroup.isRequired,
-    sortOrder: term.termGroup.sortOrder,
-    publishedAt: term.publishedAt,
-    createdAt: term.createdAt,
-    updatedAt: term.updatedAt,
-  });
-}
 
 export function isPublished(term: Term): boolean {
   return term.publishedAt !== null && term.publishedAt <= new Date();

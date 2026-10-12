@@ -1,3 +1,14 @@
+export * from './ban-customer.request.dto';
+export * from './customer-action.response.dto';
+export * from './customer-detail.response.dto';
+export * from './customer-item.dto';
+export * from './customer-page.response.dto';
+export * from './customer-pii.response.dto';
+export * from './customer-session-item.dto';
+export * from './customer-session-list.response.dto';
+export * from './get-customers.request.dto';
+export * from './update-customer-memo.request.dto';
+export * from './update-customer-role.request.dto';
 export { BanCustomerRequestDto } from '#/modules/customers/dto/ban-customer.request.dto';
 export { CustomerActionResponseDto } from '#/modules/customers/dto/customer-action.response.dto';
 export { CustomerDetailResponseDto } from '#/modules/customers/dto/customer-detail.response.dto';

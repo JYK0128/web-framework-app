@@ -7,7 +7,7 @@ import { AppEntityManager } from '#/core/database/entity-manager';
 import { ServiceTermDetailResponseDto } from '#/modules/service-terms/dto';
 import { GetServiceTermQuery } from '#/modules/service-terms/queries';
 
-import { isPublished, toServiceTerm } from './service-term.helpers';
+import { isPublished } from './service-term.helpers';
 
 @Injectable()
 @QueryHandler(GetServiceTermQuery)
@@ -16,6 +16,6 @@ export class GetServiceTermHandler implements IQueryHandler<GetServiceTermQuery,
   async execute(query: GetServiceTermQuery): Promise<ServiceTermDetailResponseDto> {
     const term = await this.em.findOne(Term, { id: query.input.termId }, { populate: ['termGroup'] });
     if (!term || !isPublished(term)) throw new ApplicationError({ code: 'SERVICE_TERM_NOT_FOUND', status: HttpStatus.NOT_FOUND });
-    return toServiceTerm(term);
+    return ServiceTermDetailResponseDto.parseEntity(term);
   }
 }

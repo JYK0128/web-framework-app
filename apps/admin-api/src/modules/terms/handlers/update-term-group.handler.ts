@@ -5,7 +5,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { TermGroup } from '#/core/database/entities/terms';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { UpdateTermGroupCommand } from '#/modules/terms/commands';
-import { OperatorTermGroupItemDto, UpdateTermGroupResponseDto } from '#/modules/terms/dto';
+import { UpdateTermGroupResponseDto } from '#/modules/terms/dto';
 
 @Injectable()
 @CommandHandler(UpdateTermGroupCommand)
@@ -19,6 +19,6 @@ export class UpdateTermGroupHandler implements ICommandHandler<UpdateTermGroupCo
     if (data.title !== undefined) group.title = data.title.trim();
     if (data.isRequired !== undefined) group.isRequired = data.isRequired;
     if (data.sortOrder !== undefined) group.sortOrder = data.sortOrder;
-    return UpdateTermGroupResponseDto.fromPlain(OperatorTermGroupItemDto.from(group));
+    return UpdateTermGroupResponseDto.parseEntity(group);
   }
 }

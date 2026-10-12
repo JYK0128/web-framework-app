@@ -14,7 +14,7 @@ export class GetRolesHandler implements IQueryHandler<GetRolesQuery, RoleListRes
 
   async execute(): Promise<RoleListResponseDto> {
     const roles = await this.em.find(Role, {});
-    const items = await Promise.all(roles.map(async (role) => RoleItemDto.from(role, await this.em.count(User, { role: role.id }))));
-    return RoleListResponseDto.fromPlain({ items });
+    const items = await Promise.all(roles.map(async (role) => RoleItemDto.parseEntity(role, await this.em.count(User, { role: role.id }))));
+    return RoleListResponseDto.parse({ items });
   }
 }

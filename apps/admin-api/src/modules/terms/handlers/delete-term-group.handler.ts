@@ -19,6 +19,6 @@ export class DeleteTermGroupHandler implements ICommandHandler<DeleteTermGroupCo
       throw new ApplicationError({ code: 'TERM_GROUP_HAS_PUBLISHED_TERMS', status: HttpStatus.CONFLICT });
     }
     group.deletedAt = new Date();
-    return DeleteTermGroupResponseDto.fromPlain({ ok: true });
+    return DeleteTermGroupResponseDto.parse({ ok: true });
   }
 }

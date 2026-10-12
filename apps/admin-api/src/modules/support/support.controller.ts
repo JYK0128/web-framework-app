@@ -88,18 +88,18 @@ function maskMessageContent(content: string): string {
 }
 
 function maskMessages(response: SupportMessageListResponseDto): SupportMessageListResponseDto {
-  return {
+  return SupportMessageListResponseDto.parse({
     ...response,
-    items: response.items.map((message) => ({
+    items: response.items.map((message) => SupportMessageItemDto.parse({
       ...message,
       senderName: message.senderType === 'user' ? maskName(message.senderName) : message.senderName,
       content: maskMessageContent(message.content),
     })),
-  };
+  });
 }
 
 function maskRoom(room: SupportRoomItemDto): SupportRoomItemDto {
-  return { ...room, title: maskMessageContent(room.title), userName: maskName(room.userName) };
+  return SupportRoomItemDto.parse({ ...room, title: maskMessageContent(room.title), userName: maskName(room.userName) });
 }
 
 @ApiTags('support') @UserAuth() @Controller('support')
@@ -114,7 +114,7 @@ export class SupportController {
   @Get('rooms') @Permissions(AdminPermission.support.read) @SwaggerApiResponse(SupportRoomPageResponseDto)
   async listRooms(@Query() query: GetSupportRoomsRequestDto): Promise<SupportRoomPageResponseDto> {
     const result = await this.internalClient.fetch<SupportRoomPageResponseDto>(`/internal/support/rooms?${this.params(query)}`);
-    return { ...result, items: result.items.map(maskRoom) };
+    return SupportRoomPageResponseDto.parse({ ...result, items: result.items.map(maskRoom) });
   }
 
   @ApiOperation({ summary: '고객지원 상담방 개인정보 원문 목록 조회' })

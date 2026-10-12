@@ -65,7 +65,7 @@ export class CreateOperatorHandler implements ICommandHandler<CreateOperatorComm
     if (emailVerificationRequired) {
       try {
         const result = await this.commandBus.execute(new RequestEmailVerificationCommand(
-          RequestEmailVerificationRequestDto.fromPlain({ email: command.input.email }),
+          RequestEmailVerificationRequestDto.parse({ email: command.input.email }),
         ));
         emailVerificationQueued = result.accepted;
       }
@@ -73,6 +73,6 @@ export class CreateOperatorHandler implements ICommandHandler<CreateOperatorComm
         this.logger.warn(`운영자 이메일 인증 메일 발송 요청을 등록하지 못했습니다: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
-    return CreateOperatorResponseDto.fromPlain({ id: operator.id, emailVerificationRequired, emailVerificationQueued });
+    return CreateOperatorResponseDto.parseEntity(operator, emailVerificationRequired, emailVerificationQueued);
   }
 }

@@ -20,7 +20,7 @@ export class CreateRoleHandler implements ICommandHandler<CreateRoleCommand, Cre
     }
     const role = this.em.create(Role, { code, label: input.label.trim(), description: input.description?.trim() || null, permissions: await normalizePermissions(this.em, input.permissions), isSystem: false });
     this.em.persist(role);
-    return CreateRoleResponseDto.fromPlain({ id: role.id, code: role.code, label: role.label, description: role.description, isSystem: role.isSystem, permissions: role.permissions ?? [], userCount: 0 });
+    return CreateRoleResponseDto.parseEntity(role, 0);
   }
 }
 

@@ -5,7 +5,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { Term } from '#/core/database/entities/terms';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { PublishTermCommand } from '#/modules/terms/commands';
-import { OperatorTermItemDto, PublishTermResponseDto } from '#/modules/terms/dto';
+import { PublishTermResponseDto } from '#/modules/terms/dto';
 
 @Injectable()
 @CommandHandler(PublishTermCommand)
@@ -21,6 +21,6 @@ export class PublishTermHandler implements ICommandHandler<PublishTermCommand, P
       throw new ApplicationError({ code: 'TERM_ALREADY_PUBLISHED', status: HttpStatus.CONFLICT });
     }
     term.publishedAt = new Date();
-    return PublishTermResponseDto.fromPlain(OperatorTermItemDto.from(term));
+    return PublishTermResponseDto.parseEntity(term);
   }
 }

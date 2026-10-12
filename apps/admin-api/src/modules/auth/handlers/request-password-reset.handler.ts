@@ -1,7 +1,7 @@
 import { randomBytes, randomUUID } from 'node:crypto';
 
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { CommandBus, CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { TimeUtil } from '@pkg/shared/common';
 import { encrypt, hmac } from '@pkg/shared/server';
 
@@ -16,7 +16,7 @@ import { AuthKvStoreKey } from '#/modules/auth/auth.key';
 import { RequestPasswordResetCommand } from '#/modules/auth/commands';
 import { RequestPasswordResetResponseDto } from '#/modules/auth/dto';
 import { PasswordResetEmailEvent } from '#/modules/auth/events';
-import { AdminEmailConfigService } from '#/modules/system-configs/admin-email-config.service';
+import { EnsureAdminEmailDeliveryConfiguredCommand } from '#/modules/system-config/commands/ensure-admin-email-delivery-configured.command';
 
 @Injectable()
 @CommandHandler(RequestPasswordResetCommand)
@@ -24,24 +24,24 @@ export class RequestPasswordResetHandler implements ICommandHandler<RequestPassw
   private readonly logger = new Logger(RequestPasswordResetHandler.name);
 
   constructor(
+    private readonly commandBus: CommandBus,
     private readonly em: AppEntityManager,
     private readonly kvStore: KvStore,
-    private readonly emailConfig: AdminEmailConfigService,
     @Inject(EVENT_BROKER.REDIS_STREAMS)
     private readonly eventBroker: EventBroker,
   ) {}
 
   async execute({ input }: RequestPasswordResetCommand): Promise<RequestPasswordResetResponseDto> {
-    if (!SECURITY_CONFIG.credentialAvailable) return RequestPasswordResetResponseDto.fromPlain({ accepted: true });
-    await this.emailConfig.ensureEmailDeliveryConfigured();
+    if (!SECURITY_CONFIG.credentialAvailable) return RequestPasswordResetResponseDto.parse({ accepted: true });
+    await this.commandBus.execute(new EnsureAdminEmailDeliveryConfiguredCommand());
 
     const email = input.email.trim().toLowerCase();
     const user = await this.em.findOne(User, {
       profile: { emailHash: hmac(email, env.PII_HASH_KEY), phoneNumberHash: hmac(input.phoneNumber, env.PII_HASH_KEY) },
     }, { filters: false });
-    if (!user || user.isDeleted) return RequestPasswordResetResponseDto.fromPlain({ accepted: true });
+    if (!user || user.isDeleted) return RequestPasswordResetResponseDto.parse({ accepted: true });
     const account = await this.em.findOne(Account, { user: user.id, providerId: Account.PROVIDER_CREDENTIAL });
-    if (!account?.password) return RequestPasswordResetResponseDto.fromPlain({ accepted: true });
+    if (!account?.password) return RequestPasswordResetResponseDto.parse({ accepted: true });
 
     const challengeId = randomUUID();
     const token = randomBytes(32).toString('base64url');
@@ -60,7 +60,7 @@ export class RequestPasswordResetHandler implements ICommandHandler<RequestPassw
       await this.removeChallenge(key);
       throw error;
     }
-    return RequestPasswordResetResponseDto.fromPlain({ accepted: true });
+    return RequestPasswordResetResponseDto.parse({ accepted: true });
   }
 
   private async removeChallenge(key: string): Promise<void> {

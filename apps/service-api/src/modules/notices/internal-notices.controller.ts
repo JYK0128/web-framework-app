@@ -5,7 +5,7 @@ import { ApiExcludeController, ApiTags } from '@nestjs/swagger';
 import { MachineAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 
-import { CreateNoticeRequestDto, GetNoticesRequestDto, NoticeActionResponseDto, NoticeItemDto, NoticePageResponseDto, UpdateNoticeRequestDto } from './notices.dto';
+import { CreateNoticeRequestDto, GetNoticesRequestDto, NoticeActionResponseDto, NoticeItemDto, NoticePageResponseDto, UpdateNoticeRequestDto } from './dto';
 import { CreateNoticeCommand, DeleteNoticeCommand, GetNoticesQuery, UpdateNoticeCommand } from './notices.messages';
 
 @ApiTags('Internal (Machine)')

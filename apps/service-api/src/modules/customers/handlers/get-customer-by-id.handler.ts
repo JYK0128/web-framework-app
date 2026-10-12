@@ -24,6 +24,6 @@ export class GetCustomerByIdHandler implements IQueryHandler<GetCustomerByIdQuer
       throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
     }
 
-    return CustomerDetailResponseDto.from(user);
+    return CustomerDetailResponseDto.parseEntity(user);
   }
 }

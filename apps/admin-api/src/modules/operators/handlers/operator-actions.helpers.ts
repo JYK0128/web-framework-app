@@ -6,7 +6,7 @@ import { AppEntityManager } from '#/core/database/entity-manager';
 import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { OperatorActionResponseDto } from '#/modules/operators/dto';
 
-export const ok = () => OperatorActionResponseDto.fromPlain({ ok: true });
+export const ok = () => OperatorActionResponseDto.parse({ ok: true });
 
 export async function findOperator(em: AppEntityManager, operatorId: string): Promise<User> {
   const operator = await em.findOne(User, { id: operatorId }, { populate: ['role'], filters: false });

@@ -18,9 +18,9 @@ export class GetFaqsHandler implements IQueryHandler<GetFaqsQuery, FaqCursorResp
       ...input.toCursorOptions(),
     });
     const categories = await this.em.find(Faq, { isPublished: true }, { fields: ['category'], orderBy: { category: 'ASC' } });
-    return FaqCursorResponseDto.fromPlain({
+    return FaqCursorResponseDto.parse({
       ...result,
-      items: result.items.map((faq) => FaqItemDto.from(faq)),
+      items: result.items.map((faq) => FaqItemDto.parseEntity(faq)),
       categories: [...new Set(categories.map((faq) => faq.category))],
     });
   }

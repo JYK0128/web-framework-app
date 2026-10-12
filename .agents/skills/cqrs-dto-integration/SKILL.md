@@ -35,13 +35,13 @@ description: >-
 - Keep list/page/cursor metadata on the collection response, separate from nested item DTOs. Put item-derived fields on the relevant item DTO.
 - Use `@Type` for collection items, `@Transform` for flattened relations, and convert MikroORM collections to arrays.
 
-## Entity mapping with from()
+## Entity mapping with parseEntity()
 
-- Use `fromPlain()` to construct DTOs from plain values. When converting actual entity instances, implement `static override from(...)` on the concrete DTO and call that mapper from handlers.
+- Use `parse()` to construct DTOs from plain values. When converting actual entity instances, implement `static override parseEntity(...)` on the concrete DTO and call that mapper from handlers.
 - Keep entity-to-DTO field mapping in the DTO and reuse it across list, detail, and mutation responses. Keep database access, authorization, and business policy decisions in handlers; pass mapping context explicitly.
-- Entity association alone does not require a mapper. HTTP request DTOs and DTOs forwarding a response already mapped by another service may use entity-based parents only for editor hints, without implementing or calling `from()`.
-- The inherited `from()` throws when called without a concrete implementation. This is a runtime guard, not a TypeScript requirement to implement a static method.
-- `EntityDto(A, B)` and `EntityResponseDto(A, B)` share the contract `from(a: A, b: B, ...args)`, where `A` and `B` here mean instances of the supplied entity classes. Preserve every entity argument's type and order before additional mapping arguments.
+- Entity association alone does not require a mapper. HTTP request DTOs and DTOs forwarding a response already mapped by another service may use entity-based parents only for editor hints, without implementing or calling `parseEntity()`.
+- The inherited `parseEntity()` throws when called without a concrete implementation. This is a runtime guard, not a TypeScript requirement to implement a static method.
+- `EntityDto(A, B)` and `EntityResponseDto(A, B)` share the contract `parseEntity(a: A, b: B, ...args)`, where `A` and `B` here mean instances of the supplied entity classes. Preserve every entity argument's type and order before additional mapping arguments.
 - Declare additional arguments' concrete types and required/optional status in the DTO's override. They are not additional entity classes and do not change the entity field hints. For example:
 
 ```ts
@@ -51,13 +51,13 @@ class ExampleItemDto extends EntityDto(User, Account) {
   @ApiProperty() userCount!: number;
   @ApiPropertyOptional() label?: string;
 
-  static override from(
+  static override parseEntity(
     user: User,
     account: Account,
     userCount: number,
     label?: string,
   ): ExampleItemDto {
-    return this.fromPlain({
+    return this.parse({
       id: user.id,
       providerId: account.providerId,
       userCount,
@@ -68,3 +68,8 @@ class ExampleItemDto extends EntityDto(User, Account) {
 ```
 
 - Keep all entity parameters in the concrete override, in the same order as the parent factory. Calls are type-checked against the mapper's declared entity and additional arguments; do not weaken these types with casts or an untyped rest parameter.
+
+- `parse(value)` constructs a single DTO from plain values; `parseArray(values)` constructs a DTO array with a `T[]` return type. Neither method automatically validates. Keep validation explicit with `validate()` where required.
+- Use `parseError(...)` and `parseMetadata(...)` for error and metadata conversion; reserve `parseEntity(...)` for entity mapping.
+
+- `BaseDto.validate()` validates the DTO with class-validator and returns the same instance. The protected static `validationError` defines the error code/status and defaults to `VALIDATION_ERROR` / HTTP 400. Request DTOs use the default; response/internal DTOs override this class property when needed. Do not pass error code/status at validation call sites. Use separate request and response DTOs when their error policies differ.

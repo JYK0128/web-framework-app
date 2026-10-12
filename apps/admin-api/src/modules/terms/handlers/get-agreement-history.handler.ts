@@ -23,9 +23,9 @@ export class GetAgreementHistoryHandler implements IQueryHandler<GetAgreementHis
       populate: ['term', 'term.termGroup'],
     });
 
-    return AgreementHistoryCursorResponseDto.fromPlain({
+    return AgreementHistoryCursorResponseDto.parse({
       ...result,
-      items: result.items.map((agreement) => AgreementHistoryItemDto.from(agreement)),
+      items: result.items.map((agreement) => AgreementHistoryItemDto.parseEntity(agreement)),
     });
   }
 }

@@ -24,8 +24,8 @@ export class ServiceTermAgreementItemDto extends EntityDto(Term) {
   @Type(() => ServiceAgreementMetadataDto)
   agreementMetadata?: ServiceAgreementMetadataDto | null;
 
-  static override from(term: Term, agreement?: UserTermAgreement): ServiceTermAgreementItemDto {
-    return this.fromPlain({
+  static override parseEntity(term: Term, agreement?: UserTermAgreement): ServiceTermAgreementItemDto {
+    return this.parse({
       termId: term.id,
       groupId: term.termGroup.id,
       title: term.termGroup.title,
@@ -34,8 +34,8 @@ export class ServiceTermAgreementItemDto extends EntityDto(Term) {
       isRequired: term.termGroup.isRequired,
       isAgreed: agreement?.isAgreed === true,
       agreedAt: agreement?.createdAt ?? null,
-      metadata: ServiceAgreementMetadataDto.fromMetadata(term.metadata),
-      agreementMetadata: ServiceAgreementMetadataDto.fromMetadata(agreement?.metadata ?? null),
+      metadata: ServiceAgreementMetadataDto.parseMetadata(term.metadata),
+      agreementMetadata: ServiceAgreementMetadataDto.parseMetadata(agreement?.metadata ?? null),
     });
   }
 }

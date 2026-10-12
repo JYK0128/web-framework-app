@@ -12,8 +12,8 @@ export class ServiceAgreementMetadataDto extends BaseDto {
   @ValidateBy({ name: 'serviceAgreementOptions', validator: { validate: (value: unknown) => ServiceAgreementOptionsSchema.safeParse(value).success } })
   options?: Record<string, boolean | null> | null;
 
-  static fromMetadata(metadata: Record<string, unknown> | null): ServiceAgreementMetadataDto | null {
+  static parseMetadata(metadata: Record<string, unknown> | null): ServiceAgreementMetadataDto | null {
     if (!metadata || metadata.options === undefined || metadata.options === null) return null;
-    return this.fromPlain({ options: ServiceAgreementOptionsSchema.parse(metadata.options) });
+    return this.parse({ options: ServiceAgreementOptionsSchema.parse(metadata.options) });
   }
 }

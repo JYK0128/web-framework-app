@@ -16,12 +16,12 @@ export class QnaService {
   async list(input: GetQnaRequestDto, mine = true): Promise<QnaPageResponseDto> {
     const where = this.scopedQuery(input.toFilterQuery(), mine);
     const result = await this.em.findByPage(Qna, where, { ...input.toPageOptions(), populate: ['user.profile', 'assignee.profile'] });
-    return QnaPageResponseDto.fromPlain({ ...result, items: result.items.map((item) => QnaItemDto.from(item)) });
+    return QnaPageResponseDto.parse({ ...result, items: result.items.map((item) => QnaItemDto.parseEntity(item)) });
   }
 
   async get(id: string, mine = true): Promise<QnaItemDto> {
     const qna = await this.findEntity(id, mine);
-    return QnaItemDto.from(qna);
+    return QnaItemDto.parseEntity(qna);
   }
 
   async create(input: CreateQnaRequestDto): Promise<QnaItemDto> {
@@ -36,7 +36,7 @@ export class QnaService {
     this.em.persist(qna);
     await this.em.flush();
     this.eventBus.publish(new QnaCreatedEvent(qna.id, qna.priority));
-    return QnaItemDto.from(qna);
+    return QnaItemDto.parseEntity(qna);
   }
 
   async update(id: string, input: UpdateQnaRequestDto, mine = false): Promise<QnaItemDto> {
@@ -47,7 +47,7 @@ export class QnaService {
       qna.assignee = assigneeId ? this.em.getReference(User, assigneeId) : null;
     }
     if (input.answer !== undefined && qna.status === QnaStatus.OPEN) qna.status = QnaStatus.ANSWERED;
-    return QnaItemDto.from(qna);
+    return QnaItemDto.parseEntity(qna);
   }
 
   async remove(id: string, mine = false): Promise<void> {

@@ -1,7 +1,7 @@
 import { randomBytes, randomUUID } from 'node:crypto';
 
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { CommandBus, CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { TimeUtil } from '@pkg/shared/common';
 import { encrypt, hmac } from '@pkg/shared/server';
 
@@ -16,7 +16,7 @@ import { AuthKvStoreKey } from '#/modules/auth/auth.key';
 import { RequestEmailVerificationCommand } from '#/modules/auth/commands';
 import { RequestEmailVerificationResponseDto } from '#/modules/auth/dto';
 import { EmailVerificationEvent } from '#/modules/auth/events';
-import { AdminEmailConfigService } from '#/modules/system-configs/admin-email-config.service';
+import { EnsureAdminEmailDeliveryConfiguredCommand } from '#/modules/system-config/commands/ensure-admin-email-delivery-configured.command';
 
 @Injectable()
 @CommandHandler(RequestEmailVerificationCommand)
@@ -24,21 +24,21 @@ export class RequestEmailVerificationHandler implements ICommandHandler<RequestE
   private readonly logger = new Logger(RequestEmailVerificationHandler.name);
 
   constructor(
+    private readonly commandBus: CommandBus,
     private readonly em: AppEntityManager,
     private readonly kvStore: KvStore,
-    private readonly emailConfig: AdminEmailConfigService,
     @Inject(EVENT_BROKER.REDIS_STREAMS)
     private readonly eventBroker: EventBroker,
   ) {}
 
   async execute({ input }: RequestEmailVerificationCommand): Promise<RequestEmailVerificationResponseDto> {
-    if (!SECURITY_CONFIG.registration.requireEmailVerification) return RequestEmailVerificationResponseDto.fromPlain({ accepted: true });
-    await this.emailConfig.ensureEmailDeliveryConfigured();
+    if (!SECURITY_CONFIG.registration.requireEmailVerification) return RequestEmailVerificationResponseDto.parse({ accepted: true });
+    await this.commandBus.execute(new EnsureAdminEmailDeliveryConfiguredCommand());
 
     const email = input.email.trim().toLowerCase();
     const emailHash = hmac(email, env.PII_HASH_KEY);
     const user = await this.em.findOne(User, { profile: { emailHash } }, { filters: false });
-    if (!user || user.isDeleted || user.emailVerified) return RequestEmailVerificationResponseDto.fromPlain({ accepted: true });
+    if (!user || user.isDeleted || user.emailVerified) return RequestEmailVerificationResponseDto.parse({ accepted: true });
 
     const challengeId = randomUUID();
     const token = randomBytes(32).toString('base64url');
@@ -58,7 +58,7 @@ export class RequestEmailVerificationHandler implements ICommandHandler<RequestE
       await this.removeChallenge(key);
       throw error;
     }
-    return RequestEmailVerificationResponseDto.fromPlain({ accepted: true });
+    return RequestEmailVerificationResponseDto.parse({ accepted: true });
   }
 
   private async removeChallenge(key: string): Promise<void> {

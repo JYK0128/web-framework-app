@@ -42,10 +42,10 @@ export class GetAgreementsHandler implements IQueryHandler<GetAgreementsQuery, T
       }
     }
 
-    return TermAgreementListResponseDto.fromPlain({
+    return TermAgreementListResponseDto.parse({
       items: [...latestTermsByGroup.values()].sort(
         (a, b) => (a.termGroup.sortOrder ?? 0) - (b.termGroup.sortOrder ?? 0),
-      ).map((term) => TermAgreementItemDto.from(
+      ).map((term) => TermAgreementItemDto.parseEntity(
         term,
         latestByGroup.get(term.termGroup.id)?.isAgreed === true
         && latestByGroup.get(term.termGroup.id)?.term.id === term.id,

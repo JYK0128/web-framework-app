@@ -1,0 +1,3 @@
+import { TestChannelResponseDto } from '#/modules/service-config/dto/delivery/test-channel.response.dto';
+
+export const result = (): TestChannelResponseDto => TestChannelResponseDto.parse({ ok: true });

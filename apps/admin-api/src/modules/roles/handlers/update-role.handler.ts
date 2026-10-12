@@ -27,6 +27,6 @@ export class UpdateRoleHandler implements ICommandHandler<UpdateRoleCommand, Upd
       await this.userAuthService.revokeRoleUsersTokens?.(role.id);
     }
     role.updatedAt = new Date();
-    return UpdateRoleResponseDto.fromPlain({ id: role.id, code: role.code, label: role.label, description: role.description, isSystem: role.isSystem, permissions: role.permissions ?? [], userCount: await this.em.count(User, { role: role.id }) });
+    return UpdateRoleResponseDto.parseEntity(role, await this.em.count(User, { role: role.id }));
   }
 }

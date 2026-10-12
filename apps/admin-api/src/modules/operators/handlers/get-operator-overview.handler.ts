@@ -20,7 +20,7 @@ export class GetOperatorOverviewHandler implements IQueryHandler<GetOperatorOver
       this.em.count(User, { deletedAt: null, twoFactorEnabled: true }, { filters: false }),
     ]);
 
-    return GetOperatorOverviewResponseDto.fromPlain({
+    return GetOperatorOverviewResponseDto.parse({
       totalOperators,
       activeOperators,
       bannedOperators,

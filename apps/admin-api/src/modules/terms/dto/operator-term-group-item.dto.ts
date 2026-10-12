@@ -11,8 +11,8 @@ export class OperatorTermGroupItemDto extends EntityDto(TermGroup) {
   @ApiProperty() createdAt!: Date;
   @ApiProperty() updatedAt!: Date;
 
-  static override from(group: TermGroup): OperatorTermGroupItemDto {
-    return OperatorTermGroupItemDto.fromPlain({
+  static override parseEntity(group: TermGroup): OperatorTermGroupItemDto {
+    return this.parse({
       id: group.id,
       title: group.title,
       isRequired: group.isRequired,

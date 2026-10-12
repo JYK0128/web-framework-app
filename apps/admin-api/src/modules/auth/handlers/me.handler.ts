@@ -41,7 +41,7 @@ export class MeHandler implements IQueryHandler<MeQuery, MeResponseDto> {
     const accounts = await this.em.find(Account, { user: user.id });
     const credentialAccount = accounts.find((account) => account.providerId === Account.PROVIDER_CREDENTIAL);
 
-    return MeResponseDto.from(
+    return MeResponseDto.parseEntity(
       user,
       profile,
       user.role,

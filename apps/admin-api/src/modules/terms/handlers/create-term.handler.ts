@@ -5,7 +5,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { Term, TermGroup } from '#/core/database/entities/terms';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { CreateTermCommand } from '#/modules/terms/commands';
-import { CreateTermResponseDto, OperatorTermItemDto } from '#/modules/terms/dto';
+import { CreateTermResponseDto } from '#/modules/terms/dto';
 
 @Injectable()
 @CommandHandler(CreateTermCommand)
@@ -39,6 +39,6 @@ export class CreateTermHandler implements ICommandHandler<CreateTermCommand, Cre
       metadata: input.metadata ? { options: input.metadata.options ?? {} } : null,
     });
     this.em.persist(term);
-    return CreateTermResponseDto.fromPlain(OperatorTermItemDto.from(term));
+    return CreateTermResponseDto.parseEntity(term);
   }
 }

@@ -13,8 +13,8 @@ export class GetPermissionsHandler implements IQueryHandler<GetPermissionsQuery,
 
   async execute(): Promise<PermissionListResponseDto> {
     const permissions = await this.em.find(Permission, {});
-    return PermissionListResponseDto.fromPlain({
-      items: permissions.map((permission) => PermissionItemDto.from(permission)),
+    return PermissionListResponseDto.parse({
+      items: permissions.map((permission) => PermissionItemDto.parseEntity(permission)),
     });
   }
 }

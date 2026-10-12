@@ -14,6 +14,6 @@ export class GetInternalFaqsHandler implements IQueryHandler<GetInternalFaqsQuer
   async execute({ input }: GetInternalFaqsQuery): Promise<FaqPageResponseDto> {
     const result = await this.em.findByPage(Faq, input.toFilterQuery(), input.toPageOptions());
     const categories = await this.em.find(Faq, {}, { fields: ['category'], orderBy: { category: 'ASC' } });
-    return FaqPageResponseDto.fromPlain({ ...result, items: result.items.map((faq) => FaqItemDto.from(faq)), categories: [...new Set(categories.map((faq) => faq.category))] });
+    return FaqPageResponseDto.parse({ ...result, items: result.items.map((faq) => FaqItemDto.parseEntity(faq)), categories: [...new Set(categories.map((faq) => faq.category))] });
   }
 }

@@ -17,6 +17,6 @@ export class GetFaqHandler implements IQueryHandler<GetFaqQuery, FaqDetailRespon
     if (!faq) {
       throw new ApplicationError({ code: 'FAQ_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
-    return FaqDetailResponseDto.from(faq);
+    return FaqDetailResponseDto.parseEntity(faq);
   }
 }

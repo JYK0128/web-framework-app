@@ -17,6 +17,6 @@ export class UnregisterHandler implements ICommandHandler<UnregisterCommand, Unr
     const user = await this.em.findOne(User, { id: this.principal.ensureUser().id }, { filters: false });
     if (!user) throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     user.deletedAt = new Date();
-    return UnregisterResponseDto.fromPlain({ ok: true });
+    return UnregisterResponseDto.parse({ ok: true });
   }
 }

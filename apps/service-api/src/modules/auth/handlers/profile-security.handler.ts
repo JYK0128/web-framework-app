@@ -33,7 +33,7 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
       throw new ApplicationError({ code: 'INVALID_CURRENT_PASSWORD', status: HttpStatus.BAD_REQUEST });
     }
     await updateCredentialPassword(account, command.input.newPassword);
-    return ChangePasswordResponseDto.fromPlain({ ok: true });
+    return ChangePasswordResponseDto.parse({ ok: true });
   }
 }
 
@@ -58,7 +58,7 @@ export class GenerateTwoFactorHandler implements ICommandHandler<GenerateTwoFact
     else {
       this.em.persist(this.em.create(TwoFactor, { user: this.em.getReference(User, user.id), secret: encrypt(secret, env.TWO_FACTOR_ENCRYPTION_KEY), verified: false }));
     }
-    return GenerateTwoFactorResponseDto.fromPlain({ secret, digits: SECURITY_CONFIG.twoFactor.digits, periodSeconds: SECURITY_CONFIG.twoFactor.periodSeconds });
+    return GenerateTwoFactorResponseDto.parse({ secret, digits: SECURITY_CONFIG.twoFactor.digits, periodSeconds: SECURITY_CONFIG.twoFactor.periodSeconds });
   }
 }
 
@@ -89,7 +89,7 @@ export class EnableTwoFactorHandler implements ICommandHandler<EnableTwoFactorCo
     twoFactor.failedVerificationCount = 0;
     twoFactor.lockedUntil = null;
     user.twoFactorEnabled = true;
-    return EnableTwoFactorResponseDto.fromPlain({ enabled: true });
+    return EnableTwoFactorResponseDto.parse({ enabled: true });
   }
 }
 
@@ -104,7 +104,7 @@ export class DisableTwoFactorHandler implements ICommandHandler<DisableTwoFactor
     const twoFactor = await this.em.findOne(TwoFactor, { user: user.id }, { filters: false });
     if (twoFactor) this.em.remove(twoFactor);
     user.twoFactorEnabled = false;
-    return DisableTwoFactorResponseDto.fromPlain({ enabled: false });
+    return DisableTwoFactorResponseDto.parse({ enabled: false });
   }
 }
 
@@ -116,7 +116,7 @@ export class UnregisterHandler implements ICommandHandler<UnregisterCommand, Unr
   async execute(): Promise<UnregisterResponseDto> {
     const user = await identifyUser(this.em, this.principal);
     user.deletedAt = new Date();
-    return UnregisterResponseDto.fromPlain({ ok: true });
+    return UnregisterResponseDto.parse({ ok: true });
   }
 }
 

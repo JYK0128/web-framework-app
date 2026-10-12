@@ -8,10 +8,8 @@ import { SERVICE_RUNTIME_CONFIG } from '#/app.config';
 import { MachineAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { NoStore } from '#/core/http/decorators/no-store.decorator';
 
-import { DeliveryTestConfigRequestDto } from './delivery-test-config.request.dto';
-import { CreateOAuthIconPresignedUrlRequestDto } from './oauth-icon.dto';
+import { CreateOAuthIconPresignedUrlRequestDto, DeliveryTestConfigRequestDto, UpdateInternalSystemConfigsRequestDto } from './dto';
 import { SystemConfigService } from './system-config.service';
-import { UpdateInternalSystemConfigsRequestDto } from './update-internal-system-configs.request.dto';
 
 @ApiTags('Internal (Machine)')
 @ApiExcludeController()

@@ -14,8 +14,8 @@ export class FaqItemDto extends EntityDto(Faq) {
   @ApiProperty({ type: String, format: 'date-time' }) override createdAt!: Date;
   @ApiProperty({ type: String, format: 'date-time' }) override updatedAt!: Date;
 
-  static override from(faq: Faq): FaqItemDto {
-    return this.fromPlain({
+  static override parseEntity(faq: Faq): FaqItemDto {
+    return this.parse({
       id: faq.id,
       category: faq.category,
       question: faq.question,

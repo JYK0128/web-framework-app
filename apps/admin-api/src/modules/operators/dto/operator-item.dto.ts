@@ -48,10 +48,10 @@ export class OperatorItemDto extends EntityDto(User) {
   @ApiProperty({ type: Date })
   updatedAt!: Date;
 
-  static override from(operator: User): OperatorItemDto {
+  static override parseEntity(operator: User): OperatorItemDto {
     const profile = operator.profile;
     if (!profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
-    return OperatorItemDto.fromPlain({
+    return this.parse({
       id: operator.id,
       name: maskName(profile.name),
       email: maskEmail(decrypt(profile.emailEncrypted, env.PII_ENCRYPTION_KEY)),

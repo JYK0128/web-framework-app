@@ -30,20 +30,20 @@ type EntityDtoInstances<T extends readonly Type<object>[]> = {
 };
 
 type EntityDtoFactory<T extends readonly Type<object>[]> = {
-  from(...args: [...EntityDtoInstances<T>, ...unknown[]]): BaseDto
+  parseEntity(...args: [...EntityDtoInstances<T>, ...unknown[]]): BaseDto
 };
 
 /**
  * Provides entity field type hints without exposing DB metadata or Swagger fields.
- * Entity mapping DTOs must override static from(); calling the inherited method throws.
- * from() preserves the entity argument types and order, followed by optional mapping arguments.
+ * Entity mapping DTOs must override static parseEntity(); calling the inherited method throws.
+ * parseEntity() preserves the entity argument types and order, followed by optional mapping arguments.
  */
 export function EntityDto<T extends readonly Type<object>[]>(
   ..._entities: T
 ): Type<EntityDtoFields<T> & BaseDto> & typeof BaseDto & EntityDtoFactory<T> {
   abstract class EntityDtoDummyClass extends BaseDto {
-    static from(..._args: [...EntityDtoInstances<T>, ...unknown[]]): BaseDto {
-      throw new Error(`${this.name}.from must be implemented`);
+    static parseEntity(..._args: [...EntityDtoInstances<T>, ...unknown[]]): BaseDto {
+      throw new Error(`${this.name}.parseEntity must be implemented`);
     }
   }
 

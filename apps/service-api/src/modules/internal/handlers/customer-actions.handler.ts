@@ -9,7 +9,7 @@ import { AppEntityManager } from '#/core/database/entity-manager';
 import { BanCustomerCommand, DeleteCustomerCommand, UnbanCustomerCommand, UpdateCustomerMemoCommand, UpdateCustomerRoleCommand } from '#/modules/internal/commands';
 import { CustomerActionResponseDto } from '#/modules/internal/dto';
 
-const ok = () => CustomerActionResponseDto.fromPlain({ ok: true });
+const ok = () => CustomerActionResponseDto.parse({ ok: true });
 
 @Injectable()
 @CommandHandler(BanCustomerCommand)

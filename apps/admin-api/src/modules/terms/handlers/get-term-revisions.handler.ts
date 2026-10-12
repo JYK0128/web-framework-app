@@ -3,7 +3,7 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { Term } from '#/core/database/entities/terms';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { TermRevisionPageResponseDto } from '#/modules/terms/dto';
+import { TermRevisionItemDto, TermRevisionPageResponseDto } from '#/modules/terms/dto';
 import { GetTermRevisionsQuery } from '#/modules/terms/queries';
 
 @Injectable()
@@ -18,9 +18,9 @@ export class GetTermRevisionsHandler implements IQueryHandler<GetTermRevisionsQu
       limit: dto.limit,
       orderBy: { publishedAt: 'DESC', id: 'DESC' },
     });
-    return TermRevisionPageResponseDto.fromPlain({
+    return TermRevisionPageResponseDto.parse({
       ...result,
-      items: result.items.map((term) => ({ id: term.id, version: term.version, publishedAt: term.publishedAt, reason: term.reason, summary: term.summary, content: term.content })),
+      items: result.items.map((term) => TermRevisionItemDto.parseEntity(term)),
     });
   }
 }

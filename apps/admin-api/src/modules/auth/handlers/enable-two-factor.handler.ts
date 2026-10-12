@@ -40,6 +40,6 @@ export class EnableTwoFactorHandler implements ICommandHandler<EnableTwoFactorCo
     twoFactor.failedVerificationCount = 0;
     twoFactor.lockedUntil = null;
     user.twoFactorEnabled = true;
-    return EnableTwoFactorResponseDto.fromPlain({ enabled: true });
+    return EnableTwoFactorResponseDto.parse({ enabled: true });
   }
 }

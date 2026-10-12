@@ -38,7 +38,7 @@ export class VerifyPhoneNumberHandler implements ICommandHandler<VerifyPhoneNumb
     user.phoneNumberVerified = true;
     profile.name = verified.name;
     await this.em.flush();
-    return VerifyPhoneNumberResponseDto.fromPlain({ ok: true });
+    return VerifyPhoneNumberResponseDto.parse({ ok: true });
   }
 
   private async processIdentityProfile(user: User, profile: Profile, identity: Awaited<ReturnType<PhoneIdentityService['verify']>>): Promise<void> {

@@ -6,12 +6,7 @@ import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 import { InternalClient } from '#/core/http/internal-client';
-import { CreateNoticeRequestDto } from '#/modules/notices/dto/create-notice.request.dto';
-import { GetNoticesRequestDto } from '#/modules/notices/dto/get-notices.request.dto';
-import { NoticeActionResponseDto } from '#/modules/notices/dto/notice-action.response.dto';
-import { NoticeItemDto } from '#/modules/notices/dto/notice-item.dto';
-import { NoticePageResponseDto } from '#/modules/notices/dto/notice-page.response.dto';
-import { UpdateNoticeRequestDto } from '#/modules/notices/dto/update-notice.request.dto';
+import { CreateNoticeRequestDto, GetNoticesRequestDto, NoticeActionResponseDto, NoticeItemDto, NoticePageResponseDto, UpdateNoticeRequestDto } from '#/modules/notices/dto';
 
 @ApiTags('notices')
 @UserAuth()

@@ -13,6 +13,6 @@ export class GetOperatorTermGroupsHandler implements IQueryHandler<GetOperatorTe
 
   async execute(): Promise<OperatorTermGroupListResponseDto> {
     const groups = await this.em.find(TermGroup, {}, { orderBy: { sortOrder: 'ASC', createdAt: 'ASC' } });
-    return OperatorTermGroupListResponseDto.fromPlain({ items: groups.map((group) => OperatorTermGroupItemDto.from(group)) });
+    return OperatorTermGroupListResponseDto.parse({ items: groups.map((group) => OperatorTermGroupItemDto.parseEntity(group)) });
   }
 }

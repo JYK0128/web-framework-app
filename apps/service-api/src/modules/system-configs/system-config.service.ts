@@ -152,7 +152,7 @@ export class SystemConfigService implements OnModuleInit {
       status: UploadStatus.PENDING,
     });
     await this.em.flush();
-    return { ...presigned, uploadId: upload.id };
+    return CreateOAuthIconPresignedUrlResponseDto.parse({ ...presigned, uploadId: upload.id });
   }
 
   async uploadOAuthIcon(filename: string, contentType: string, buffer: Buffer): Promise<void> {

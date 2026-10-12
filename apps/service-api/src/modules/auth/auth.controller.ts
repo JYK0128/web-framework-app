@@ -75,10 +75,10 @@ export class AuthController {
 
   private createLoginResponse(result: LoginResponseDto, res: Response): LoginResponseDto {
     if ('requiresTwoFactor' in result && result.requiresTwoFactor) {
-      return {
+      return LoginResponseDto.parse({
         requiresTwoFactor: true,
         twoFactorChallengeToken: result.twoFactorChallengeToken,
-      };
+      });
     }
 
     const userAgent = this.requestContext.userAgent ?? undefined;
@@ -91,17 +91,17 @@ export class AuthController {
         maxAge: TimeUtil.ms.second(result.refreshTokenTtlSeconds),
       });
 
-      return {
+      return LoginResponseDto.parse({
         accessToken: result.accessToken,
         requiresTwoFactor: false,
-      };
+      });
     }
 
-    return {
+    return LoginResponseDto.parse({
       accessToken: result.accessToken,
       refreshToken: result.refreshToken,
       requiresTwoFactor: false,
-    };
+    });
   }
 
   @Public()
@@ -201,15 +201,15 @@ export class AuthController {
         });
       }
 
-      return {
+      return RefreshResponseDto.parse({
         accessToken: result.accessToken,
-      };
+      });
     }
 
-    return {
+    return RefreshResponseDto.parse({
       accessToken: result.accessToken,
       refreshToken: result.refreshToken,
-    };
+    });
   }
 
   @Public()

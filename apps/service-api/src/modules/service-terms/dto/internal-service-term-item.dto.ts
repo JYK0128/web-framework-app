@@ -1,12 +1,13 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
-import { BaseDto } from '#/core/http/dto/base/base.dto';
+import { Term } from '#/core/database/entities/terms';
+import { EntityDto } from '#/core/http/dto/base/entity.dto';
 
 import { ServiceAgreementMetadataDto } from './service-agreement-metadata.dto';
 
 @ApiSchema({ name: 'InternalServiceTermItem' })
-export class InternalServiceTermItemDto extends BaseDto {
+export class InternalServiceTermItemDto extends EntityDto(Term) {
   @ApiProperty() id!: string;
   @ApiProperty() groupId!: string;
   @ApiProperty() title!: string;
@@ -24,4 +25,8 @@ export class InternalServiceTermItemDto extends BaseDto {
   @ApiPropertyOptional({ type: () => ServiceAgreementMetadataDto, nullable: true })
   @Type(() => ServiceAgreementMetadataDto)
   metadata?: ServiceAgreementMetadataDto | null;
+
+  static override parseEntity(term: Term): InternalServiceTermItemDto {
+    return this.parse({ id: term.id, groupId: term.termGroup.id, title: term.termGroup.title, version: term.version, content: term.content, reason: term.reason, summary: term.summary, isNoticeRequired: term.isNoticeRequired, isRequired: term.termGroup.isRequired, sortOrder: term.termGroup.sortOrder, isPublished: term.isPublished, publishedAt: term.publishedAt, createdAt: term.createdAt, updatedAt: term.updatedAt, metadata: ServiceAgreementMetadataDto.parseMetadata(term.metadata) });
+  }
 }
