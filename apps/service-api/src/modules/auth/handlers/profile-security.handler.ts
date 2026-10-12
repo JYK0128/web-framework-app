@@ -15,7 +15,7 @@ import { AppEntityManager } from '#/core/database/entity-manager';
 import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { env } from '#/env';
 import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand, UnregisterCommand } from '#/modules/auth/commands';
-import { ChangePasswordResponseDto, GenerateTwoFactorResponseDto, TwoFactorStateResponseDto, UnregisterResponseDto } from '#/modules/auth/dto/profile-security.dto';
+import { ChangePasswordResponseDto, DisableTwoFactorResponseDto, EnableTwoFactorResponseDto, GenerateTwoFactorResponseDto, UnregisterResponseDto } from '#/modules/auth/dto';
 
 @Injectable()
 @CommandHandler(ChangePasswordCommand)
@@ -65,10 +65,10 @@ export class GenerateTwoFactorHandler implements ICommandHandler<GenerateTwoFact
 
 @Injectable()
 @CommandHandler(EnableTwoFactorCommand)
-export class EnableTwoFactorHandler implements ICommandHandler<EnableTwoFactorCommand, TwoFactorStateResponseDto> {
+export class EnableTwoFactorHandler implements ICommandHandler<EnableTwoFactorCommand, EnableTwoFactorResponseDto> {
   constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext) {}
 
-  async execute(command: EnableTwoFactorCommand): Promise<TwoFactorStateResponseDto> {
+  async execute(command: EnableTwoFactorCommand): Promise<EnableTwoFactorResponseDto> {
     assertTwoFactorEnabled();
     const user = await identifyUser(this.em, this.principal);
     const twoFactor = await this.em.findOne(TwoFactor, { user: user.id }, { filters: false });
@@ -90,22 +90,22 @@ export class EnableTwoFactorHandler implements ICommandHandler<EnableTwoFactorCo
     twoFactor.failedVerificationCount = 0;
     twoFactor.lockedUntil = null;
     user.twoFactorEnabled = true;
-    return TwoFactorStateResponseDto.fromPlain({ enabled: true });
+    return EnableTwoFactorResponseDto.fromPlain({ enabled: true });
   }
 }
 
 @Injectable()
 @CommandHandler(DisableTwoFactorCommand)
-export class DisableTwoFactorHandler implements ICommandHandler<DisableTwoFactorCommand, TwoFactorStateResponseDto> {
+export class DisableTwoFactorHandler implements ICommandHandler<DisableTwoFactorCommand, DisableTwoFactorResponseDto> {
   constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext) {}
 
-  async execute(): Promise<TwoFactorStateResponseDto> {
+  async execute(): Promise<DisableTwoFactorResponseDto> {
     if (SECURITY_CONFIG.twoFactor.required) throw new ApplicationError({ code: 'TWO_FACTOR_REQUIRED', status: HttpStatus.FORBIDDEN });
     const user = await identifyUser(this.em, this.principal);
     const twoFactor = await this.em.findOne(TwoFactor, { user: user.id }, { filters: false });
     if (twoFactor) this.em.remove(twoFactor);
     user.twoFactorEnabled = false;
-    return TwoFactorStateResponseDto.fromPlain({ enabled: false });
+    return DisableTwoFactorResponseDto.fromPlain({ enabled: false });
   }
 }
 

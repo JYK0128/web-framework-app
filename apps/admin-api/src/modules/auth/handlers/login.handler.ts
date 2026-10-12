@@ -13,12 +13,13 @@ import { User } from '#/core/database/entities/auth/user.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { KvStore } from '#/core/kv-store/kv-store.service';
 import { env } from '#/env';
-import { LoginCommand, type LoginResult } from '#/modules/auth/commands/login.command';
+import { LoginCommand } from '#/modules/auth/commands/login.command';
+import { LoginResponseDto } from '#/modules/auth/dto/login.response.dto';
 import { TwoFactorLoginKvStoreKey } from '#/modules/auth/two-factor-login-kv-store';
 
 @Injectable()
 @CommandHandler(LoginCommand)
-export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> {
+export class LoginHandler implements ICommandHandler<LoginCommand, LoginResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly kvStore: KvStore,
@@ -28,7 +29,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
 
   // Login coordinates policy checks and persistence in sequence; keep the flow explicit.
 
-  async execute(command: LoginCommand): Promise<LoginResult> {
+  async execute(command: LoginCommand): Promise<LoginResponseDto> {
     const { input } = command;
     if (!SECURITY_CONFIG.credentialAvailable) throw new ApplicationError({ code: 'CREDENTIAL_AUTH_UNAVAILABLE', status: HttpStatus.FORBIDDEN });
 
@@ -115,7 +116,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
         JSON.stringify({ userId: user.id, rememberMe: input.rememberMe === true, attempts: 0 }),
         SECURITY_CONFIG.twoFactor.challengeTtlSeconds,
       );
-      return { requiresTwoFactor: true, twoFactorChallengeToken };
+      return LoginResponseDto.fromPlain({ requiresTwoFactor: true, twoFactorChallengeToken });
     }
 
     user.updateMetadata({
@@ -129,7 +130,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
     const tokenPair = await this.authTokenService.login(user, {
       rememberMe: input.rememberMe,
     });
-    return { ...tokenPair, requiresTwoFactor: false };
+    return LoginResponseDto.fromPlain({ ...tokenPair, requiresTwoFactor: false });
   }
 }
 

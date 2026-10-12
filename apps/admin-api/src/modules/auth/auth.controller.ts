@@ -12,19 +12,20 @@ import { Public, SkipPasswordExpiry, SkipPhoneVerification, SkipTwoFactorSetup, 
 import { Cookie } from '#/core/http/decorators/cookie.decorator';
 import { NoStore } from '#/core/http/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, FindIdCommand, GenerateTwoFactorCommand, LoginCommand, type LoginResult, LogoutCommand, RefreshCommand, RegisterCommand, RequestEmailVerificationCommand, RequestPasswordResetCommand, ResetPasswordCommand, TwoFactorLoginCommand, UnregisterCommand, VerifyEmailCommand } from '#/modules/auth/commands';
+import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, FindIdCommand, GenerateTwoFactorCommand, LoginCommand, LogoutCommand, RefreshCommand, RegisterCommand, RequestEmailVerificationCommand, RequestPasswordResetCommand, ResetPasswordCommand, TwoFactorLoginCommand, UnregisterCommand, VerifyEmailCommand } from '#/modules/auth/commands';
 import { VerifyPhoneNumberCommand } from '#/modules/auth/commands/verify-phone-number.command';
-import { ChangePasswordRequestDto, ChangePasswordResponseDto, DisableTwoFactorResponseDto, EmptyProfileSecurityRequestDto, EnableTwoFactorRequestDto, EnableTwoFactorResponseDto, GenerateTwoFactorResponseDto, LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, RefreshRequestDto, RefreshResponseDto, TwoFactorLoginRequestDto, UnregisterResponseDto } from '#/modules/auth/dto';
-import { EmailVerificationRequestDto } from '#/modules/auth/dto/email-verification.request.dto';
-import { EmailVerificationRequestResponseDto } from '#/modules/auth/dto/email-verification-request.response.dto';
+import { ChangePasswordRequestDto, ChangePasswordResponseDto, DisableTwoFactorRequestDto, DisableTwoFactorResponseDto, EnableTwoFactorRequestDto, EnableTwoFactorResponseDto, GenerateTwoFactorRequestDto, GenerateTwoFactorResponseDto, LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, RefreshRequestDto, RefreshResponseDto, TwoFactorLoginRequestDto, UnregisterRequestDto, UnregisterResponseDto } from '#/modules/auth/dto';
 import { FindIdRequestDto } from '#/modules/auth/dto/find-id.request.dto';
 import { FindIdResponseDto } from '#/modules/auth/dto/find-id.response.dto';
-import { PasswordResetRequestDto } from '#/modules/auth/dto/password-reset.request.dto';
-import { PasswordResetResponseDto } from '#/modules/auth/dto/password-reset.response.dto';
-import { PasswordResetRequestResponseDto } from '#/modules/auth/dto/password-reset-request.response.dto';
 import { RegisterRequestDto } from '#/modules/auth/dto/register.request.dto';
 import { RegisterResponseDto } from '#/modules/auth/dto/register.response.dto';
+import { RequestEmailVerificationRequestDto } from '#/modules/auth/dto/request-email-verification.request.dto';
+import { RequestEmailVerificationResponseDto } from '#/modules/auth/dto/request-email-verification.response.dto';
+import { RequestPasswordResetRequestDto } from '#/modules/auth/dto/request-password-reset.request.dto';
+import { RequestPasswordResetResponseDto } from '#/modules/auth/dto/request-password-reset.response.dto';
 import { ResetPasswordRequestDto } from '#/modules/auth/dto/reset-password.request.dto';
+import { ResetPasswordResponseDto } from '#/modules/auth/dto/reset-password.response.dto';
+import { TwoFactorLoginResponseDto } from '#/modules/auth/dto/two-factor-login.response.dto';
 import { VerifyEmailRequestDto } from '#/modules/auth/dto/verify-email.request.dto';
 import { VerifyEmailResponseDto } from '#/modules/auth/dto/verify-email.response.dto';
 import { VerifyPhoneNumberRequestDto } from '#/modules/auth/dto/verify-phone-number.request.dto';
@@ -63,8 +64,8 @@ export class AuthController {
   @Post('email/challenge')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '이메일 인증 메일 요청' })
-  @SwaggerApiResponse(EmailVerificationRequestResponseDto)
-  requestEmailVerification(@Body() dto: EmailVerificationRequestDto): Promise<EmailVerificationRequestResponseDto> {
+  @SwaggerApiResponse(RequestEmailVerificationResponseDto)
+  requestEmailVerification(@Body() dto: RequestEmailVerificationRequestDto): Promise<RequestEmailVerificationResponseDto> {
     return this.commandBus.execute(new RequestEmailVerificationCommand(dto));
   }
 
@@ -81,8 +82,8 @@ export class AuthController {
   @Post('password/reset/challenge')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '비밀번호 재설정 요청' })
-  @SwaggerApiResponse(PasswordResetRequestResponseDto)
-  requestPasswordReset(@Body() dto: PasswordResetRequestDto): Promise<PasswordResetRequestResponseDto> {
+  @SwaggerApiResponse(RequestPasswordResetResponseDto)
+  requestPasswordReset(@Body() dto: RequestPasswordResetRequestDto): Promise<RequestPasswordResetResponseDto> {
     return this.commandBus.execute(new RequestPasswordResetCommand(dto));
   }
 
@@ -90,8 +91,8 @@ export class AuthController {
   @Post('password/reset')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '비밀번호 재설정' })
-  @SwaggerApiResponse(PasswordResetResponseDto)
-  resetPassword(@Body() dto: ResetPasswordRequestDto): Promise<PasswordResetResponseDto> {
+  @SwaggerApiResponse(ResetPasswordResponseDto)
+  resetPassword(@Body() dto: ResetPasswordRequestDto): Promise<ResetPasswordResponseDto> {
     return this.commandBus.execute(new ResetPasswordCommand(dto));
   }
 
@@ -104,7 +105,7 @@ export class AuthController {
     @Body() dto: LoginRequestDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<LoginResponseDto> {
-    const result = await this.commandBus.execute<LoginCommand, LoginResult>(
+    const result = await this.commandBus.execute<LoginCommand, LoginResponseDto>(
       new LoginCommand(dto),
     );
 
@@ -120,13 +121,13 @@ export class AuthController {
     @Body() dto: TwoFactorLoginRequestDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<LoginResponseDto> {
-    const result = await this.commandBus.execute<TwoFactorLoginCommand, TokenPairResult>(
+    const result = await this.commandBus.execute<TwoFactorLoginCommand, TwoFactorLoginResponseDto>(
       new TwoFactorLoginCommand(dto),
     );
-    return this.createLoginResponse({ ...result, requiresTwoFactor: false }, res);
+    return this.createLoginResponse(result, res);
   }
 
-  private createLoginResponse(result: LoginResult, res: Response): LoginResponseDto {
+  private createLoginResponse(result: LoginResponseDto, res: Response): LoginResponseDto {
     if ('requiresTwoFactor' in result && result.requiresTwoFactor) {
       return {
         requiresTwoFactor: true,
@@ -255,7 +256,7 @@ export class AuthController {
   @ApiOperation({ summary: '2단계 인증 코드 생성' })
   @SwaggerApiResponse(GenerateTwoFactorResponseDto)
   async generateTwoFactor(): Promise<GenerateTwoFactorResponseDto> {
-    return this.commandBus.execute(new GenerateTwoFactorCommand(new EmptyProfileSecurityRequestDto()));
+    return this.commandBus.execute(new GenerateTwoFactorCommand(new GenerateTwoFactorRequestDto()));
   }
 
   @Post('2fa/enable')
@@ -273,7 +274,7 @@ export class AuthController {
   @ApiOperation({ summary: '2단계 인증 끄기' })
   @SwaggerApiResponse(DisableTwoFactorResponseDto)
   async disableTwoFactor(): Promise<DisableTwoFactorResponseDto> {
-    return this.commandBus.execute(new DisableTwoFactorCommand(new EmptyProfileSecurityRequestDto()));
+    return this.commandBus.execute(new DisableTwoFactorCommand(new DisableTwoFactorRequestDto()));
   }
 
   @Post('unregister')
@@ -281,6 +282,6 @@ export class AuthController {
   @ApiOperation({ summary: '운영자 계정 삭제' })
   @SwaggerApiResponse(UnregisterResponseDto)
   async unregister(): Promise<UnregisterResponseDto> {
-    return this.commandBus.execute(new UnregisterCommand(new EmptyProfileSecurityRequestDto()));
+    return this.commandBus.execute(new UnregisterCommand(new UnregisterRequestDto()));
   }
 }

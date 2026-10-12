@@ -1,0 +1,9 @@
+import { ApiProperty, ApiSchema } from '@nestjs/swagger';
+
+import { BaseDto } from '#/core/http/dto/base/base.dto';
+
+@ApiSchema({ name: 'PasswordResetAcceptedDto' })
+export class RequestPasswordResetResponseDto extends BaseDto {
+  @ApiProperty({ type: Boolean })
+  accepted!: boolean;
+}

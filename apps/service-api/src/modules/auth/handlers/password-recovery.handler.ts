@@ -11,17 +11,17 @@ import { AppEntityManager } from '#/core/database/entity-manager';
 import { KvStore } from '#/core/kv-store/kv-store.service';
 import { MessageService } from '#/core/notification';
 import { env } from '#/env';
-import { RequestPasswordResetCommand, ResetPasswordCommand } from '#/modules/auth/commands/password-recovery.command';
-import { PasswordResetAcceptedDto, PasswordResetResponseDto } from '#/modules/auth/dto/registration.dto';
+import { RequestPasswordResetCommand, ResetPasswordCommand } from '#/modules/auth/commands';
+import { RequestPasswordResetResponseDto, ResetPasswordResponseDto } from '#/modules/auth/dto';
 import { ensureEmailDeliveryConfigured, type PasswordResetRecord, sendPasswordResetChallenge } from '#/modules/auth/email-verification.helper';
 
 @Injectable()
 @CommandHandler(RequestPasswordResetCommand)
-export class RequestPasswordResetHandler implements ICommandHandler<RequestPasswordResetCommand, PasswordResetAcceptedDto> {
+export class RequestPasswordResetHandler implements ICommandHandler<RequestPasswordResetCommand, RequestPasswordResetResponseDto> {
   constructor(private readonly em: AppEntityManager, private readonly kv: KvStore, private readonly messages: MessageService) {}
 
-  async execute(command: RequestPasswordResetCommand): Promise<PasswordResetAcceptedDto> {
-    if (!SECURITY_CONFIG.credentialAvailable) return PasswordResetAcceptedDto.fromPlain({ accepted: true });
+  async execute(command: RequestPasswordResetCommand): Promise<RequestPasswordResetResponseDto> {
+    if (!SECURITY_CONFIG.credentialAvailable) return RequestPasswordResetResponseDto.fromPlain({ accepted: true });
     await ensureEmailDeliveryConfigured(this.em);
     const email = command.input.email.trim().toLowerCase();
     const user = await this.em.findOne(User, { profile: { emailHash: hmac(email, env.PII_HASH_KEY), phoneNumberHash: hmac(command.input.phoneNumber, env.PII_HASH_KEY) } }, { populate: ['profile'], filters: false });
@@ -32,16 +32,16 @@ export class RequestPasswordResetHandler implements ICommandHandler<RequestPassw
         await sendPasswordResetChallenge(this.em, this.kv, this.messages, user, user.profile, decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY));
       }
     }
-    return PasswordResetAcceptedDto.fromPlain({ accepted: true });
+    return RequestPasswordResetResponseDto.fromPlain({ accepted: true });
   }
 }
 
 @Injectable()
 @CommandHandler(ResetPasswordCommand)
-export class ResetPasswordHandler implements ICommandHandler<ResetPasswordCommand, PasswordResetResponseDto> {
+export class ResetPasswordHandler implements ICommandHandler<ResetPasswordCommand, ResetPasswordResponseDto> {
   constructor(private readonly em: AppEntityManager, private readonly kv: KvStore) {}
 
-  async execute(command: ResetPasswordCommand): Promise<PasswordResetResponseDto> {
+  async execute(command: ResetPasswordCommand): Promise<ResetPasswordResponseDto> {
     if (!SECURITY_CONFIG.credentialAvailable) throw invalidToken();
     const { challengeId, token, newPassword } = command.input;
     const key = `service:password-reset:${challengeId}`;
@@ -57,7 +57,7 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
     await updateCredentialPassword(account, newPassword);
     user.updateMetadata({ failedLoginAttempts: 0, loginFailureWindowStartedAt: null, lockedUntil: null });
     await this.em.flush();
-    return PasswordResetResponseDto.fromPlain({ ok: true });
+    return ResetPasswordResponseDto.fromPlain({ ok: true });
   }
 }
 

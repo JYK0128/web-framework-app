@@ -1,3 +1,3 @@
 import { OkResponseDto } from '#/core/http/dto/response/ok.response.dto';
 
-export class PasswordResetResponseDto extends OkResponseDto {}
+export class VerifyPhoneNumberResponseDto extends OkResponseDto {}

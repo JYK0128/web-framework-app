@@ -14,9 +14,8 @@ import { AppEntityManager } from '#/core/database/entity-manager';
 import { KvStore } from '#/core/kv-store/kv-store.service';
 import { MessageService } from '#/core/notification';
 import { env } from '#/env';
-import { RegisterCommand } from '#/modules/auth/commands/registration.command';
-import { RequestEmailVerificationCommand, VerifyEmailCommand } from '#/modules/auth/commands/verify-email.command';
-import { EmailVerificationResponseDto, RegisterResponseDto, RequestEmailVerificationResponseDto } from '#/modules/auth/dto/registration.dto';
+import { RegisterCommand, RequestEmailVerificationCommand, VerifyEmailCommand } from '#/modules/auth/commands';
+import { RegisterResponseDto, RequestEmailVerificationResponseDto, VerifyEmailResponseDto } from '#/modules/auth/dto';
 import { ensureEmailDeliveryConfigured, sendEmailVerificationChallenge, verifyEmailChallenge } from '#/modules/auth/email-verification.helper';
 
 @Injectable()
@@ -83,11 +82,11 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
 
 @Injectable()
 @CommandHandler(VerifyEmailCommand)
-export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, EmailVerificationResponseDto> {
+export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, VerifyEmailResponseDto> {
   constructor(private readonly em: AppEntityManager, private readonly kv: KvStore) {}
-  async execute(command: VerifyEmailCommand): Promise<EmailVerificationResponseDto> {
+  async execute(command: VerifyEmailCommand): Promise<VerifyEmailResponseDto> {
     await verifyEmailChallenge(this.em, this.kv, command.input.challengeId, command.input.token);
-    return EmailVerificationResponseDto.fromPlain({ ok: true });
+    return VerifyEmailResponseDto.fromPlain({ ok: true });
   }
 }
 

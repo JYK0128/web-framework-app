@@ -3,13 +3,13 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
 import { AccountRecoveryService } from '#/modules/auth/account-recovery.service';
 import { RequestEmailVerificationCommand } from '#/modules/auth/commands/request-email-verification.command';
-import { EmailVerificationRequestResponseDto } from '#/modules/auth/dto/email-verification-request.response.dto';
+import { RequestEmailVerificationResponseDto } from '#/modules/auth/dto/request-email-verification.response.dto';
 
 @Injectable()
 @CommandHandler(RequestEmailVerificationCommand)
-export class RequestEmailVerificationHandler implements ICommandHandler<RequestEmailVerificationCommand, EmailVerificationRequestResponseDto> {
+export class RequestEmailVerificationHandler implements ICommandHandler<RequestEmailVerificationCommand, RequestEmailVerificationResponseDto> {
   constructor(private readonly recovery: AccountRecoveryService) {}
-  async execute({ input }: RequestEmailVerificationCommand): Promise<EmailVerificationRequestResponseDto> {
-    return EmailVerificationRequestResponseDto.fromPlain(await this.recovery.requestEmailVerification(input.email));
+  async execute({ input }: RequestEmailVerificationCommand): Promise<RequestEmailVerificationResponseDto> {
+    return RequestEmailVerificationResponseDto.fromPlain(await this.recovery.requestEmailVerification(input.email));
   }
 }

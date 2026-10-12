@@ -1,9 +1,8 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { TokenPairResult } from '#/core/auth/user/user-auth.interface';
-import type { TwoFactorLoginRequestDto } from '#/modules/auth/dto';
+import type { TwoFactorLoginRequestDto, TwoFactorLoginResponseDto } from '#/modules/auth/dto';
 
-export class TwoFactorLoginCommand extends Command<TokenPairResult> {
+export class TwoFactorLoginCommand extends Command<TwoFactorLoginResponseDto> {
   constructor(public readonly input: TwoFactorLoginRequestDto) {
     super();
   }

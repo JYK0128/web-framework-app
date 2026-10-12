@@ -1,4 +1,4 @@
-import { ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
+import { ApiHideProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 
 import { BaseDto } from '#/core/http/dto/base/base.dto';
 
@@ -23,4 +23,7 @@ export class LoginResponseDto extends BaseDto {
     description: '순수 네이티브 앱용 Refresh Token (웹 브라우저는 HttpOnly 쿠키로 전달)',
   })
   refreshToken?: string;
+
+  @ApiHideProperty()
+  refreshTokenTtlSeconds?: number;
 }

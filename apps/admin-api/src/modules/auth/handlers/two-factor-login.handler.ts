@@ -5,13 +5,14 @@ import { decrypt } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
 import { verifyTotp } from '#/core/auth/user/policy/totp.policy';
-import { type IUserAuthService, type TokenPairResult, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
+import { type IUserAuthService, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
 import { TwoFactor } from '#/core/database/entities/auth.extensions/two-factor.entity';
 import { User } from '#/core/database/entities/auth/user.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { KvStore } from '#/core/kv-store/kv-store.service';
 import { env } from '#/env';
 import { TwoFactorLoginCommand } from '#/modules/auth/commands';
+import { TwoFactorLoginResponseDto } from '#/modules/auth/dto/two-factor-login.response.dto';
 import { TwoFactorLoginKvStoreKey } from '#/modules/auth/two-factor-login-kv-store';
 
 interface TwoFactorLoginChallenge {
@@ -22,7 +23,7 @@ interface TwoFactorLoginChallenge {
 
 @Injectable()
 @CommandHandler(TwoFactorLoginCommand)
-export class TwoFactorLoginHandler implements ICommandHandler<TwoFactorLoginCommand, TokenPairResult> {
+export class TwoFactorLoginHandler implements ICommandHandler<TwoFactorLoginCommand, TwoFactorLoginResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly kvStore: KvStore,
@@ -30,7 +31,7 @@ export class TwoFactorLoginHandler implements ICommandHandler<TwoFactorLoginComm
     private readonly authTokenService: IUserAuthService,
   ) {}
 
-  async execute(command: TwoFactorLoginCommand): Promise<TokenPairResult> {
+  async execute(command: TwoFactorLoginCommand): Promise<TwoFactorLoginResponseDto> {
     const { twoFactorChallengeToken, code } = command.input;
     const key = TwoFactorLoginKvStoreKey.challenge(twoFactorChallengeToken);
     const rawRecord = await this.kvStore.get<string>(key);
@@ -78,7 +79,8 @@ export class TwoFactorLoginHandler implements ICommandHandler<TwoFactorLoginComm
     });
     await this.em.flush();
 
-    return this.authTokenService.login(user, { rememberMe: challenge.rememberMe });
+    const tokenPair = await this.authTokenService.login(user, { rememberMe: challenge.rememberMe });
+    return TwoFactorLoginResponseDto.fromPlain({ ...tokenPair, requiresTwoFactor: false });
   }
 
   private async recordFailedAttempt(key: string, rawRecord: string, challenge: TwoFactorLoginChallenge): Promise<void> {

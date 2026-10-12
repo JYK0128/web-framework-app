@@ -8,7 +8,7 @@ import { User } from '#/core/database/entities/auth/user.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { env } from '#/env';
 import { FindIdCommand } from '#/modules/auth/commands/find-id.command';
-import type { FindIdResponseDto } from '#/modules/auth/dto/account-recovery.dto';
+import type { FindIdResponseDto } from '#/modules/auth/dto';
 
 @Injectable()
 @CommandHandler(FindIdCommand)
