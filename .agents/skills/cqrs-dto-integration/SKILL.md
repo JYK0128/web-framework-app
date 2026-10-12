@@ -70,6 +70,6 @@ class ExampleItemDto extends EntityDto(User, Account) {
 - Keep all entity parameters in the concrete override, in the same order as the parent factory. Calls are type-checked against the mapper's declared entity and additional arguments; do not weaken these types with casts or an untyped rest parameter.
 
 - `parse(value)` constructs a single DTO from plain values; `parseArray(values)` constructs a DTO array with a `T[]` return type. Neither method automatically validates. Keep validation explicit with `validate()` where required.
-- Use `parseError(...)` and `parseMetadata(...)` for error and metadata conversion; reserve `parseEntity(...)` for entity mapping.
+- Use the inherited `parse(...)` for normalized error objects; do not add a separate `parseError(...)` factory. Normalize raw errors at the logging boundary before DTO construction. Reserve `parseEntity(...)` for entity mapping.
 
 - `BaseDto.validate()` validates the DTO with class-validator and returns the same instance. The protected static `validationError` defines the error code/status and defaults to `VALIDATION_ERROR` / HTTP 400. Request DTOs use the default; response/internal DTOs override this class property when needed. Do not pass error code/status at validation call sites. Use separate request and response DTOs when their error policies differ.

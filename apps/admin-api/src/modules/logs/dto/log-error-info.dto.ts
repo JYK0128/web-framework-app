@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { BaseDto } from '#/core/http/dto/base/base.dto';
-import { normalizeLogError } from '#/core/log-telemetry/log-normalizer';
 
 export class LogErrorInfoDto extends BaseDto {
   @ApiProperty({ description: '에러/예외 클래스명 (예: ApplicationError, TypeError)' })
@@ -21,9 +20,4 @@ export class LogErrorInfoDto extends BaseDto {
 
   @ApiProperty({ type: String, nullable: true, description: 'DB 예외 시 실행 SQL 쿼리' })
   sql!: string | null;
-
-  static parseError(rawError?: unknown, responseBody?: unknown): LogErrorInfoDto | null {
-    const errorInfo = normalizeLogError(rawError, responseBody);
-    return errorInfo ? LogErrorInfoDto.parse(errorInfo) : null;
-  }
 }
