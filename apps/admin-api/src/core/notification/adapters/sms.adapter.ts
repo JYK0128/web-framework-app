@@ -3,16 +3,16 @@ import { createHmac, randomBytes } from 'node:crypto';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 import type { SmsConfigDto } from '@pkg/shared/server';
+import type { AxiosResponse } from 'axios';
 import { z } from 'zod';
 
 import { postNotificationForm, postNotificationJson } from '#/core/notification/notification.http';
 import type { SmsMessage } from '#/core/notification/notification.interface';
-import type { ProviderHttpResponse } from '#/core/notification/provider-response';
 
 const recordSchema = z.record(z.string(), z.unknown());
 
-function parseNhnSmsResponse(response: ProviderHttpResponse): string | undefined {
-  const parsed = recordSchema.safeParse(response.body);
+function parseNhnSmsResponse(response: AxiosResponse<unknown>): string | undefined {
+  const parsed = recordSchema.safeParse(response.data);
   if (!parsed.success) throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', message: `SMS: Invalid provider response`, status: HttpStatus.BAD_GATEWAY });
 
   const data = parsed.data;
@@ -29,12 +29,12 @@ function parseNhnSmsResponse(response: ProviderHttpResponse): string | undefined
   const rawError = failedRecipient?.resultMessage ?? (header?.isSuccessful === false ? header.resultMessage : undefined) ?? data.errorMessage ?? data.message ?? data.description ?? data.errmsg;
 
   const errorMessage = typeof rawError === 'string' ? rawError : `Provider rejected request (HTTP ${response.status})`;
-  if (!response.ok || !accepted) throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+  if ((response.status < 200 || response.status >= 300) || !accepted) throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
   return typeof rawId === 'string' || typeof rawId === 'number' ? String(rawId) : undefined;
 }
 
-function parseSolapiSmsResponse(response: ProviderHttpResponse): string | undefined {
-  const parsed = recordSchema.safeParse(response.body);
+function parseSolapiSmsResponse(response: AxiosResponse<unknown>): string | undefined {
+  const parsed = recordSchema.safeParse(response.data);
   if (!parsed.success) throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', message: `SMS: Invalid provider response`, status: HttpStatus.BAD_GATEWAY });
 
   const data = parsed.data;
@@ -43,13 +43,13 @@ function parseSolapiSmsResponse(response: ProviderHttpResponse): string | undefi
   const rawError = data.errorMessage ?? data.message ?? data.description ?? data.errmsg;
 
   const errorMessage = typeof rawError === 'string' ? rawError : `Provider rejected request (HTTP ${response.status})`;
-  if (!response.ok || !accepted) throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+  if ((response.status < 200 || response.status >= 300) || !accepted) throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
   return messageId;
 }
 
 @Injectable()
 export class SmsAdapter {
-  private async postProviderJson(url: string, headers: Record<string, string>, body: Record<string, unknown>): Promise<ProviderHttpResponse> {
+  private async postProviderJson(url: string, headers: Record<string, string>, body: Record<string, unknown>): Promise<AxiosResponse<unknown>> {
     try {
       return await postNotificationJson(url, headers, body);
     }

@@ -19,3 +19,23 @@ export interface OAuthProviderConfig {
   jwksUrl?: string
   issuer?: string
 }
+
+export interface OAuthIdentity {
+  id: string
+  email: string
+  name: string
+  emailVerified: boolean
+}
+
+export interface PublicOAuthProvider {
+  id: string
+  name: string
+  iconUrl?: string
+  brandColor?: string
+  brandTextColor?: string
+}
+
+export interface OAuthProtocolCompletion {
+  identity: OAuthIdentity
+  returnTo: string
+}

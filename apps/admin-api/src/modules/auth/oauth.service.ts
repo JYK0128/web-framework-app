@@ -8,8 +8,8 @@ import { Account, Profile, User } from '#/core/database/entities/auth';
 import { Role } from '#/core/database/entities/auth.extensions';
 import { AdminSystemConfigCode, SystemConfig } from '#/core/database/entities/system-configs';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import type { OAuthProviderConfig } from '#/core/oauth/oauth-provider.config';
-import { type OAuthIdentity, OAuthProviderService, type PublicOAuthProvider } from '#/core/oauth/oauth-provider.service';
+import type { OAuthIdentity, OAuthProviderConfig, PublicOAuthProvider } from '#/core/oauth/oauth.interface';
+import { OAuthProviderService } from '#/core/oauth/oauth.service';
 import { env } from '#/env';
 
 const CONFIG_CODE = AdminSystemConfigCode.OAUTH;

@@ -3,7 +3,7 @@ import { ApplicationError, withRetry } from '@pkg/shared/common';
 import { z } from 'zod';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { getPortOneVerification } from '#/core/phone-identity/portone.http';
+import { getPortOneVerification } from '#/core/phone-identity/phone-identity.http';
 
 const verificationSchema = z.object({
   id: z.string(),

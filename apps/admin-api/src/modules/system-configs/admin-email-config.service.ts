@@ -1,13 +1,11 @@
 import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { ApplicationError, z } from '@pkg/shared/common';
-import { decrypt, encrypt } from '@pkg/shared/server';
+import { decrypt, type EmailConfigDto, encrypt } from '@pkg/shared/server';
 
 import { AdminSystemConfigCode, SystemConfig } from '#/core/database/entities/system-configs';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { NotificationService } from '#/core/notification/notification.service';
 import { env } from '#/env';
 import { AdminEmailConfigResponseDto } from '#/modules/system-configs/dto/admin-email/admin-email-config.response.dto';
-import { TestAdminEmailResponseDto } from '#/modules/system-configs/dto/admin-email/test-admin-email.response.dto';
 import { UpdateAdminEmailConfigRequestDto } from '#/modules/system-configs/dto/admin-email/update-admin-email-config.request.dto';
 
 const CONFIG_CODE = AdminSystemConfigCode.EMAIL;
@@ -25,8 +23,8 @@ const AdminEmailConfigSchema = z.object({
 type AdminEmailConfigValue = z.infer<typeof AdminEmailConfigSchema>;
 
 @Injectable()
-export class SystemConfigService {
-  constructor(private readonly em: AppEntityManager, private readonly notifications: NotificationService) {}
+export class AdminEmailConfigService {
+  constructor(private readonly em: AppEntityManager) {}
 
   async getResponse(): Promise<AdminEmailConfigResponseDto> {
     const value = await this.getValue();
@@ -64,42 +62,21 @@ export class SystemConfigService {
     return this.getResponse();
   }
 
-  async sendPasswordResetEmail(to: string, resetUrl: string): Promise<void> {
-    const config = await this.getValue();
-    if (!this.isConfigured(config)) return;
-    await this.send(config, to, '[Admin] 비밀번호 재설정', `비밀번호 재설정 링크: ${resetUrl}`);
-  }
-
   async ensureEmailDeliveryConfigured(): Promise<void> {
     if (!this.isConfigured(await this.getValue())) {
       throw new ApplicationError({ code: 'EMAIL_DELIVERY_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
     }
   }
 
-  async sendEmailVerificationEmail(to: string, verificationUrl: string, ttlMinutes: number): Promise<void> {
+  async getEmailDeliveryConfig(): Promise<EmailConfigDto> {
     const config = await this.getValue();
-    await this.send(config, to, '[Admin] 이메일 주소 인증', `아래 링크에서 관리자 이메일 인증을 완료해 주세요. 링크는 ${ttlMinutes}분 동안 유효합니다.\n${verificationUrl}`);
-  }
-
-  async sendTestEmail(to: string): Promise<TestAdminEmailResponseDto> {
-    const config = await this.getValue();
-    await this.send(config, to, '[Admin] SMTP 연결 테스트', 'Admin SMTP 릴레이 연결이 정상적으로 동작합니다.');
-    return TestAdminEmailResponseDto.fromPlain({ ok: true });
-  }
-
-  private async send(config: AdminEmailConfigValue, to: string, subject: string, text: string): Promise<void> {
     if (!this.isConfigured(config)) {
       throw new ApplicationError({
         code: 'ACCOUNT_RECOVERY_EMAIL_CONFIG_INCOMPLETE',
         status: HttpStatus.SERVICE_UNAVAILABLE,
       });
     }
-
-    await this.notifications.send({
-      channel: 'email',
-      message: { to, subject, text },
-      config: { ...config, smtp: { ...config.smtp, pass: decrypt(config.smtp.pass, env.ADMIN_EMAIL_ENCRYPTION_KEY) } },
-    });
+    return { ...config, smtp: { ...config.smtp, pass: decrypt(config.smtp.pass, env.ADMIN_EMAIL_ENCRYPTION_KEY) } };
   }
 
   private isConfigured(config: AdminEmailConfigValue): boolean {

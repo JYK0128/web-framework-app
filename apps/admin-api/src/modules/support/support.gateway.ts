@@ -5,6 +5,8 @@ import { KvStore } from '#/core/kv-store/kv-store.service';
 import { RealtimeService } from '#/core/realtime/realtime.service';
 import { SOCKET_PATH } from '#/modules/support/support.config';
 
+import { SupportKvStoreKey } from './support.key';
+
 @WebSocketGateway({ namespace: '/support', path: SOCKET_PATH, cors: { origin: false } })
 export class SupportGateway implements OnGatewayInit {
   constructor(
@@ -19,7 +21,7 @@ export class SupportGateway implements OnGatewayInit {
   @SubscribeMessage('support.join')
   async join(@ConnectedSocket() socket: Socket, @MessageBody() body: { ticket?: string }) {
     if (typeof body?.ticket !== 'string') return null;
-    const ticket = await this.kvStore.getAndDelete<{ roomId: string }>(`admin:support:socket-ticket:${body.ticket}`);
+    const ticket = await this.kvStore.getAndDelete<{ roomId: string }>(SupportKvStoreKey.socketTicket(body.ticket));
     if (!ticket) return null;
     await socket.join(ticket.roomId);
     return ticket.roomId;

@@ -86,7 +86,7 @@ export const OperatorsControllerCreateOperatorV1Response = zod.object({
   "data": zod.object({
   "id": zod.string(),
   "emailVerificationRequired": zod.boolean(),
-  "emailVerificationSent": zod.boolean()
+  "emailVerificationQueued": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

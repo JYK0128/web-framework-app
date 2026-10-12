@@ -7,7 +7,7 @@ import { OAuthIconUploadController } from './oauth-icon-upload.controller';
 import { ServiceConfigController } from './service-config.controller';
 import { ServiceSystemConfigClient } from './service-system-config.client';
 import { SystemConfigController } from './system-config.controller';
-import { SystemConfigService } from './system-config.service';
+import { AdminEmailConfigService } from './admin-email-config.service';
 
-@Module({ imports: [CqrsModule], controllers: [ServiceConfigController, SystemConfigController, OAuthIconUploadController], providers: [SystemConfigService, AdminWebhookConfigService, ServiceSystemConfigClient, ...SYSTEM_CONFIG_HANDLERS], exports: [SystemConfigService, AdminWebhookConfigService, ServiceSystemConfigClient] })
+@Module({ imports: [CqrsModule], controllers: [ServiceConfigController, SystemConfigController, OAuthIconUploadController], providers: [AdminEmailConfigService, AdminWebhookConfigService, ServiceSystemConfigClient, ...SYSTEM_CONFIG_HANDLERS], exports: [AdminEmailConfigService, AdminWebhookConfigService, ServiceSystemConfigClient] })
 export class SystemConfigsModule {}

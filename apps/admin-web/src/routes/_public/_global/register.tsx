@@ -44,7 +44,7 @@ function RegisterPage() {
   const registered = registerMutation.data && {
     email: registerMutation.variables?.data.email ?? '',
     verificationRequired: registerMutation.data.emailVerificationRequired,
-    emailSent: requestVerificationMutation.isSuccess || registerMutation.data.verificationEmailSent,
+    emailQueued: requestVerificationMutation.isSuccess || registerMutation.data.verificationEmailQueued,
   };
 
   const resendVerification = () => {
@@ -138,8 +138,8 @@ function RegisterPage() {
   );
 }
 
-function getRegistrationCompleteMessage(registered: { email: string, verificationRequired: boolean, emailSent: boolean }): string {
+function getRegistrationCompleteMessage(registered: { email: string, verificationRequired: boolean, emailQueued: boolean }): string {
   if (!registered.verificationRequired) return '로그인하여 계속 진행해 주세요.';
-  if (registered.emailSent) return `${registered.email} 주소의 인증 링크를 확인해 주세요.`;
+  if (registered.emailQueued) return `${registered.email} 주소로 인증 메일 발송을 요청했습니다. 잠시 후 메일함을 확인해 주세요.`;
   return '이메일 인증을 마치면 로그인할 수 있습니다. 인증 메일을 다시 받아 주세요.';
 }

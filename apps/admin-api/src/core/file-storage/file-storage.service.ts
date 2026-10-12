@@ -1,6 +1,6 @@
-import type { FileAdapter, PresignedUploadUrlResult, SaveFileResult } from './storage.interface';
+import type { FileStorageAdapter, PresignedUploadUrlResult, SaveFileResult } from './file-storage.interface';
 
-export abstract class StorageService implements FileAdapter {
+export abstract class FileStorageService implements FileStorageAdapter {
   abstract readonly name: string;
   abstract saveFile(subDir: string, filename: string, buffer: Buffer): Promise<SaveFileResult>;
   abstract readFile(subDir: string, filename: string): Promise<Buffer>;

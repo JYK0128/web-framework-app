@@ -3,37 +3,28 @@ import { createHash, randomBytes } from 'node:crypto';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { decrypt, isEncrypted } from '@pkg/shared/server';
-import { createRemoteJWKSet, jwtVerify } from 'jose';
+import { createRemoteJWKSet, customFetch, jwtVerify } from 'jose';
+import { z } from 'zod';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { HTTP_REQUEST_TIMEOUT_MS } from '#/core/http/http-client';
+import { httpClient } from '#/core/http/http-client';
 import { KvStore } from '#/core/kv-store/kv-store.service';
 import { env } from '#/env';
 
-import { OAuthKvStoreKey } from './oauth-kv-store';
-import type { OAuthProviderConfig } from './oauth-provider.config';
-import { requestOAuthProvider } from './oauth-provider.http';
-import { getOAuthProviderConfigurationIssues } from './oauth-provider-validation';
+import { requestOAuthProvider } from './oauth.http';
+import type { OAuthIdentity, OAuthProtocolCompletion, OAuthProviderConfig, PublicOAuthProvider } from './oauth.interface';
+import { OAuthKvStoreKey } from './oauth.key';
 
-export interface OAuthIdentity {
-  id: string
-  email: string
-  name: string
-  emailVerified: boolean
-}
-
-export interface PublicOAuthProvider {
-  id: string
-  name: string
-  iconUrl?: string
-  brandColor?: string
-  brandTextColor?: string
-}
-
-export interface OAuthProtocolCompletion {
-  identity: OAuthIdentity
-  returnTo: string
-}
+const oauthProviderConfigSchema = z.object({
+  clientId: z.string().optional(),
+  clientSecret: z.string().optional(),
+  authorizeUrl: z.string().optional(),
+  tokenUrl: z.string().optional(),
+  userInfoUrl: z.string().optional(),
+  idTokenOnly: z.boolean().optional(),
+  jwksUrl: z.string().optional(),
+  issuer: z.string().optional(),
+});
 
 interface OAuthStateRecord {
   providerId: string
@@ -151,7 +142,20 @@ export class OAuthProviderService {
       const jwksUrl = provider.jwksUrl!;
       let jwks = REMOTE_JWKS_CACHE.get(jwksUrl);
       if (!jwks) {
-        jwks = createRemoteJWKSet(new URL(jwksUrl), { timeoutDuration: HTTP_REQUEST_TIMEOUT_MS });
+        jwks = createRemoteJWKSet(new URL(jwksUrl), {
+          timeoutDuration: httpClient.defaults.timeout,
+          [customFetch]: async (url, { headers, signal }) => {
+            const response = await httpClient.get<unknown>(url, {
+              headers: Object.fromEntries(headers.entries()),
+              signal,
+              maxRedirects: 0,
+            });
+            return new Response(JSON.stringify(response.data), {
+              status: response.status,
+              headers: { 'Content-Type': 'application/json' },
+            });
+          },
+        });
         REMOTE_JWKS_CACHE.set(jwksUrl, jwks);
       }
       const verified = await jwtVerify(idToken, jwks, { issuer: provider.issuer, audience: provider.clientId });
@@ -183,7 +187,34 @@ export class OAuthProviderService {
   }
 
   private isUsable(config: OAuthProviderConfig, allowHttp: boolean): boolean {
-    return config.enabled === true && getOAuthProviderConfigurationIssues(config, allowHttp).length === 0;
+    if (config.enabled !== true) return false;
+
+    const parsed = oauthProviderConfigSchema.safeParse(config);
+    if (!parsed.success) return false;
+
+    const provider = parsed.data;
+    const urls = provider.idTokenOnly
+      ? [provider.authorizeUrl, provider.tokenUrl, provider.jwksUrl, provider.issuer]
+      : [provider.authorizeUrl, provider.tokenUrl, provider.userInfoUrl];
+    const requiredValues = provider.idTokenOnly
+      ? [provider.clientId, provider.clientSecret, provider.authorizeUrl, provider.tokenUrl, provider.jwksUrl, provider.issuer]
+      : [provider.clientId, provider.clientSecret, provider.authorizeUrl, provider.tokenUrl, provider.userInfoUrl];
+
+    return requiredValues.every((value) => typeof value === 'string' && value.trim().length > 0)
+      && urls.every((value) => !value?.trim() || isAllowedOAuthUrl(value, allowHttp));
+  }
+}
+
+function isAllowedOAuthUrl(value: string, allowHttp: boolean): boolean {
+  try {
+    const url = new URL(value.trim());
+    return (url.protocol === 'https:' || (allowHttp && url.protocol === 'http:'))
+      && !url.username
+      && !url.password
+      && !url.hash;
+  }
+  catch {
+    return false;
   }
 }
 

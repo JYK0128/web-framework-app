@@ -12,7 +12,7 @@ import { MachineModule } from '#/core/auth/machine/machine.module';
 import { UserAuthModule } from '#/core/auth/user/user.module';
 import { DatabaseModule } from '#/core/database/database.module';
 import { EventBrokerModule } from '#/core/event-broker/event-broker.module';
-import { StorageModule } from '#/core/file-storage/storage.module';
+import { FileStorageModule } from '#/core/file-storage/file-storage.module';
 import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { RequestContext } from '#/core/http/contexts/request.context';
 import { ApplicationErrorFilter } from '#/core/http/filters/application-error.filter';
@@ -28,6 +28,7 @@ import { KvStoreModule } from '#/core/kv-store/kv-store.module';
 import { LogTelemetryModule } from '#/core/log-telemetry/log-telemetry.module';
 import { LoggerModule } from '#/core/logger/logger.module';
 import { NotificationModule } from '#/core/notification/notification.module';
+import { OAuthModule } from '#/core/oauth/oauth.module';
 import { PhoneIdentityModule } from '#/core/phone-identity/phone-identity.module';
 import { RealtimeModule } from '#/core/realtime/realtime.module';
 import { WebhookModule } from '#/core/webhook/webhook.module';
@@ -38,16 +39,18 @@ const telemetryModule = LogTelemetryModule.forRoot({ appName: 'admin-api', loki:
 const RESOURCE_MODULES = [
   UserAuthModule.forRoot({ driver: 'jwt', refreshTokenStore: 'redis' }),
   NotificationModule,
+  OAuthModule,
   WebhookModule.forRoot(),
   PhoneIdentityModule,
   MachineModule.forRoot({ driver: 'jwt', connection: { targetService: 'service-api', baseUrl: env.SERVICE_API_URL } }),
   RealtimeModule.forRoot({ socketIo: { redis: { url: env.REDIS_URL } } }),
-  StorageModule.forRoot({
+  FileStorageModule.forRoot({
     driver: env.STORAGE_DRIVER,
     local: {
       baseDir: resolve(process.cwd(), ADMIN_RUNTIME_CONFIG.storage.localDirectory),
       publicUrlPrefix: ADMIN_RUNTIME_CONFIG.storage.publicUrlPrefix,
       uploadUrlPrefix: ADMIN_RUNTIME_CONFIG.storage.uploadUrlPrefix,
+      cacheMaxAgeSeconds: ADMIN_RUNTIME_CONFIG.staticAssetsCacheMaxAgeSeconds,
     },
     ...(env.STORAGE_DRIVER === 's3'
       ? {
@@ -69,7 +72,7 @@ const RESOURCE_MODULES = [
     limit: SECURITY_CONFIG.rateLimit.maxRequests,
     blockDuration: SECURITY_CONFIG.rateLimit.blockDurationMilliseconds,
   }]),
-  EventBrokerModule.forRoot({ defaultAdapter: 'redis-pubsub', redisPubSub: { url: env.REDIS_URL, topic: 'events' } }),
+  EventBrokerModule.forRoot({ defaultAdapter: 'redis-pubsub', redisPubSub: { url: env.REDIS_URL, topic: 'events' }, redisStreams: { url: env.REDIS_URL, stream: 'admin-events' } }),
   LoggerModule.forRoot({ appName: 'admin-api' }),
   telemetryModule,
 ];
@@ -78,10 +81,11 @@ const RESOURCE_MODULE_EXPORTS = [
   UserAuthModule,
   MachineModule,
   NotificationModule,
+  OAuthModule,
   WebhookModule,
   PhoneIdentityModule,
   RealtimeModule,
-  StorageModule,
+  FileStorageModule,
   DatabaseModule,
   KvStoreModule,
   EventBrokerModule,

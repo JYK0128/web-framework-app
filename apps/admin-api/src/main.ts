@@ -1,7 +1,5 @@
 import 'reflect-metadata';
 
-import { resolve } from 'node:path';
-
 import { MikroORM } from '@mikro-orm/core';
 import { VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
@@ -9,9 +7,8 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 
-import { ADMIN_RUNTIME_CONFIG, SECURITY_CONFIG } from '#/app.config';
+import { SECURITY_CONFIG } from '#/app.config';
 import { DatabaseSeeder } from '#/core/database/seeders/database.seeder';
-import { serveStorageFiles } from '#/core/file-storage/storage.http';
 import { ApiErrorResponseDto } from '#/core/http/dto/response/api.response.dto';
 import { createI18nMiddleware } from '#/core/http/middlewares/i18n.middleware';
 import { LoggerService } from '#/core/logger/logger.service';
@@ -63,13 +60,6 @@ async function bootstrap(): Promise<void> {
     origin: false,
   });
 
-  if (env.STORAGE_DRIVER === 'local') {
-    await serveStorageFiles(app, {
-      directory: resolve(process.cwd(), ADMIN_RUNTIME_CONFIG.storage.localDirectory),
-      publicUrlPrefix: ADMIN_RUNTIME_CONFIG.storage.publicUrlPrefix,
-      cacheMaxAgeSeconds: ADMIN_RUNTIME_CONFIG.staticAssetsCacheMaxAgeSeconds,
-    });
-  }
   app.use(createI18nMiddleware());
 
   setupSwagger(app);

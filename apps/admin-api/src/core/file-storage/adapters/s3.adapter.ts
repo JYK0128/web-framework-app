@@ -3,23 +3,23 @@ import { createHash, createHmac } from 'node:crypto';
 import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { getS3Object, putS3Object } from '#/core/file-storage/s3.http';
-import { type FileAdapter, type PresignedUploadUrlResult, type S3Options, type SaveFileResult, STORAGE_MODULE_OPTIONS, type StorageModuleOptions } from '#/core/file-storage/storage.interface';
+import { getS3Object, putS3Object } from '#/core/file-storage/file-storage.http';
+import { FILE_STORAGE_MODULE_OPTIONS, type FileStorageAdapter, type FileStorageModuleOptions, type PresignedUploadUrlResult, type S3StorageOptions, type SaveFileResult } from '#/core/file-storage/file-storage.interface';
 
 /**
  * AWS S3 및 S3 호환 스토리지(Cloudflare R2, MinIO) 어댑터
  * AWS Signature Version 4 (SigV4) 기반 직접 연동
  */
 @Injectable()
-export class S3Adapter implements FileAdapter {
+export class S3Adapter implements FileStorageAdapter {
   readonly name = 's3';
   private readonly logger = new Logger(S3Adapter.name);
-  private readonly s3Config?: S3Options;
+  private readonly s3Config?: S3StorageOptions;
 
   constructor(
     @Optional()
-    @Inject(STORAGE_MODULE_OPTIONS)
-    options?: StorageModuleOptions,
+    @Inject(FILE_STORAGE_MODULE_OPTIONS)
+    options?: FileStorageModuleOptions,
   ) {
     this.s3Config = options?.s3;
   }
@@ -164,7 +164,7 @@ export class S3Adapter implements FileAdapter {
     return cleanSubDir ? `${cleanSubDir}/${filename}` : filename;
   }
 
-  private getHost(config: S3Options): string {
+  private getHost(config: S3StorageOptions): string {
     if (config.endpoint) {
       const stripped = config.endpoint.replace(/^https?:\/\//, '').replace(/\/$/, '');
       return `${config.bucket}.${stripped}`;
@@ -175,7 +175,7 @@ export class S3Adapter implements FileAdapter {
       : `${config.bucket}.s3.${region}.amazonaws.com`;
   }
 
-  private ensureConfig(): S3Options {
+  private ensureConfig(): S3StorageOptions {
     if (!this.s3Config?.bucket || !this.s3Config.accessKeyId || !this.s3Config.secretAccessKey) {
       throw new ApplicationError({
         code: 'S3_STORAGE_NOT_CONFIGURED',
@@ -189,7 +189,7 @@ export class S3Adapter implements FileAdapter {
     method: string,
     path: string,
     headers: Record<string, string>,
-    config: S3Options,
+    config: S3StorageOptions,
   ): Record<string, string> {
     const region = config.region ?? 'us-east-1';
     const now = new Date();

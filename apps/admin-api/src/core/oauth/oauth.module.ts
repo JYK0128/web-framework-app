@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 
-import { OAuthProviderService } from './oauth-provider.service';
+import { OAuthProviderService } from './oauth.service';
 
+@Global()
 @Module({
   providers: [OAuthProviderService],
   exports: [OAuthProviderService],
 })
-export class OAuthProviderModule {}
+export class OAuthModule {}

@@ -1,7 +1,6 @@
 export * from './change-password.command';
 export * from './disable-two-factor.command';
 export * from './enable-two-factor.command';
-export * from './find-id.command';
 export * from './generate-two-factor.command';
 export * from './login.command';
 export * from './logout.command';

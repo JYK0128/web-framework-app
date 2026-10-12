@@ -1,6 +1,6 @@
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
-import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { CommandBus, CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { encrypt, hash, hmac } from '@pkg/shared/server';
 
@@ -10,10 +10,9 @@ import { Account, Profile, User } from '#/core/database/entities/auth';
 import { Role, RoleCode } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { env } from '#/env';
-import { AccountRecoveryService } from '#/modules/auth/account-recovery.service';
-import { RegisterCommand } from '#/modules/auth/commands';
-import { RegisterResponseDto } from '#/modules/auth/dto';
-import { SystemConfigService } from '#/modules/system-configs/system-config.service';
+import { RegisterCommand, RequestEmailVerificationCommand } from '#/modules/auth/commands';
+import { RegisterResponseDto, RequestEmailVerificationRequestDto } from '#/modules/auth/dto';
+import { AdminEmailConfigService } from '#/modules/system-configs/admin-email-config.service';
 
 @Injectable()
 @CommandHandler(RegisterCommand)
@@ -22,15 +21,15 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
 
   constructor(
     private readonly em: AppEntityManager,
-    private readonly accountRecovery: AccountRecoveryService,
-    private readonly systemConfig: SystemConfigService,
+    private readonly commandBus: CommandBus,
+    private readonly emailConfig: AdminEmailConfigService,
   ) {}
 
   async execute(command: RegisterCommand): Promise<RegisterResponseDto> {
     if (!SECURITY_CONFIG.registration.allowRegistration) throw new ApplicationError({ code: 'REGISTRATION_DISABLED', status: HttpStatus.FORBIDDEN });
     if (!SECURITY_CONFIG.credentialAvailable) throw new ApplicationError({ code: 'CREDENTIAL_AUTH_UNAVAILABLE', status: HttpStatus.FORBIDDEN });
     assertPasswordPolicy(command.input.password);
-    if (SECURITY_CONFIG.registration.requireEmailVerification) await this.systemConfig.ensureEmailDeliveryConfigured();
+    if (SECURITY_CONFIG.registration.requireEmailVerification) await this.emailConfig.ensureEmailDeliveryConfigured();
 
     const email = command.input.email.trim().toLowerCase();
     const emailHash = hmac(email, env.PII_HASH_KEY);
@@ -63,16 +62,18 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
       throw error;
     }
 
-    let verificationEmailSent = false;
+    let verificationEmailQueued = false;
     if (SECURITY_CONFIG.registration.requireEmailVerification) {
       try {
-        await this.accountRecovery.requestEmailVerification(email);
-        verificationEmailSent = true;
+        const result = await this.commandBus.execute(new RequestEmailVerificationCommand(
+          RequestEmailVerificationRequestDto.fromPlain({ email }),
+        ));
+        verificationEmailQueued = result.accepted;
       }
       catch (error) {
-        this.logger.warn(`Registration email verification could not be sent: ${error instanceof Error ? error.message : String(error)}`);
+        this.logger.warn(`Registration email verification could not be queued: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
-    return RegisterResponseDto.fromPlain({ emailVerificationRequired: SECURITY_CONFIG.registration.requireEmailVerification, verificationEmailSent });
+    return RegisterResponseDto.fromPlain({ emailVerificationRequired: SECURITY_CONFIG.registration.requireEmailVerification, verificationEmailQueued });
   }
 }

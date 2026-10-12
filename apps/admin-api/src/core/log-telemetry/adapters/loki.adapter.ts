@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { normalizeLogError } from '#/core/log-telemetry/log-normalizer';
 import { type ILogTelemetryAdapter, LOG_TELEMETRY_MODULE_OPTIONS, type LogEntry, type LogStatsResult, type LogTelemetryModuleOptions, type QueryLogOptions, type QueryLogResult } from '#/core/log-telemetry/log-telemetry.interface';
 import { LOG_DEFAULT_LOOKBACK_MS, LOG_QUERY_DEFAULT_LIMIT, LOG_QUERY_MAX_LIMIT, LOG_QUERY_RANGE_LIMIT, LOG_WATCH_LOOKBACK_MS, LOG_WATCH_MAX_SEEN_IDS, LOG_WATCH_POLL_INTERVAL_MS, LOG_WATCH_TRIM_SEEN_IDS } from '#/core/log-telemetry/loki.config';
-import { queryLoki } from '#/core/log-telemetry/loki.http';
+import { queryLoki } from '#/core/log-telemetry/log-telemetry.http';
 
 export interface LokiStreamEntry {
   stream: Record<string, string>

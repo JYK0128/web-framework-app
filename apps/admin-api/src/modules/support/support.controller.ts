@@ -12,6 +12,7 @@ import { KvStore } from '#/core/kv-store/kv-store.service';
 import { RealtimeService } from '#/core/realtime/realtime.service';
 
 import { CreateSupportMessageRequestDto, GetSupportRoomsRequestDto, SupportMessageItemDto, SupportMessageListResponseDto, SupportRoomItemDto, SupportRoomPageResponseDto, SupportSocketTicketResponseDto, UpdateSupportRoomRequestDto } from './dto';
+import { SupportKvStoreKey } from './support.key';
 
 const SUPPORT_UNANSWERED_TOPIC = 'support:unanswered';
 
@@ -139,7 +140,7 @@ export class SupportController {
   async socketTicket(@Param('roomId') roomId: string): Promise<SupportSocketTicketResponseDto> {
     await this.internalClient.fetch(`/internal/support/rooms/${roomId}`);
     const ticket = crypto.randomUUID();
-    await this.kvStore.set(`admin:support:socket-ticket:${ticket}`, { roomId }, 30);
+    await this.kvStore.set(SupportKvStoreKey.socketTicket(ticket), { roomId }, 30);
     return Object.assign(new SupportSocketTicketResponseDto(), { ticket });
   }
 

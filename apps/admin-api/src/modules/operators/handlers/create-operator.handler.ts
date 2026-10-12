@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
-import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { CommandBus, CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { encrypt, hmac } from '@pkg/shared/server';
 
@@ -10,7 +10,8 @@ import { Role } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { env } from '#/env';
-import { AccountRecoveryService } from '#/modules/auth/account-recovery.service';
+import { RequestEmailVerificationCommand } from '#/modules/auth/commands';
+import { RequestEmailVerificationRequestDto } from '#/modules/auth/dto';
 import { CreateOperatorCommand } from '#/modules/operators/commands';
 import { CreateOperatorResponseDto } from '#/modules/operators/dto';
 import { assertSuperAdmin } from '#/modules/operators/handlers/operator-actions.helpers';
@@ -23,7 +24,7 @@ export class CreateOperatorHandler implements ICommandHandler<CreateOperatorComm
   constructor(
     private readonly em: AppEntityManager,
     private readonly principal: PrincipalContext,
-    private readonly accountRecovery: AccountRecoveryService,
+    private readonly commandBus: CommandBus,
   ) {}
 
   async execute(command: CreateOperatorCommand): Promise<CreateOperatorResponseDto> {
@@ -60,16 +61,18 @@ export class CreateOperatorHandler implements ICommandHandler<CreateOperatorComm
     this.em.persist([operator, profile, account]);
     await this.em.flush();
     const emailVerificationRequired = SECURITY_CONFIG.registration.requireEmailVerification;
-    let emailVerificationSent = false;
+    let emailVerificationQueued = false;
     if (emailVerificationRequired) {
       try {
-        await this.accountRecovery.requestEmailVerification(command.input.email);
-        emailVerificationSent = true;
+        const result = await this.commandBus.execute(new RequestEmailVerificationCommand(
+          RequestEmailVerificationRequestDto.fromPlain({ email: command.input.email }),
+        ));
+        emailVerificationQueued = result.accepted;
       }
       catch (error) {
-        this.logger.warn(`운영자 이메일 인증 메일을 발송하지 못했습니다: ${error instanceof Error ? error.message : String(error)}`);
+        this.logger.warn(`운영자 이메일 인증 메일 발송 요청을 등록하지 못했습니다: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
-    return CreateOperatorResponseDto.fromPlain({ id: operator.id, emailVerificationRequired, emailVerificationSent });
+    return CreateOperatorResponseDto.fromPlain({ id: operator.id, emailVerificationRequired, emailVerificationQueued });
   }
 }

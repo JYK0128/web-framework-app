@@ -3,18 +3,18 @@ import { createHash } from 'node:crypto';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import type { PushConfigDto } from '@pkg/shared/server';
+import type { AxiosResponse } from 'axios';
 import { importPKCS8, SignJWT } from 'jose';
 import { z } from 'zod';
 
 import { SECURITY_CONFIG } from '#/app.config';
 import { postNotificationForm, postNotificationJson } from '#/core/notification/notification.http';
 import type { PushMessage } from '#/core/notification/notification.interface';
-import type { ProviderHttpResponse } from '#/core/notification/provider-response';
 
 const recordSchema = z.record(z.string(), z.unknown());
 
-function parseNhnPushResponse(response: ProviderHttpResponse): string | undefined {
-  const parsed = recordSchema.safeParse(response.body);
+function parseNhnPushResponse(response: AxiosResponse<unknown>): string | undefined {
+  const parsed = recordSchema.safeParse(response.data);
   if (!parsed.success) throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', message: `NHN Push: Invalid provider response`, status: HttpStatus.BAD_GATEWAY });
 
   const data = parsed.data;
@@ -31,24 +31,24 @@ function parseNhnPushResponse(response: ProviderHttpResponse): string | undefine
   const rawError = failedRecipient?.resultMessage ?? (header?.isSuccessful === false ? header.resultMessage : undefined) ?? data.errorMessage ?? data.message ?? data.description ?? data.errmsg;
 
   const errorMessage = typeof rawError === 'string' ? rawError : `Provider rejected request (HTTP ${response.status})`;
-  if (!response.ok || !accepted) throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+  if ((response.status < 200 || response.status >= 300) || !accepted) throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
   return typeof rawId === 'string' || typeof rawId === 'number' ? String(rawId) : undefined;
 }
 
-function parseFcmResponse(response: ProviderHttpResponse): string | undefined {
-  const parsed = recordSchema.safeParse(response.body);
+function parseFcmResponse(response: AxiosResponse<unknown>): string | undefined {
+  const parsed = recordSchema.safeParse(response.data);
   if (!parsed.success) throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', message: `FCM Push: Invalid provider response`, status: HttpStatus.BAD_GATEWAY });
 
   const data = parsed.data;
   const rawError = [data.error, data.message, data.description, data.errmsg].find((value): value is string => typeof value === 'string');
   const errorMessage = rawError ?? `Provider rejected request (HTTP ${response.status})`;
-  if (!response.ok || typeof data.name !== 'string' || data.error) throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+  if ((response.status < 200 || response.status >= 300) || typeof data.name !== 'string' || data.error) throw ApplicationError.from(new Error(errorMessage), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
   return data.name;
 }
 
 @Injectable()
 export class PushAdapter {
-  private async postProviderJson(url: string, headers: Record<string, string>, body: Record<string, unknown>): Promise<ProviderHttpResponse> {
+  private async postProviderJson(url: string, headers: Record<string, string>, body: Record<string, unknown>): Promise<AxiosResponse<unknown>> {
     try {
       return await postNotificationJson(url, headers, body);
     }

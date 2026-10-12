@@ -12,9 +12,9 @@ import { Public, SkipPasswordExpiry, SkipPhoneVerification, SkipTwoFactorSetup, 
 import { Cookie } from '#/core/http/decorators/cookie.decorator';
 import { NoStore } from '#/core/http/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, FindIdCommand, GenerateTwoFactorCommand, LoginCommand, LogoutCommand, RefreshCommand, RegisterCommand, RequestEmailVerificationCommand, RequestPasswordResetCommand, ResetPasswordCommand, TwoFactorLoginCommand, UnregisterCommand, VerifyEmailCommand, VerifyPhoneNumberCommand } from '#/modules/auth/commands';
+import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand, LoginCommand, LogoutCommand, RefreshCommand, RegisterCommand, RequestEmailVerificationCommand, RequestPasswordResetCommand, ResetPasswordCommand, TwoFactorLoginCommand, UnregisterCommand, VerifyEmailCommand, VerifyPhoneNumberCommand } from '#/modules/auth/commands';
 import { ChangePasswordRequestDto, ChangePasswordResponseDto, DisableTwoFactorRequestDto, DisableTwoFactorResponseDto, EnableTwoFactorRequestDto, EnableTwoFactorResponseDto, FindIdRequestDto, FindIdResponseDto, GenerateTwoFactorRequestDto, GenerateTwoFactorResponseDto, LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, RefreshRequestDto, RefreshResponseDto, RegisterRequestDto, RegisterResponseDto, RequestEmailVerificationRequestDto, RequestEmailVerificationResponseDto, RequestPasswordResetRequestDto, RequestPasswordResetResponseDto, ResetPasswordRequestDto, ResetPasswordResponseDto, TwoFactorLoginRequestDto, TwoFactorLoginResponseDto, UnregisterRequestDto, UnregisterResponseDto, VerifyEmailRequestDto, VerifyEmailResponseDto, VerifyPhoneNumberRequestDto, VerifyPhoneNumberResponseDto } from '#/modules/auth/dto';
-import { MeQuery } from '#/modules/auth/queries';
+import { FindIdQuery, MeQuery } from '#/modules/auth/queries';
 
 @ApiTags('Auth')
 @UserAuth()
@@ -42,7 +42,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '아이디 찾기' })
   @SwaggerApiResponse(FindIdResponseDto)
-  findId(@Body() dto: FindIdRequestDto): Promise<FindIdResponseDto> { return this.commandBus.execute(new FindIdCommand(dto)); }
+  findId(@Body() dto: FindIdRequestDto): Promise<FindIdResponseDto> { return this.queryBus.execute(new FindIdQuery(dto)); }
 
   @Public()
   @Post('email/challenge')

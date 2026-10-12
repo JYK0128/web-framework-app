@@ -11,5 +11,5 @@ export class CreateOperatorResponseDto extends BaseDto {
   emailVerificationRequired!: boolean;
 
   @ApiProperty()
-  emailVerificationSent!: boolean;
+  emailVerificationQueued!: boolean;
 }

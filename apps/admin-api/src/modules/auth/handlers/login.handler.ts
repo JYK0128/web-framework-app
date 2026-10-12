@@ -12,9 +12,9 @@ import { TwoFactor } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { KvStore } from '#/core/kv-store/kv-store.service';
 import { env } from '#/env';
+import { AuthKvStoreKey } from '#/modules/auth/auth.key';
 import { LoginCommand } from '#/modules/auth/commands';
 import { LoginResponseDto } from '#/modules/auth/dto';
-import { TwoFactorLoginKvStoreKey } from '#/modules/auth/two-factor-login-kv-store';
 
 @Injectable()
 @CommandHandler(LoginCommand)
@@ -111,7 +111,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResponse
 
       const twoFactorChallengeToken = randomUUID();
       await this.kvStore.set(
-        TwoFactorLoginKvStoreKey.challenge(twoFactorChallengeToken),
+        AuthKvStoreKey.twoFactorLoginChallenge(twoFactorChallengeToken),
         JSON.stringify({ userId: user.id, rememberMe: input.rememberMe === true, attempts: 0 }),
         SECURITY_CONFIG.twoFactor.challengeTtlSeconds,
       );
