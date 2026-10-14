@@ -7,6 +7,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { SECURITY_CONFIG } from '#/app.config';
 import { Account, User } from '#/core/database/entities/auth';
 import { AppEntityManager } from '#/core/database/entity-manager';
+import { AuthKvStoreKey } from '#/modules/auth/auth.key';
 import { type PasswordResetRecord } from '#/modules/auth/credential/password-reset.helper';
 import { ResetPasswordCommand } from '#/modules/auth/credential/reset-password.command';
 import { ResetPasswordResponseDto } from '#/modules/auth/credential/reset-password.response.dto';
@@ -19,7 +20,7 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
   async execute(command: ResetPasswordCommand): Promise<ResetPasswordResponseDto> {
     if (!SECURITY_CONFIG.credentialAvailable) throw invalidToken();
     const { challengeId, token, newPassword } = command.input;
-    const key = `service:password-reset:${challengeId}`;
+    const key = AuthKvStoreKey.passwordResetChallenge(challengeId);
     const pending = await this.kv.get<PasswordResetRecord>(key);
     if (!pending || pending.token !== token) throw invalidToken();
     const user = await this.em.findOne(User, { id: pending.userId, profile: { emailHash: pending.emailHash } }, { filters: false });

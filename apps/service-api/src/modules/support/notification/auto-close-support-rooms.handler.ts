@@ -9,7 +9,7 @@ import { SERVICE_RUNTIME_CONFIG } from '#/app.config';
 import { SupportMessage, SupportMessageSenderType, SupportRoom, SupportRoomStatus } from '#/core/database/entities/support';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { AutoCloseSupportRoomsCommand } from '#/modules/support/notification/auto-close-support-rooms.command';
-import { ServiceContext } from '#/modules/system-configs/service.context';
+import { ServiceContext } from '#/modules/system-config/service.context';
 
 const AUTO_CLOSE_JOB_LOCK = 'service:support:scheduler:auto-close';
 

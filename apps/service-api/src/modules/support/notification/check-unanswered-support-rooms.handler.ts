@@ -13,8 +13,8 @@ import { SupportMessage, SupportMessageSenderType, SupportRoom, SupportRoomStatu
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { CheckUnansweredSupportRoomsCommand } from '#/modules/support/notification/check-unanswered-support-rooms.command';
 import { InquiryWebhookService } from '#/modules/support/notification/inquiry-webhook.service';
-import { ServiceContext } from '#/modules/system-configs/service.context';
-import { SystemContext, type WebhookConfig } from '#/modules/system-configs/system.context';
+import { ServiceContext } from '#/modules/system-config/service.context';
+import { SystemContext, type WebhookConfig } from '#/modules/system-config/system.context';
 
 const UNANSWERED_JOB_LOCK = 'service:support:scheduler:unanswered';
 

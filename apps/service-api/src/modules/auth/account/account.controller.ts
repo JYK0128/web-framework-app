@@ -1,11 +1,11 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public, UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
 import { NoStore } from '@pkg/server-core/http/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
 
-import { FindIdCommand } from '#/modules/auth/account/find-id.command';
+import { FindIdQuery } from '#/modules/auth/account/find-id.query';
 import { FindIdRequestDto } from '#/modules/auth/account/find-id.request.dto';
 import { FindIdResponseDto } from '#/modules/auth/account/find-id.response.dto';
 import { RegisterCommand } from '#/modules/auth/account/register.command';
@@ -20,7 +20,7 @@ import { UnregisterResponseDto } from '#/modules/auth/account/unregister.respons
 @NoStore()
 @Controller('auth')
 export class AuthAccountController {
-  constructor(private readonly commandBus: CommandBus) {}
+  constructor(private readonly commandBus: CommandBus, private readonly queryBus: QueryBus) {}
 
   @Public()
   @Post('register')
@@ -37,7 +37,7 @@ export class AuthAccountController {
   @ApiOperation({ operationId: 'AuthController_findId_v1', summary: '서비스 사용자 계정 찾기' })
   @SwaggerApiResponse(FindIdResponseDto)
   findId(@Body() dto: FindIdRequestDto): Promise<FindIdResponseDto> {
-    return this.commandBus.execute(new FindIdCommand(dto));
+    return this.queryBus.execute(new FindIdQuery(dto));
   }
 
   @Post('unregister')

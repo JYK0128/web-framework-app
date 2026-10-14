@@ -5,7 +5,7 @@ import { SECURITY_CONFIG, SERVICE_ID } from '#/app.config';
 import { env } from '#/env';
 import { OAuthController } from '#/modules/auth/oauth/oauth.controller';
 import { OAuthService } from '#/modules/auth/oauth/oauth.service';
-import { SystemConfigsModule } from '#/modules/system-configs/system-configs.module';
+import { SystemConfigsModule } from '#/modules/system-config/system-configs.module';
 
 const oauthProviderModule = OAuthProviderModule.forRoot({
   namespace: SERVICE_ID,

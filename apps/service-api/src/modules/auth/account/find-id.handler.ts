@@ -1,25 +1,25 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { QueryHandler, type IQueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { hashWithSecret } from '@pkg/shared/server';
 
 import { Account, User } from '#/core/database/entities/auth';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { env } from '#/env';
-import { FindIdCommand } from '#/modules/auth/account/find-id.command';
+import { FindIdQuery } from '#/modules/auth/account/find-id.query';
 import { FindIdResponseDto } from '#/modules/auth/account/find-id.response.dto';
 import { FindIdItemDto } from '#/modules/auth/account/find-id-item.dto';
 
 @Injectable()
-@CommandHandler(FindIdCommand)
-export class FindIdHandler implements ICommandHandler<FindIdCommand, FindIdResponseDto> {
+@QueryHandler(FindIdQuery)
+export class FindIdHandler implements IQueryHandler<FindIdQuery, FindIdResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(command: FindIdCommand): Promise<FindIdResponseDto> {
+  async execute({ input }: FindIdQuery): Promise<FindIdResponseDto> {
     const users = await this.em.find(User, {
       profile: {
-        name: command.input.name.trim(),
-        phoneNumberHash: hashWithSecret(command.input.phoneNumber, env.PII_HASH_KEY),
+        name: input.name.trim(),
+        phoneNumberHash: hashWithSecret(input.phoneNumber, env.PII_HASH_KEY),
       },
     }, { populate: ['profile'] });
     if (users.length === 0) return FindIdResponseDto.parse({ items: [] });

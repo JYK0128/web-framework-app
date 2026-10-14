@@ -1,31 +1,41 @@
 import { randomBytes, randomUUID } from 'node:crypto';
 
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus, Logger } from '@nestjs/common';
+import { EventBroker } from '@pkg/server-core/event-broker/event-broker.service';
 import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
-import { NotificationService } from '@pkg/server-core/notification/index';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
+import { encrypt } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
 import { Profile, User } from '#/core/database/entities/auth';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { sendEmail, serviceWebUrl } from '#/modules/auth/auth-email.helper';
-import { SystemContext } from '#/modules/system-configs/system.context';
+import { env } from '#/env';
+import { AuthKvStoreKey } from '#/modules/auth/auth.key';
+import { EmailVerificationEvent } from '#/modules/auth/email-verification/email-verification.event';
 
-type ChallengeRecord = { userId: string, emailHash: string, token: string };
+type ChallengeRecord = { userId: string, emailHash: string, emailEncrypted: string, token: string };
+const logger = new Logger('EmailVerificationHelper');
 
-export async function sendEmailVerificationChallenge(systemContext: SystemContext, kv: KvStore, messages: NotificationService, user: User, profile: Profile, email: string): Promise<void> {
+export async function sendEmailVerificationChallenge(eventBroker: EventBroker, kv: KvStore, user: User, profile: Profile, email: string): Promise<void> {
   const challengeId = randomUUID();
   const token = randomBytes(32).toString('base64url');
-  const key = `service:email-verification:${challengeId}`;
-  await kv.set(key, { userId: user.id, emailHash: profile.emailHash, token } satisfies ChallengeRecord, TimeUtil.s.minute(SECURITY_CONFIG.registration.emailVerificationTokenTtlMinutes));
-  const url = serviceWebUrl('/verify-email');
-  url.searchParams.set('challengeId', challengeId);
-  url.searchParams.set('token', token);
-  await sendEmail(systemContext, kv, messages, key, email, '서비스 이메일 인증', `아래 링크에서 이메일 인증을 완료해 주세요. 링크는 ${SECURITY_CONFIG.registration.emailVerificationTokenTtlMinutes}분 동안 유효합니다.\n${url.toString()}`);
+  const key = AuthKvStoreKey.emailVerificationChallenge(challengeId);
+  const ttlMinutes = SECURITY_CONFIG.registration.emailVerificationTokenTtlMinutes;
+  await kv.set(key, { userId: user.id, emailHash: profile.emailHash, emailEncrypted: encrypt(email, env.PII_ENCRYPTION_KEY), token } satisfies ChallengeRecord, TimeUtil.s.minute(ttlMinutes));
+  try {
+    await eventBroker.publish(new EmailVerificationEvent(challengeId, ttlMinutes));
+  }
+  catch (error) {
+    try { await kv.del(key); }
+    catch (cleanupError) {
+      logger.error(`Failed to remove email challenge after event publication failure: ${cleanupError instanceof Error ? cleanupError.message : String(cleanupError)}`);
+    }
+    throw error;
+  }
 }
 
 export async function verifyEmailChallenge(em: AppEntityManager, kv: KvStore, challengeId: string, token: string): Promise<void> {
-  const key = `service:email-verification:${challengeId}`;
+  const key = AuthKvStoreKey.emailVerificationChallenge(challengeId);
   const pending = await kv.get<ChallengeRecord>(key);
   if (!pending || pending.token !== token) throw invalidEmailToken();
   const user = await em.findOne(User, { id: pending.userId, profile: { emailHash: pending.emailHash } }, { filters: false });

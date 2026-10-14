@@ -5,7 +5,7 @@ import { AuthAccountController } from '#/modules/auth/account/account.controller
 import { FindIdHandler } from '#/modules/auth/account/find-id.handler';
 import { RegisterHandler } from '#/modules/auth/account/register.handler';
 import { UnregisterHandler } from '#/modules/auth/account/unregister.handler';
-import { SystemConfigsModule } from '#/modules/system-configs/system-configs.module';
+import { SystemConfigsModule } from '#/modules/system-config/system-configs.module';
 
 @Module({
   controllers: [AuthAccountController],

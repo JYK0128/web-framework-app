@@ -8,15 +8,15 @@ import { NoticeImportance } from '@pkg/shared/constants';
 import { Event, EventPhase } from '../src/core/database/entities/events';
 import { Faq, FaqCategory } from '../src/core/database/entities/faqs';
 import type { AppEntityManager } from '../src/core/database/entity-manager';
-import { UpdateNoticeRequestDto } from '#/modules/notices/update-notice.request.dto';
-import { UpdateNoticeCommand } from '#/modules/notices/update-notice.command';
-import { UpdateNoticeHandler } from '#/modules/notices/update-notice.handler';
-import { UpdateEventRequestDto } from '#/modules/events/update-event.request.dto';
-import { UpdateEventCommand } from '#/modules/events/update-event.command';
-import { UpdateEventHandler } from '#/modules/events/update-event.handler';
-import { UpdateFaqRequestDto } from '#/modules/faqs/update-faq.request.dto';
-import { UpdateFaqCommand } from '#/modules/faqs/update-faq.command';
-import { UpdateFaqHandler } from '#/modules/faqs/update-faq.handler';
+import { UpdateNoticeRequestDto } from '#/modules/notice/update-notice.request.dto';
+import { UpdateNoticeCommand } from '#/modules/notice/update-notice.command';
+import { UpdateNoticeHandler } from '#/modules/notice/update-notice.handler';
+import { UpdateEventRequestDto } from '#/modules/event/update-event.request.dto';
+import { UpdateEventCommand } from '#/modules/event/update-event.command';
+import { UpdateEventHandler } from '#/modules/event/update-event.handler';
+import { UpdateFaqRequestDto } from '#/modules/faq/update-faq.request.dto';
+import { UpdateFaqCommand } from '#/modules/faq/update-faq.command';
+import { UpdateFaqHandler } from '#/modules/faq/update-faq.handler';
 
 const manager = (entity: object) => ({ findOne: async () => entity }) as unknown as AppEntityManager;
 const publishedAt = new Date('2020-01-01T00:00:00Z');
@@ -64,9 +64,9 @@ test('partial content requests reject null for non-nullable fields', () => {
 test('Q&A, support and membership updates reject invalid nulls and permission strings', async () => {
   const { UpdateQnaRequestDto } = await import('#/modules/qna/update-qna.request.dto');
 const { UpdateOwnQnaRequestDto } = await import('#/modules/qna/update-own-qna.request.dto');
-  const { UpdateSupportRoomRequestDto } = await import('#/modules/support/rooms/update-support-room.request.dto');
-  const { UpdateCustomerMembershipRequestDto } = await import('#/modules/memberships/update-customer-membership.request.dto');
-const { CreateCustomerMembershipRequestDto } = await import('#/modules/memberships/create-customer-membership.request.dto');
+  const { UpdateSupportRoomRequestDto } = await import('#/modules/support/room/update-support-room.request.dto');
+  const { UpdateCustomerMembershipRequestDto } = await import('#/modules/membership/update-customer-membership.request.dto');
+const { CreateCustomerMembershipRequestDto } = await import('#/modules/membership/create-customer-membership.request.dto');
   for (const [Dto, fields] of [
     [UpdateQnaRequestDto, ['status', 'priority', 'answer']],
     [UpdateOwnQnaRequestDto, ['status']],
@@ -83,12 +83,12 @@ const { CreateCustomerMembershipRequestDto } = await import('#/modules/membershi
 });
 
 test('notice detail requests retain public visibility and delete requests retain soft deletion', async () => {
-  const { GetNoticeRequestDto } = await import('#/modules/notices/get-notice.request.dto');
-  const { DeleteNoticeRequestDto } = await import('#/modules/notices/delete-notice.request.dto');
-  const { GetNoticeQuery } = await import('#/modules/notices/get-notice.query');
-const { DeleteNoticeCommand } = await import('#/modules/notices/delete-notice.command');
-  const { GetNoticeHandler } = await import('#/modules/notices/get-notice.handler');
-const { DeleteNoticeHandler } = await import('#/modules/notices/delete-notice.handler');
+  const { GetNoticeRequestDto } = await import('#/modules/notice/get-notice.request.dto');
+  const { DeleteNoticeRequestDto } = await import('#/modules/notice/delete-notice.request.dto');
+  const { GetNoticeQuery } = await import('#/modules/notice/get-notice.query');
+const { DeleteNoticeCommand } = await import('#/modules/notice/delete-notice.command');
+  const { GetNoticeHandler } = await import('#/modules/notice/get-notice.handler');
+const { DeleteNoticeHandler } = await import('#/modules/notice/delete-notice.handler');
   const notice = Object.assign(new Notice(), { id: 'notice', title: 'Draft', content: 'Content', publishedAt: null });
   const em = { findOne: async (_entity: unknown, where: { id: string, publishedAt?: { $lte: Date } }) => where.id === notice.id && (!where.publishedAt || (notice.publishedAt !== null && notice.publishedAt <= where.publishedAt.$lte)) ? notice : null } as unknown as AppEntityManager;
   const request = GetNoticeRequestDto.parse({ noticeId: notice.id }).validate();
@@ -106,12 +106,12 @@ const { DeleteNoticeHandler } = await import('#/modules/notices/delete-notice.ha
 });
 
 test('event detail requests retain public visibility and delete requests retain soft deletion', async () => {
-  const { GetEventRequestDto } = await import('#/modules/events/get-event.request.dto');
-  const { DeleteEventRequestDto } = await import('#/modules/events/delete-event.request.dto');
-  const { GetEventQuery } = await import('#/modules/events/get-event.query');
-const { DeleteEventCommand } = await import('#/modules/events/delete-event.command');
-  const { GetEventHandler } = await import('#/modules/events/get-event.handler');
-const { DeleteEventHandler } = await import('#/modules/events/delete-event.handler');
+  const { GetEventRequestDto } = await import('#/modules/event/get-event.request.dto');
+  const { DeleteEventRequestDto } = await import('#/modules/event/delete-event.request.dto');
+  const { GetEventQuery } = await import('#/modules/event/get-event.query');
+const { DeleteEventCommand } = await import('#/modules/event/delete-event.command');
+  const { GetEventHandler } = await import('#/modules/event/get-event.handler');
+const { DeleteEventHandler } = await import('#/modules/event/delete-event.handler');
   const event = Object.assign(new Event(), { id: 'event', title: 'Draft', content: 'Content', startsAt: new Date('2030-01-01'), endsAt: new Date('2030-01-02') });
   const em = { findOne: async (_entity: unknown, where: { id: string, publishedAt?: { $lte: Date } }) => where.id === event.id && (!where.publishedAt || (event.publishedAt !== null && event.publishedAt <= where.publishedAt.$lte)) ? event : null } as unknown as AppEntityManager;
   const request = GetEventRequestDto.parse({ eventId: event.id }).validate();
@@ -126,9 +126,9 @@ const { DeleteEventHandler } = await import('#/modules/events/delete-event.handl
 
 
 test('notice publication dates accept drafts and schedules; invalid dates are rejected', async () => {
-  const { CreateNoticeRequestDto } = await import('#/modules/notices/create-notice.request.dto');
-  const { CreateNoticeCommand } = await import('#/modules/notices/create-notice.command');
-  const { CreateNoticeHandler } = await import('#/modules/notices/create-notice.handler');
+  const { CreateNoticeRequestDto } = await import('#/modules/notice/create-notice.request.dto');
+  const { CreateNoticeCommand } = await import('#/modules/notice/create-notice.command');
+  const { CreateNoticeHandler } = await import('#/modules/notice/create-notice.handler');
   for (const date of [undefined, null, '2099-01-01T12:00:00+09:00', '2020-01-01T00:00:00Z']) {
     const input = plainToInstance(CreateNoticeRequestDto, { title: 'Notice', content: 'Content', publishedAt: date });
     assert.deepEqual(validateSync(input), []);
@@ -149,9 +149,9 @@ test('notice publication dates accept drafts and schedules; invalid dates are re
 });
 
 test('scheduled notices become public at their publication time without a status update', async (context) => {
-  const { GetPublicNoticesRequestDto } = await import('#/modules/notices/get-public-notices.request.dto');
-  const { GetPublicNoticesQuery } = await import('#/modules/notices/get-public-notices.query');
-  const { GetPublicNoticesHandler } = await import('#/modules/notices/get-public-notices.handler');
+  const { GetPublicNoticesRequestDto } = await import('#/modules/notice/get-public-notices.request.dto');
+  const { GetPublicNoticesQuery } = await import('#/modules/notice/get-public-notices.query');
+  const { GetPublicNoticesHandler } = await import('#/modules/notice/get-public-notices.handler');
   context.mock.timers.enable({ apis: ['Date'], now: new Date('2030-01-01T00:00:00Z') });
   const scheduled = Object.assign(new Notice(), { id: 'scheduled', title: 'Scheduled', content: 'Content', publishedAt: new Date('2030-01-01T01:00:00Z') });
   const draft = Object.assign(new Notice(), { id: 'draft', title: 'Draft', content: 'Content', publishedAt: null });
@@ -178,15 +178,15 @@ test('PostgreSQL: notice migration preserves publication and scheduled visibilit
   const { EntityCaseNamingStrategy } = await import('@mikro-orm/core');
   const { AppEntityManager: EntityManager } = await import('../src/core/database/entity-manager');
   const { Migration20261013010000 } = await import('../src/core/database/migrations/Migration20261013010000_notice-publication-date');
-  const { CreateNoticeRequestDto } = await import('#/modules/notices/create-notice.request.dto');
-  const { CreateNoticeCommand } = await import('#/modules/notices/create-notice.command');
-  const { CreateNoticeHandler } = await import('#/modules/notices/create-notice.handler');
-  const { GetPublicNoticesRequestDto } = await import('#/modules/notices/get-public-notices.request.dto');
-  const { GetPublicNoticesQuery } = await import('#/modules/notices/get-public-notices.query');
-  const { GetPublicNoticesHandler } = await import('#/modules/notices/get-public-notices.handler');
-  const { GetNoticeRequestDto } = await import('#/modules/notices/get-notice.request.dto');
-  const { GetNoticeQuery } = await import('#/modules/notices/get-notice.query');
-  const { GetNoticeHandler } = await import('#/modules/notices/get-notice.handler');
+  const { CreateNoticeRequestDto } = await import('#/modules/notice/create-notice.request.dto');
+  const { CreateNoticeCommand } = await import('#/modules/notice/create-notice.command');
+  const { CreateNoticeHandler } = await import('#/modules/notice/create-notice.handler');
+  const { GetPublicNoticesRequestDto } = await import('#/modules/notice/get-public-notices.request.dto');
+  const { GetPublicNoticesQuery } = await import('#/modules/notice/get-public-notices.query');
+  const { GetPublicNoticesHandler } = await import('#/modules/notice/get-public-notices.handler');
+  const { GetNoticeRequestDto } = await import('#/modules/notice/get-notice.request.dto');
+  const { GetNoticeQuery } = await import('#/modules/notice/get-notice.query');
+  const { GetNoticeHandler } = await import('#/modules/notice/get-notice.handler');
   const orm = await MikroORM.init({ entities: [Notice, Event], entityManager: EntityManager, namingStrategy: EntityCaseNamingStrategy, clientUrl: noticeDatabaseUrl, persistOnCreate: false });
   try {
     await orm.schema.create();
@@ -248,7 +248,7 @@ test('PostgreSQL: notice migration preserves publication and scheduled visibilit
 
 
 test('notice getters and response mapping derive publication at the exact scheduled time', async (context) => {
-  const { NoticeItemDto } = await import('#/modules/notices/notice-item.dto');
+  const { NoticeItemDto } = await import('#/modules/notice/notice-item.dto');
   const now = new Date('2030-01-01T00:00:00Z');
   context.mock.timers.enable({ apis: ['Date'], now });
   const notice = Object.assign(new Notice(), { id: 'notice', title: 'Title', content: 'Content' });
@@ -268,7 +268,7 @@ test('notice getters and response mapping derive publication at the exact schedu
 });
 
 test('event publication and phase getters change at exact publication, start and end times', async (context) => {
-  const { EventItemDto } = await import('#/modules/events/event-item.dto');
+  const { EventItemDto } = await import('#/modules/event/event-item.dto');
   const now = new Date('2030-01-01T00:00:00Z');
   context.mock.timers.enable({ apis: ['Date'], now });
   const event = Object.assign(new Event(), { id: 'event', title: 'Title', content: 'Content', startsAt: new Date(now.getTime() + 2000), endsAt: new Date(now.getTime() + 3000) });
@@ -276,9 +276,9 @@ test('event publication and phase getters change at exact publication, start and
   assert.deepEqual(state(), [true, false, false, EventPhase.upcoming]);
   event.publishedAt = new Date(now.getTime() + 1000);
   assert.deepEqual(state(), [false, true, false, EventPhase.upcoming]);
-  const { GetEventHandler } = await import('#/modules/events/get-event.handler');
-  const { GetEventQuery } = await import('#/modules/events/get-event.query');
-  const { GetEventRequestDto } = await import('#/modules/events/get-event.request.dto');
+  const { GetEventHandler } = await import('#/modules/event/get-event.handler');
+  const { GetEventQuery } = await import('#/modules/event/get-event.query');
+  const { GetEventRequestDto } = await import('#/modules/event/get-event.request.dto');
   const em = { findOne: async (_entity: unknown, where: { publishedAt?: { $lte: Date } }) => !where.publishedAt || (event.publishedAt && event.publishedAt <= where.publishedAt.$lte) ? event : null } as unknown as AppEntityManager;
   const detail = new GetEventHandler(em);
   const query = new GetEventQuery(GetEventRequestDto.parse({ eventId: event.id }), true);

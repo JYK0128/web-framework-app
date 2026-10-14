@@ -10,7 +10,7 @@ import { Account, Profile, User } from '#/core/database/entities/auth';
 import { Role } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { env } from '#/env';
-import { SystemContext } from '#/modules/system-configs/system.context';
+import { SystemContext } from '#/modules/system-config/system.context';
 
 export interface OAuthCompletion {
   tokens: TokenPairResult

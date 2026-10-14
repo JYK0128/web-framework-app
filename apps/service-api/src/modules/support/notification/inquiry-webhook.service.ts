@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { WebhookService } from '@pkg/server-core/webhook/index';
 
-import { SystemContext, type WebhookConfig } from '#/modules/system-configs/system.context';
+import { SystemContext, type WebhookConfig } from '#/modules/system-config/system.context';
 
 @Injectable()
 export class InquiryWebhookService {

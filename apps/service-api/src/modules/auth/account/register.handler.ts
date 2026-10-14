@@ -1,9 +1,10 @@
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
-import { HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { EVENT_BROKER } from '@pkg/server-core/event-broker/event-broker.interface';
+import { EventBroker } from '@pkg/server-core/event-broker/event-broker.service';
 import { assertPasswordPolicy } from '@pkg/server-core/auth/user/password.policy';
 import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
-import { NotificationService } from '@pkg/server-core/notification/index';
 import { ApplicationError } from '@pkg/shared/common';
 import { encrypt, hashPassword, hashWithSecret } from '@pkg/shared/server';
 
@@ -14,16 +15,21 @@ import { AppEntityManager } from '#/core/database/entity-manager';
 import { env } from '#/env';
 import { RegisterCommand } from '#/modules/auth/account/register.command';
 import { RegisterResponseDto } from '#/modules/auth/account/register.response.dto';
-import { ensureEmailNotificationConfigured } from '#/modules/auth/auth-email.helper';
+import { ensureEmailNotificationConfigured } from '#/modules/system-config/notification/service-email-config.helper';
 import { sendEmailVerificationChallenge } from '#/modules/auth/email-verification/email-verification.helper';
-import { SystemContext } from '#/modules/system-configs/system.context';
+import { SystemContext } from '#/modules/system-config/system.context';
 
 @Injectable()
 @CommandHandler(RegisterCommand)
 export class RegisterHandler implements ICommandHandler<RegisterCommand, RegisterResponseDto> {
   private readonly logger = new Logger(RegisterHandler.name);
 
-  constructor(private readonly em: AppEntityManager, private readonly kv: KvStore, private readonly messages: NotificationService, private readonly systemContext: SystemContext) {}
+  constructor(
+    private readonly em: AppEntityManager,
+    private readonly kv: KvStore,
+    private readonly systemContext: SystemContext,
+    @Inject(EVENT_BROKER.REDIS_STREAMS) private readonly eventBroker: EventBroker,
+  ) {}
 
   async execute(command: RegisterCommand): Promise<RegisterResponseDto> {
     if (!SECURITY_CONFIG.registration.allowRegistration) throw new ApplicationError({ code: 'REGISTRATION_DISABLED', status: HttpStatus.FORBIDDEN });
@@ -69,7 +75,7 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
     let verificationEmailSent = false;
     if (SECURITY_CONFIG.registration.requireEmailVerification) {
       try {
-        await sendEmailVerificationChallenge(this.systemContext, this.kv, this.messages, user, profile, email);
+        await sendEmailVerificationChallenge(this.eventBroker, this.kv, user, profile, email);
         verificationEmailSent = true;
       }
       catch (error) {

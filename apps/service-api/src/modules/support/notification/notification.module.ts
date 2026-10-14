@@ -6,8 +6,8 @@ import { CheckUnansweredSupportRoomsHandler } from '#/modules/support/notificati
 import { InquiryWebhookService } from '#/modules/support/notification/inquiry-webhook.service';
 import { SupportInquiryScheduler } from '#/modules/support/notification/support-inquiry.scheduler';
 import { SupportRoomCreatedWebhookHandler } from '#/modules/support/notification/support-room-created-webhook.handler';
-import { SupportRoomsModule } from '#/modules/support/rooms/rooms.module';
-import { SystemConfigsModule } from '#/modules/system-configs/system-configs.module';
+import { SupportRoomsModule } from '#/modules/support/room/rooms.module';
+import { SystemConfigsModule } from '#/modules/system-config/system-configs.module';
 
 @Module({
   imports: [CqrsModule, SystemConfigsModule, SupportRoomsModule],

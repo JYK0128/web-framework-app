@@ -62,8 +62,8 @@ Webhook은 Admin이 소유하고 관리한다. 원본은 Admin DB에 저장하�
 
 ## 조사 근거
 
-- 설정 저장/Redis 대상: `apps/service-api/src/modules/system-configs/system-config.service.ts`
-- 서비스 설정 읽기·점검: `apps/service-api/src/modules/system-configs/system.context.ts`, `system-maintenance.guard.ts`
+- 설정 저장/Redis 대상: `apps/service-api/src/modules/system-config/system-config.service.ts`
+- 서비스 설정 읽기·점검: `apps/service-api/src/modules/system-config/system.context.ts`, `system-maintenance.guard.ts`
 - 공통 운영시간·휴무일·점검 계산: `packages/shared/src/core/system-schedule.ts`
 - 운영 안내: `apps/service-web/src/routes/_app/_protected/-components/operation-notice.tsx`, `apps/service-web/src/components/app/maintenance.tsx`
 - 문의 Webhook: `apps/service-api/src/modules/support/notification/inquiry-alert.service.ts`, `support-inquiry.scheduler.ts`, `apps/service-api/src/modules/qna/qna-created.handler.ts`
