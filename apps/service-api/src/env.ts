@@ -1,7 +1,7 @@
 import { z } from '@pkg/shared/common';
 import { deriveSecretKey } from '@pkg/shared/server';
 
-import { SECRET_KEY_PURPOSE } from './key-purpose';
+import { SECRET_KEY_PURPOSE } from './app.secret';
 
 const envSchema = z.object({
   // Process identity and runtime

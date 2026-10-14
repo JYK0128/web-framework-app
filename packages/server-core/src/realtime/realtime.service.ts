@@ -21,7 +21,7 @@ export class RealtimeService {
     event: string,
     payload: unknown,
     policy?: SocketClientPolicy<TData>,
-  ): Promise<number> {
+  ): Promise<void> {
     return this.socketIoAdapter.emit(target, event, payload, policy);
   }
 

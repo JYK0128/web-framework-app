@@ -12,7 +12,7 @@ import { GetSupportMessagePiiListRequestDto } from '#/modules/support/messages/g
 import { GetSupportMessagePiiListResponseDto } from '#/modules/support/messages/get-support-message-pii-list.response.dto';
 import { GetSupportMessagesRequestDto } from '#/modules/support/messages/get-support-messages.request.dto';
 import { GetSupportMessagesResponseDto } from '#/modules/support/messages/get-support-messages.response.dto';
-import { maskMessages } from '#/modules/support/support-masking';
+import { maskMessages } from '#/modules/support/support.helper';
 
 @ApiTags('support')
 @UserAuth()

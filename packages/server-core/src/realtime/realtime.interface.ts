@@ -2,6 +2,7 @@ import type { SocketIoAdapterOptions } from '@pkg/server-core/realtime/adapters/
 import type { RedisClientOptions } from 'redis';
 
 export const REALTIME_MODULE_OPTIONS = Symbol('REALTIME_MODULE_OPTIONS');
+export const SOCKET_IO_REDIS_KEY = 'web-framework:socket.io';
 
 export interface RealtimeModuleOptions {
   socketIo?: SocketIoAdapterOptions

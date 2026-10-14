@@ -22,6 +22,7 @@ import { LoggerModule } from '@pkg/server-core/logger/index';
 import { NotificationModule } from '@pkg/server-core/notification/notification.module';
 import { PhoneIdentityModule } from '@pkg/server-core/phone-identity/phone-identity.module';
 import { RealtimeModule } from '@pkg/server-core/realtime/realtime.module';
+import { SOCKET_IO_REDIS_KEY } from '@pkg/server-core/realtime/realtime.interface';
 import { WebhookModule } from '@pkg/server-core/webhook/webhook.module';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsModule } from 'nestjs-cls';
@@ -121,7 +122,7 @@ const MESSAGING_MODULES = {
     }),
     RealtimeModule.forRoot({
       socketIo: {
-        redis: { url: env.REDIS_URL, key: 'service-api:socket.io' },
+        redis: { url: env.REDIS_URL, key: SOCKET_IO_REDIS_KEY },
       },
       sse: {
         redis: { url: env.REDIS_URL, key: 'service-api:sse' },

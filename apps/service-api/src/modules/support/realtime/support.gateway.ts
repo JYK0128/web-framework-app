@@ -9,9 +9,8 @@ import type { Namespace, Socket } from 'socket.io';
 
 import { SupportRoom } from '#/core/database/entities/support';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { SOCKET_PATH } from '#/modules/support/support.config';
 
-@WebSocketGateway({ namespace: '/support', path: SOCKET_PATH, cors: { origin: false } })
+@WebSocketGateway({ namespace: '/support', path: '/api/v1/socket.io', cors: { origin: false } })
 export class SupportGateway implements OnGatewayInit {
   constructor(
     private readonly realtime: RealtimeService,

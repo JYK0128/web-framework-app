@@ -14,7 +14,7 @@ import { GetSupportRoomsRequestDto } from '#/modules/support/rooms/get-support-r
 import { GetSupportRoomsResponseDto } from '#/modules/support/rooms/get-support-rooms.response.dto';
 import { UpdateSupportRoomRequestDto } from '#/modules/support/rooms/update-support-room.request.dto';
 import { UpdateSupportRoomResponseDto } from '#/modules/support/rooms/update-support-room.response.dto';
-import { maskRoom } from '#/modules/support/support-masking';
+import { maskRoom } from '#/modules/support/support.helper';
 
 @ApiTags('support')
 @UserAuth()

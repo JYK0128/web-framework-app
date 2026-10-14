@@ -17,6 +17,7 @@ interface RealtimeSocket<TData> {
 interface RealtimeNamespace {
   fetchSockets(): Promise<RealtimeSocket<unknown>[]>
   in(room: string): RealtimeNamespace
+  emit(event: string, payload: unknown): void
 }
 
 function isRealtimeNamespace(value: unknown): value is RealtimeNamespace {
@@ -113,19 +114,23 @@ export class SocketIoAdapter extends IoAdapter implements OnModuleInit, OnModule
     event: string,
     payload: unknown,
     policy?: SocketClientPolicy<TData>,
-  ): Promise<number> {
+  ): Promise<void> {
+    if (!policy?.filter && !policy?.isActive) {
+      const namespace = this.namespaces.get(target.namespace);
+      if (!namespace) return;
+      const targetNamespace = target.room ? namespace.in(target.room) : namespace;
+      targetNamespace.emit(event, payload);
+      return;
+    }
+
     const sockets = await this.getSockets<TData>(target);
-    let recipientCount = 0;
 
     for (const socket of sockets) {
       if (policy?.filter && !policy.filter(socket.data)) continue;
       if (policy?.isActive && !(await policy.isActive(socket.data))) continue;
 
       socket.emit(event, payload);
-      recipientCount += 1;
     }
-
-    return recipientCount;
   }
 
   async hasConnection<TData>(target: SocketTarget, policy?: SocketClientPolicy<TData>): Promise<boolean> {
