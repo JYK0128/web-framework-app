@@ -1,13 +1,13 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { updateCredentialPassword } from '@pkg/server-core/auth/user/password.policy';
+import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
 import { ApplicationError } from '@pkg/shared/common';
 import { verifyPassword } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { updateCredentialPassword } from '#/core/auth/user/policy/password.policy';
 import { Account, User } from '#/core/database/entities/auth';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { ChangePasswordCommand } from '#/modules/auth/credential/change-password.command';
 import { ChangePasswordResponseDto } from '#/modules/auth/credential/change-password.response.dto';
 
@@ -28,7 +28,7 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
     if (!await verifyPassword(command.input.currentPassword, account.password)) {
       throw new ApplicationError({ code: 'INVALID_CURRENT_PASSWORD', status: HttpStatus.BAD_REQUEST });
     }
-    await updateCredentialPassword(account, command.input.newPassword);
+    await updateCredentialPassword(account, command.input.newPassword, SECURITY_CONFIG.password);
     return ChangePasswordResponseDto.parse({ ok: true });
   }
 }

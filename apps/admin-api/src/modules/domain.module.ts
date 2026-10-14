@@ -1,25 +1,27 @@
 import { Module } from '@nestjs/common';
 
-import { AuthModule } from './auth/auth.module';
-import { CustomersModule } from './customers/customers.module';
-import { EventsModule } from './events/events.module';
-import { FaqsModule } from './faqs/faqs.module';
-import { HealthModule } from './health/health.module';
-import { LogsModule } from './logs/logs.module';
-import { MembershipsModule } from './memberships/memberships.module';
-import { NoticesModule } from './notices/notices.module';
-import { OperatorsModule } from './operators/operators.module';
-import { PermissionsModule } from './permissions/permissions.module';
-import { QnaModule } from './qna/qna.module';
-import { RolesModule } from './roles/roles.module';
-import { ServiceConfigModule } from './service-config/service-config.module';
-import { ServiceTermsModule } from './service-terms/service-terms.module';
-import { SupportModule } from './support/support.module';
-import { SystemConfigModule } from './system-config/system-config.module';
-import { TermsModule } from './terms/terms.module';
+import { AlertsModule } from '#/modules/alerts/alerts.module';
+import { AuthModule } from '#/modules/auth/auth.module';
+import { CustomersModule } from '#/modules/customers/customers.module';
+import { EventsModule } from '#/modules/events/events.module';
+import { FaqsModule } from '#/modules/faqs/faqs.module';
+import { HealthModule } from '#/modules/health/health.module';
+import { LogsModule } from '#/modules/logs/logs.module';
+import { MembershipsModule } from '#/modules/memberships/memberships.module';
+import { NoticesModule } from '#/modules/notices/notices.module';
+import { OperatorsModule } from '#/modules/operators/operators.module';
+import { PermissionsModule } from '#/modules/permissions/permissions.module';
+import { QnaModule } from '#/modules/qna/qna.module';
+import { RolesModule } from '#/modules/roles/roles.module';
+import { ServiceConfigModule } from '#/modules/service-config/service-config.module';
+import { ServiceTermsModule } from '#/modules/service-terms/service-terms.module';
+import { SupportModule } from '#/modules/support/support.module';
+import { SystemConfigModule } from '#/modules/system-config/system-config.module';
+import { TermsModule } from '#/modules/terms/terms.module';
 
 const DOMAIN_MODULES = [
   AuthModule,
+  AlertsModule,
   HealthModule,
   CustomersModule,
   FaqsModule,

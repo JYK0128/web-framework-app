@@ -1,9 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 import { SmsConfigDto } from '@pkg/shared/server';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
-
-import { BaseDto } from '#/core/http/dto/base/base.dto';
 
 export class TestSmsRequestDto extends BaseDto {
   @ApiProperty({ example: '01012345678' })

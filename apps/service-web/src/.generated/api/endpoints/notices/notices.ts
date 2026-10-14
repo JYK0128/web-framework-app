@@ -227,9 +227,3 @@ export function useNoticesControllerDetailV1<TData = Awaited<ReturnType<typeof n
 
   return withQueryKey(query, queryOptions.queryKey);
 }
-
-
-
-
-
-

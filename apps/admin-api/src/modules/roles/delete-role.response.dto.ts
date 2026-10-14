@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { EntityResponseDto } from '@pkg/server-core/http/dto/response/entity.response.dto';
 
 import { Role } from '#/core/database/entities/auth.extensions';
-import { EntityResponseDto } from '#/core/http/dto/response/entity.response.dto';
 
 export class DeleteRoleResponseDto extends EntityResponseDto(Role) {
   @ApiProperty() id!: string;

@@ -3,16 +3,17 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { TermGroup } from '#/core/database/entities/terms';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { InternalServiceTermGroupItemDto, InternalServiceTermGroupListResponseDto } from '#/modules/service-terms';
 import { GetInternalServiceTermGroupsQuery } from '#/modules/service-terms/groups/get-internal-service-term-groups.query';
+import { GetInternalServiceTermGroupsResponseDto } from '#/modules/service-terms/groups/get-internal-service-term-groups.response.dto';
+import { InternalServiceTermGroupItemDto } from '#/modules/service-terms/groups/internal-service-term-group-item.dto';
 
 @Injectable()
 @QueryHandler(GetInternalServiceTermGroupsQuery)
-export class GetInternalServiceTermGroupsHandler implements IQueryHandler<GetInternalServiceTermGroupsQuery, InternalServiceTermGroupListResponseDto> {
+export class GetInternalServiceTermGroupsHandler implements IQueryHandler<GetInternalServiceTermGroupsQuery, GetInternalServiceTermGroupsResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(): Promise<InternalServiceTermGroupListResponseDto> {
+  async execute(): Promise<GetInternalServiceTermGroupsResponseDto> {
     const groups = await this.em.find(TermGroup, {}, { orderBy: { sortOrder: 'ASC', createdAt: 'ASC' } });
-    return InternalServiceTermGroupListResponseDto.parse({ items: groups.map((group) => InternalServiceTermGroupItemDto.parseEntity(group)) });
+    return GetInternalServiceTermGroupsResponseDto.parse({ items: groups.map((group) => InternalServiceTermGroupItemDto.parseEntity(group)) });
   }
 }

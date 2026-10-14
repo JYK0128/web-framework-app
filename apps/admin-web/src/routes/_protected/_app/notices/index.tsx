@@ -58,7 +58,14 @@ function NoticeManagementPage() {
           </button>
         ),
       }),
-      column.accessor('status', { header: '게시 상태', cell: ({ getValue }) => getValue() === 'published' ? '게시' : '임시저장' }),
+      column.display({
+        id: 'publicationState',
+        header: '게시 상태',
+        cell: ({ row }) => {
+          if (row.original.isDraft) return '임시저장';
+          return row.original.isScheduled ? '예약' : '게시';
+        },
+      }),
       column.accessor('publishedAt', { header: '게시일', cell: ({ getValue }) => getValue() ? new Date(String(getValue())).toLocaleString('ko-KR') : '-' }),
       column.display({
         id: 'actions',

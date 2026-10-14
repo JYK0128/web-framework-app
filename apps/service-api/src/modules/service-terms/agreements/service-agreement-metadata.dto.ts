@@ -1,8 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 import { z } from '@pkg/shared/common';
 import { IsOptional, ValidateBy } from 'class-validator';
-
-import { BaseDto } from '#/core/http/dto/base/base.dto';
 
 export const ServiceAgreementOptionsSchema = z.record(z.string(), z.boolean().nullable());
 

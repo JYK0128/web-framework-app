@@ -1,7 +1,6 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 import { IsNotEmpty, IsString } from 'class-validator';
-
-import { BaseDto } from '#/core/http/dto/base/base.dto';
 
 @ApiSchema({ name: 'OAuthCallbackRequest' })
 export class OAuthCallbackRequestDto extends BaseDto {

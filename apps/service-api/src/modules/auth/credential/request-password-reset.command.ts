@@ -4,5 +4,7 @@ import type { RequestPasswordResetRequestDto } from '#/modules/auth/credential/r
 import type { RequestPasswordResetResponseDto } from '#/modules/auth/credential/request-password-reset.response.dto';
 
 export class RequestPasswordResetCommand extends Command<RequestPasswordResetResponseDto> {
-  constructor(public readonly input: RequestPasswordResetRequestDto) { super(); }
+  constructor(public readonly input: RequestPasswordResetRequestDto) {
+    super();
+  }
 }

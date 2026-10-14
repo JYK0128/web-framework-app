@@ -1,11 +1,11 @@
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CommandBus, CommandHandler, type ICommandHandler, QueryBus } from '@nestjs/cqrs';
+import { assertPasswordPolicy } from '@pkg/server-core/auth/user/password.policy';
 import { ApplicationError } from '@pkg/shared/common';
 import { encrypt, hashPassword, hashWithSecret } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { assertPasswordPolicy } from '#/core/auth/user/policy/password.policy';
 import { Account, Profile, User } from '#/core/database/entities/auth';
 import { Role, RoleCode } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
@@ -30,7 +30,7 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
   async execute(command: RegisterCommand): Promise<RegisterResponseDto> {
     if (!SECURITY_CONFIG.registration.allowRegistration) throw new ApplicationError({ code: 'REGISTRATION_DISABLED', status: HttpStatus.FORBIDDEN });
     if (!SECURITY_CONFIG.credentialAvailable) throw new ApplicationError({ code: 'CREDENTIAL_AUTH_UNAVAILABLE', status: HttpStatus.FORBIDDEN });
-    assertPasswordPolicy(command.input.password);
+    assertPasswordPolicy(command.input.password, SECURITY_CONFIG.password);
     if (SECURITY_CONFIG.registration.requireEmailVerification) await this.queryBus.execute(new CheckAdminEmailConfigQuery());
 
     const email = command.input.email.trim().toLowerCase();

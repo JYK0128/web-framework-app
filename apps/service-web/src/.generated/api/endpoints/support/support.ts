@@ -33,6 +33,7 @@ import type {
   SupportControllerListMessagesV1200,
   SupportControllerListRoomsV1200,
   SupportControllerListRoomsV1Params,
+  SupportControllerSocketTicketV1200,
   SupportControllerUpdateRoomV1200,
   UpdateSupportRoomRequestDto
 } from '../../model';
@@ -494,14 +495,14 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getSupportControllerCreateMessageV1MutationOptions(options), queryClient);
     }
-    export const supportControllerEventsV1 = (
+    export const supportControllerSocketTicketV1 = (
     roomId: string,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<void>(
-      {url: `/api/v1/support/rooms/${roomId}/events`, method: 'GET', signal
+      return axios<SupportControllerSocketTicketV1200>(
+      {url: `/api/v1/support/rooms/${roomId}/socket-ticket`, method: 'POST', signal
     },
       options);
     }
@@ -509,74 +510,44 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-export const getSupportControllerEventsV1QueryKey = (roomId: string,) => {
-    return [
-    `/api/v1/support/rooms/${roomId}/events`
-    ] as const;
+export const getSupportControllerSocketTicketV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof supportControllerSocketTicketV1>>, TError,{roomId: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof supportControllerSocketTicketV1>>, TError,{roomId: string}, TContext> => {
+
+const mutationKey = ['supportControllerSocketTicketV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof supportControllerSocketTicketV1>>, {roomId: string}> = (props) => {
+          const {roomId} = props ?? {};
+
+          return  supportControllerSocketTicketV1(roomId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SupportControllerSocketTicketV1MutationResult = NonNullable<Awaited<ReturnType<typeof supportControllerSocketTicketV1>>>
+
+    export type SupportControllerSocketTicketV1MutationError = unknown
+
+    export const useSupportControllerSocketTicketV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof supportControllerSocketTicketV1>>, TError,{roomId: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof supportControllerSocketTicketV1>>,
+        TError,
+        {roomId: string},
+        TContext
+      > => {
+      return useMutation(getSupportControllerSocketTicketV1MutationOptions(options), queryClient);
     }
-
-
-export const getSupportControllerEventsV1QueryOptions = <TData = Awaited<ReturnType<typeof supportControllerEventsV1>>, TError = unknown>(roomId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerEventsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getSupportControllerEventsV1QueryKey(roomId);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof supportControllerEventsV1>>> = ({ signal }) => supportControllerEventsV1(roomId, requestOptions, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, enabled: roomId !== null && roomId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof supportControllerEventsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type SupportControllerEventsV1QueryResult = NonNullable<Awaited<ReturnType<typeof supportControllerEventsV1>>>
-export type SupportControllerEventsV1QueryError = unknown
-
-
-export function useSupportControllerEventsV1<TData = Awaited<ReturnType<typeof supportControllerEventsV1>>, TError = unknown>(
- roomId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerEventsV1>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof supportControllerEventsV1>>,
-          TError,
-          Awaited<ReturnType<typeof supportControllerEventsV1>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useSupportControllerEventsV1<TData = Awaited<ReturnType<typeof supportControllerEventsV1>>, TError = unknown>(
- roomId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerEventsV1>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof supportControllerEventsV1>>,
-          TError,
-          Awaited<ReturnType<typeof supportControllerEventsV1>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useSupportControllerEventsV1<TData = Awaited<ReturnType<typeof supportControllerEventsV1>>, TError = unknown>(
- roomId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerEventsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-
-export function useSupportControllerEventsV1<TData = Awaited<ReturnType<typeof supportControllerEventsV1>>, TError = unknown>(
- roomId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerEventsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getSupportControllerEventsV1QueryOptions(roomId,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-
-
-
-
-

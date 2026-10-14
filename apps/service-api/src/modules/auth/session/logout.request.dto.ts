@@ -1,7 +1,6 @@
 import { ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 import { IsOptional, IsString } from 'class-validator';
-
-import { BaseDto } from '#/core/http/dto/base/base.dto';
 
 @ApiSchema({ name: 'LogoutRequest' })
 export class LogoutRequestDto extends BaseDto {

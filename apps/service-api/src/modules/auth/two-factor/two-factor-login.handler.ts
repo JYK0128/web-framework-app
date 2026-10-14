@@ -1,15 +1,16 @@
+import { LockMode } from '@mikro-orm/core';
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { ApplicationError } from '@pkg/shared/common';
+import { verifyTotp } from '@pkg/server-core/auth/user/totp';
+import { type IUserAuthService, USER_AUTH_SERVICE } from '@pkg/server-core/auth/user/user-auth.interface';
+import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
+import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { decrypt } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { verifyTotp } from '#/core/auth/user/policy/totp.policy';
-import { type IUserAuthService, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
 import { User } from '#/core/database/entities/auth';
 import { TwoFactor } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { KvStore } from '#/core/kv-store/kv-store.service';
 import { env } from '#/env';
 import { TwoFactorLoginCommand } from '#/modules/auth/two-factor/two-factor-login.command';
 import { TwoFactorLoginResponseDto } from '#/modules/auth/two-factor/two-factor-login.response.dto';
@@ -41,43 +42,53 @@ export class TwoFactorLoginHandler implements ICommandHandler<TwoFactorLoginComm
       throw invalidChallenge();
     }
 
-    const user = await this.em.findOne(User, { id: challenge.userId }, { populate: ['role'] });
-    if (!user || user.isDeleted || user.isBanned || user.isLocked || !user.twoFactorEnabled
-      || !(SECURITY_CONFIG.twoFactor.required || SECURITY_CONFIG.twoFactor.enabled)) {
-      await this.kvStore.delIfValue(key, rawRecord);
-      throw invalidChallenge();
-    }
-    if (SECURITY_CONFIG.registration.requireEmailVerification && !user.emailVerified) {
-      await this.kvStore.delIfValue(key, rawRecord);
-      throw new ApplicationError({
-        code: 'EMAIL_VERIFICATION_REQUIRED',
-        status: HttpStatus.FORBIDDEN,
+    const result = await this.em.transactional(async (em) => {
+      const user = await em.findOne(User, { id: challenge.userId }, { populate: ['role'], refresh: true, lockMode: LockMode.PESSIMISTIC_WRITE });
+      if (!user || user.isDeleted || user.isBanned || user.isLocked || !user.twoFactorEnabled
+        || !(SECURITY_CONFIG.twoFactor.required || SECURITY_CONFIG.twoFactor.enabled)) {
+        await this.kvStore.delIfValue(key, rawRecord);
+        throw invalidChallenge();
+      }
+      if (SECURITY_CONFIG.registration.requireEmailVerification && !user.emailVerified) {
+        await this.kvStore.delIfValue(key, rawRecord);
+        throw new ApplicationError({
+          code: 'EMAIL_VERIFICATION_REQUIRED',
+          status: HttpStatus.FORBIDDEN,
+        });
+      }
+
+      const twoFactor = await em.findOne(TwoFactor, { user: user.id, verified: true }, { filters: false, refresh: true, lockMode: LockMode.PESSIMISTIC_WRITE });
+      if (!twoFactor) {
+        await this.kvStore.delIfValue(key, rawRecord);
+        throw invalidChallenge();
+      }
+
+      const now = new Date();
+      if (twoFactor.isLockedAt(now)) {
+        await this.kvStore.delIfValue(key, rawRecord);
+        return new ApplicationError({ code: 'TWO_FACTOR_LOCKED', status: HttpStatus.TOO_MANY_REQUESTS });
+      }
+      if (!verifyTotp(decrypt(twoFactor.secret, env.TWO_FACTOR_ENCRYPTION_KEY), code, SECURITY_CONFIG.twoFactor)) {
+        twoFactor.recordVerificationFailure(now, SECURITY_CONFIG.lockout.maxFailureAttempts, TimeUtil.ms.minute(SECURITY_CONFIG.lockout.lockoutDurationMinutes));
+        return new ApplicationError({ code: 'TWO_FACTOR_INVALID', status: HttpStatus.UNAUTHORIZED });
+      }
+
+      if (!await this.kvStore.delIfValue(key, rawRecord)) throw invalidChallenge();
+
+      user.updateMetadata({
+        lastLoginAt: now,
+        failedLoginAttempts: 0,
+        loginFailureWindowStartedAt: null,
+        lockedUntil: null,
       });
-    }
-
-    const twoFactor = await this.em.findOne(TwoFactor, { user: user.id, verified: true }, { filters: false });
-    if (!twoFactor) {
-      await this.kvStore.delIfValue(key, rawRecord);
-      throw invalidChallenge();
-    }
-
-    if (!verifyTotp(decrypt(twoFactor.secret, env.TWO_FACTOR_ENCRYPTION_KEY), code)) {
-      await this.recordFailedAttempt(key, rawRecord, challenge);
-      throw new ApplicationError({
-        code: 'TWO_FACTOR_INVALID',
-        status: HttpStatus.UNAUTHORIZED,
-      });
-    }
-
-    if (!await this.kvStore.delIfValue(key, rawRecord)) throw invalidChallenge();
-
-    user.updateMetadata({
-      lastLoginAt: new Date(),
-      failedLoginAttempts: 0,
-      loginFailureWindowStartedAt: null,
-      lockedUntil: null,
+      twoFactor.resetVerificationFailures();
+      return user;
     });
-    await this.em.flush();
+    if (result instanceof ApplicationError) {
+      if (result.code === 'TWO_FACTOR_INVALID') await this.recordFailedAttempt(key, rawRecord, challenge);
+      throw result;
+    }
+    const user = result;
 
     const tokenPair = await this.authTokenService.login(user, { rememberMe: challenge.rememberMe });
     return TwoFactorLoginResponseDto.parse({

@@ -57,7 +57,14 @@ function EventManagementPage() {
         ),
       }),
       column.accessor('startsAt', { header: '이벤트 기간', cell: ({ row }) => `${new Date(row.original.startsAt).toLocaleString('ko-KR')} ~ ${new Date(row.original.endsAt).toLocaleString('ko-KR')}` }),
-      column.accessor('status', { header: '게시 상태', cell: ({ getValue }) => getValue() === 'published' ? '게시' : '임시저장' }),
+      column.display({
+        id: 'publicationState',
+        header: '게시 상태',
+        cell: ({ row }) => {
+          if (row.original.isDraft) return '임시저장';
+          return row.original.isScheduled ? '예약' : '게시';
+        },
+      }),
       column.display({
         id: 'actions',
         header: '관리',

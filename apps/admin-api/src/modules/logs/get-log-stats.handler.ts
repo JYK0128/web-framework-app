@@ -1,15 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { LogTelemetryService } from '@pkg/server-core/log-telemetry/log-telemetry.service';
 
 import { GetLogStatsQuery } from '#/modules/logs/get-log-stats.query';
-import { LogStatsResponseDto } from '#/modules/logs/log-stats.response.dto';
-import { LogsService } from '#/modules/logs/logs.service';
+import { GetLogStatsResponseDto } from '#/modules/logs/get-log-stats.response.dto';
 
 @Injectable()
 @QueryHandler(GetLogStatsQuery)
-export class GetLogStatsHandler implements IQueryHandler<GetLogStatsQuery, LogStatsResponseDto> {
-  constructor(private readonly logs: LogsService) {}
-  async execute(): Promise<LogStatsResponseDto> {
-    return LogStatsResponseDto.parse(await this.logs.stats());
+export class GetLogStatsHandler implements IQueryHandler<GetLogStatsQuery, GetLogStatsResponseDto> {
+  constructor(private readonly telemetry: LogTelemetryService) {}
+  async execute(): Promise<GetLogStatsResponseDto> {
+    const stats = await this.telemetry.getStats();
+    return GetLogStatsResponseDto.parse({
+      total: stats.totalRequests,
+      errors: stats.errorCount,
+      averageDurationMs: stats.avgDuration,
+      errorRate: stats.errorRate,
+    });
   }
 }

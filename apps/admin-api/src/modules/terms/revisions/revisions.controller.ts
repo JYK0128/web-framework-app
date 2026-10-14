@@ -1,13 +1,12 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
+import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
 
-import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-
-import { GetTermRevisionsQuery } from './get-term-revisions.query';
-import { GetTermRevisionsRequestDto } from './get-term-revisions.request.dto';
-import { GetTermRevisionsResponseDto } from './get-term-revisions.response.dto';
+import { GetTermRevisionsQuery } from '#/modules/terms/revisions/get-term-revisions.query';
+import { GetTermRevisionsRequestDto } from '#/modules/terms/revisions/get-term-revisions.request.dto';
+import { GetTermRevisionsResponseDto } from '#/modules/terms/revisions/get-term-revisions.response.dto';
 
 @ApiTags('terms')
 @UserAuth()

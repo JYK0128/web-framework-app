@@ -5,7 +5,7 @@
  * Data Plane Service API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { NoticeItem } from './noticeItem';
+import type { GetNoticeResponseDto } from './getNoticeResponseDto';
 import type { NoticesControllerDetailV1200Meta } from './noticesControllerDetailV1200Meta';
 
 export type NoticesControllerDetailV1200 = {
@@ -14,7 +14,7 @@ export type NoticesControllerDetailV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: NoticeItem;
+  data: GetNoticeResponseDto;
   message?: string;
   meta?: NoticesControllerDetailV1200Meta;
 };

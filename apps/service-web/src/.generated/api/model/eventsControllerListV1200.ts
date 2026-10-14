@@ -5,8 +5,8 @@
  * Data Plane Service API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { EventCursorResponse } from './eventCursorResponse';
 import type { EventsControllerListV1200Meta } from './eventsControllerListV1200Meta';
+import type { GetPublicEventsResponseDto } from './getPublicEventsResponseDto';
 
 export type EventsControllerListV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type EventsControllerListV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: EventCursorResponse;
+  data: GetPublicEventsResponseDto;
   message?: string;
   meta?: EventsControllerListV1200Meta;
 };

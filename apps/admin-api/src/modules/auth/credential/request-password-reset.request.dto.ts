@@ -1,10 +1,9 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
+import { ToLowerCase } from '@pkg/server-core/http/decorators/to-lower-case.decorator';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 import { normalizePhoneNumber } from '@pkg/shared/common';
 import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
-
-import { ToLowerCase } from '#/core/http/decorators/to-lower-case.decorator';
-import { BaseDto } from '#/core/http/dto/base/base.dto';
 
 @ApiSchema({ name: 'PasswordResetRequestDto' })
 export class RequestPasswordResetRequestDto extends BaseDto {

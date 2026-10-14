@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 import { IsBoolean, IsEmail, IsInt, IsNotEmpty, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
-
-import { BaseDto } from '#/core/http/dto/base/base.dto';
 
 export class UpdateAdminEmailConfigRequestDto extends BaseDto {
   @ApiProperty() @IsString() @IsNotEmpty() @MaxLength(255) smtpHost!: string;

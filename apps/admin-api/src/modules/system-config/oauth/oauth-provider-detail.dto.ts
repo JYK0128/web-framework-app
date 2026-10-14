@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 import { IsBoolean, IsIn, IsOptional, IsString, Matches } from 'class-validator';
-
-import { BaseDto } from '#/core/http/dto/base/base.dto';
 
 export class OAuthProviderDetailDto extends BaseDto {
   @ApiProperty({ description: '프로바이더 활성화 여부', example: false, default: false })

@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ToNumber } from '@pkg/server-core/http/decorators/to-number.decorator';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 import { Type } from 'class-transformer';
 import { IsArray, IsInt, IsString, Matches, Max, Min, ValidateNested } from 'class-validator';
 
-import { ToNumber } from '#/core/http/decorators/to-number.decorator';
-import { BaseDto } from '#/core/http/dto/base/base.dto';
 import { OperatingLunchBreakDto } from '#/modules/service-config/operation/operating-lunch-break.dto';
 
 export class OperatingHoursDto extends BaseDto {

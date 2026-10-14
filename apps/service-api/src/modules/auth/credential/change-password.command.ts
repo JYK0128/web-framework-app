@@ -4,5 +4,7 @@ import type { ChangePasswordRequestDto } from '#/modules/auth/credential/change-
 import type { ChangePasswordResponseDto } from '#/modules/auth/credential/change-password.response.dto';
 
 export class ChangePasswordCommand extends Command<ChangePasswordResponseDto> {
-  constructor(public readonly input: ChangePasswordRequestDto) { super(); }
+  constructor(public readonly input: ChangePasswordRequestDto) {
+    super();
+  }
 }

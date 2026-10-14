@@ -2,15 +2,15 @@ import { randomUUID } from 'node:crypto';
 
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { type IUserAuthService, USER_AUTH_SERVICE } from '@pkg/server-core/auth/user/user-auth.interface';
+import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { hashWithSecret, verifyPassword } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { type IUserAuthService, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
 import { Account, User } from '#/core/database/entities/auth';
 import { TwoFactor } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { KvStore } from '#/core/kv-store/kv-store.service';
 import { env } from '#/env';
 import { AuthKvStoreKey } from '#/modules/auth/auth.key';
 import { LoginCommand } from '#/modules/auth/session/login.command';
@@ -101,21 +101,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResponse
     }
 
     if (user.twoFactorEnabled && (SECURITY_CONFIG.twoFactor.required || SECURITY_CONFIG.twoFactor.enabled)) {
-      await this.em.findOneOrFail(TwoFactor, { user: user.id, verified: true }, {
-        filters: false,
-        failHandler: () => new ApplicationError({
-          code: 'ADMIN_TWO_FACTOR_INVALID',
-          status: HttpStatus.UNAUTHORIZED,
-        }),
-      });
-
-      const twoFactorChallengeToken = randomUUID();
-      await this.kvStore.set(
-        AuthKvStoreKey.twoFactorLoginChallenge(twoFactorChallengeToken),
-        JSON.stringify({ userId: user.id, rememberMe: input.rememberMe === true, attempts: 0 }),
-        SECURITY_CONFIG.twoFactor.challengeTtlSeconds,
-      );
-      return LoginResponseDto.parse({ requiresTwoFactor: true, twoFactorChallengeToken });
+      return this.createTwoFactorChallenge(user, input.rememberMe === true);
     }
 
     user.updateMetadata({
@@ -134,6 +120,26 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResponse
       refreshToken: tokenPair.refreshToken,
       requiresTwoFactor: false,
     });
+  }
+
+  private async createTwoFactorChallenge(user: User, rememberMe: boolean): Promise<LoginResponseDto> {
+    const twoFactor = await this.em.findOneOrFail(TwoFactor, { user: user.id, verified: true }, {
+      filters: false,
+      failHandler: () => new ApplicationError({
+        code: 'ADMIN_TWO_FACTOR_INVALID',
+        status: HttpStatus.UNAUTHORIZED,
+      }),
+    });
+
+    if (twoFactor.isLocked) throw new ApplicationError({ code: 'TWO_FACTOR_LOCKED', status: HttpStatus.TOO_MANY_REQUESTS });
+
+    const twoFactorChallengeToken = randomUUID();
+    await this.kvStore.set(
+      AuthKvStoreKey.twoFactorLoginChallenge(twoFactorChallengeToken),
+      JSON.stringify({ userId: user.id, rememberMe, attempts: 0 }),
+      SECURITY_CONFIG.twoFactor.challengeTtlSeconds,
+    );
+    return LoginResponseDto.parse({ requiresTwoFactor: true, twoFactorChallengeToken });
   }
 }
 

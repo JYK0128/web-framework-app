@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
 
 import { UserTermAgreement } from '#/core/database/entities/terms';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { AgreementHistoryItemDto } from '#/modules/terms/agreements/agreement-history-item.dto';
 import { GetAgreementHistoryQuery } from '#/modules/terms/agreements/get-agreement-history.query';
 import { GetAgreementHistoryResponseDto } from '#/modules/terms/agreements/get-agreement-history.response.dto';

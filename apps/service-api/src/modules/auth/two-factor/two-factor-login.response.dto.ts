@@ -1,6 +1,5 @@
 import { ApiHideProperty, ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
-
-import { BaseDto } from '#/core/http/dto/base/base.dto';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 
 @ApiSchema({ name: 'TwoFactorLoginResponse' })
 export class TwoFactorLoginResponseDto extends BaseDto {

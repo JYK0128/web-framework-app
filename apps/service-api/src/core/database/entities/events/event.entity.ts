@@ -1,10 +1,16 @@
 import type { Opt } from '@mikro-orm/core';
-import { Entity, Enum, Property } from '@mikro-orm/decorators/legacy';
+import { Entity, Index, Property } from '@mikro-orm/decorators/legacy';
 
-import { BaseEntity } from '#/core/database/entities/common/base.entity';
-import { PublicationStatus } from '#/core/database/entities/notices/notice.entity';
+import { BaseEntity } from '#/core/database/entities/base.entity';
+
+export enum EventPhase {
+  ongoing = 'ongoing',
+  upcoming = 'upcoming',
+  ended = 'ended',
+}
 
 @Entity({ tableName: 'event' })
+@Index({ properties: ['publishedAt'] })
 export class Event extends BaseEntity {
   @Property({ type: 'integer', formula: (columns) => `case when ${columns.toString()}."endsAt" <= current_timestamp then 2 when ${columns.toString()}."startsAt" > current_timestamp then 1 else 0 end` })
   phaseOrder!: Opt<number>;
@@ -30,9 +36,22 @@ export class Event extends BaseEntity {
   @Property({ type: 'string', length: 500, nullable: true })
   linkUrl: string | null = null;
 
-  @Enum(() => PublicationStatus)
-  status: Opt<PublicationStatus> = PublicationStatus.draft;
-
   @Property({ type: 'timestamptz', nullable: true })
   publishedAt: Date | null = null;
+
+  @Property({ persist: false })
+  get isDraft(): Opt<boolean> { return this.publishedAt === null; }
+
+  @Property({ persist: false })
+  get isScheduled(): Opt<boolean> { return this.publishedAt !== null && this.publishedAt.getTime() > Date.now(); }
+
+  @Property({ persist: false })
+  get isPublished(): Opt<boolean> { return this.publishedAt !== null && this.publishedAt.getTime() <= Date.now(); }
+
+  @Property({ type: 'string', persist: false })
+  get phase(): Opt<EventPhase> {
+    const now = Date.now();
+    if (this.endsAt.getTime() <= now) return EventPhase.ended;
+    return this.startsAt.getTime() > now ? EventPhase.upcoming : EventPhase.ongoing;
+  }
 }

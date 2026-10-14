@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 import { IsEnum, IsUrl } from 'class-validator';
 
-import { BaseDto } from '#/core/http/dto/base/base.dto';
 import { WebhookType } from '#/modules/system-config/webhook/webhook-config.dto';
 
 export class TestWebhookRequestDto extends BaseDto {

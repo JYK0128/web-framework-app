@@ -1,9 +1,9 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
+import { ToLowerCase } from '@pkg/server-core/http/decorators/to-lower-case.decorator';
+import { EntityDto } from '@pkg/server-core/http/dto/base/entity.dto';
 import { IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 import { Account, User } from '#/core/database/entities/auth';
-import { ToLowerCase } from '#/core/http/decorators/to-lower-case.decorator';
-import { EntityDto } from '#/core/http/dto/base/entity.dto';
 
 @ApiSchema({ name: 'LoginRequest' })
 export class LoginRequestDto extends EntityDto(User, Account) {

@@ -1,19 +1,18 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { SkipPasswordExpiry, UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
+import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
 
-import { SkipPasswordExpiry, UserAuth } from '#/core/http/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-
-import { GetAgreementHistoryQuery } from './get-agreement-history.query';
-import { GetAgreementHistoryRequestDto } from './get-agreement-history.request.dto';
-import { GetAgreementHistoryResponseDto } from './get-agreement-history.response.dto';
-import { GetAgreementsQuery } from './get-agreements.query';
-import { GetAgreementsRequestDto } from './get-agreements.request.dto';
-import { GetAgreementsResponseDto } from './get-agreements.response.dto';
-import { SetAgreementsCommand } from './set-agreements.command';
-import { SetAgreementsRequestDto } from './set-agreements.request.dto';
-import { SetAgreementsResponseDto } from './set-agreements.response.dto';
+import { GetAgreementHistoryQuery } from '#/modules/terms/agreements/get-agreement-history.query';
+import { GetAgreementHistoryRequestDto } from '#/modules/terms/agreements/get-agreement-history.request.dto';
+import { GetAgreementHistoryResponseDto } from '#/modules/terms/agreements/get-agreement-history.response.dto';
+import { GetAgreementsQuery } from '#/modules/terms/agreements/get-agreements.query';
+import { GetAgreementsRequestDto } from '#/modules/terms/agreements/get-agreements.request.dto';
+import { GetAgreementsResponseDto } from '#/modules/terms/agreements/get-agreements.response.dto';
+import { SetAgreementsCommand } from '#/modules/terms/agreements/set-agreements.command';
+import { SetAgreementsRequestDto } from '#/modules/terms/agreements/set-agreements.request.dto';
+import { SetAgreementsResponseDto } from '#/modules/terms/agreements/set-agreements.response.dto';
 
 @ApiTags('terms')
 @UserAuth()

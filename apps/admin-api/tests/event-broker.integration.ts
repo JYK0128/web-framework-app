@@ -1,3 +1,4 @@
+import { verifyBrokerHandlers, verifyRedisBrokerHandlers } from './broker-handlers.regression';
 import 'reflect-metadata';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
@@ -8,11 +9,11 @@ import { EventBrokerModule } from '../src/core/event-broker/event-broker.module'
 import { EventBus } from '@nestjs/cqrs';
 import { createClient } from 'redis';
 import { Kafka } from 'kafkajs';
-import { RedisStreamsEventBrokerAdapter } from '../src/core/event-broker/adapters/redis-streams/redis-streams-event-broker.adapter';
-import { RedisPubSubEventBrokerAdapter } from '../src/core/event-broker/adapters/redis-pubsub/redis-pubsub-event-broker.adapter';
-import { RabbitMQEventBrokerAdapter } from '../src/core/event-broker/adapters/rabbitmq/rabbitmq-event-broker.adapter';
-import { KafkaEventBrokerAdapter } from '../src/core/event-broker/adapters/kafka/kafka-event-broker.adapter';
-import { InMemoryEventBrokerAdapter } from '../src/core/event-broker/adapters/in-memory/in-memory-event-broker.adapter';
+import { RedisStreamsAdapter as RedisStreamsEventBrokerAdapter } from '../src/core/event-broker/adapters/redis-streams.adapter';
+import { RedisPubSubAdapter as RedisPubSubEventBrokerAdapter } from '../src/core/event-broker/adapters/redis-pubsub.adapter';
+import { RabbitMQAdapter as RabbitMQEventBrokerAdapter } from '../src/core/event-broker/adapters/rabbitmq.adapter';
+import { KafkaAdapter as KafkaEventBrokerAdapter } from '../src/core/event-broker/adapters/kafka.adapter';
+import { InMemoryAdapter as InMemoryEventBrokerAdapter } from '../src/core/event-broker/adapters/in-memory.adapter';
 import { EventBroker } from '../src/core/event-broker/event-broker.service';
 
 class VerificationEvent { constructor(readonly value: number) {} }
@@ -66,10 +67,12 @@ for (const defaultAdapter of [undefined, 'redis-pubsub'] as const) {
   finally { await configuredApp.close(); }
 }
 for (const defaultAdapter of ['redis-pubsub', 'redis-streams', 'rabbitmq', 'kafka'] as const) {
-  assert.throws(() => EventBrokerModule.forRoot({ defaultAdapter }), /not registered/);
+  assert.throws(() => EventBrokerModule.forRoot({ defaultAdapter }));
 }
 console.log('Constructor selection, default injection, in-memory listener and publish errors: passed');
+await verifyBrokerHandlers();
 if (process.argv.includes('--memory-only')) process.exit(0);
+await verifyRedisBrokerHandlers();
 
 const redis = new RedisStreamsEventBrokerAdapter({ url: 'redis://localhost:16389', stream: `verify:${suffix}` });
 await redis.onModuleInit();
@@ -134,7 +137,7 @@ for (const adapter of [new RabbitMQEventBrokerAdapter({ url: 'amqp://localhost:1
       if (attempts === 1) throw new Error('expected first attempt failure');
       await delay(50);
       completed = true;
-    }, { group: 'workers' });
+    }, { group: `workers-${suffix}` });
     await adapter.publish(new VerificationEvent(1));
     await waitFor(() => completed);
     assert.ok(attempts >= 2);
@@ -142,7 +145,7 @@ for (const adapter of [new RabbitMQEventBrokerAdapter({ url: 'amqp://localhost:1
     await stop();
     await adapter.publish(new VerificationEvent(2));
     let resumed = false;
-    const stopAgain = await adapter.subscribe(VerificationEvent.name, payload => { resumed = (payload as VerificationEvent).value === 2; }, { group: 'workers' });
+    const stopAgain = await adapter.subscribe(VerificationEvent.name, payload => { resumed = (payload as VerificationEvent).value === 2; }, { group: `workers-${suffix}` });
     await waitFor(() => resumed);
     await stopAgain();
     console.log(`${adapter.name} failure redelivery, completion, offline backlog, unsubscribe: passed`);

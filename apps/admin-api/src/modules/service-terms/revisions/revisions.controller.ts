@@ -1,14 +1,13 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
+import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
+import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
 import { AdminPermission } from '@pkg/shared';
 
-import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
-import { Permissions } from '#/core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-import { InternalClient } from '#/core/http/internal-client';
-
-import { GetServiceTermRevisionsRequestDto } from './get-service-term-revisions.request.dto';
-import { GetServiceTermRevisionsResponseDto } from './get-service-term-revisions.response.dto';
+import { InternalClient } from '#/core/internal-client';
+import { GetServiceTermRevisionsRequestDto } from '#/modules/service-terms/revisions/get-service-term-revisions.request.dto';
+import { GetServiceTermRevisionsResponseDto } from '#/modules/service-terms/revisions/get-service-term-revisions.response.dto';
 
 @ApiTags('service-terms')
 @UserAuth()

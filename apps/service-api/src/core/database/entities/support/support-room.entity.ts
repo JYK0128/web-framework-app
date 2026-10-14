@@ -2,7 +2,7 @@ import { type Opt, type Rel } from '@mikro-orm/core';
 import { Entity, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
 
 import { User } from '#/core/database/entities/auth/user.entity';
-import { BaseEntity } from '#/core/database/entities/common/base.entity';
+import { BaseEntity } from '#/core/database/entities/base.entity';
 
 export const SupportRoomStatus = {
   OPEN: 'open',

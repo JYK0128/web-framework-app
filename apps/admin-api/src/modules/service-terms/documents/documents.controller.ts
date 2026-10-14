@@ -1,22 +1,21 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
+import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
+import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
 import { AdminPermission } from '@pkg/shared';
 
-import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
-import { Permissions } from '#/core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-import { InternalClient } from '#/core/http/internal-client';
-
-import { CreateServiceTermRequestDto } from './create-service-term.request.dto';
-import { CreateServiceTermResponseDto } from './create-service-term.response.dto';
-import { DeleteServiceTermRequestDto } from './delete-service-term.request.dto';
-import { DeleteServiceTermResponseDto } from './delete-service-term.response.dto';
-import { GetServiceTermsRequestDto } from './get-service-terms.request.dto';
-import { GetServiceTermsResponseDto } from './get-service-terms.response.dto';
-import { PublishServiceTermRequestDto } from './publish-service-term.request.dto';
-import { PublishServiceTermResponseDto } from './publish-service-term.response.dto';
-import { UpdateServiceTermRequestDto } from './update-service-term.request.dto';
-import { UpdateServiceTermResponseDto } from './update-service-term.response.dto';
+import { InternalClient } from '#/core/internal-client';
+import { CreateServiceTermRequestDto } from '#/modules/service-terms/documents/create-service-term.request.dto';
+import { CreateServiceTermResponseDto } from '#/modules/service-terms/documents/create-service-term.response.dto';
+import { DeleteServiceTermRequestDto } from '#/modules/service-terms/documents/delete-service-term.request.dto';
+import { DeleteServiceTermResponseDto } from '#/modules/service-terms/documents/delete-service-term.response.dto';
+import { GetServiceTermsRequestDto } from '#/modules/service-terms/documents/get-service-terms.request.dto';
+import { GetServiceTermsResponseDto } from '#/modules/service-terms/documents/get-service-terms.response.dto';
+import { PublishServiceTermRequestDto } from '#/modules/service-terms/documents/publish-service-term.request.dto';
+import { PublishServiceTermResponseDto } from '#/modules/service-terms/documents/publish-service-term.response.dto';
+import { UpdateServiceTermRequestDto } from '#/modules/service-terms/documents/update-service-term.request.dto';
+import { UpdateServiceTermResponseDto } from '#/modules/service-terms/documents/update-service-term.response.dto';
 
 @ApiTags('service-terms')
 @UserAuth()

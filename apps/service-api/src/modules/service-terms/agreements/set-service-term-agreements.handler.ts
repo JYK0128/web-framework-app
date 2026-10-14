@@ -4,8 +4,8 @@ import { ApplicationError } from '@pkg/shared/common';
 
 import { Term, UserTermAgreement } from '#/core/database/entities/terms';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { SetServiceTermAgreementsResponseDto } from '#/modules/service-terms';
 import { SetServiceTermAgreementsCommand } from '#/modules/service-terms/agreements/set-service-term-agreements.command';
+import { SetServiceTermAgreementsResponseDto } from '#/modules/service-terms/agreements/set-service-term-agreements.response.dto';
 import { isPublished } from '#/modules/service-terms/service-term.helpers';
 
 @Injectable()

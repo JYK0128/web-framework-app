@@ -11,7 +11,7 @@
 | `infra/identity/` | 본인인증 처리와 PortOne 어댑터 |
 | `infra/alert/` | 운영 알림 처리와 Slack·Discord·Teams·ChannelTalk 어댑터 |
 | `infra/realtime/` | 실시간 발행·구독 서비스와 Socket.IO·SSE 어댑터 |
-| `infra/file-storage/` | `STORAGE_DRIVER` 선택, 파일 저장 서비스와 로컬·S3 어댑터 |
+| `core/storage/` | API의 `core.module.ts`에서 `forRoot({ adapter })`에 어댑터 클래스를 직접 지정하며, 구현은 `core/storage/`에서 관리 |
 | `infra/database/`, `infra/kv-store/`, `infra/event-broker/` | DB·KV·이벤트 브로커 연결과 구현 선택 |
 | `infra/log-telemetry/` | Loki 로그 조회 서비스와 어댑터 |
 | `core/services/logger/` | 앱에서 사용하는 로거 API. 로그 수집·저장은 Vector/Loki 인프라가 담당 |
@@ -29,6 +29,6 @@
 
 PortOne 결과 검증·전화번호 정규화와 HTTP 호출은 `infra/identity/` 안의 서비스·어댑터가 맡는다. 운영 알림 서비스는 기본 제목과 실패 로깅을 담당하고 제공자 어댑터는 실제 전송을 담당한다. 두 기능은 각각 `infra/alert/`에 둔다.
 
-저장소는 기존 `STORAGE_DRIVER`로 로컬·S3를 선택한다. 과거 대화 조회, Socket 실시간 전달, 미응답 배치 알림의 SSE 전달 방식은 유지한다. 발송 이력·템플릿 편집 UI·배치 정책을 새로 추가한 구조 변경은 아니다.
+저장소는 각 API의 `core.module.ts`에서 `forRoot({ adapter })`에 `LocalStorageAdapter` 또는 `S3StorageAdapter`를 직접 지정해 선택한다. S3 인증 정보는 환경변수로 읽으며, 로컬 파일의 HTTP 제공은 각 API의 `main.ts`에서 등록한다. 과거 대화 조회, Socket 실시간 전달, 미응답 배치 알림의 SSE 전달 방식은 유지한다. 발송 이력·템플릿 편집 UI·배치 정책을 새로 추가한 구조 변경은 아니다.
 
 메시지·운영 알림 모듈은 각 `infra/` 기능 폴더 안에서 서비스와 어댑터를 함께 등록한다. 저장소 서비스 토큰은 선택된 어댑터에 직접 연결한다. FCM 액세스 토큰은 설정 지문과 만료 시간을 확인해 재사용하며 동시 발급 요청을 합친다. 외부 발송 결과는 제공자별 성공 조건으로 검사하고 PortOne 응답은 Zod로 검증한다.

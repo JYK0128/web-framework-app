@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsString, IsUUID, ValidateNested } from 'class-validator';
 
-import { BaseDto } from '#/core/http/dto/base/base.dto';
 import { AgreementMetadataDto } from '#/modules/terms/agreements/agreement-metadata.dto';
 
 export class SetAgreementItemDto extends BaseDto {

@@ -1,10 +1,10 @@
 import { ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
+import { ApiEnumOptional } from '@pkg/server-core/http/decorators/api-enum.decorator';
+import { CursorRequestDto } from '@pkg/server-core/http/dto/request/cursor.request.dto';
+import { SortDirection } from '@pkg/server-core/http/dto/request/sortable.request.dto';
 import { IsEnum, IsIn, IsOptional } from 'class-validator';
 
 import { Faq, FaqCategory } from '#/core/database/entities/faqs';
-import { ApiEnumOptional } from '#/core/http/decorators/api-enum.decorator';
-import { CursorRequestDto } from '#/core/http/dto/request/cursor.request.dto';
-import { SortDirection } from '#/core/http/dto/request/sortable.request.dto';
 
 const FAQ_SORT_FIELDS = ['sortOrder', 'createdAt'] as const;
 type FaqSortKey = (typeof FAQ_SORT_FIELDS)[number];

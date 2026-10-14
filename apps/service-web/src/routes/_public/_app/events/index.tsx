@@ -17,12 +17,6 @@ const columnHelper = createColumnHelper<EventItem>();
 
 const phaseLabels = { ongoing: '진행 중', upcoming: '예정', ended: '종료' };
 
-function getEventPhase(event: EventItem): EventsControllerListV1Phase {
-  const now = Date.now();
-  if (new Date(event.endsAt).getTime() <= now) return 'ended';
-  return new Date(event.startsAt).getTime() > now ? 'upcoming' : 'ongoing';
-}
-
 function EventsPage() {
   const [search, setSearch] = useState('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -35,7 +29,7 @@ function EventsPage() {
   });
   const items = useMemo(() => query.data?.pages.flatMap((page) => page.items) ?? [], [query.data]);
   const columns = useMemo(() => [
-    columnHelper.display({ id: 'phase', header: '상태', size: 100, minSize: 80, cell: ({ row }) => phaseLabels[getEventPhase(row.original)] }),
+    columnHelper.display({ id: 'phase', header: '상태', size: 100, minSize: 80, cell: ({ row }) => phaseLabels[row.original.phase] }),
     columnHelper.accessor('startsAt', { header: '기간', size: 210, minSize: 180, cell: ({ row }) => `${new Date(row.original.startsAt).toLocaleDateString('ko-KR')} – ${new Date(row.original.endsAt).toLocaleDateString('ko-KR')}` }),
     columnHelper.accessor('title', {
       header: '제목',

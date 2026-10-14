@@ -42,7 +42,10 @@ export const EventsControllerListV1Response = zod.object({
   "endsAt": zod.iso.datetime({"offset":true}),
   "imageUrl": zod.string().nullable(),
   "linkUrl": zod.string().nullable(),
-  "status": zod.enum(['draft', 'published']),
+  "isDraft": zod.boolean(),
+  "isScheduled": zod.boolean(),
+  "isPublished": zod.boolean(),
+  "phase": zod.enum(['ongoing', 'upcoming', 'ended']),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -73,7 +76,10 @@ export const EventsControllerDetailV1Response = zod.object({
   "endsAt": zod.iso.datetime({"offset":true}),
   "imageUrl": zod.string().nullable(),
   "linkUrl": zod.string().nullable(),
-  "status": zod.enum(['draft', 'published']),
+  "isDraft": zod.boolean(),
+  "isScheduled": zod.boolean(),
+  "isPublished": zod.boolean(),
+  "phase": zod.enum(['ongoing', 'upcoming', 'ended']),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -81,4 +87,3 @@ export const EventsControllerDetailV1Response = zod.object({
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
-

@@ -1,8 +1,8 @@
 import { Query } from '@nestjs/cqrs';
 
 import type { GetLogsRequestDto } from '#/modules/logs/get-logs.request.dto';
-import type { LogPageResponseDto } from '#/modules/logs/log-page.response.dto';
+import type { GetLogsResponseDto } from '#/modules/logs/get-logs.response.dto';
 
-export class GetLogsQuery extends Query<LogPageResponseDto> {
+export class GetLogsQuery extends Query<GetLogsResponseDto> {
   constructor(public readonly input: GetLogsRequestDto) { super(); }
 }

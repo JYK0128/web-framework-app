@@ -1,12 +1,12 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { SECURITY_CONFIG } from '#/app.config';
 import { User } from '#/core/database/entities/auth';
 import { TwoFactor } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { DisableTwoFactorCommand } from '#/modules/auth/two-factor/disable-two-factor.command';
 import { DisableTwoFactorResponseDto } from '#/modules/auth/two-factor/disable-two-factor.response.dto';
 

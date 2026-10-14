@@ -1,15 +1,17 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
+import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
+import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
 import { AdminPermission } from '@pkg/shared';
 
-import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
-import { Permissions } from '#/core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-import { GetLogsRequestDto, GetLogStatsRequestDto, LogPageResponseDto, LogStatsResponseDto } from '#/modules/logs';
-
-import { GetLogStatsQuery } from './get-log-stats.query';
-import { GetLogsQuery } from './get-logs.query';
+import { GetLogStatsQuery } from '#/modules/logs/get-log-stats.query';
+import { GetLogStatsRequestDto } from '#/modules/logs/get-log-stats.request.dto';
+import { GetLogStatsResponseDto } from '#/modules/logs/get-log-stats.response.dto';
+import { GetLogsQuery } from '#/modules/logs/get-logs.query';
+import { GetLogsRequestDto } from '#/modules/logs/get-logs.request.dto';
+import { GetLogsResponseDto } from '#/modules/logs/get-logs.response.dto';
 
 @ApiTags('logs')
 @UserAuth()
@@ -19,17 +21,17 @@ export class LogsController {
 
   @Get()
   @Permissions(AdminPermission.log.read)
-  @SwaggerApiResponse(LogPageResponseDto)
+  @SwaggerApiResponse(GetLogsResponseDto)
   @ApiOperation({ summary: 'HTTP 로그 조회' })
-  getLogs(@Query() input: GetLogsRequestDto): Promise<LogPageResponseDto> {
+  getLogs(@Query() input: GetLogsRequestDto): Promise<GetLogsResponseDto> {
     return this.queryBus.execute(new GetLogsQuery(input));
   }
 
   @Get('stats')
   @Permissions(AdminPermission.log.read)
-  @SwaggerApiResponse(LogStatsResponseDto)
+  @SwaggerApiResponse(GetLogStatsResponseDto)
   @ApiOperation({ summary: 'HTTP 로그 통계' })
-  getStats(): Promise<LogStatsResponseDto> {
+  getStats(): Promise<GetLogStatsResponseDto> {
     return this.queryBus.execute(new GetLogStatsQuery(new GetLogStatsRequestDto()));
   }
 }

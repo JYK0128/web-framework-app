@@ -1,11 +1,7 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsIn, IsOptional } from 'class-validator';
+import { PageRequestDto } from '@pkg/server-core/http/dto/request/page.request.dto';
 
-import type { BaseEntity } from '#/core/database/entities/common';
-import { PageRequestDto } from '#/core/http/dto/request/page.request.dto';
-import { EVENT_PUBLICATION_STATUS } from '#/modules/events/events.constants';
+import type { BaseEntity } from '#/core/database/entities/base.entity';
 
 export class GetEventsRequestDto extends PageRequestDto<BaseEntity, 'startsAt' | 'createdAt'> {
-  @ApiPropertyOptional({ enum: EVENT_PUBLICATION_STATUS }) @IsOptional() @IsIn(EVENT_PUBLICATION_STATUS) status?: typeof EVENT_PUBLICATION_STATUS[number];
   override sort: ('startsAt' | 'createdAt')[] = ['startsAt'];
 }

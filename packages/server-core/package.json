@@ -1,0 +1,74 @@
+{
+  "name": "@pkg/server-core",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#/*": "./src/*"
+  },
+  "exports": {
+    "./http/dto": {
+      "types": "./src/http/dto/index.ts",
+      "default": "./src/http/dto/index.ts"
+    },
+    "./http/dto/request": {
+      "types": "./src/http/dto/request/index.ts",
+      "default": "./src/http/dto/request/index.ts"
+    },
+    "./http/dto/response": {
+      "types": "./src/http/dto/response/index.ts",
+      "default": "./src/http/dto/response/index.ts"
+    },
+    "./*": {
+      "types": "./src/*.ts",
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {
+    "lint": "eslint \"src/**/*.{ts,tsx}\" --fix",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@nestjs/common": "11.1.28",
+    "@nestjs/core": "11.1.28",
+    "@mikro-orm/decorators": "7.1.10",
+    "@mikro-orm/postgresql": "7.1.10",
+    "@nestjs/platform-express": "11.1.28",
+    "@nestjs/platform-socket.io": "11.1.28",
+    "@nestjs/cqrs": "11.0.3",
+    "@mikro-orm/core": "7.1.10",
+    "@nestjs/swagger": "11.4.6",
+    "@socket.io/redis-adapter": "8.3.0",
+    "@pkg/shared": "workspace:*",
+    "class-transformer": "0.5.1",
+    "class-validator": "0.15.1",
+    "express": "^5.2.1",
+    "express-session": "1.19.0",
+    "i18next": "26.3.6",
+    "i18next-http-middleware": "3.9.8",
+    "lodash-es": "4.18.1",
+    "nestjs-cls": "6.2.1",
+    "sanitize-html": "2.17.7",
+    "axios": "1.20.0",
+    "amqplib": "2.2.0",
+    "kafkajs": "2.2.4",
+    "jose": "6.2.12",
+    "nodemailer": "9.0.5",
+    "redis": "5.9.0",
+    "zod": "4.4.3",
+    "rxjs": "7.8.2",
+    "socket.io": "4.8.3"
+  },
+  "devDependencies": {
+    "@pkg/config": "workspace:*",
+    "@types/express": "5.0.6",
+    "@types/express-session": "1.19.0",
+    "@types/lodash-es": "4.17.12",
+    "@types/sanitize-html": "2.16.1",
+    "@types/amqplib": "0.10.8",
+    "@types/nodemailer": "8.0.1",
+    "@types/node": "26.1.2",
+    "eslint": "9.39.5",
+    "typescript": "5.9.3"
+  }
+}

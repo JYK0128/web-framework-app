@@ -6,7 +6,6 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { NoticeItemImportance } from './noticeItemImportance';
-import type { NoticeItemStatus } from './noticeItemStatus';
 
 export interface NoticeItem {
   id: string;
@@ -14,7 +13,9 @@ export interface NoticeItem {
   content: string;
   importance: NoticeItemImportance;
   isPinned: boolean;
-  status: NoticeItemStatus;
+  isDraft: boolean;
+  isScheduled: boolean;
+  isPublished: boolean;
   /** @nullable */
   publishedAt: string | null;
   createdAt: string;

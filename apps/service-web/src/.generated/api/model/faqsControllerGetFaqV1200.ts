@@ -5,8 +5,8 @@
  * Data Plane Service API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { FaqDetailResponse } from './faqDetailResponse';
 import type { FaqsControllerGetFaqV1200Meta } from './faqsControllerGetFaqV1200Meta';
+import type { GetFaqResponseDto } from './getFaqResponseDto';
 
 export type FaqsControllerGetFaqV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type FaqsControllerGetFaqV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: FaqDetailResponse;
+  data: GetFaqResponseDto;
   message?: string;
   meta?: FaqsControllerGetFaqV1200Meta;
 };

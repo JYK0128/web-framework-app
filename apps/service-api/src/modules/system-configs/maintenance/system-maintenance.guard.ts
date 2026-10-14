@@ -3,7 +3,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { getMaintenanceMessage } from '@pkg/shared/policy';
 import type { Request } from 'express';
 
-import { SystemContext } from '#/modules/system-configs/system.context';
+import { ServiceContext } from '#/modules/system-configs/service.context';
 
 const MAINTENANCE_EXEMPT_PATHS = [
   '/health/live',
@@ -16,14 +16,14 @@ const MAINTENANCE_EXEMPT_PATHS = [
 
 @Injectable()
 export class SystemMaintenanceGuard implements CanActivate {
-  constructor(private readonly systemContext: SystemContext) {}
+  constructor(private readonly serviceContext: ServiceContext) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const path = request.path || request.url || '';
     if (MAINTENANCE_EXEMPT_PATHS.some((prefix) => path === prefix || path.startsWith(`${prefix}/`))) return true;
 
-    const { maintenance } = await this.systemContext.getConfig();
+    const { maintenance } = await this.serviceContext.getConfig();
     const message = getMaintenanceMessage(maintenance, new Date());
     if (message === undefined) return true;
     throw new ApplicationError({

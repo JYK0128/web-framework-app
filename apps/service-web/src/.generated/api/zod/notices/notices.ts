@@ -40,7 +40,9 @@ export const NoticesControllerListV1Response = zod.object({
   "content": zod.string(),
   "importance": zod.enum(['normal', 'important', 'urgent']),
   "isPinned": zod.boolean(),
-  "status": zod.enum(['draft', 'published']),
+  "isDraft": zod.boolean(),
+  "isScheduled": zod.boolean(),
+  "isPublished": zod.boolean(),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -69,7 +71,9 @@ export const NoticesControllerDetailV1Response = zod.object({
   "content": zod.string(),
   "importance": zod.enum(['normal', 'important', 'urgent']),
   "isPinned": zod.boolean(),
-  "status": zod.enum(['draft', 'published']),
+  "isDraft": zod.boolean(),
+  "isScheduled": zod.boolean(),
+  "isPublished": zod.boolean(),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -77,4 +81,3 @@ export const NoticesControllerDetailV1Response = zod.object({
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
-

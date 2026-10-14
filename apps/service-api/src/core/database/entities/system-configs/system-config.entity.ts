@@ -1,7 +1,7 @@
 import { Entity, Enum, Index, Property } from '@mikro-orm/decorators/legacy';
 import { ServiceSystemConfigCode } from '@pkg/shared/constants';
 
-import { BaseEntity } from '#/core/database/entities/common/base.entity';
+import { BaseEntity } from '#/core/database/entities/base.entity';
 
 @Entity({ tableName: 'system_config' })
 export class SystemConfig extends BaseEntity {

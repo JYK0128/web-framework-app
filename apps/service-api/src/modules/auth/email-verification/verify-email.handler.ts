@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
 
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { KvStore } from '#/core/kv-store/kv-store.service';
 import { verifyEmailChallenge } from '#/modules/auth/email-verification/email-verification.helper';
 import { VerifyEmailCommand } from '#/modules/auth/email-verification/verify-email.command';
 import { VerifyEmailResponseDto } from '#/modules/auth/email-verification/verify-email.response.dto';

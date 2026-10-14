@@ -4,8 +4,8 @@ import { ApplicationError } from '@pkg/shared/common';
 
 import { Permission as PermissionEntity, Role } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { CreateRoleResponseDto } from '#/modules/roles';
 import { CreateRoleCommand } from '#/modules/roles/create-role.command';
+import { CreateRoleResponseDto } from '#/modules/roles/create-role.response.dto';
 
 @Injectable()
 @CommandHandler(CreateRoleCommand)

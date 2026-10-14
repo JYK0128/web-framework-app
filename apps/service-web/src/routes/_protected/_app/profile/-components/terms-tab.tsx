@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 
 import { getServiceTermsControllerGetAgreementHistoryV1QueryKey, getServiceTermsControllerGetAgreementsV1QueryKey, useServiceTermsControllerSetAgreementsV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
-import type { ServiceTermAgreementItem, ServiceTermAgreementListResponse } from '#/.generated/api/model';
+import type { GetServiceTermAgreementsResponseDto, ServiceTermAgreementItem } from '#/.generated/api/model';
 import { Button, Checkbox } from '#/.generated/shadcn/components/ui';
 import { ActionCard, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
@@ -17,9 +17,9 @@ export function ProfileTermsTab({ agreements }: { agreements: ServiceTermAgreeme
       onMutate: async ({ data }) => {
         const queryKey = getServiceTermsControllerGetAgreementsV1QueryKey();
         await queryClient.cancelQueries({ queryKey });
-        const previous = queryClient.getQueryData<ServiceTermAgreementListResponse>(queryKey);
+        const previous = queryClient.getQueryData<GetServiceTermAgreementsResponseDto>(queryKey);
         const changes = new Map(data.agreements.map((agreement) => [agreement.termId, agreement]));
-        queryClient.setQueryData<ServiceTermAgreementListResponse>(queryKey, (current) => current
+        queryClient.setQueryData<GetServiceTermAgreementsResponseDto>(queryKey, (current) => current
           ? {
             ...current,
             items: current.items.map((term) => {

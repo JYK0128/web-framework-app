@@ -32,7 +32,7 @@ for (const resource of ['events', 'notices'] as const) {
         await dialog.getByRole('button', { name: /종료일/ }).click();
         await page.locator('[role=gridcell]:not([data-outside]) button').filter({ hasText: /^28$/ }).click();
         await page.keyboard.press('Escape');
-        await dialog.getByRole('checkbox', { name: '게시', exact: true }).check();
+        await dialog.getByRole('button', { name: '지금 게시', exact: true }).click();
       }
       // Verify the UI save before publishing through the authenticated API.
       const saved = page.waitForResponse((response) => response.url().endsWith(`/api/v1/${resource}`) && response.request().method() === 'POST');
@@ -42,11 +42,11 @@ for (const resource of ['events', 'notices'] as const) {
       const created = (await response.json()).data;
       id = created.id;
       expect(created.content).toContain('<h2>');
-      if (resource === 'events') expect(created.status).toBe('published');
+      if (resource === 'events') expect(created.isPublished).toBe(true);
       expect(created.content).toMatch(/color:\s*(?:#ff0000|rgb\(255,\s*0,\s*0\))/);
       expect(created.content).toContain(image);
       const publish = await page.request.patch(`/api/v1/${resource}/${id}`, { data: {
-        status: 'published',
+        publishedAt: new Date().toISOString(),
         content: `${created.content}<script>alert(1)</script><img src="/test.png" onerror="alert(1)"><a href="javascript:alert(1)">안전한 링크</a>`,
       } });
       expect(publish.ok()).toBeTruthy();

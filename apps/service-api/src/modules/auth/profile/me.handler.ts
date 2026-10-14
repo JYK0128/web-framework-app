@@ -1,8 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { isCredentialPasswordExpired } from '@pkg/server-core/auth/user/password.policy';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { isCredentialPasswordExpired } from '#/core/auth/user/policy/password.policy';
+import { SECURITY_CONFIG } from '#/app.config';
 import { Account, User } from '#/core/database/entities/auth';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { MeQuery } from '#/modules/auth/profile/me.query';
@@ -46,7 +47,7 @@ export class MeHandler implements IQueryHandler<MeQuery, MeResponseDto> {
       user.profile,
       user.role,
       accounts,
-      credentialAccount?.password ? isCredentialPasswordExpired(credentialAccount) : false,
+      credentialAccount?.password ? isCredentialPasswordExpired(credentialAccount, SECURITY_CONFIG.password) : false,
     );
   }
 }

@@ -5,7 +5,7 @@
  * Data Plane Service API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { EventItemStatus } from './eventItemStatus';
+import type { EventItemPhase } from './eventItemPhase';
 
 export interface EventItem {
   id: string;
@@ -17,7 +17,10 @@ export interface EventItem {
   imageUrl: string | null;
   /** @nullable */
   linkUrl: string | null;
-  status: EventItemStatus;
+  isDraft: boolean;
+  isScheduled: boolean;
+  isPublished: boolean;
+  phase: EventItemPhase;
   /** @nullable */
   publishedAt: string | null;
   createdAt: string;

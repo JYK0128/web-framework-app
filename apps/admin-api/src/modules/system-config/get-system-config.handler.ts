@@ -1,34 +1,29 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { AdminSystemConfigCode, SystemConfig } from '#/core/database/entities/system-configs';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { InternalClient } from '#/core/http/internal-client';
+import { InternalClient } from '#/core/internal-client';
+import { SystemContext } from '#/core/system.context';
+import { AdminEmailConfigResponseDto } from '#/modules/system-config/admin-email/admin-email-config.response.dto';
+import { GetSystemConfigQuery } from '#/modules/system-config/get-system-config.query';
+import { GetSystemConfigResponseDto } from '#/modules/system-config/get-system-config.response.dto';
 import type { ServiceSystemConfigResponseDto } from '#/modules/system-config/service-system-config.response.dto';
-
-import { AdminEmailConfigResponseDto } from './admin-email/admin-email-config.response.dto';
-import { GetSystemConfigQuery } from './get-system-config.query';
-import { SystemConfigResponseDto } from './system-config.response.dto';
-import { AdminWebhookConfigResponseDto } from './webhook/admin-webhook-config.response.dto';
+import { AdminWebhookConfigResponseDto } from '#/modules/system-config/webhook/admin-webhook-config.response.dto';
 
 @Injectable()
 @QueryHandler(GetSystemConfigQuery)
-export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuery, SystemConfigResponseDto> {
-  constructor(private readonly internalClient: InternalClient, private readonly em: AppEntityManager) {}
+export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuery, GetSystemConfigResponseDto> {
+  constructor(private readonly internalClient: InternalClient, private readonly systemContext: SystemContext) {}
 
-  async execute(): Promise<SystemConfigResponseDto> {
-    const [config, emailEntity, webhookEntity] = await Promise.all([
+  async execute(): Promise<GetSystemConfigResponseDto> {
+    const [config, systemConfig] = await Promise.all([
       this.internalClient.fetch<ServiceSystemConfigResponseDto>('/internal/system-config'),
-      this.em.findOne(SystemConfig, { code: AdminSystemConfigCode.EMAIL }, { filters: false }),
-      this.em.findOne(SystemConfig, { code: AdminSystemConfigCode.WEBHOOK }, { filters: false }),
+      this.systemContext.getConfig(),
     ]);
-    if (!emailEntity) throw new NotFoundException('Admin 이메일 설정을 찾을 수 없습니다.');
-    if (!webhookEntity) throw new NotFoundException('Admin 웹훅 설정을 찾을 수 없습니다.');
-    return SystemConfigResponseDto.parse({
+    return GetSystemConfigResponseDto.parse({
       notification: config.notification,
       oauth: config.oauth,
-      webhook: AdminWebhookConfigResponseDto.parseEntity(webhookEntity),
-      adminEmail: AdminEmailConfigResponseDto.parseEntity(emailEntity),
+      webhook: AdminWebhookConfigResponseDto.parse(systemConfig.webhook),
+      adminEmail: AdminEmailConfigResponseDto.parseValue(systemConfig.adminEmail),
     });
   }
 }

@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { EntityDto } from '@pkg/server-core/http/dto/base/entity.dto';
 
 import { Term } from '#/core/database/entities/terms';
-import { EntityDto } from '#/core/http/dto/base/entity.dto';
 import { AgreementMetadataDto } from '#/modules/terms/agreements/agreement-metadata.dto';
 
 export class TermItemDto extends EntityDto(Term) {
@@ -44,6 +44,9 @@ export class TermItemDto extends EntityDto(Term) {
   @ApiProperty()
   isPublished!: boolean;
 
+  @ApiProperty({ type: Boolean })
+  isScheduled!: boolean;
+
   @ApiProperty()
   isDraft!: boolean;
 
@@ -68,6 +71,7 @@ export class TermItemDto extends EntityDto(Term) {
       publishedAt: term.publishedAt,
       metadata: term.metadata,
       isPublished: term.isPublished,
+      isScheduled: term.isScheduled,
       isDraft: term.isDraft,
       createdAt: term.createdAt,
       updatedAt: term.updatedAt,

@@ -227,9 +227,3 @@ export function useEventsControllerDetailV1<TData = Awaited<ReturnType<typeof ev
 
   return withQueryKey(query, queryOptions.queryKey);
 }
-
-
-
-
-
-

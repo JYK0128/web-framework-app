@@ -84,6 +84,9 @@ importers:
       '@nestjs/websockets':
         specifier: 11.1.28
         version: 11.1.28(@nestjs/common@11.1.28(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.28)(@nestjs/platform-socket.io@11.1.28)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@pkg/server-core':
+        specifier: workspace:*
+        version: link:../../packages/server-core
       '@pkg/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -394,6 +397,9 @@ importers:
       '@nestjs/websockets':
         specifier: 11.1.28
         version: 11.1.28(@nestjs/common@11.1.28(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.28)(@nestjs/platform-socket.io@11.1.28)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@pkg/server-core':
+        specifier: workspace:*
+        version: link:../../packages/server-core
       '@pkg/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -726,6 +732,127 @@ importers:
       typescript-eslint:
         specifier: 8.66.0
         version: 8.66.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3)
+
+  packages/server-core:
+    dependencies:
+      '@mikro-orm/core':
+        specifier: 7.1.10
+        version: 7.1.10
+      '@mikro-orm/decorators':
+        specifier: 7.1.10
+        version: 7.1.10(@mikro-orm/core@7.1.10)(reflect-metadata@0.2.2)
+      '@mikro-orm/postgresql':
+        specifier: 7.1.10
+        version: 7.1.10(@mikro-orm/core@7.1.10)
+      '@nestjs/common':
+        specifier: 11.1.28
+        version: 11.1.28(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/core':
+        specifier: 11.1.28
+        version: 11.1.28(@nestjs/common@11.1.28(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@11.1.28)(@nestjs/websockets@11.1.28)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/cqrs':
+        specifier: 11.0.3
+        version: 11.0.3(@nestjs/common@11.1.28(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.28)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/platform-express':
+        specifier: 11.1.28
+        version: 11.1.28(@nestjs/common@11.1.28(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.28)
+      '@nestjs/platform-socket.io':
+        specifier: 11.1.28
+        version: 11.1.28(@nestjs/common@11.1.28(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/websockets@11.1.28)(rxjs@7.8.2)
+      '@nestjs/swagger':
+        specifier: 11.4.6
+        version: 11.4.6(@nestjs/common@11.1.28(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.28)(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)
+      '@pkg/shared':
+        specifier: workspace:*
+        version: link:../shared
+      '@socket.io/redis-adapter':
+        specifier: 8.3.0
+        version: 8.3.0(socket.io-adapter@2.5.8)
+      amqplib:
+        specifier: 2.2.0
+        version: 2.2.0
+      axios:
+        specifier: 1.20.0
+        version: 1.20.0
+      class-transformer:
+        specifier: 0.5.1
+        version: 0.5.1
+      class-validator:
+        specifier: 0.15.1
+        version: 0.15.1
+      express:
+        specifier: ^5.2.1
+        version: 5.2.1
+      express-session:
+        specifier: 1.19.0
+        version: 1.19.0
+      i18next:
+        specifier: 26.3.6
+        version: 26.3.6(typescript@5.9.3)
+      i18next-http-middleware:
+        specifier: 3.9.8
+        version: 3.9.8
+      jose:
+        specifier: 6.2.12
+        version: 6.2.12
+      kafkajs:
+        specifier: 2.2.4
+        version: 2.2.4
+      lodash-es:
+        specifier: 4.18.1
+        version: 4.18.1
+      nestjs-cls:
+        specifier: 6.2.1
+        version: 6.2.1(@nestjs/common@11.1.28(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.28)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      nodemailer:
+        specifier: 9.0.5
+        version: 9.0.5
+      redis:
+        specifier: 5.9.0
+        version: 5.9.0
+      rxjs:
+        specifier: 7.8.2
+        version: 7.8.2
+      sanitize-html:
+        specifier: 2.17.7
+        version: 2.17.7
+      socket.io:
+        specifier: 4.8.3
+        version: 4.8.3
+      zod:
+        specifier: 4.4.3
+        version: 4.4.3
+    devDependencies:
+      '@pkg/config':
+        specifier: workspace:*
+        version: link:../config
+      '@types/amqplib':
+        specifier: 0.10.8
+        version: 0.10.8
+      '@types/express':
+        specifier: 5.0.6
+        version: 5.0.6
+      '@types/express-session':
+        specifier: 1.19.0
+        version: 1.19.0
+      '@types/lodash-es':
+        specifier: 4.17.12
+        version: 4.17.12
+      '@types/node':
+        specifier: 26.1.2
+        version: 26.1.2
+      '@types/nodemailer':
+        specifier: 8.0.1
+        version: 8.0.1
+      '@types/sanitize-html':
+        specifier: 2.16.1
+        version: 2.16.1
+      eslint:
+        specifier: 9.39.5
+        version: 9.39.5(jiti@2.7.0)
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
 
   packages/shared:
     dependencies:
@@ -4431,9 +4558,6 @@ packages:
     resolution: {integrity: sha512-y5mVgQNkMbs1eK9Xyc0pmNdabN2wHhRYY/5r4W5HrUT1rYCEPeVNSj1RUJeSDKT3U0p+mXCvLgkrFuIafYI6BA==}
     engines: {node: '>=22.0.0'}
 
-  launder@1.7.1:
-    resolution: {integrity: sha512-mU6WRz5EusL9ZZuiZ5SO4Y6C0P9PAUR9iwdb6bzj4KDihm28DiHFw+/yk9DBH4f+Pv1wuzQ4e2jV3oQ7mkIqvw==}
-
   launder@1.7.2:
     resolution: {integrity: sha512-DLg3HPnHUfBi5/MxMLmJD12dmlMpFEC2HgMW6vkZ/9JR0RU00kXoRGvDxAvFmdO0o610OA77i4FgNTLucmhDVg==}
 
@@ -6606,7 +6730,7 @@ snapshots:
   '@eslint/css-tree@4.0.5':
     dependencies:
       mdn-data: 2.29.0
-      source-map-js: 1.2.1
+      source-map-js: 1.2.2
 
   '@eslint/eslintrc@3.3.6':
     dependencies:
@@ -7448,7 +7572,7 @@ snapshots:
       '@csstools/css-parser-algorithms': 4.0.0(@csstools/css-tokenizer@4.0.0)
       '@csstools/css-tokenizer': 4.0.0
       '@csstools/media-query-list-parser': 5.0.0(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)
-      postcss: 8.5.25
+      postcss: 8.5.29
       postcss-selector-parser: 7.1.4
       postcss-value-parser: 4.2.0
       style-search: 0.1.0
@@ -8539,7 +8663,7 @@ snapshots:
   css-tree@3.2.1:
     dependencies:
       mdn-data: 2.27.1
-      source-map-js: 1.2.1
+      source-map-js: 1.2.2
 
   cssesc@3.0.0: {}
 
@@ -8881,7 +9005,6 @@ snapshots:
       '@esbuild/win32-arm64': 0.27.7
       '@esbuild/win32-ia32': 0.27.7
       '@esbuild/win32-x64': 0.27.7
-    optional: true
 
   esbuild@0.28.1:
     optionalDependencies:
@@ -9776,10 +9899,6 @@ snapshots:
   kind-of@6.0.3: {}
 
   kysely@0.29.4: {}
-
-  launder@1.7.1:
-    dependencies:
-      dayjs: 1.11.23
 
   launder@1.7.2:
     dependencies:
@@ -10732,9 +10851,9 @@ snapshots:
       escape-string-regexp: 4.0.0
       htmlparser2: 12.0.0
       is-plain-object: 5.1.0
-      launder: 1.7.1
+      launder: 1.7.2
       parse-srcset: 1.0.2
-      postcss: 8.5.25
+      postcss: 8.5.29
 
   sanitize-html@2.18.0:
     dependencies:
@@ -11207,7 +11326,6 @@ snapshots:
       get-tsconfig: 4.14.1
     optionalDependencies:
       fsevents: 2.3.3
-    optional: true
 
   tunnel-agent@0.6.0:
     dependencies:

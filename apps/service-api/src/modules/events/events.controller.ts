@@ -1,12 +1,15 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Public } from '@pkg/server-core/http/decorators/auth-mode.decorator';
+import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
 
-import { Public } from '#/core/http/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-
-import { EventCursorResponseDto, EventItemDto, GetPublicEventsRequestDto } from '.';
-import { GetEventQuery, GetPublicEventsQuery } from './events.messages';
+import { GetEventQuery } from '#/modules/events/get-event.query';
+import { GetEventRequestDto } from '#/modules/events/get-event.request.dto';
+import { GetEventResponseDto } from '#/modules/events/get-event.response.dto';
+import { GetPublicEventsQuery } from '#/modules/events/get-public-events.query';
+import { GetPublicEventsRequestDto } from '#/modules/events/get-public-events.request.dto';
+import { GetPublicEventsResponseDto } from '#/modules/events/get-public-events.response.dto';
 
 @ApiTags('events')
 @Public()
@@ -14,12 +17,15 @@ import { GetEventQuery, GetPublicEventsQuery } from './events.messages';
 export class EventsController {
   constructor(private readonly queryBus: QueryBus) {}
   @ApiOperation({ summary: '공개 이벤트 목록 조회' })
-  @SwaggerApiResponse(EventCursorResponseDto)
+  @SwaggerApiResponse(GetPublicEventsResponseDto)
   @Get()
-  list(@Query() query: GetPublicEventsRequestDto): Promise<EventCursorResponseDto> { return this.queryBus.execute(new GetPublicEventsQuery(query)); }
+  list(@Query() query: GetPublicEventsRequestDto): Promise<GetPublicEventsResponseDto> { return this.queryBus.execute(new GetPublicEventsQuery(query)); }
 
   @ApiOperation({ summary: '공개 이벤트 상세 조회' })
-  @SwaggerApiResponse(EventItemDto)
+  @SwaggerApiResponse(GetEventResponseDto)
   @Get(':id')
-  detail(@Param('id') id: string): Promise<EventItemDto> { return this.queryBus.execute(new GetEventQuery(id, true)); }
+  detail(@Param('id') id: string): Promise<GetEventResponseDto> {
+    const request = GetEventRequestDto.parse({ eventId: id }).validate();
+    return this.queryBus.execute(new GetEventQuery(request, true));
+  }
 }

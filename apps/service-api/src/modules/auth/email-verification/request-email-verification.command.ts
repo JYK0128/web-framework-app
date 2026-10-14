@@ -4,5 +4,7 @@ import type { RequestEmailVerificationRequestDto } from '#/modules/auth/email-ve
 import type { RequestEmailVerificationResponseDto } from '#/modules/auth/email-verification/request-email-verification.response.dto';
 
 export class RequestEmailVerificationCommand extends Command<RequestEmailVerificationResponseDto> {
-  constructor(public readonly input: RequestEmailVerificationRequestDto) { super(); }
+  constructor(public readonly input: RequestEmailVerificationRequestDto) {
+    super();
+  }
 }

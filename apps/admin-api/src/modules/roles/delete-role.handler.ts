@@ -5,8 +5,8 @@ import { ApplicationError } from '@pkg/shared/common';
 import { User } from '#/core/database/entities/auth';
 import { Role } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { DeleteRoleResponseDto } from '#/modules/roles';
 import { DeleteRoleCommand } from '#/modules/roles/delete-role.command';
+import { DeleteRoleResponseDto } from '#/modules/roles/delete-role.response.dto';
 
 @Injectable()
 @CommandHandler(DeleteRoleCommand)

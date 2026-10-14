@@ -1,10 +1,10 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { User } from '#/core/database/entities/auth';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { UnregisterCommand } from '#/modules/auth/account/unregister.command';
 import { UnregisterResponseDto } from '#/modules/auth/account/unregister.response.dto';
 

@@ -1,14 +1,15 @@
 import { BadRequestException, Body, Controller, Get, Param, Patch, Post, Put, Req, Res } from '@nestjs/common';
 import { ApiExcludeController, ApiTags } from '@nestjs/swagger';
+import { MachineAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
+import { NoStore } from '@pkg/server-core/http/decorators/no-store.decorator';
 import { instanceToPlain } from 'class-transformer';
 import type { Request, Response } from 'express';
 
 import { SERVICE_RUNTIME_CONFIG } from '#/app.config';
-import { MachineAuth } from '#/core/http/decorators/auth-mode.decorator';
-import { NoStore } from '#/core/http/decorators/no-store.decorator';
-
-import { CreateOAuthIconPresignedUrlRequestDto, NotificationTestConfigRequestDto, UpdateInternalSystemConfigsRequestDto } from '.';
-import { SystemConfigService } from './system-config.service';
+import { NotificationTestConfigRequestDto } from '#/modules/system-configs/notification/notification-test-config.request.dto';
+import { CreateOAuthIconPresignedUrlRequestDto } from '#/modules/system-configs/oauth/create-oauth-icon-presigned-url.request.dto';
+import { SystemConfigService } from '#/modules/system-configs/system-config.service';
+import { UpdateInternalSystemConfigsRequestDto } from '#/modules/system-configs/update-internal-system-configs.request.dto';
 
 @ApiTags('Internal (Machine)')
 @ApiExcludeController()

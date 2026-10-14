@@ -1,7 +1,7 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
+import { EntityDto } from '@pkg/server-core/http/dto/base/entity.dto';
 
 import { TermGroup } from '#/core/database/entities/terms';
-import { EntityDto } from '#/core/http/dto/base/entity.dto';
 
 @ApiSchema({ name: 'InternalServiceTermGroupItem' })
 export class InternalServiceTermGroupItemDto extends EntityDto(TermGroup) {

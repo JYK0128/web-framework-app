@@ -1,12 +1,19 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
+import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
+import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
 import { AdminPermission } from '@pkg/shared';
 
-import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
-import { Permissions } from '#/core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-import { InternalClient } from '#/core/http/internal-client';
-import { CreateNoticeRequestDto, GetNoticesRequestDto, NoticeActionResponseDto, NoticeItemDto, NoticePageResponseDto, UpdateNoticeRequestDto } from '#/modules/notices';
+import { InternalClient } from '#/core/internal-client';
+import { CreateNoticeRequestDto } from '#/modules/notices/create-notice.request.dto';
+import { CreateNoticeResponseDto } from '#/modules/notices/create-notice.response.dto';
+import { DeleteNoticeRequestDto } from '#/modules/notices/delete-notice.request.dto';
+import { DeleteNoticeResponseDto } from '#/modules/notices/delete-notice.response.dto';
+import { GetNoticesRequestDto } from '#/modules/notices/get-notices.request.dto';
+import { GetNoticesResponseDto } from '#/modules/notices/get-notices.response.dto';
+import { UpdateNoticeRequestDto } from '#/modules/notices/update-notice.request.dto';
+import { UpdateNoticeResponseDto } from '#/modules/notices/update-notice.response.dto';
 
 @ApiTags('notices')
 @UserAuth()
@@ -14,14 +21,13 @@ import { CreateNoticeRequestDto, GetNoticesRequestDto, NoticeActionResponseDto, 
 export class NoticesController {
   constructor(private readonly client: InternalClient) {}
   @Permissions(AdminPermission.notice.read)
-  @SwaggerApiResponse(NoticePageResponseDto)
+  @SwaggerApiResponse(GetNoticesResponseDto)
   @Get()
-  list(@Query() query: GetNoticesRequestDto): Promise<NoticePageResponseDto> {
+  list(@Query() query: GetNoticesRequestDto): Promise<GetNoticesResponseDto> {
     const params = new URLSearchParams({ page: String(query.page), limit: String(query.limit) });
     for (const sort of query.sort) params.append('sort[]', sort);
     for (const direction of query.direction) params.append('direction[]', direction);
     if (query.search) params.set('search', query.search);
-    if (query.status) params.set('status', query.status);
     if (query.importance) params.set('importance', query.importance);
     return this.client.fetch(`/internal/notices?${params.toString()}`);
   }
@@ -29,16 +35,19 @@ export class NoticesController {
   @Permissions(AdminPermission.notice.create)
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @SwaggerApiResponse(NoticeItemDto, HttpStatus.CREATED)
-  create(@Body() input: CreateNoticeRequestDto): Promise<NoticeItemDto> { return this.client.fetch('/internal/notices', { method: 'POST', body: input }); }
+  @SwaggerApiResponse(CreateNoticeResponseDto, HttpStatus.CREATED)
+  create(@Body() input: CreateNoticeRequestDto): Promise<CreateNoticeResponseDto> { return this.client.fetch('/internal/notices', { method: 'POST', body: input }); }
 
   @Permissions(AdminPermission.notice.update)
   @Patch(':id')
-  @SwaggerApiResponse(NoticeItemDto)
-  update(@Param('id') id: string, @Body() input: UpdateNoticeRequestDto): Promise<NoticeItemDto> { return this.client.fetch(`/internal/notices/${id}`, { method: 'PATCH', body: input }); }
+  @SwaggerApiResponse(UpdateNoticeResponseDto)
+  update(@Param('id') id: string, @Body() input: UpdateNoticeRequestDto): Promise<UpdateNoticeResponseDto> { return this.client.fetch(`/internal/notices/${id}`, { method: 'PATCH', body: input }); }
 
   @Permissions(AdminPermission.notice.delete)
   @Delete(':id')
-  @SwaggerApiResponse(NoticeActionResponseDto)
-  remove(@Param('id') id: string): Promise<NoticeActionResponseDto> { return this.client.fetch(`/internal/notices/${id}`, { method: 'DELETE' }); }
+  @SwaggerApiResponse(DeleteNoticeResponseDto)
+  remove(@Param('id') id: string): Promise<DeleteNoticeResponseDto> {
+    const request = DeleteNoticeRequestDto.parse({ noticeId: id }).validate();
+    return this.client.fetch(`/internal/notices/${request.noticeId}`, { method: 'DELETE' });
+  }
 }

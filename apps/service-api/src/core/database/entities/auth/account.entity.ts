@@ -1,7 +1,7 @@
 import type { Opt, Rel } from '@mikro-orm/core';
 import { Embeddable, Embedded, Entity, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
 
-import { BaseEntity } from '#/core/database/entities/common/base.entity';
+import { BaseEntity } from '#/core/database/entities/base.entity';
 
 import { User } from './user.entity';
 

@@ -5,14 +5,14 @@ import { encrypt } from '@pkg/shared/server';
 
 import { AdminSystemConfigCode, SystemConfig } from '#/core/database/entities/system-configs';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { InternalClient } from '#/core/http/internal-client';
+import { InternalClient } from '#/core/internal-client';
+import { SystemContext } from '#/core/system.context';
 import { env } from '#/env';
+import { AdminEmailConfigDto } from '#/modules/system-config/admin-email/admin-email-config.dto';
 import { UpdateSystemConfigCommand } from '#/modules/system-config/update-system-config.command';
 import { UpdateSystemConfigResponseDto } from '#/modules/system-config/update-system-config.response.dto';
-
-import { AdminEmailConfigDto } from './admin-email/admin-email-config.dto';
-import { AdminWebhookConfigResponseDto } from './webhook/admin-webhook-config.response.dto';
-import { WebhookConfigDto } from './webhook/webhook-config.dto';
+import { AdminWebhookConfigResponseDto } from '#/modules/system-config/webhook/admin-webhook-config.response.dto';
+import { WebhookConfigDto } from '#/modules/system-config/webhook/webhook-config.dto';
 
 @Injectable()
 @CommandHandler(UpdateSystemConfigCommand)
@@ -20,6 +20,7 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
   constructor(
     private readonly em: AppEntityManager,
     private readonly internalClient: InternalClient,
+    private readonly systemContext: SystemContext,
   ) {}
 
   async execute(command: UpdateSystemConfigCommand): Promise<UpdateSystemConfigResponseDto> {
@@ -57,6 +58,7 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
           savedWebhook = AdminWebhookConfigResponseDto.parseEntity(entity);
         }
       });
+      this.systemContext.invalidateCache();
       if (adminEmail) updatedKeys.push('adminEmail');
       if (webhook) updatedKeys.push('webhook');
     }

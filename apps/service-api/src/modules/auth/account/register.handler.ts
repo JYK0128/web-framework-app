@@ -1,34 +1,35 @@
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { assertPasswordPolicy } from '@pkg/server-core/auth/user/password.policy';
+import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
+import { NotificationService } from '@pkg/server-core/notification/index';
 import { ApplicationError } from '@pkg/shared/common';
 import { encrypt, hashPassword, hashWithSecret } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { assertPasswordPolicy } from '#/core/auth/user/policy/password.policy';
 import { Account, Profile, User } from '#/core/database/entities/auth';
 import { Role, RoleCode } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { KvStore } from '#/core/kv-store/kv-store.service';
-import { MessageService } from '#/core/notification';
 import { env } from '#/env';
 import { RegisterCommand } from '#/modules/auth/account/register.command';
 import { RegisterResponseDto } from '#/modules/auth/account/register.response.dto';
 import { ensureEmailNotificationConfigured } from '#/modules/auth/auth-email.helper';
 import { sendEmailVerificationChallenge } from '#/modules/auth/email-verification/email-verification.helper';
+import { SystemContext } from '#/modules/system-configs/system.context';
 
 @Injectable()
 @CommandHandler(RegisterCommand)
 export class RegisterHandler implements ICommandHandler<RegisterCommand, RegisterResponseDto> {
   private readonly logger = new Logger(RegisterHandler.name);
 
-  constructor(private readonly em: AppEntityManager, private readonly kv: KvStore, private readonly messages: MessageService) {}
+  constructor(private readonly em: AppEntityManager, private readonly kv: KvStore, private readonly messages: NotificationService, private readonly systemContext: SystemContext) {}
 
   async execute(command: RegisterCommand): Promise<RegisterResponseDto> {
     if (!SECURITY_CONFIG.registration.allowRegistration) throw new ApplicationError({ code: 'REGISTRATION_DISABLED', status: HttpStatus.FORBIDDEN });
     if (!SECURITY_CONFIG.credentialAvailable) throw new ApplicationError({ code: 'CREDENTIAL_AUTH_UNAVAILABLE', status: HttpStatus.FORBIDDEN });
-    assertPasswordPolicy(command.input.password);
-    if (SECURITY_CONFIG.registration.requireEmailVerification) await ensureEmailNotificationConfigured(this.em);
+    assertPasswordPolicy(command.input.password, SECURITY_CONFIG.password);
+    if (SECURITY_CONFIG.registration.requireEmailVerification) await ensureEmailNotificationConfigured(this.systemContext);
 
     const email = command.input.email.trim().toLowerCase();
     const emailHash = hashWithSecret(email, env.PII_HASH_KEY);
@@ -68,7 +69,7 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
     let verificationEmailSent = false;
     if (SECURITY_CONFIG.registration.requireEmailVerification) {
       try {
-        await sendEmailVerificationChallenge(this.em, this.kv, this.messages, user, profile, email);
+        await sendEmailVerificationChallenge(this.systemContext, this.kv, this.messages, user, profile, email);
         verificationEmailSent = true;
       }
       catch (error) {

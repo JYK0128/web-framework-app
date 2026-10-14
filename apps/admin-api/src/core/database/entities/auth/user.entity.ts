@@ -4,7 +4,7 @@ import { isFuture } from '@pkg/shared/common';
 
 import { Role } from '#/core/database/entities/auth.extensions/role.entity';
 import { Profile } from '#/core/database/entities/auth/profile.entity';
-import { BaseEntity } from '#/core/database/entities/common/base.entity';
+import { BaseEntity } from '#/core/database/entities/base.entity';
 
 @Embeddable()
 export class UserMetadata {

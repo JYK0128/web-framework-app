@@ -1,20 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 
-import { axios } from '#/lib/axios';
 import { closeSupportChat, openSupportChat } from '#/lib/support-chat-state';
 
-async function joinSupportRoom(socket: ReturnType<typeof io>, roomId: string, isCancelled: () => boolean, onJoined: () => void): Promise<void> {
-  try {
-    const { ticket } = await axios<{ ticket: string }>({ url: `/api/v1/support/rooms/${encodeURIComponent(roomId)}/socket-ticket`, method: 'POST', data: {} });
-    if (isCancelled() || !socket.connected) return;
-    socket.emit('support.join', { ticket }, (roomId: string | null) => {
-      if (roomId) onJoined();
-    });
-  }
-  catch {
-    return;
-  }
+function joinSupportRoom(socket: ReturnType<typeof io>, roomId: string, onJoined: () => void): void {
+  socket.emit('support.join', { roomId }, (joinedRoomId: string | null) => {
+    if (joinedRoomId) onJoined();
+  });
 }
 
 export function useSupportSocket(roomId: string, enabled: boolean, onEvent: (event: string) => void): void {
@@ -24,13 +16,11 @@ export function useSupportSocket(roomId: string, enabled: boolean, onEvent: (eve
     if (!enabled) return;
     openSupportChat(roomId);
     const socket = io('/support', { path: '/api/v1/socket.io', withCredentials: true, transports: ['websocket'], autoConnect: false });
-    let cancelled = false;
-    socket.on('connect', () => void joinSupportRoom(socket, roomId, () => cancelled, () => onEventRef.current('support.connected')));
+    socket.on('connect', () => joinSupportRoom(socket, roomId, () => onEventRef.current('support.connected')));
     socket.on('support.message.created', () => onEventRef.current('support.message.created'));
     socket.on('support.room.status.changed', () => onEventRef.current('support.room.status.changed'));
     socket.connect();
     return () => {
-      cancelled = true;
       socket.disconnect();
       closeSupportChat(roomId);
     };

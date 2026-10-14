@@ -1,12 +1,12 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { assertPasswordCanBeUsed, updateCredentialPassword } from '@pkg/server-core/auth/user/password.policy';
+import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { assertPasswordCanBeUsed, updateCredentialPassword } from '#/core/auth/user/policy/password.policy';
 import { Account, User } from '#/core/database/entities/auth';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { KvStore } from '#/core/kv-store/kv-store.service';
 import { AuthKvStoreKey } from '#/modules/auth/auth.key';
 import { ResetPasswordCommand } from '#/modules/auth/credential/reset-password.command';
 import { ResetPasswordResponseDto } from '#/modules/auth/credential/reset-password.response.dto';
@@ -28,10 +28,10 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
     if (!user || user.isDeleted) throw invalidResetToken();
     const account = await this.em.findOne(Account, { user: user.id, providerId: Account.PROVIDER_CREDENTIAL });
     if (!account?.password) throw invalidResetToken();
-    await assertPasswordCanBeUsed(account, input.newPassword);
+    await assertPasswordCanBeUsed(account, input.newPassword, SECURITY_CONFIG.password);
     const consumed = await this.kvStore.getAndDelete<{ token: string }>(key);
     if (!consumed || consumed.token !== input.token) throw invalidResetToken();
-    await updateCredentialPassword(account, input.newPassword);
+    await updateCredentialPassword(account, input.newPassword, SECURITY_CONFIG.password);
     user.updateMetadata({ failedLoginAttempts: 0, loginFailureWindowStartedAt: null, lockedUntil: null });
     await this.em.flush();
     return ResetPasswordResponseDto.parse({ ok: true });

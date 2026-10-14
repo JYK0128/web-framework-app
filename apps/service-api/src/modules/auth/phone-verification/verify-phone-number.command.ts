@@ -4,5 +4,7 @@ import type { VerifyPhoneNumberRequestDto } from '#/modules/auth/phone-verificat
 import type { VerifyPhoneNumberResponseDto } from '#/modules/auth/phone-verification/verify-phone-number.response.dto';
 
 export class VerifyPhoneNumberCommand extends Command<VerifyPhoneNumberResponseDto> {
-  constructor(public readonly input: VerifyPhoneNumberRequestDto) { super(); }
+  constructor(public readonly input: VerifyPhoneNumberRequestDto) {
+    super();
+  }
 }

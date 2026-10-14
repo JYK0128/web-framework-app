@@ -1,11 +1,11 @@
-import { Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
-import { type IEventHandler, QueryBus } from '@nestjs/cqrs';
+import { Logger } from '@nestjs/common';
+import { EventsHandler, type IEventHandler, QueryBus } from '@nestjs/cqrs';
+import { BrokerConsumer } from '@pkg/server-core/event-broker/broker-consumer.decorator';
+import { EVENT_BROKER } from '@pkg/server-core/event-broker/event-broker.interface';
+import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
+import { NotificationService } from '@pkg/server-core/notification/notification.service';
 import { decrypt } from '@pkg/shared/server';
 
-import { EVENT_BROKER } from '#/core/event-broker/event-broker.interface';
-import { EventBroker } from '#/core/event-broker/event-broker.service';
-import { KvStore } from '#/core/kv-store/kv-store.service';
-import { NotificationService } from '#/core/notification/notification.service';
 import { env } from '#/env';
 import { AuthKvStoreKey } from '#/modules/auth/auth.key';
 import { EmailVerificationEvent } from '#/modules/auth/email-verification/email-verification.event';
@@ -13,30 +13,16 @@ import { GetAdminSmtpConfigQuery } from '#/modules/system-config/admin-email/get
 
 type EmailVerificationRecord = { emailEncrypted: string, token: string };
 
-@Injectable()
-export class EmailVerificationHandler implements IEventHandler<EmailVerificationEvent>, OnModuleInit, OnModuleDestroy {
+@EventsHandler(EmailVerificationEvent)
+@BrokerConsumer({ broker: EVENT_BROKER.REDIS_STREAMS, group: 'admin-auth-email-notification' })
+export class EmailVerificationHandler implements IEventHandler<EmailVerificationEvent> {
   private readonly logger = new Logger(EmailVerificationHandler.name);
-  private unsubscribe?: () => Promise<void>;
 
   constructor(
     private readonly queryBus: QueryBus,
-    @Inject(EVENT_BROKER.REDIS_STREAMS)
-    private readonly eventBroker: EventBroker,
     private readonly kvStore: KvStore,
     private readonly notifications: NotificationService,
   ) {}
-
-  async onModuleInit(): Promise<void> {
-    this.unsubscribe = await this.eventBroker.subscribe<EmailVerificationEvent>(
-      EmailVerificationEvent.name,
-      (event) => this.handle(event),
-      { group: 'admin-auth-email-notification' },
-    );
-  }
-
-  async onModuleDestroy(): Promise<void> {
-    await this.unsubscribe?.();
-  }
 
   async handle(event: EmailVerificationEvent): Promise<void> {
     const record = await this.kvStore.get<EmailVerificationRecord>(AuthKvStoreKey.emailVerificationChallenge(event.challengeId));

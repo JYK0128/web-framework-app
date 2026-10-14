@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 import { Type } from 'class-transformer';
 import { IsArray, ValidateNested } from 'class-validator';
 
-import { BaseDto } from '#/core/http/dto/base/base.dto';
 import { OperatingHolidayItemDto } from '#/modules/service-config/operation/operating-holiday-item.dto';
 import { OperatingHoursDto } from '#/modules/service-config/operation/operating-hours.dto';
 import { OperatingMessagesDto } from '#/modules/service-config/operation/operating-messages.dto';

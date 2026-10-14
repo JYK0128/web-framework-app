@@ -11,15 +11,14 @@ import { Modal, type ModalComponentProps } from '#/components/modal';
 
 export type NoticeEditorModalProps = ModalComponentProps<boolean> & { notice?: NoticeItemDto, readOnly?: boolean };
 const importanceOptions = [{ label: '일반', value: 'normal' }, { label: '중요', value: 'important' }, { label: '긴급', value: 'urgent' }] as const;
-const statusOptions = [{ label: '임시저장', value: 'draft' }, { label: '게시', value: 'published' }] as const;
 
 export function NoticeEditorModal({ notice, readOnly = false, open, onOpenChange, close }: NoticeEditorModalProps) {
   const queryClient = useQueryClient();
   const form = useAppForm({
-    defaultValues: { title: notice?.title ?? '', content: toEditorHtml(notice?.content ?? ''), importance: notice?.importance ?? 'normal', isPinned: notice?.isPinned ?? false, status: notice?.status ?? 'draft' as const },
-    validators: { onSubmit: z.object({ title: z.string().trim().min(1, '제목을 입력해 주세요.').max(255), content: z.string().refine(hasEditorContent, '내용을 입력해 주세요.'), importance: z.enum(['normal', 'important', 'urgent']), isPinned: z.boolean(), status: z.enum(['draft', 'published']) }) },
+    defaultValues: { title: notice?.title ?? '', content: toEditorHtml(notice?.content ?? ''), importance: notice?.importance ?? 'normal', isPinned: notice?.isPinned ?? false, publishedAt: notice?.publishedAt ?? '' },
+    validators: { onSubmit: z.object({ title: z.string().trim().min(1, '제목을 입력해 주세요.').max(255), content: z.string().refine(hasEditorContent, '내용을 입력해 주세요.'), importance: z.enum(['normal', 'important', 'urgent']), isPinned: z.boolean(), publishedAt: z.string().refine((value) => value === '' || !Number.isNaN(Date.parse(value)), '게시 일시를 확인해 주세요.') }) },
     onSubmit: async ({ value }) => {
-      const data: CreateNoticeRequestDto = { title: value.title.trim(), content: value.content.trim(), importance: value.importance, isPinned: value.isPinned, status: value.status };
+      const data: CreateNoticeRequestDto = { title: value.title.trim(), content: value.content.trim(), importance: value.importance, isPinned: value.isPinned, publishedAt: value.publishedAt ? new Date(value.publishedAt).toISOString() : null };
       if (notice) await noticesControllerUpdateV1(notice.id, data);
       else await noticesControllerCreateV1(data);
       await queryClient.invalidateQueries({ queryKey: getNoticesControllerListV1QueryKey() });
@@ -61,8 +60,18 @@ export function NoticeEditorModal({ notice, readOnly = false, open, onOpenChange
               "
               >
                 <form.AppField name="importance">{(field) => <field.Select label="중요도" options={importanceOptions} disabled={readOnly} required />}</form.AppField>
-                <form.AppField name="status">{(field) => <field.Select label="게시 상태" options={statusOptions} disabled={readOnly} required />}</form.AppField>
+                <form.AppField name="publishedAt">
+                  {(field) => (
+                    <field.DatetimePicker label="게시 일시" placeholder="비워두면 임시저장" description="미래 일시를 선택하면 해당 시각부터 공개됩니다." disabled={readOnly} />
+                  )}
+                </form.AppField>
               </div>
+              {!readOnly && (
+                <div className="flex gap-2">
+                  <Button type="button" variant="outline" onClick={() => form.setFieldValue('publishedAt', new Date().toISOString())}>지금 게시</Button>
+                  <Button type="button" variant="outline" onClick={() => form.setFieldValue('publishedAt', '')}>임시저장</Button>
+                </div>
+              )}
               <form.AppField name="isPinned">{(field) => <field.Checkbox label="상단 고정" description="공지사항 목록 상단에 고정합니다." disabled={readOnly} showError={false} />}</form.AppField>
             </FormLayout>
           </Modal.Body>

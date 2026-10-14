@@ -1,2 +1,2 @@
 export * from './database.module';
-export * from './entity-manager';
+export * from '#/core/database/entity-manager';

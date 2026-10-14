@@ -18,6 +18,11 @@ export class Session {
   @Property({ type: 'timestamp' })
   expiresAt!: Date;
 
+  @Property({ type: 'boolean', persist: false })
+  get isExpired(): Opt<boolean> {
+    return this.expiresAt.getTime() <= Date.now();
+  }
+
   @Property({ type: 'string', length: 255, nullable: true })
   ipAddress: Opt<string> | null = null;
 

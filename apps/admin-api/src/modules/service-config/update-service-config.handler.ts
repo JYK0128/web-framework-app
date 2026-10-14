@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
-import { InternalClient } from '#/core/http/internal-client';
+import { InternalClient } from '#/core/internal-client';
 import { UpdateServiceConfigCommand } from '#/modules/service-config/update-service-config.command';
 import { UpdateServiceConfigResponseDto } from '#/modules/service-config/update-service-config.response.dto';
 

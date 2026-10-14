@@ -1,8 +1,8 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { TestChannelResponseDto } from '#/modules/system-config/notification/test-channel.response.dto';
 import type { TestPushRequestDto } from '#/modules/system-config/notification/test-push.request.dto';
+import type { TestPushResponseDto } from '#/modules/system-config/notification/test-push.response.dto';
 
-export class TestPushCommand extends Command<TestChannelResponseDto> {
+export class TestPushCommand extends Command<TestPushResponseDto> {
   constructor(public readonly input: TestPushRequestDto) { super(); }
 }

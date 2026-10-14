@@ -1,7 +1,6 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 import { IsBoolean, IsInt, IsNotEmpty, IsString, Max, Min } from 'class-validator';
-
-import { BaseDto } from '#/core/http/dto/base/base.dto';
 
 @ApiSchema({ name: 'CreateFaqRequest' })
 export class CreateFaqRequestDto extends BaseDto {

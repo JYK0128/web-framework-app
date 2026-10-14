@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { EntityDto } from '@pkg/server-core/http/dto/base/entity.dto';
 
 import { Permission as PermissionEntity } from '#/core/database/entities/auth.extensions';
-import { EntityDto } from '#/core/http/dto/base/entity.dto';
 
 export class PermissionItemDto extends EntityDto(PermissionEntity) {
   @ApiProperty() override id!: string;

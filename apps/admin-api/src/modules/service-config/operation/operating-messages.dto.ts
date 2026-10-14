@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 import { IsString } from 'class-validator';
-
-import { BaseDto } from '#/core/http/dto/base/base.dto';
 
 export class OperatingMessagesDto extends BaseDto {
   @ApiProperty({ example: '현재 점심시간입니다.', description: '점심시간 안내 문구' })

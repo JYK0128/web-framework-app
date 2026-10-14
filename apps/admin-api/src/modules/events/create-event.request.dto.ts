@@ -1,9 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 import { Type } from 'class-transformer';
-import { IsDate, IsIn, IsNotEmpty, IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
-
-import { BaseDto } from '#/core/http/dto/base/base.dto';
-import { EVENT_PUBLICATION_STATUS } from '#/modules/events/events.constants';
+import { IsDate, IsNotEmpty, IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
 
 export class CreateEventRequestDto extends BaseDto {
   static readonly richTextFields = ['content'];
@@ -13,5 +11,5 @@ export class CreateEventRequestDto extends BaseDto {
   @ApiProperty({ format: 'date-time' }) @Type(() => Date) @IsDate() endsAt!: Date;
   @ApiPropertyOptional({ maxLength: 500 }) @IsOptional() @IsString() @MaxLength(500) imageUrl?: string | null;
   @ApiPropertyOptional({ maxLength: 500 }) @IsOptional() @IsUrl({ require_tld: false }) @MaxLength(500) linkUrl?: string | null;
-  @ApiProperty({ enum: EVENT_PUBLICATION_STATUS }) @IsIn(EVENT_PUBLICATION_STATUS) status: typeof EVENT_PUBLICATION_STATUS[number] = 'draft';
+  @ApiPropertyOptional({ type: String, format: 'date-time', nullable: true }) @IsOptional() @Type(() => Date) @IsDate() publishedAt?: Date | null;
 }

@@ -1,7 +1,7 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
+import { EntityDto } from '@pkg/server-core/http/dto/base/entity.dto';
 
 import { Faq, FaqCategory } from '#/core/database/entities/faqs';
-import { EntityDto } from '#/core/http/dto/base/entity.dto';
 
 @ApiSchema({ name: 'FaqItem' })
 export class FaqItemDto extends EntityDto(Faq) {

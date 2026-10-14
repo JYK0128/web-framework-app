@@ -37,7 +37,11 @@ export function ServiceTermViewModal({ term, open, onOpenChange }: ModalComponen
                     {term.version}
                   </span>
                   <span>·</span>
-                  <span>{term.isPublished ? '게시됨' : '초안'}</span>
+                  <span>
+                    {term.isPublished && '게시됨'}
+                    {term.isScheduled && '예약'}
+                    {term.isDraft && '초안'}
+                  </span>
                   <span>·</span>
                   <span>{term.isRequired ? '필수 동의' : '선택 동의'}</span>
                 </div>

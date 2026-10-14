@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { EntityDto } from '@pkg/server-core/http/dto/base/entity.dto';
 
 import { UserTermAgreement } from '#/core/database/entities/terms';
-import { EntityDto } from '#/core/http/dto/base/entity.dto';
 import { AgreementMetadataDto } from '#/modules/terms/agreements/agreement-metadata.dto';
 
 export class AgreementHistoryItemDto extends EntityDto(UserTermAgreement) {

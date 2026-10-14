@@ -1,15 +1,10 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsIn, IsOptional } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-import type { BaseEntity } from '#/core/database/entities/common';
-import { PageRequestDto } from '#/core/http/dto/request/page.request.dto';
-import { QnaPriority, QnaStatus } from '#/modules/qna/qna.constants';
-
-export class GetQnaRequestDto extends PageRequestDto<BaseEntity, 'createdAt' | 'updatedAt'> {
-  @ApiPropertyOptional({ isArray: true, enum: ['createdAt', 'updatedAt'] })
-  @IsIn(['createdAt', 'updatedAt'], { each: true })
-  override sort: ('createdAt' | 'updatedAt')[] = ['createdAt'];
-
-  @ApiPropertyOptional({ enum: QnaStatus }) @IsOptional() @IsEnum(QnaStatus) status?: QnaStatus;
-  @ApiPropertyOptional({ enum: QnaPriority }) @IsOptional() @IsEnum(QnaPriority) priority?: QnaPriority;
+export class GetQnaRequestDto extends BaseDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  qnaId!: string;
 }

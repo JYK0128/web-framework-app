@@ -1,8 +1,8 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsDateString, IsNotEmpty, IsObject, IsOptional, IsString, MaxLength, ValidateIf, ValidateNested } from 'class-validator';
 
-import { BaseDto } from '#/core/http/dto/base/base.dto';
 import { AgreementMetadataDto } from '#/modules/terms/agreements/agreement-metadata.dto';
 
 export class UpdateTermRequestDto extends BaseDto {

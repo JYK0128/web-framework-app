@@ -1,32 +1,16 @@
-import { Injectable, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { RealtimeService } from '@pkg/server-core/realtime/realtime.service';
 import { UserNotificationCreatedEvent } from '@pkg/shared/server';
 
-import { EventBroker } from '#/core/event-broker/event-broker.service';
-import { RealtimeService } from '#/core/realtime/realtime.service';
-
 @Injectable()
-export class NotificationStreamService implements OnModuleInit, OnModuleDestroy {
-  private unsubscribe?: () => Promise<void>;
+export class NotificationStreamService {
+  constructor(private readonly realtime: RealtimeService) {}
 
-  constructor(
-    private readonly eventBroker: EventBroker,
-    private readonly realtime: RealtimeService,
-  ) {}
-
-  async onModuleInit(): Promise<void> {
-    this.unsubscribe = await this.eventBroker.subscribe<UserNotificationCreatedEvent>(
-      UserNotificationCreatedEvent.name,
-      (event) => {
-        this.realtime.publishSSE(this.topic(event.userId), {
-          type: 'notification.created',
-          data: event.notification,
-        });
-      },
-    );
-  }
-
-  async onModuleDestroy(): Promise<void> {
-    await this.unsubscribe?.();
+  publish(event: UserNotificationCreatedEvent): void {
+    this.realtime.publishSSE(this.topic(event.userId), {
+      type: 'notification.created',
+      data: event.notification,
+    });
   }
 
   stream(userId: string) {

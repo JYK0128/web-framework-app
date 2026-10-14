@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 import { Type } from 'class-transformer';
 
-import { BaseDto } from '#/core/http/dto/base/base.dto';
 import { ServiceAgreementMetadataDto } from '#/modules/service-terms/agreements/service-agreement-metadata.dto';
 
 export class ServiceTermItemDto extends BaseDto {
@@ -25,6 +25,8 @@ export class ServiceTermItemDto extends BaseDto {
 
   @ApiProperty() sortOrder!: number;
 
+  @ApiProperty({ type: Boolean }) isDraft!: boolean;
+  @ApiProperty({ type: Boolean }) isScheduled!: boolean;
   @ApiProperty() isPublished!: boolean;
 
   @ApiProperty({ type: String, nullable: true, format: 'date-time' }) publishedAt!: Date | null;

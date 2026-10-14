@@ -9,82 +9,6 @@ import * as zod from 'zod';
 
 
 /**
- * @summary PortOne 전화번호 인증 결과 검증 및 계정에 반영
- */
-export const AuthControllerVerifyPhoneNumberV1Body = zod.object({
-  "identityVerificationId": zod.string().describe('PortOne verification transaction ID')
-})
-
-export const AuthControllerVerifyPhoneNumberV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "ok": zod.boolean()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-/**
- * @summary 서비스 사용자 로그인 (Refresh Token + 초단기 JWT 발급)
- */
-export const authControllerLoginV1BodyRememberMeDefault = false;
-
-export const AuthControllerLoginV1Body = zod.object({
-  "email": zod.email(),
-  "password": zod.string(),
-  "rememberMe": zod.boolean().default(authControllerLoginV1BodyRememberMeDefault).describe('로그인 상태 유지 (자동 로그인)')
-})
-
-export const AuthControllerLoginV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "requiresTwoFactor": zod.boolean().optional().describe('2단계 인증 코드 입력이 필요한 로그인 단계인지 여부'),
-  "twoFactorChallengeToken": zod.string().optional().describe('OTP 검증을 위한 일회성 로그인 챌린지 토큰'),
-  "accessToken": zod.string().optional().describe('초단기 액세스 토큰 (JWT)'),
-  "refreshToken": zod.string().optional().describe('순수 네이티브 앱용 Refresh Token (웹 브라우저는 HttpOnly 쿠키로 전달)')
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-/**
- * @summary 2단계 인증 코드로 로그인 완료
- */
-export const authControllerCompleteTwoFactorLoginV1BodyCodeMin = 6;
-export const authControllerCompleteTwoFactorLoginV1BodyCodeMax = 6;
-
-
-
-export const AuthControllerCompleteTwoFactorLoginV1Body = zod.object({
-  "twoFactorChallengeToken": zod.string().describe('비밀번호 확인 후 발급된 일회성 로그인 챌린지 토큰'),
-  "code": zod.string().min(authControllerCompleteTwoFactorLoginV1BodyCodeMin).max(authControllerCompleteTwoFactorLoginV1BodyCodeMax)
-})
-
-export const AuthControllerCompleteTwoFactorLoginV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "requiresTwoFactor": zod.boolean().optional().describe('2단계 인증 코드 입력이 필요한 로그인 단계인지 여부'),
-  "twoFactorChallengeToken": zod.string().optional().describe('OTP 검증을 위한 일회성 로그인 챌린지 토큰'),
-  "accessToken": zod.string().optional().describe('초단기 액세스 토큰 (JWT)'),
-  "refreshToken": zod.string().optional().describe('순수 네이티브 앱용 Refresh Token (웹 브라우저는 HttpOnly 쿠키로 전달)')
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-/**
  * @summary 서비스 사용자 회원가입 ((app.config.ts 정책 적용))
  */
 export const authControllerRegisterV1BodyPasswordMin = 8;
@@ -142,47 +66,6 @@ export const AuthControllerFindIdV1Response = zod.object({
  * @summary 서비스 사용자 계정 탈퇴 (정책 설정 적용)
  */
 export const AuthControllerUnregisterV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "ok": zod.boolean()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-/**
- * @summary 이메일 인증 메일 요청
- */
-export const AuthControllerRequestEmailVerificationV1Body = zod.object({
-  "email": zod.email()
-})
-
-export const AuthControllerRequestEmailVerificationV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "accepted": zod.boolean().describe('계정 존재 여부와 무관하게 요청을 접수했다는 표시')
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-/**
- * @summary 이메일 인증 완료
- */
-export const AuthControllerVerifyEmailV1Body = zod.object({
-  "challengeId": zod.string(),
-  "token": zod.string()
-})
-
-export const AuthControllerVerifyEmailV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
@@ -274,6 +157,124 @@ export const AuthControllerChangePasswordV1Response = zod.object({
 })
 
 /**
+ * @summary 이메일 인증 메일 요청
+ */
+export const AuthControllerRequestEmailVerificationV1Body = zod.object({
+  "email": zod.email()
+})
+
+export const AuthControllerRequestEmailVerificationV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "accepted": zod.boolean().describe('계정 존재 여부와 무관하게 요청을 접수했다는 표시')
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary 이메일 인증 완료
+ */
+export const AuthControllerVerifyEmailV1Body = zod.object({
+  "challengeId": zod.string(),
+  "token": zod.string()
+})
+
+export const AuthControllerVerifyEmailV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary PortOne 전화번호 인증 결과 검증 및 계정에 반영
+ */
+export const AuthControllerVerifyPhoneNumberV1Body = zod.object({
+  "identityVerificationId": zod.string().describe('PortOne verification transaction ID')
+})
+
+export const AuthControllerVerifyPhoneNumberV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary 현재 로그인한 사용자 프로필 정보 조회
+ */
+export const AuthControllerMeV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string().describe('사용자 고유 식별자'),
+  "email": zod.string().describe('사용자 이메일'),
+  "emailVerified": zod.boolean().describe('이메일 인증 여부'),
+  "name": zod.string().describe('사용자 이름'),
+  "image": zod.string().nullish().describe('프로필 아바타 이미지'),
+  "phoneNumber": zod.string().nullable().describe('연락처'),
+  "twoFactorEnabled": zod.boolean().describe('2단계 인증(2FA) 활성화 여부'),
+  "phoneNumberVerified": zod.boolean().describe('본인인증 완료 여부'),
+  "passwordExpired": zod.boolean().describe('현재 app.config.ts 비밀번호 정책에 따른 만료 여부'),
+  "roleCode": zod.string().describe('역할 코드'),
+  "roleLabel": zod.string().describe('역할 표시명'),
+  "permissions": zod.array(zod.string()).describe('보유 권한 목록'),
+  "providers": zod.array(zod.string()).describe('연결된 로그인 제공자 목록'),
+  "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullable().describe('비밀번호 변경일'),
+  "lastLoginAt": zod.string().nullish().describe('최근 로그인 일시')
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary 서비스 사용자 로그인 (Refresh Token + 초단기 JWT 발급)
+ */
+export const authControllerLoginV1BodyRememberMeDefault = false;
+
+export const AuthControllerLoginV1Body = zod.object({
+  "email": zod.email(),
+  "password": zod.string(),
+  "rememberMe": zod.boolean().default(authControllerLoginV1BodyRememberMeDefault).describe('로그인 상태 유지 (자동 로그인)')
+})
+
+export const AuthControllerLoginV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "requiresTwoFactor": zod.boolean().optional().describe('2단계 인증 코드 입력이 필요한 로그인 단계인지 여부'),
+  "twoFactorChallengeToken": zod.string().optional().describe('OTP 검증을 위한 일회성 로그인 챌린지 토큰'),
+  "accessToken": zod.string().optional().describe('초단기 액세스 토큰 (JWT)'),
+  "refreshToken": zod.string().optional().describe('순수 네이티브 앱용 Refresh Token (웹 브라우저는 HttpOnly 쿠키로 전달)')
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
  * @summary Refresh Token 기반 초단기 AccessToken 갱신 및 토큰 회전
  */
 export const AuthControllerRefreshV1Body = zod.object({
@@ -315,30 +316,28 @@ export const AuthControllerLogoutV1Response = zod.object({
 })
 
 /**
- * @summary 현재 로그인한 사용자 프로필 정보 조회
+ * @summary 2단계 인증 코드로 로그인 완료
  */
-export const AuthControllerMeV1Response = zod.object({
+export const authControllerCompleteTwoFactorLoginV1BodyCodeMin = 6;
+export const authControllerCompleteTwoFactorLoginV1BodyCodeMax = 6;
+
+
+
+export const AuthControllerCompleteTwoFactorLoginV1Body = zod.object({
+  "twoFactorChallengeToken": zod.string().describe('비밀번호 확인 후 발급된 일회성 로그인 챌린지 토큰'),
+  "code": zod.string().min(authControllerCompleteTwoFactorLoginV1BodyCodeMin).max(authControllerCompleteTwoFactorLoginV1BodyCodeMax)
+})
+
+export const AuthControllerCompleteTwoFactorLoginV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "id": zod.string().describe('사용자 고유 식별자'),
-  "email": zod.string().describe('사용자 이메일'),
-  "emailVerified": zod.boolean().describe('이메일 인증 여부'),
-  "name": zod.string().describe('사용자 이름'),
-  "image": zod.string().nullish().describe('프로필 아바타 이미지'),
-  "phoneNumber": zod.string().nullable().describe('연락처'),
-  "twoFactorEnabled": zod.boolean().describe('2단계 인증(2FA) 활성화 여부'),
-  "phoneNumberVerified": zod.boolean().describe('본인인증 완료 여부'),
-  "passwordExpired": zod.boolean().describe('현재 app.config.ts 비밀번호 정책에 따른 만료 여부'),
-  "roleCode": zod.string().describe('역할 코드'),
-  "roleLabel": zod.string().describe('역할 표시명'),
-  "permissions": zod.array(zod.string()).describe('보유 권한 목록'),
-  "providers": zod.array(zod.string()).describe('연결된 로그인 제공자 목록'),
-  "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullable().describe('비밀번호 변경일'),
-  "lastLoginAt": zod.string().nullish().describe('최근 로그인 일시')
+  "requiresTwoFactor": zod.boolean(),
+  "accessToken": zod.string().optional().describe('초단기 액세스 토큰 (JWT)'),
+  "refreshToken": zod.string().optional().describe('네이티브 클라이언트용 Refresh Token')
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

@@ -1,13 +1,13 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { type IUserAuthService, USER_AUTH_SERVICE } from '@pkg/server-core/auth/user/user-auth.interface';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { type IUserAuthService, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
 import { User } from '#/core/database/entities/auth';
 import { Role } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { UpdateRoleResponseDto } from '#/modules/roles';
 import { UpdateRoleCommand } from '#/modules/roles/update-role.command';
+import { UpdateRoleResponseDto } from '#/modules/roles/update-role.response.dto';
 
 import { normalizePermissions } from './create-role.handler';
 
@@ -22,11 +22,12 @@ export class UpdateRoleHandler implements ICommandHandler<UpdateRoleCommand, Upd
     const input = command.input.input;
     if (input.label !== undefined) role.label = input.label.trim();
     if (input.description !== undefined) role.description = input.description.trim() || null;
+    role.updatedAt = new Date();
     if (input.permissions !== undefined) {
       role.permissions = await normalizePermissions(this.em, input.permissions);
-      await this.userAuthService.revokeRoleUsersTokens?.(role.id);
+      await this.em.flush();
+      await this.userAuthService.invalidateRoleTokens?.(role.id);
     }
-    role.updatedAt = new Date();
     return UpdateRoleResponseDto.parseEntity(role, await this.em.count(User, { role: role.id }));
   }
 }

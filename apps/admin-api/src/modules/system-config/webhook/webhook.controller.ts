@@ -1,17 +1,17 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
+import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
+import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
 import { AdminPermission } from '@pkg/shared';
 
-import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
-import { Permissions } from '#/core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-
-import { SyncWebhookConfigCommand } from './sync-webhook-config.command';
-import { SyncWebhookConfigResponseDto } from './sync-webhook-config.response.dto';
-import { TestWebhookCommand } from './test-webhook.command';
-import { TestWebhookRequestDto } from './test-webhook.request.dto';
-import { TestWebhookResponseDto } from './test-webhook.response.dto';
+import { SyncWebhookConfigCommand } from '#/modules/system-config/webhook/sync-webhook-config.command';
+import { SyncWebhookConfigRequestDto } from '#/modules/system-config/webhook/sync-webhook-config.request.dto';
+import { SyncWebhookConfigResponseDto } from '#/modules/system-config/webhook/sync-webhook-config.response.dto';
+import { TestWebhookCommand } from '#/modules/system-config/webhook/test-webhook.command';
+import { TestWebhookRequestDto } from '#/modules/system-config/webhook/test-webhook.request.dto';
+import { TestWebhookResponseDto } from '#/modules/system-config/webhook/test-webhook.response.dto';
 
 @ApiTags('system-configs')
 @UserAuth()
@@ -32,6 +32,6 @@ export class SystemConfigWebhookController {
   @SwaggerApiResponse(SyncWebhookConfigResponseDto)
   @ApiOperation({ summary: '웹훅 설정 동기화', operationId: 'SystemConfigController_syncConfigs_v1' })
   syncWebhookConfig(): Promise<SyncWebhookConfigResponseDto> {
-    return this.commandBus.execute(new SyncWebhookConfigCommand());
+    return this.commandBus.execute(new SyncWebhookConfigCommand(new SyncWebhookConfigRequestDto()));
   }
 }

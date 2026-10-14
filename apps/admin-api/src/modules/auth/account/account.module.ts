@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
+import { AuthAccountController } from '#/modules/auth/account/account.controller';
+import { FindIdHandler } from '#/modules/auth/account/find-id.handler';
+import { RegisterHandler } from '#/modules/auth/account/register.handler';
+import { UnregisterHandler } from '#/modules/auth/account/unregister.handler';
 import { AuthEmailVerificationModule } from '#/modules/auth/email-verification/email-verification.module';
 import { SystemConfigAdminEmailModule } from '#/modules/system-config/admin-email/admin-email.module';
-
-import { AuthAccountController } from './account.controller';
-import { FindIdHandler } from './find-id.handler';
-import { RegisterHandler } from './register.handler';
-import { UnregisterHandler } from './unregister.handler';
 
 @Module({
   controllers: [AuthAccountController],

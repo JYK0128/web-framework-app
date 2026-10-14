@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
 
-import { customerHandlers } from './customers.handlers';
+import { CustomerAccountModule } from '#/modules/customers/account/account.module';
+import { CustomerMembershipModule } from '#/modules/customers/membership/membership.module';
+import { CustomerProfileModule } from '#/modules/customers/profile/profile.module';
+import { CustomerSessionsModule } from '#/modules/customers/sessions/sessions.module';
 
 @Module({
-  imports: [CqrsModule],
-  providers: [...customerHandlers],
+  imports: [CustomerAccountModule, CustomerMembershipModule, CustomerSessionsModule, CustomerProfileModule],
 })
 export class CustomersModule {}

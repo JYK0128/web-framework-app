@@ -1,12 +1,14 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { HealthCheck, HealthCheckService, HealthIndicatorService, MikroOrmHealthIndicator } from '@nestjs/terminus';
+import { Public } from '@pkg/server-core/http/decorators/auth-mode.decorator';
+import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
 
-import { Public } from '#/core/http/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-import { KvStore } from '#/core/kv-store/kv-store.service';
-
-import { HealthResponseDto } from '.';
+import { CheckLiveRequestDto } from '#/modules/health/check-live.request.dto';
+import { CheckLiveResponseDto } from '#/modules/health/check-live.response.dto';
+import { CheckReadyRequestDto } from '#/modules/health/check-ready.request.dto';
+import { CheckReadyResponseDto } from '#/modules/health/check-ready.response.dto';
 
 /**
  * Health check controller
@@ -27,18 +29,18 @@ export class HealthController {
   @Get('live')
   @HealthCheck()
   @ApiOperation({ summary: 'Liveness Probe (프로세스 생존 여부 확인)' })
-  @SwaggerApiResponse(HealthResponseDto)
-  async checkLive(): Promise<HealthResponseDto> {
-    return HealthResponseDto.parse((await this.health.check([])));
+  @SwaggerApiResponse(CheckLiveResponseDto)
+  async checkLive(_input: CheckLiveRequestDto = new CheckLiveRequestDto()): Promise<CheckLiveResponseDto> {
+    return CheckLiveResponseDto.parse((await this.health.check([])));
   }
 
   @Public()
   @Get('ready')
   @HealthCheck()
   @ApiOperation({ summary: 'Readiness Probe (DB 및 Redis 연결 상태 종합 점검)' })
-  @SwaggerApiResponse(HealthResponseDto)
-  async checkReady(): Promise<HealthResponseDto> {
-    return HealthResponseDto.parse((await this.health.check([
+  @SwaggerApiResponse(CheckReadyResponseDto)
+  async checkReady(_input: CheckReadyRequestDto = new CheckReadyRequestDto()): Promise<CheckReadyResponseDto> {
+    return CheckReadyResponseDto.parse((await this.health.check([
       () => this.db.pingCheck('database'),
       () =>
         this.healthIndicatorService

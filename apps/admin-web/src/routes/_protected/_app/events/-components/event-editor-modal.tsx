@@ -14,10 +14,10 @@ export type EventEditorModalProps = ModalComponentProps<boolean> & { event?: Eve
 export function EventEditorModal({ event, readOnly = false, open, onOpenChange, close }: EventEditorModalProps) {
   const queryClient = useQueryClient();
   const form = useAppForm({
-    defaultValues: { title: event?.title ?? '', content: toEditorHtml(event?.content ?? ''), startsAt: event?.startsAt ?? '', endsAt: event?.endsAt ?? '', isPublished: event?.status === 'published' },
-    validators: { onSubmit: z.object({ title: z.string().trim().min(1, '제목을 입력해 주세요.').max(255), content: z.string().refine(hasEditorContent, '내용을 입력해 주세요.'), startsAt: z.string().min(1, '시작일을 입력해 주세요.'), endsAt: z.string().min(1, '종료일을 입력해 주세요.'), isPublished: z.boolean() }).refine((value) => new Date(value.endsAt) > new Date(value.startsAt), { path: ['endsAt'], message: '종료일은 시작일 이후여야 합니다.' }) },
+    defaultValues: { title: event?.title ?? '', content: toEditorHtml(event?.content ?? ''), startsAt: event?.startsAt ?? '', endsAt: event?.endsAt ?? '', publishedAt: event?.publishedAt ?? '' },
+    validators: { onSubmit: z.object({ title: z.string().trim().min(1, '제목을 입력해 주세요.').max(255), content: z.string().refine(hasEditorContent, '내용을 입력해 주세요.'), startsAt: z.string().min(1, '시작일을 입력해 주세요.'), endsAt: z.string().min(1, '종료일을 입력해 주세요.'), publishedAt: z.string().refine((value) => value === '' || !Number.isNaN(Date.parse(value)), '게시 일시를 확인해 주세요.') }).refine((value) => new Date(value.endsAt) > new Date(value.startsAt), { path: ['endsAt'], message: '종료일은 시작일 이후여야 합니다.' }) },
     onSubmit: async ({ value }) => {
-      const data: CreateEventRequestDto = { title: value.title.trim(), content: value.content.trim(), startsAt: new Date(value.startsAt).toISOString(), endsAt: new Date(value.endsAt).toISOString(), status: value.isPublished ? 'published' : 'draft' };
+      const data: CreateEventRequestDto = { title: value.title.trim(), content: value.content.trim(), startsAt: new Date(value.startsAt).toISOString(), endsAt: new Date(value.endsAt).toISOString(), publishedAt: value.publishedAt ? new Date(value.publishedAt).toISOString() : null };
       if (event) await eventsControllerUpdateV1(event.id, data);
       else await eventsControllerCreateV1(data);
       await queryClient.invalidateQueries({ queryKey: getEventsControllerListV1QueryKey() });
@@ -54,15 +54,20 @@ export function EventEditorModal({ event, readOnly = false, open, onOpenChange, 
               <form.AppField name="title">{(field) => <field.Input label="제목" placeholder="이벤트 제목" disabled={readOnly} required />}</form.AppField>
               <div className="
                 relative grid gap-4
-                sm:grid-cols-[1fr_1fr_4rem]
+                sm:grid-cols-2
               "
               >
                 <form.AppField name="startsAt">{(field) => <field.DatetimePicker label="시작일" placeholder="시작 일시 선택" disabled={readOnly} required />}</form.AppField>
                 <form.AppField name="endsAt">{(field) => <field.DatetimePicker label="종료일" placeholder="종료 일시 선택" disabled={readOnly} required />}</form.AppField>
-                <div className="sm:anchor-position-[--endsAt] sm:ml-4">
-                  <form.AppField name="isPublished">{(field) => <field.Checkbox label="게시" disabled={readOnly} />}</form.AppField>
-                </div>
+
               </div>
+              <form.AppField name="publishedAt">{(field) => <field.DatetimePicker label="게시 일시" placeholder="비워두면 임시저장" description="미래 일시를 선택하면 해당 시각부터 공개됩니다." disabled={readOnly} />}</form.AppField>
+              {!readOnly && (
+                <div className="flex gap-2">
+                  <Button type="button" variant="outline" onClick={() => form.setFieldValue('publishedAt', new Date().toISOString())}>지금 게시</Button>
+                  <Button type="button" variant="outline" onClick={() => form.setFieldValue('publishedAt', '')}>임시저장</Button>
+                </div>
+              )}
               <form.AppField name="content">{(field) => readOnly ? <EditorViewer content={field.state.value} /> : <field.Editor label="내용" required />}</form.AppField>
             </FormLayout>
           </Modal.Body>

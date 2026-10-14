@@ -16,6 +16,7 @@ export const SECURITY_CONFIG = {
   identityVerification: { maxRetries: 2, retryDelayMilliseconds: 200, retryMaxDelayMilliseconds: 10_000, retryBackoffFactor: 2, retryJitterEnabled: false },
   integrations: {
     httpRequestTimeoutSeconds: 5,
+    notificationProviderRequestTimeoutSeconds: 10,
     oauthIconMaxSizeBytes: 2 * 1024 * 1024,
     oauthIconPresignedUrlTtlSeconds: 300,
     pushMessageTtlMinutes: 60,

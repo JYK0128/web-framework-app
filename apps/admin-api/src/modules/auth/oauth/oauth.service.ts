@@ -1,18 +1,16 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { type IUserAuthService, type TokenPairResult, USER_AUTH_SERVICE } from '@pkg/server-core/auth/user/user-auth.interface';
+import type { OAuthIdentity, OAuthProviderConfig, PublicOAuthProvider } from '@pkg/server-core/oauth/oauth-provider.config';
+import { OAuthProviderService } from '@pkg/server-core/oauth/oauth-provider.service';
 import { ApplicationError } from '@pkg/shared/common';
 import { encrypt, hashWithSecret } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { type IUserAuthService, type TokenPairResult, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
 import { Account, Profile, User } from '#/core/database/entities/auth';
 import { Role } from '#/core/database/entities/auth.extensions';
-import { AdminSystemConfigCode, SystemConfig } from '#/core/database/entities/system-configs';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import type { OAuthIdentity, OAuthProviderConfig, PublicOAuthProvider } from '#/core/oauth/oauth.interface';
-import { OAuthProviderService } from '#/core/oauth/oauth.service';
+import { SystemContext } from '#/core/system.context';
 import { env } from '#/env';
-
-const CONFIG_CODE = AdminSystemConfigCode.OAUTH;
 
 export interface OAuthCompletion {
   tokens: TokenPairResult
@@ -24,6 +22,7 @@ export class OAuthService {
   constructor(
     private readonly em: AppEntityManager,
     private readonly oauthProvider: OAuthProviderService,
+    private readonly systemContext: SystemContext,
     @Inject(USER_AUTH_SERVICE) private readonly authService: IUserAuthService,
   ) {}
 
@@ -106,8 +105,8 @@ export class OAuthService {
   }
 
   private async getProviderMap(): Promise<Record<string, OAuthProviderConfig>> {
-    const config = await this.em.findOne(SystemConfig, { code: CONFIG_CODE }, { filters: false });
-    if (!config || !config.value || typeof config.value !== 'object' || Array.isArray(config.value)) return {};
-    return config.value as Record<string, OAuthProviderConfig>;
+    const { oauth } = await this.systemContext.getConfig();
+    if (!oauth || typeof oauth !== 'object' || Array.isArray(oauth)) return {};
+    return oauth as Record<string, OAuthProviderConfig>;
   }
 }

@@ -27,6 +27,16 @@ await stop();
 
 Redis Streams의 실제 그룹은 `<group>:<eventName>`, RabbitMQ queue는 `<group>.<eventName>`, Kafka group은 `<group>.<eventName>`, Kafka topic은 `<topic-prefix>.<eventName>`이다. 동일 이벤트·그룹의 소비자들은 작업을 분담하고 다른 그룹은 독립적으로 소비한다. Streams group 최초 생성은 `0`, Kafka 새 그룹은 `fromBeginning: true`라서 보관된 과거 이벤트도 처리한다. Pub/Sub는 모든 구독 서버에 전달된다.
 
+## CQRS 이벤트 수신
+
+업무 처리는 `Controller → Command/Query → Handler`로 실행한다. Q&A·상담의 저장과 이벤트 발행은 해당 핸들러에서 수행하고, 스케줄러는 Command만 실행한다. 브로커·SSE·WebSocket 전송 서비스는 인프라 역할을 유지한다.
+
+업무 이벤트 수신은 `*.handler.ts`의 `@EventsHandler(Event)`와 `IEventHandler<Event>`로 통일한다. 외부 브로커를 사용하는 핸들러에는 `@BrokerConsumer({ broker: EVENT_BROKER.REDIS_STREAMS, group: 'workers' })`처럼 연결과 소비자 옵션을 지정한다. 기본 주입 브로커를 사용하려면 `@BrokerConsumer()`를 사용한다.
+
+`BrokerEventHandlers`가 시작 시 핸들러를 탐색해 구독하고 종료 시 해제한다. 외부 이벤트는 해당 이벤트 클래스의 프로토타입을 복원하고 `handle()` 완료를 직접 기다린다. 모든 핸들러가 성공해야 구독 콜백이 성공하며, 예외는 어댑터에 전파되어 기존 ACK·재전달 정책을 따른다. 같은 이벤트·브로커·소비자 옵션의 핸들러들은 하나의 구독에서 순서대로 실행한다. 재전달 시 이미 성공했던 핸들러도 다시 실행될 수 있으므로 부작용은 멱등성을 갖춰야 한다.
+
+인메모리 브로커는 이미 Nest EventBus로 이벤트를 발행하므로 별도 구독을 추가하지 않아 중복 실행을 방지한다. 인메모리 CQRS 핸들러의 완료 보장은 기존과 동일하다. 외부 수신에서는 `EventBus.publish()`로 재발행하지 않으며, ACK를 위해 선택된 핸들러의 완료를 기다린다. `@BrokerConsumer`는 `@EventsHandler`와 함께 사용해야 하고, 필요한 브로커가 등록되지 않으면 시작에 실패한다. SSE 스트림 서비스는 스트림 제공과 토픽 라우팅을 맡는다.
+
 ## 운영 시 필요한 계약
 
 - Redis Streams는 XAUTOCLAIM을 지원하는 Redis 6.2 이상이 필요하다. `retryIdleMs`는 정상 처리의 최대 소요 시간보다 길게 설정한다. 짧으면 다른 소비자가 아직 처리 중인 작업을 회수할 수 있다. 회수 중에도 신규 작업을 소비한다.

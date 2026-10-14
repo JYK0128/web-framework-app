@@ -1,28 +1,25 @@
 import { HttpStatus, Logger } from '@nestjs/common';
+import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
+import { NotificationService } from '@pkg/server-core/notification/index';
 import { ApplicationError } from '@pkg/shared/common';
-import { ServiceSystemConfigCode } from '@pkg/shared/constants';
-import { decrypt, isEncrypted } from '@pkg/shared/server';
 
-import { SystemConfig } from '#/core/database/entities/system-configs';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { KvStore } from '#/core/kv-store/kv-store.service';
-import { MessageService } from '#/core/notification';
 import { env } from '#/env';
+import { SystemContext } from '#/modules/system-configs/system.context';
 
 type EmailConfig = { from?: string, smtp?: { host?: string, port?: number, secure?: boolean, user?: string, pass?: string } };
 
 const logger = new Logger('EmailVerificationHelper');
 
-export async function ensureEmailNotificationConfigured(em: AppEntityManager): Promise<void> {
+export async function ensureEmailNotificationConfigured(systemContext: SystemContext): Promise<void> {
   serviceWebUrl('/verify-email');
-  const config = await getEmailConfig(em);
+  const config = await getEmailConfig(systemContext);
   if (!hasEmailConfig(config)) {
     throw new ApplicationError({ code: 'EMAIL_NOTIFICATION_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
   }
 }
 
-export async function sendEmail(em: AppEntityManager, kv: KvStore, messages: MessageService, challengeKey: string, email: string, subject: string, text: string): Promise<void> {
-  const config = await getEmailConfig(em);
+export async function sendEmail(systemContext: SystemContext, kv: KvStore, messages: NotificationService, challengeKey: string, email: string, subject: string, text: string): Promise<void> {
+  const config = await getEmailConfig(systemContext);
   if (!hasEmailConfig(config)) {
     await kv.del(challengeKey);
     throw new ApplicationError({ code: 'EMAIL_NOTIFICATION_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
@@ -43,17 +40,8 @@ export async function sendEmail(em: AppEntityManager, kv: KvStore, messages: Mes
   }
 }
 
-async function getEmailConfig(em: AppEntityManager): Promise<EmailConfig | null> {
-  const entity = await em.findOne(SystemConfig, { code: ServiceSystemConfigCode.NOTIFICATION }, { filters: false });
-  if (typeof entity?.value !== 'object' || entity.value === null) return null;
-  const config = (entity.value as { email?: EmailConfig }).email;
-  if (!config?.smtp?.pass || !isEncrypted(config.smtp.pass)) return config ?? null;
-  try {
-    return { ...config, smtp: { ...config.smtp, pass: decrypt(config.smtp.pass, env.NOTIFICATION_EMAIL_ENCRYPTION_KEY) } };
-  }
-  catch (error) {
-    throw ApplicationError.from(error, { code: 'EMAIL_NOTIFICATION_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
-  }
+async function getEmailConfig(systemContext: SystemContext): Promise<EmailConfig | null> {
+  return (await systemContext.getNotificationConfig())?.email ?? null;
 }
 
 function hasEmailConfig(config: EmailConfig | null): config is EmailConfig & { from: string, smtp: { host: string, port: number, user: string, pass: string } } {

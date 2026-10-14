@@ -7,6 +7,7 @@ description: >-
 
 # Event Broker integration
 
+- Implement domain event consumers as `*.handler.ts` classes with Nest `@EventsHandler(Event)` and `IEventHandler<Event>`. Add `@BrokerConsumer({ broker: EVENT_BROKER.*, group, ... })` for external consumers or `@BrokerConsumer()` for the configured default. Do not register broker subscriptions or lifecycle hooks in domain handlers. `BrokerEventHandlers` discovers metadata, restores event prototypes, awaits external handler completion, and owns subscription cleanup; do not relay external delivery through fire-and-forget `EventBus.publish()`. In-memory consumers use the existing EventBus path exactly once.
 - Follow the `EventBroker` `publish` and `publishAll` contracts.
 - Use `src/infra/infra.module.ts` and `EventBrokerModule.forRoot(...)` as the configuration source.
 - `EventBroker` injection uses `defaultAdapter` from `EventBrokerModule.forRoot(...)`, defaulting to in-memory when omitted. Explicit `EVENT_BROKER.*` constructor tokens always select their own adapter independently. Reject unconfigured defaults at module registration; keep unconfigured external tokens unregistered. Do not add per-call `adapter` selection.

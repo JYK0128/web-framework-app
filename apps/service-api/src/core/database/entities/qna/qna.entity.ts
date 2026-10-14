@@ -1,14 +1,11 @@
 import { type Opt, type Rel } from '@mikro-orm/core';
 import { Entity, Enum, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
+import { QnaPriority, QnaStatus } from '@pkg/shared/constants';
 
 import { User } from '#/core/database/entities/auth/user.entity';
-import { BaseEntity } from '#/core/database/entities/common/base.entity';
+import { BaseEntity } from '#/core/database/entities/base.entity';
 import { ContentCategory } from '#/core/database/entities/common/content-category';
 
-export const QnaStatus = { OPEN: 'open', IN_PROGRESS: 'in_progress', ANSWERED: 'answered', CLOSED: 'closed' } as const;
-export type QnaStatus = (typeof QnaStatus)[keyof typeof QnaStatus];
-export const QnaPriority = { LOW: 'low', NORMAL: 'normal', HIGH: 'high', URGENT: 'urgent' } as const;
-export type QnaPriority = (typeof QnaPriority)[keyof typeof QnaPriority];
 export const QnaCategory = ContentCategory;
 export type QnaCategory = ContentCategory;
 

@@ -5,8 +5,8 @@
  * Data Plane Service API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { CreateSupportRoomResponseDto } from './createSupportRoomResponseDto';
 import type { SupportControllerCreateRoomV1200Meta } from './supportControllerCreateRoomV1200Meta';
-import type { SupportRoomItem } from './supportRoomItem';
 
 export type SupportControllerCreateRoomV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type SupportControllerCreateRoomV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: SupportRoomItem;
+  data: CreateSupportRoomResponseDto;
   message?: string;
   meta?: SupportControllerCreateRoomV1200Meta;
 };

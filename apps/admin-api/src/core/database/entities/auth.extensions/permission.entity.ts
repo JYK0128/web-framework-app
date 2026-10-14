@@ -1,7 +1,7 @@
 import { type Opt } from '@mikro-orm/core';
 import { Entity, Property } from '@mikro-orm/decorators/legacy';
 
-import { BaseEntity } from '#/core/database/entities/common/base.entity';
+import { BaseEntity } from '#/core/database/entities/base.entity';
 
 @Entity({ tableName: 'permission' })
 export class Permission extends BaseEntity {

@@ -4,5 +4,7 @@ import type { EnableTwoFactorRequestDto } from '#/modules/auth/two-factor/enable
 import type { EnableTwoFactorResponseDto } from '#/modules/auth/two-factor/enable-two-factor.response.dto';
 
 export class EnableTwoFactorCommand extends Command<EnableTwoFactorResponseDto> {
-  constructor(public readonly input: EnableTwoFactorRequestDto) { super(); }
+  constructor(public readonly input: EnableTwoFactorRequestDto) {
+    super();
+  }
 }

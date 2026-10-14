@@ -1,11 +1,10 @@
 import { HttpStatus } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
+import { EntityResponseDto } from '@pkg/server-core/http/dto/response/entity.response.dto';
 import { IsBoolean, IsInt, IsString, Max, Min } from 'class-validator';
 
 import { SystemConfig } from '#/core/database/entities/system-configs';
-import { EntityResponseDto } from '#/core/http/dto/response/entity.response.dto';
-
-import { AdminEmailConfigDto } from './admin-email-config.dto';
+import { AdminEmailConfigDto } from '#/modules/system-config/admin-email/admin-email-config.dto';
 
 export class AdminEmailConfigResponseDto extends EntityResponseDto(SystemConfig) {
   protected static override readonly validationError = {
@@ -21,7 +20,11 @@ export class AdminEmailConfigResponseDto extends EntityResponseDto(SystemConfig)
   @ApiProperty() @IsString() from!: string;
 
   static override parseEntity(entity: SystemConfig): AdminEmailConfigResponseDto {
-    const config = AdminEmailConfigDto.parseEntity(entity);
+    return this.parseValue(entity.value);
+  }
+
+  static parseValue(value: unknown): AdminEmailConfigResponseDto {
+    const config = AdminEmailConfigDto.parse(value);
     return this.parse({
       from: config.from,
       smtpHost: config.smtp.host,

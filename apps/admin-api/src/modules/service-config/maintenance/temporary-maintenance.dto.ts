@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 import { IsBoolean, IsDateString, IsOptional, IsString, Validate, type ValidationArguments } from 'class-validator';
-
-import { BaseDto } from '#/core/http/dto/base/base.dto';
 
 export class TemporaryMaintenanceDto extends BaseDto {
   @ApiProperty({ example: false, description: '임시 점검 활성화 여부' })

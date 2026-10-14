@@ -1,13 +1,19 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
+import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
+import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
 import { AdminPermission } from '@pkg/shared';
 
-import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
-import { Permissions } from '#/core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-import { InternalClient } from '#/core/http/internal-client';
-
-import { CreateFaqRequestDto, FaqActionResponseDto, FaqItemDto, FaqPageResponseDto, GetFaqsRequestDto, UpdateFaqRequestDto } from '.';
+import { InternalClient } from '#/core/internal-client';
+import { CreateFaqRequestDto } from '#/modules/faqs/create-faq.request.dto';
+import { CreateFaqResponseDto } from '#/modules/faqs/create-faq.response.dto';
+import { DeleteFaqRequestDto } from '#/modules/faqs/delete-faq.request.dto';
+import { DeleteFaqResponseDto } from '#/modules/faqs/delete-faq.response.dto';
+import { GetFaqsRequestDto } from '#/modules/faqs/get-faqs.request.dto';
+import { GetFaqsResponseDto } from '#/modules/faqs/get-faqs.response.dto';
+import { UpdateFaqRequestDto } from '#/modules/faqs/update-faq.request.dto';
+import { UpdateFaqResponseDto } from '#/modules/faqs/update-faq.response.dto';
 
 @ApiTags('faqs')
 @UserAuth()
@@ -17,9 +23,9 @@ export class FaqsController {
 
   @ApiOperation({ summary: 'FAQ 목록 조회' })
   @Permissions(AdminPermission.faq.read)
-  @SwaggerApiResponse(FaqPageResponseDto)
+  @SwaggerApiResponse(GetFaqsResponseDto)
   @Get()
-  async listFaqs(@Query() query: GetFaqsRequestDto): Promise<FaqPageResponseDto> {
+  async listFaqs(@Query() query: GetFaqsRequestDto): Promise<GetFaqsResponseDto> {
     const params = new URLSearchParams({ page: String(query.page), limit: String(query.limit) });
     for (const field of query.sort) params.append('sort[]', field);
     for (const direction of query.direction) params.append('direction[]', direction);
@@ -31,22 +37,23 @@ export class FaqsController {
   @Post()
   @Permissions(AdminPermission.faq.create)
   @HttpCode(HttpStatus.CREATED)
-  @SwaggerApiResponse(FaqItemDto, HttpStatus.CREATED)
-  async createFaq(@Body() input: CreateFaqRequestDto): Promise<FaqItemDto> {
+  @SwaggerApiResponse(CreateFaqResponseDto, HttpStatus.CREATED)
+  async createFaq(@Body() input: CreateFaqRequestDto): Promise<CreateFaqResponseDto> {
     return this.internalClient.fetch('/internal/faqs', { method: 'POST', body: input });
   }
 
   @Patch(':id')
   @Permissions(AdminPermission.faq.update)
-  @SwaggerApiResponse(FaqItemDto)
-  async updateFaq(@Param('id') id: string, @Body() input: UpdateFaqRequestDto): Promise<FaqItemDto> {
+  @SwaggerApiResponse(UpdateFaqResponseDto)
+  async updateFaq(@Param('id') id: string, @Body() input: UpdateFaqRequestDto): Promise<UpdateFaqResponseDto> {
     return this.internalClient.fetch(`/internal/faqs/${id}`, { method: 'PATCH', body: input });
   }
 
   @Delete(':id')
   @Permissions(AdminPermission.faq.delete)
-  @SwaggerApiResponse(FaqActionResponseDto)
-  async deleteFaq(@Param('id') id: string): Promise<FaqActionResponseDto> {
-    return this.internalClient.fetch(`/internal/faqs/${id}`, { method: 'DELETE' });
+  @SwaggerApiResponse(DeleteFaqResponseDto)
+  async deleteFaq(@Param('id') id: string): Promise<DeleteFaqResponseDto> {
+    const request = DeleteFaqRequestDto.parse({ faqId: id }).validate();
+    return this.internalClient.fetch(`/internal/faqs/${request.faqId}`, { method: 'DELETE' });
   }
 }

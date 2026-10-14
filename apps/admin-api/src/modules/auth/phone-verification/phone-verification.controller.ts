@@ -1,10 +1,10 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { SkipPasswordExpiry, SkipPhoneVerification, SkipTwoFactorSetup, UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
+import { NoStore } from '@pkg/server-core/http/decorators/no-store.decorator';
+import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
 
-import { SkipPasswordExpiry, SkipPhoneVerification, SkipTwoFactorSetup, UserAuth } from '#/core/http/decorators/auth-mode.decorator';
-import { NoStore } from '#/core/http/decorators/no-store.decorator';
-import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 import { VerifyPhoneNumberCommand } from '#/modules/auth/phone-verification/verify-phone-number.command';
 import { VerifyPhoneNumberRequestDto } from '#/modules/auth/phone-verification/verify-phone-number.request.dto';
 import { VerifyPhoneNumberResponseDto } from '#/modules/auth/phone-verification/verify-phone-number.response.dto';

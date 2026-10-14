@@ -321,7 +321,7 @@ const publicationStatusTones: Record<PublicationStatus, 'neutral' | 'info' | 'su
 
 function getPublicationStatus(term: ServiceTermItemDto): PublicationStatus {
   if (term.isPublished) return 'published';
-  if (term.publishedAt) return 'scheduled';
+  if (term.isScheduled) return 'scheduled';
   return 'draft';
 }
 

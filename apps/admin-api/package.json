@@ -21,7 +21,9 @@
     "test:system-config": "node tests/system-config.regression.mjs",
     "test:alimtalk": "node tests/alimtalk.integration.mjs",
     "test:terms": "node tests/terms.regression.mjs",
-    "test:service-terms": "node tests/service-terms.regression.mjs"
+    "test:service-terms": "node tests/service-terms.regression.mjs",
+    "test:two-factor": "node tests/two-factor.regression.mjs",
+    "test:domain-structure": "node tests/domain-structure.regression.mjs"
   },
   "mikro-orm": {
     "tsConfigPath": "./tsconfig.app.json",
@@ -48,6 +50,7 @@
     "@nestjs/throttler": "6.5.0",
     "@nestjs/websockets": "11.1.28",
     "@pkg/shared": "workspace:*",
+    "@pkg/server-core": "workspace:*",
     "@socket.io/redis-adapter": "8.3.0",
     "amqplib": "2.2.0",
     "axios": "1.20.0",

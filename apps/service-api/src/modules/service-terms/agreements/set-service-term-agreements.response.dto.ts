@@ -1,6 +1,5 @@
 import { ApiSchema } from '@nestjs/swagger';
-
-import { OkResponseDto } from '#/core/http/dto/response';
+import { OkResponseDto } from '@pkg/server-core/http/dto/response';
 
 @ApiSchema({ name: 'SetServiceTermAgreementsResponse' })
 export class SetServiceTermAgreementsResponseDto extends OkResponseDto {}

@@ -1,11 +1,10 @@
 import { Controller, type MessageEvent, Sse } from '@nestjs/common';
 import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
+import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
+import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
 import type { Observable } from 'rxjs';
 
-import { PrincipalContext } from '#/core/http/contexts/principal.context';
-import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
-
-import { NotificationStreamService } from './notification-stream.service';
+import { NotificationStreamService } from '#/modules/notifications/notification-stream.service';
 
 @ApiTags('notifications') @UserAuth() @Controller('notifications')
 export class NotificationsController {

@@ -1,11 +1,10 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Public, SkipPasswordExpiry, SkipTwoFactorSetup, UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
+import { NoStore } from '@pkg/server-core/http/decorators/no-store.decorator';
+import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
 
-import { Public, SkipPasswordExpiry, SkipTwoFactorSetup, UserAuth } from '#/core/http/decorators/auth-mode.decorator';
-import { NoStore } from '#/core/http/decorators/no-store.decorator';
-import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-import { LoginResponseDto } from '#/modules/auth/session/login.response.dto';
 import { DisableTwoFactorCommand } from '#/modules/auth/two-factor/disable-two-factor.command';
 import { DisableTwoFactorRequestDto } from '#/modules/auth/two-factor/disable-two-factor.request.dto';
 import { DisableTwoFactorResponseDto } from '#/modules/auth/two-factor/disable-two-factor.response.dto';
@@ -30,10 +29,10 @@ export class AuthTwoFactorController {
   @Post('login/2fa')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ operationId: 'AuthController_completeTwoFactorLogin_v1', summary: '2단계 인증 코드로 로그인 완료' })
-  @SwaggerApiResponse(LoginResponseDto)
+  @SwaggerApiResponse(TwoFactorLoginResponseDto)
   async completeTwoFactorLogin(
     @Body() dto: TwoFactorLoginRequestDto,
-  ): Promise<LoginResponseDto> {
+  ): Promise<TwoFactorLoginResponseDto> {
     return this.commandBus.execute<TwoFactorLoginCommand, TwoFactorLoginResponseDto>(
       new TwoFactorLoginCommand(dto),
     );

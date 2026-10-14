@@ -1,6 +1,7 @@
 export * from './boolean';
 export * from './date';
 export * from './encoding';
+export * from './enum';
 export * from './environment';
 export * from './error';
 export * from './fetch';

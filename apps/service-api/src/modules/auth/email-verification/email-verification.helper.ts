@@ -1,18 +1,19 @@
 import { randomBytes, randomUUID } from 'node:crypto';
 
 import { HttpStatus } from '@nestjs/common';
+import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
+import { NotificationService } from '@pkg/server-core/notification/index';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 
 import { SECURITY_CONFIG } from '#/app.config';
 import { Profile, User } from '#/core/database/entities/auth';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { KvStore } from '#/core/kv-store/kv-store.service';
-import { MessageService } from '#/core/notification';
 import { sendEmail, serviceWebUrl } from '#/modules/auth/auth-email.helper';
+import { SystemContext } from '#/modules/system-configs/system.context';
 
 type ChallengeRecord = { userId: string, emailHash: string, token: string };
 
-export async function sendEmailVerificationChallenge(em: AppEntityManager, kv: KvStore, messages: MessageService, user: User, profile: Profile, email: string): Promise<void> {
+export async function sendEmailVerificationChallenge(systemContext: SystemContext, kv: KvStore, messages: NotificationService, user: User, profile: Profile, email: string): Promise<void> {
   const challengeId = randomUUID();
   const token = randomBytes(32).toString('base64url');
   const key = `service:email-verification:${challengeId}`;
@@ -20,7 +21,7 @@ export async function sendEmailVerificationChallenge(em: AppEntityManager, kv: K
   const url = serviceWebUrl('/verify-email');
   url.searchParams.set('challengeId', challengeId);
   url.searchParams.set('token', token);
-  await sendEmail(em, kv, messages, key, email, '서비스 이메일 인증', `아래 링크에서 이메일 인증을 완료해 주세요. 링크는 ${SECURITY_CONFIG.registration.emailVerificationTokenTtlMinutes}분 동안 유효합니다.\n${url.toString()}`);
+  await sendEmail(systemContext, kv, messages, key, email, '서비스 이메일 인증', `아래 링크에서 이메일 인증을 완료해 주세요. 링크는 ${SECURITY_CONFIG.registration.emailVerificationTokenTtlMinutes}분 동안 유효합니다.\n${url.toString()}`);
 }
 
 export async function verifyEmailChallenge(em: AppEntityManager, kv: KvStore, challengeId: string, token: string): Promise<void> {

@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 import { IsBoolean, IsString, Matches } from 'class-validator';
-
-import { BaseDto } from '#/core/http/dto/base/base.dto';
 
 export class OperatingLunchBreakDto extends BaseDto {
   @ApiProperty({ example: false, description: '점심시간 활성화 여부' })

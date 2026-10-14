@@ -1,4 +1,4 @@
-import { defineEnum } from '#/core/schema/enum';
+import { defineEnum } from '@pkg/shared/common';
 
 export const ContentCategory = defineEnum('ContentCategory', {
   ACCOUNT: '계정',

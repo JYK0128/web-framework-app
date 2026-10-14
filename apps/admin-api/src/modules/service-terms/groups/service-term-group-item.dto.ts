@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-
-import { BaseDto } from '#/core/http/dto/base/base.dto';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 
 export class ServiceTermGroupItemDto extends BaseDto {
   @ApiProperty() id!: string;

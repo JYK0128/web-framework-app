@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { EntityDto } from '@pkg/server-core/http/dto/base/entity.dto';
 import { decrypt } from '@pkg/shared/server';
 
 import { Profile } from '#/core/database/entities/auth';
-import { EntityDto } from '#/core/http/dto/base/entity.dto';
 
 export class FindIdItemDto extends EntityDto(Profile) {
   @ApiProperty() maskedEmail!: string;

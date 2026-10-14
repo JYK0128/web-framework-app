@@ -4,19 +4,19 @@ import { ApplicationError } from '@pkg/shared/common';
 
 import { Faq } from '#/core/database/entities/faqs';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { FaqDetailResponseDto } from '#/modules/faqs';
 import { GetFaqQuery } from '#/modules/faqs/get-faq.query';
+import { GetFaqResponseDto } from '#/modules/faqs/get-faq.response.dto';
 
 @Injectable()
 @QueryHandler(GetFaqQuery)
-export class GetFaqHandler implements IQueryHandler<GetFaqQuery, FaqDetailResponseDto> {
+export class GetFaqHandler implements IQueryHandler<GetFaqQuery, GetFaqResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(query: GetFaqQuery): Promise<FaqDetailResponseDto> {
+  async execute(query: GetFaqQuery): Promise<GetFaqResponseDto> {
     const faq = await this.em.findOne(Faq, { id: query.input.faqId, isPublished: true });
     if (!faq) {
       throw new ApplicationError({ code: 'FAQ_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
-    return FaqDetailResponseDto.parseEntity(faq);
+    return GetFaqResponseDto.parseEntity(faq);
   }
 }

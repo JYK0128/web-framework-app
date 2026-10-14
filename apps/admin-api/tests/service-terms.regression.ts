@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { ApplicationError } from '@pkg/shared/common';
-import type { MachineAuthIssuer, MachineConnection } from '../src/core/auth/machine/machine-auth.interface';
+import type { MachineAuthIssuer, MachineConnection } from '@pkg/server-core/auth/machine/machine-auth.interface';
 import type { RequestContext } from '../src/core/http/contexts/request.context';
 import { httpClient } from '../src/core/http/http-client';
 import { InternalClient } from '../src/core/http/internal-client';

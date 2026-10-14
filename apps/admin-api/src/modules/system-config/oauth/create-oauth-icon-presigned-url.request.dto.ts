@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 import { IsIn, IsInt, IsNotEmpty, IsString, Max, Min } from 'class-validator';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { BaseDto } from '#/core/http/dto/base/base.dto';
 
 export class CreateOAuthIconPresignedUrlRequestDto extends BaseDto {
   @ApiProperty({ example: 'google.png' })

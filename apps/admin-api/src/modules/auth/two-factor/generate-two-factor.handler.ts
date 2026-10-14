@@ -1,7 +1,9 @@
 import { randomBytes } from 'node:crypto';
 
+import { LockMode } from '@mikro-orm/core';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
 import { ApplicationError } from '@pkg/shared/common';
 import { encrypt } from '@pkg/shared/server';
 
@@ -9,7 +11,6 @@ import { SECURITY_CONFIG } from '#/app.config';
 import { User } from '#/core/database/entities/auth';
 import { TwoFactor } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { env } from '#/env';
 import { GenerateTwoFactorCommand } from '#/modules/auth/two-factor/generate-two-factor.command';
 import { GenerateTwoFactorResponseDto } from '#/modules/auth/two-factor/generate-two-factor.response.dto';
@@ -21,22 +22,22 @@ export class GenerateTwoFactorHandler implements ICommandHandler<GenerateTwoFact
 
   async execute(): Promise<GenerateTwoFactorResponseDto> {
     if (!SECURITY_CONFIG.twoFactor.enabled && !SECURITY_CONFIG.twoFactor.required) throw new ApplicationError({ code: 'TWO_FACTOR_DISABLED', status: HttpStatus.FORBIDDEN });
-    const user = await this.em.findOne(User, { id: this.principal.ensureUser().id }, { filters: false });
-    if (!user) throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
-    if (user.twoFactorEnabled) throw new ApplicationError({ code: 'TWO_FACTOR_ALREADY_ENABLED', status: HttpStatus.BAD_REQUEST });
-    const secret = toBase32(randomBytes(20));
-    const existing = await this.em.findOne(TwoFactor, { user: user.id }, { filters: false });
-    if (existing) {
-      if (existing.isLocked) throw new ApplicationError({ code: 'TWO_FACTOR_SETUP_LOCKED', status: HttpStatus.TOO_MANY_REQUESTS });
-      existing.secret = encrypt(secret, env.TWO_FACTOR_ENCRYPTION_KEY);
-      existing.verified = false;
-      existing.failedVerificationCount = 0;
-      existing.lockedUntil = null;
-    }
-    else {
-      this.em.persist(this.em.create(TwoFactor, { user: this.em.getReference(User, user.id), secret: encrypt(secret, env.TWO_FACTOR_ENCRYPTION_KEY), verified: false }));
-    }
-    return GenerateTwoFactorResponseDto.parse({ secret, digits: SECURITY_CONFIG.twoFactor.digits, periodSeconds: SECURITY_CONFIG.twoFactor.periodSeconds });
+    return this.em.transactional(async (em) => {
+      const user = await em.findOne(User, { id: this.principal.ensureUser().id }, { filters: false, refresh: true, lockMode: LockMode.PESSIMISTIC_WRITE });
+      if (!user) throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
+      if (user.twoFactorEnabled) throw new ApplicationError({ code: 'TWO_FACTOR_ALREADY_ENABLED', status: HttpStatus.BAD_REQUEST });
+      const secret = toBase32(randomBytes(20));
+      const existing = await em.findOne(TwoFactor, { user: user.id }, { filters: false, refresh: true, lockMode: LockMode.PESSIMISTIC_WRITE });
+      if (existing) {
+        if (existing.isLocked) throw new ApplicationError({ code: 'TWO_FACTOR_SETUP_LOCKED', status: HttpStatus.TOO_MANY_REQUESTS });
+        existing.secret = encrypt(secret, env.TWO_FACTOR_ENCRYPTION_KEY);
+        existing.verified = false;
+      }
+      else {
+        em.persist(em.create(TwoFactor, { user: em.getReference(User, user.id), secret: encrypt(secret, env.TWO_FACTOR_ENCRYPTION_KEY), verified: false }));
+      }
+      return GenerateTwoFactorResponseDto.parse({ secret, digits: SECURITY_CONFIG.twoFactor.digits, periodSeconds: SECURITY_CONFIG.twoFactor.periodSeconds });
+    });
   }
 }
 

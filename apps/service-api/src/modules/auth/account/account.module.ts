@@ -1,14 +1,15 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { AuthAccountController } from './account.controller';
-import { FindIdHandler } from './find-id.handler';
-import { RegisterHandler } from './register.handler';
-import { UnregisterHandler } from './unregister.handler';
+import { AuthAccountController } from '#/modules/auth/account/account.controller';
+import { FindIdHandler } from '#/modules/auth/account/find-id.handler';
+import { RegisterHandler } from '#/modules/auth/account/register.handler';
+import { UnregisterHandler } from '#/modules/auth/account/unregister.handler';
+import { SystemConfigsModule } from '#/modules/system-configs/system-configs.module';
 
 @Module({
   controllers: [AuthAccountController],
-  imports: [CqrsModule],
+  imports: [CqrsModule, SystemConfigsModule],
   providers: [FindIdHandler, RegisterHandler, UnregisterHandler],
 })
 export class AuthAccountModule {}

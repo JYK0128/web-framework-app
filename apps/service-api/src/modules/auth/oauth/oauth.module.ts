@@ -1,13 +1,23 @@
 import { Module } from '@nestjs/common';
+import { OAuthProviderModule } from '@pkg/server-core/oauth/oauth-provider.module';
 
-import { OAuthProviderModule } from '#/core/oauth/oauth.module';
+import { SECURITY_CONFIG, SERVICE_ID } from '#/app.config';
+import { env } from '#/env';
+import { OAuthController } from '#/modules/auth/oauth/oauth.controller';
+import { OAuthService } from '#/modules/auth/oauth/oauth.service';
+import { SystemConfigsModule } from '#/modules/system-configs/system-configs.module';
 
-import { OAuthController } from './oauth.controller';
-import { OAuthService } from './oauth.service';
+const oauthProviderModule = OAuthProviderModule.forRoot({
+  namespace: SERVICE_ID,
+  stateTtlMinutes: SECURITY_CONFIG.token.oauthStateTtlMinutes,
+  requestTimeoutMs: SECURITY_CONFIG.integrations.oauthProviderRequestTimeoutSeconds * 1000,
+  allowHttp: env.NODE_ENV === 'development',
+  encryptionKey: env.OAUTH_ENCRYPTION_KEY,
+});
 
 @Module({
   controllers: [OAuthController],
-  imports: [OAuthProviderModule],
+  imports: [oauthProviderModule, SystemConfigsModule],
   providers: [OAuthService],
 })
 export class AuthOAuthModule {}

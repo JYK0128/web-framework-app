@@ -1,10 +1,10 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Public, SkipPasswordExpiry, UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
+import { NoStore } from '@pkg/server-core/http/decorators/no-store.decorator';
+import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
 
-import { Public, SkipPasswordExpiry, UserAuth } from '#/core/http/decorators/auth-mode.decorator';
-import { NoStore } from '#/core/http/decorators/no-store.decorator';
-import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 import { ChangePasswordCommand } from '#/modules/auth/credential/change-password.command';
 import { ChangePasswordRequestDto } from '#/modules/auth/credential/change-password.request.dto';
 import { ChangePasswordResponseDto } from '#/modules/auth/credential/change-password.response.dto';

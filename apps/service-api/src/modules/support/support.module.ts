@@ -1,20 +1,12 @@
 import { Module } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
 
-import { SystemConfigsModule } from '#/modules/system-configs/system-configs.module';
-
-import { InquiryAlertService } from './notification/inquiry-alert.service';
-import { SupportInquiryScheduler } from './notification/support-inquiry.scheduler';
-import { SupportRoomCreatedHandler } from './rooms/support-room-created.handler';
-import { SupportController } from './support.controller';
-import { SupportGateway } from './support.gateway';
-import { SupportService } from './support.service';
-import { SupportInternalController } from './support-internal.controller';
+import { SupportMessagesModule } from '#/modules/support/messages/messages.module';
+import { SupportNotificationModule } from '#/modules/support/notification/notification.module';
+import { SupportRealtimeModule } from '#/modules/support/realtime/realtime.module';
+import { SupportRoomsModule } from '#/modules/support/rooms/rooms.module';
 
 @Module({
-  imports: [CqrsModule, SystemConfigsModule],
-  controllers: [SupportController, SupportInternalController],
-  providers: [SupportService, SupportGateway, InquiryAlertService, SupportInquiryScheduler, SupportRoomCreatedHandler],
-  exports: [InquiryAlertService],
+  imports: [SupportRoomsModule, SupportMessagesModule, SupportRealtimeModule, SupportNotificationModule],
+  exports: [SupportNotificationModule],
 })
 export class SupportModule {}

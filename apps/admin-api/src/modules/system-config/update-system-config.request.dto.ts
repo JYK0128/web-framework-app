@@ -1,9 +1,9 @@
 import { ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 import { NotificationConfigDto } from '@pkg/shared/server';
 import { Type } from 'class-transformer';
 import { IsObject, IsOptional, Validate, ValidateNested } from 'class-validator';
 
-import { BaseDto } from '#/core/http/dto/base/base.dto';
 import { UpdateAdminEmailConfigRequestDto } from '#/modules/system-config/admin-email/update-admin-email-config.request.dto';
 import { OAuthConfigDto } from '#/modules/system-config/oauth/oauth-config.dto';
 import { OAuthConfigValidator } from '#/modules/system-config/oauth/oauth-config.validator';

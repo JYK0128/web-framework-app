@@ -13,7 +13,6 @@ const envSchema = z.object({
   DATABASE_URL: z.string().min(1),
   REDIS_URL: z.string().min(1),
   LOKI_URL: z.url(),
-  STORAGE_DRIVER: z.enum(['local', 's3']).default('local'),
   STORAGE_S3_BUCKET: z.string().min(1).optional(),
   STORAGE_S3_REGION: z.string().min(1).optional(),
   STORAGE_S3_ENDPOINT: z.url().optional(),
@@ -25,11 +24,6 @@ const envSchema = z.object({
   SERVICE_API_URL: z.url(),
   APP_BASE_URL: z.url(),
   PORTONE_API_SECRET: z.string().min(1),
-}).superRefine((config, context) => {
-  if (config.STORAGE_DRIVER !== 's3') return;
-  for (const key of ['STORAGE_S3_BUCKET', 'STORAGE_S3_ACCESS_KEY_ID', 'STORAGE_S3_SECRET_ACCESS_KEY'] as const) {
-    if (!config[key]) context.addIssue({ code: 'custom', path: [key], message: `${key} is required when STORAGE_DRIVER=s3` });
-  }
 });
 
 const parsed = envSchema.safeParse(process.env);

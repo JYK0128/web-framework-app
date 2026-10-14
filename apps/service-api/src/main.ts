@@ -7,15 +7,18 @@ import { VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { FileStorageService } from '@pkg/server-core/file-storage/file-storage.service';
+import { serveStorageFiles } from '@pkg/server-core/file-storage/storage.http';
+import { ApiErrorResponseDto } from '@pkg/server-core/http/dto/response/api.response.dto';
+import { createI18nMiddleware } from '@pkg/server-core/http/middlewares/i18n.middleware';
+import { LoggerService } from '@pkg/server-core/logger/logger.service';
+import { SocketIoAdapter } from '@pkg/server-core/realtime/adapters/socket-io.adapter';
 import helmet from 'helmet';
 
 import { SECURITY_CONFIG, SERVICE_RUNTIME_CONFIG } from '#/app.config';
 import { DatabaseSeeder } from '#/core/database/seeders/database.seeder';
-import { serveStorageFiles } from '#/core/file-storage/storage.http';
-import { ApiErrorResponseDto } from '#/core/http/dto/response/api.response.dto';
-import { createI18nMiddleware } from '#/core/http/middlewares/i18n.middleware';
-import { LoggerService } from '#/core/logger/logger.service';
-import { SocketIoAdapter } from '#/core/realtime/adapters/socket-io.adapter';
+import en from '#/locales/en.json';
+import ko from '#/locales/ko.json';
 
 import { AppModule } from './app.module';
 import { env } from './env';
@@ -63,14 +66,14 @@ async function bootstrap(): Promise<void> {
     origin: false,
   });
 
-  if (env.STORAGE_DRIVER === 'local') {
+  if (app.get(FileStorageService).has('local')) {
     await serveStorageFiles(app, {
       directory: resolve(process.cwd(), SERVICE_RUNTIME_CONFIG.storage.localDirectory),
       publicUrlPrefix: SERVICE_RUNTIME_CONFIG.storage.publicUrlPrefix,
       cacheMaxAgeSeconds: SERVICE_RUNTIME_CONFIG.staticAssetsCacheMaxAgeSeconds,
     });
   }
-  app.use(createI18nMiddleware());
+  app.use(createI18nMiddleware({ en: { translation: en }, ko: { translation: ko } }));
 
   setupSwagger(app);
 

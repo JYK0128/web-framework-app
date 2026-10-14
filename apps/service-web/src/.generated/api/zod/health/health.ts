@@ -45,4 +45,3 @@ export const HealthControllerCheckReadyV1Response = zod.object({
   "responseTime": zod.number().optional().describe('Time the health indicator took to respond, in ms')
 })).optional()
 })
-

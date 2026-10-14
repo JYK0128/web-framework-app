@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
-import { InternalClient } from '#/core/http/internal-client';
+import { InternalClient } from '#/core/internal-client';
 import { CreateOAuthIconPresignedUrlCommand } from '#/modules/system-config/oauth/create-oauth-icon-presigned-url.command';
 import { CreateOAuthIconPresignedUrlResponseDto } from '#/modules/system-config/oauth/create-oauth-icon-presigned-url.response.dto';
 

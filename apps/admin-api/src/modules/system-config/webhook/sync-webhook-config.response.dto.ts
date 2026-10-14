@@ -1,3 +1,3 @@
-import { OkResponseDto } from '#/core/http/dto/response/ok.response.dto';
+import { OkResponseDto } from '@pkg/server-core/http/dto/response/ok.response.dto';
 
 export class SyncWebhookConfigResponseDto extends OkResponseDto {}

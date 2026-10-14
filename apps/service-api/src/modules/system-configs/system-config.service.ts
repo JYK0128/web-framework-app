@@ -1,6 +1,9 @@
 import { randomUUID } from 'node:crypto';
 
 import { HttpStatus, Injectable, NotFoundException, type OnModuleInit } from '@nestjs/common';
+import { StorageService } from '@pkg/server-core/file-storage/storage.service';
+import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
+import { assertEnabledOAuthProvidersAreConfigured } from '@pkg/server-core/oauth/oauth-provider-validation';
 import { ApplicationError, TimeUtil, z } from '@pkg/shared/common';
 import { ServiceSystemConfigCode } from '@pkg/shared/constants';
 import { decrypt, encrypt, isEncrypted, type NotificationConfigDto } from '@pkg/shared/server';
@@ -10,23 +13,28 @@ import { SECURITY_CONFIG } from '#/app.config';
 import { SystemConfig } from '#/core/database/entities/system-configs';
 import { Upload, UploadStatus } from '#/core/database/entities/uploads';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { StorageService } from '#/core/file-storage/storage.service';
-import { KvStore } from '#/core/kv-store/kv-store.service';
-import { assertEnabledOAuthProvidersAreConfigured } from '#/core/oauth/oauth-provider-validation';
 import { env } from '#/env';
-
-import { assertEnabledNotificationProvidersAreConfigured } from './notification/notification-provider-validation';
-import { CreateOAuthIconPresignedUrlRequestDto, CreateOAuthIconPresignedUrlResponseDto, OAUTH_ICON_SUBDIR } from './oauth/oauth-icon.dto';
-import { SystemConfigSnapshotSchema, SystemContext } from './system.context';
-import { SERVICE_SYSTEM_CONFIGS_REDIS_KEY } from './system-config.constants';
+import { NOTIFICATION_SECRET_PATHS, transformNotificationSecrets } from '#/modules/system-configs/notification/notification-config-secrets';
+import { assertEnabledNotificationProvidersAreConfigured } from '#/modules/system-configs/notification/notification-provider-validation';
+import { CreateOAuthIconPresignedUrlRequestDto } from '#/modules/system-configs/oauth/create-oauth-icon-presigned-url.request.dto';
+import { CreateOAuthIconPresignedUrlResponseDto } from '#/modules/system-configs/oauth/create-oauth-icon-presigned-url.response.dto';
+import { OAUTH_ICON_SUBDIR } from '#/modules/system-configs/oauth/oauth-icon.helpers';
+import { ServiceContext, ServiceContextSnapshotSchema } from '#/modules/system-configs/service.context';
+import { SystemContext, SystemContextSnapshotSchema } from '#/modules/system-configs/system.context';
+import { SERVICE_CONTEXT_REDIS_KEY, SERVICE_SYSTEM_CONTEXT_REDIS_KEY } from '#/modules/system-configs/system-config.constants';
 
 const CONFIG_CODES = Object.values(ServiceSystemConfigCode);
-const RUNTIME_SNAPSHOT_CODES = [
+const SERVICE_CONTEXT_CODES = [
   ServiceSystemConfigCode.OPERATION,
   ServiceSystemConfigCode.MAINTENANCE,
   ServiceSystemConfigCode.INQUIRY,
-  ServiceSystemConfigCode.WEBHOOK,
 ] as const;
+const SYSTEM_CONTEXT_CODES = [
+  ServiceSystemConfigCode.WEBHOOK,
+  ServiceSystemConfigCode.NOTIFICATION,
+  ServiceSystemConfigCode.OAUTH,
+] as const;
+const CONTEXT_CONFIG_CODES = [...SERVICE_CONTEXT_CODES, ...SYSTEM_CONTEXT_CODES];
 const CONFIG_VALUE_SCHEMA = z.record(z.string(), z.unknown()).optional();
 const UPDATE_SCHEMA = z.object(Object.fromEntries(
   CONFIG_CODES.map((code) => [code, CONFIG_VALUE_SCHEMA]),
@@ -34,35 +42,6 @@ const UPDATE_SCHEMA = z.object(Object.fromEntries(
 
 type NotificationConfigValue = Record<string, unknown>;
 type ParsedSystemConfigUpdates = z.infer<typeof UPDATE_SCHEMA>;
-
-const NOTIFICATION_SECRET_PATHS = [
-  'email.smtp.pass',
-  'messenger.kakao.nhn.appKey',
-  'messenger.kakao.nhn.secretKey',
-  'messenger.kakao.solapi.apiKey',
-  'messenger.kakao.solapi.apiSecret',
-  'messenger.kakao.aligo.apiKey',
-  'messenger.line.channelSecret',
-  'messenger.line.accessToken',
-  'messenger.whatsapp.accessToken',
-  'messenger.telegram.botToken',
-  'messenger.wechat.appSecret',
-  'sms.nhn.secretKey',
-  'sms.solapi.apiKey',
-  'sms.solapi.apiSecret',
-  'sms.aligo.apiKey',
-  'push.fcm.apiKey',
-  'push.fcm.privateKey',
-  'push.nhn.appKey',
-  'push.nhn.userAccessKeyId',
-  'push.nhn.secretAccessKey',
-] as const;
-const NOTIFICATION_ENCRYPTION_KEYS = {
-  email: env.NOTIFICATION_EMAIL_ENCRYPTION_KEY,
-  messenger: env.NOTIFICATION_MESSENGER_ENCRYPTION_KEY,
-  sms: env.NOTIFICATION_SMS_ENCRYPTION_KEY,
-  push: env.NOTIFICATION_PUSH_ENCRYPTION_KEY,
-} as const;
 
 function readPath(value: unknown, path: string[]): unknown {
   let current = value;
@@ -86,23 +65,13 @@ function writePath(value: Record<string, unknown>, path: string[], nextValue: un
   current[path[path.length - 1]] = nextValue;
 }
 
-function transformNotificationSecrets(value: Record<string, unknown>, transform: (secret: string, key: string) => string): void {
-  for (const secretPath of NOTIFICATION_SECRET_PATHS) {
-    const path = secretPath.split('.');
-    const secret = readPath(value, path);
-    if (typeof secret === 'string' && secret.length > 0) {
-      const key = NOTIFICATION_ENCRYPTION_KEYS[path[0] as keyof typeof NOTIFICATION_ENCRYPTION_KEYS];
-      writePath(value, path, transform(secret, key));
-    }
-  }
-}
-
 @Injectable()
 export class SystemConfigService implements OnModuleInit {
   constructor(
     private readonly em: AppEntityManager,
     private readonly kvStore: KvStore,
     private readonly storageService: StorageService,
+    private readonly serviceContext: ServiceContext,
     private readonly systemContext: SystemContext,
   ) {}
 
@@ -129,14 +98,14 @@ export class SystemConfigService implements OnModuleInit {
     this.applyUpdates(updates, configs);
     await this.markOAuthIconsReady(updates);
     await this.em.flush();
-    await this.syncRuntimeSnapshotIfChanged(updates);
+    await this.syncContextsIfChanged(updates);
     return CONFIG_CODES.filter((code) => updates[code] !== undefined);
   }
 
   async createOAuthIconPresignedUrl(input: CreateOAuthIconPresignedUrlRequestDto): Promise<CreateOAuthIconPresignedUrlResponseDto> {
     const extension = (/\.([a-zA-Z0-9]+)$/.exec(input.filename)?.[1] ?? 'png').toLowerCase();
     const filename = `${randomUUID()}.${extension}`;
-    const presigned = await this.storageService.getPresignedUploadUrl(
+    const presigned = await this.storageService.use('s3').getPresignedUploadUrl(
       OAUTH_ICON_SUBDIR,
       filename,
       input.contentType,
@@ -164,14 +133,14 @@ export class SystemConfigService implements OnModuleInit {
     if (upload.mimeType !== contentType || buffer.length > SECURITY_CONFIG.integrations.oauthIconMaxSizeBytes || buffer.length > upload.size) {
       throw new ApplicationError({ code: 'OAUTH_ICON_UPLOAD_INVALID', status: HttpStatus.BAD_REQUEST });
     }
-    await this.storageService.saveFile(OAUTH_ICON_SUBDIR, filename, buffer);
+    await this.storageService.use('s3').saveFile(OAUTH_ICON_SUBDIR, filename, buffer);
   }
 
   async getOAuthIcon(filename: string): Promise<{ buffer: Buffer, contentType: string }> {
     const upload = await this.em.findOne(Upload, { storedName: filename, subDir: OAUTH_ICON_SUBDIR }, { filters: false });
     if (!upload || upload.status !== UploadStatus.READY) throw new NotFoundException('OAuth 아이콘을 찾을 수 없습니다.');
     try {
-      return { buffer: await this.storageService.readFile(OAUTH_ICON_SUBDIR, filename), contentType: upload.mimeType };
+      return { buffer: await this.storageService.use('s3').readFile(OAUTH_ICON_SUBDIR, filename), contentType: upload.mimeType };
     }
     catch {
       throw new NotFoundException('OAuth 아이콘 파일을 찾을 수 없습니다.');
@@ -179,20 +148,40 @@ export class SystemConfigService implements OnModuleInit {
   }
 
   async syncToRedis(em: AppEntityManager = this.em): Promise<void> {
-    const configs = await em.find(SystemConfig, {
-      code: { $in: RUNTIME_SNAPSHOT_CODES },
-    }, { filters: false });
+    await this.syncServiceContextToRedis(em);
+    await this.syncSystemContextToRedis(em);
+  }
+
+  private async syncServiceContextToRedis(em: AppEntityManager): Promise<void> {
+    const configs = await em.find(SystemConfig, { code: { $in: SERVICE_CONTEXT_CODES } }, { filters: false });
     const values = new Map(configs.map((config) => [config.code, config.value]));
-    const result = SystemConfigSnapshotSchema.safeParse({
+    const result = ServiceContextSnapshotSchema.safeParse({
       operation: values.get(ServiceSystemConfigCode.OPERATION),
       maintenance: values.get(ServiceSystemConfigCode.MAINTENANCE),
       inquiry: values.get(ServiceSystemConfigCode.INQUIRY),
-      webhook: values.get(ServiceSystemConfigCode.WEBHOOK),
     });
     if (!result.success) {
       throw new ApplicationError({ code: 'SYSTEM_CONFIG_INVALID', status: HttpStatus.SERVICE_UNAVAILABLE, details: result.error.issues });
     }
-    await this.kvStore.set(SERVICE_SYSTEM_CONFIGS_REDIS_KEY, result.data);
+    await this.kvStore.set(SERVICE_CONTEXT_REDIS_KEY, result.data);
+    this.serviceContext.invalidateCache();
+  }
+
+  private async syncSystemContextToRedis(em: AppEntityManager): Promise<void> {
+    const configs = await em.find(SystemConfig, { code: { $in: SYSTEM_CONTEXT_CODES } }, { filters: false });
+    const values = new Map(configs.map((config) => [config.code, config.value]));
+    const webhook = values.get(ServiceSystemConfigCode.WEBHOOK);
+    const notification = values.get(ServiceSystemConfigCode.NOTIFICATION);
+    const oauth = values.get(ServiceSystemConfigCode.OAUTH);
+    const result = SystemContextSnapshotSchema.safeParse({
+      webhook,
+      notification: isPlainObject(notification) ? notification : null,
+      oauth: isPlainObject(oauth) ? oauth : null,
+    });
+    if (!result.success) {
+      throw new ApplicationError({ code: 'SYSTEM_CONFIG_INVALID', status: HttpStatus.SERVICE_UNAVAILABLE, details: result.error.issues });
+    }
+    await this.kvStore.set(SERVICE_SYSTEM_CONTEXT_REDIS_KEY, result.data);
     this.systemContext.invalidateCache();
   }
 
@@ -288,15 +277,24 @@ export class SystemConfigService implements OnModuleInit {
   }
 
   private validateRuntimeSnapshot(updates: ParsedSystemConfigUpdates, configs: Map<SystemConfig['code'], SystemConfig>): void {
-    const snapshot = {
+    const serviceContext = {
       operation: updates.operation ?? configs.get(ServiceSystemConfigCode.OPERATION)?.value,
       maintenance: updates.maintenance ?? configs.get(ServiceSystemConfigCode.MAINTENANCE)?.value,
       inquiry: updates.inquiry ?? configs.get(ServiceSystemConfigCode.INQUIRY)?.value,
-      webhook: updates.webhook ?? configs.get(ServiceSystemConfigCode.WEBHOOK)?.value,
     };
-    const result = SystemConfigSnapshotSchema.safeParse(snapshot);
-    if (!result.success) {
-      throw new ApplicationError({ code: 'SYSTEM_CONFIG_INVALID', status: HttpStatus.BAD_REQUEST, details: result.error.issues });
+    const systemContext = {
+      webhook: updates.webhook ?? configs.get(ServiceSystemConfigCode.WEBHOOK)?.value,
+      notification: updates.notification ?? configs.get(ServiceSystemConfigCode.NOTIFICATION)?.value ?? null,
+      oauth: updates.oauth ?? configs.get(ServiceSystemConfigCode.OAUTH)?.value ?? null,
+    };
+    const serviceResult = ServiceContextSnapshotSchema.safeParse(serviceContext);
+    const systemResult = SystemContextSnapshotSchema.safeParse(systemContext);
+    if (!serviceResult.success || !systemResult.success) {
+      const issues = [
+        ...(serviceResult.success ? [] : serviceResult.error.issues),
+        ...(systemResult.success ? [] : systemResult.error.issues),
+      ];
+      throw new ApplicationError({ code: 'SYSTEM_CONFIG_INVALID', status: HttpStatus.BAD_REQUEST, details: issues });
     }
   }
 
@@ -331,8 +329,8 @@ export class SystemConfigService implements OnModuleInit {
     for (const upload of uploads) upload.status = UploadStatus.READY;
   }
 
-  private async syncRuntimeSnapshotIfChanged(updates: ParsedSystemConfigUpdates): Promise<void> {
-    const changed = Object.keys(updates).some((code) => RUNTIME_SNAPSHOT_CODES.includes(code as typeof RUNTIME_SNAPSHOT_CODES[number]));
+  private async syncContextsIfChanged(updates: ParsedSystemConfigUpdates): Promise<void> {
+    const changed = Object.keys(updates).some((code) => CONTEXT_CONFIG_CODES.includes(code as typeof CONTEXT_CONFIG_CODES[number]));
     if (!changed) return;
     try {
       await this.syncToRedis();

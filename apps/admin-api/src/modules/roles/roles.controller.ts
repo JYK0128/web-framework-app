@@ -1,17 +1,23 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
+import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
+import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
 import { AdminPermission } from '@pkg/shared';
 
-import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
-import { Permissions } from '#/core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-
-import { CreateRoleRequestDto, CreateRoleResponseDto, DeleteRoleResponseDto, GetRolesRequestDto, RoleListResponseDto, UpdateRoleRequestDto, UpdateRoleResponseDto } from '.';
-import { CreateRoleCommand } from './create-role.command';
-import { DeleteRoleCommand } from './delete-role.command';
-import { GetRolesQuery } from './get-roles.query';
-import { UpdateRoleCommand } from './update-role.command';
+import { CreateRoleCommand } from '#/modules/roles/create-role.command';
+import { CreateRoleRequestDto } from '#/modules/roles/create-role.request.dto';
+import { CreateRoleResponseDto } from '#/modules/roles/create-role.response.dto';
+import { DeleteRoleCommand } from '#/modules/roles/delete-role.command';
+import { DeleteRoleRequestDto } from '#/modules/roles/delete-role.request.dto';
+import { DeleteRoleResponseDto } from '#/modules/roles/delete-role.response.dto';
+import { GetRolesQuery } from '#/modules/roles/get-roles.query';
+import { GetRolesRequestDto } from '#/modules/roles/get-roles.request.dto';
+import { GetRolesResponseDto } from '#/modules/roles/get-roles.response.dto';
+import { UpdateRoleCommand } from '#/modules/roles/update-role.command';
+import { UpdateRoleRequestDto } from '#/modules/roles/update-role.request.dto';
+import { UpdateRoleResponseDto } from '#/modules/roles/update-role.response.dto';
 
 @ApiTags('roles')
 @UserAuth()
@@ -21,9 +27,9 @@ export class RolesController {
 
   @Get()
   @Permissions(AdminPermission.role.read)
-  @SwaggerApiResponse(RoleListResponseDto)
+  @SwaggerApiResponse(GetRolesResponseDto)
   @ApiOperation({ summary: '역할 목록 조회' })
-  getRoles(): Promise<RoleListResponseDto> {
+  getRoles(): Promise<GetRolesResponseDto> {
     return this.queryBus.execute(new GetRolesQuery(new GetRolesRequestDto()));
   }
 
@@ -48,6 +54,7 @@ export class RolesController {
   @SwaggerApiResponse(DeleteRoleResponseDto)
   @ApiOperation({ summary: '역할 삭제' })
   deleteRole(@Param('id') id: string): Promise<DeleteRoleResponseDto> {
-    return this.commandBus.execute(new DeleteRoleCommand({ roleId: id }));
+    const request = DeleteRoleRequestDto.parse({ roleId: id }).validate();
+    return this.commandBus.execute(new DeleteRoleCommand(request));
   }
 }

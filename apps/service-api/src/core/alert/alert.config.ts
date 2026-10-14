@@ -1,1 +1,0 @@
-export const ALERT_HTTP_TIMEOUT_MS = 5000;

@@ -1,95 +1,159 @@
-import { resolve } from 'node:path';
-
-import { Global, HttpStatus, Module, ValidationPipe } from '@nestjs/common';
+import { Global, HttpStatus, Module, type ModuleMetadata, ValidationPipe } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { AuthenticationGuard } from '@pkg/server-core/auth/authentication.guard';
+import { MachineAuthModule } from '@pkg/server-core/auth/machine/machine-auth.module';
+import { UserAuthModule } from '@pkg/server-core/auth/user/user.module';
+import { EventBrokerModule } from '@pkg/server-core/event-broker/event-broker.module';
+import { StorageModule } from '@pkg/server-core/file-storage/storage.module';
+import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
+import { RequestContext } from '@pkg/server-core/http/contexts/request.context';
+import { ApplicationErrorFilter } from '@pkg/server-core/http/filters/application-error.filter';
+import { HttpExceptionFilter } from '@pkg/server-core/http/filters/http-exception.filter';
+import { UnexpectedExceptionFilter } from '@pkg/server-core/http/filters/unexpected-exception.filter';
+import { PermissionGuard } from '@pkg/server-core/http/guards/permission.guard';
+import { ResponseTransformInterceptor } from '@pkg/server-core/http/interceptors/response-transform.interceptor';
+import { RequestContextMiddleware } from '@pkg/server-core/http/middlewares/request-context.middleware';
+import { REQUEST_LOGGING_PII_HASH_KEY, RequestLoggingMiddleware } from '@pkg/server-core/http/middlewares/request-logging.middleware';
+import { SanitizeHtmlPipe, TrimStringPipe } from '@pkg/server-core/http/pipes/index';
+import { KvStoreModule } from '@pkg/server-core/kv-store/kv-store.module';
+import { LogTelemetryModule } from '@pkg/server-core/log-telemetry/index';
+import { LoggerModule } from '@pkg/server-core/logger/index';
+import { NotificationModule } from '@pkg/server-core/notification/notification.module';
+import { PhoneIdentityModule } from '@pkg/server-core/phone-identity/phone-identity.module';
+import { RealtimeModule } from '@pkg/server-core/realtime/realtime.module';
+import { WebhookModule } from '@pkg/server-core/webhook/webhook.module';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsModule } from 'nestjs-cls';
 
-import { SECURITY_CONFIG, SERVICE_RUNTIME_CONFIG } from '#/app.config';
-import { AlertModule } from '#/core/alert/alert.module';
-import { AuthenticationGuard } from '#/core/auth/authentication.guard';
-import { MachineModule } from '#/core/auth/machine/machine.module';
-import { MachineAuthGuard } from '#/core/auth/machine/machine-auth.guard';
-import { UserAuthModule } from '#/core/auth/user/user.module';
+import { MACHINE_ALLOWED_LIST, SECURITY_CONFIG, SERVICE_ID } from '#/app.config';
 import { DatabaseModule } from '#/core/database/database.module';
-import { EventBrokerModule } from '#/core/event-broker/event-broker.module';
-import { StorageModule } from '#/core/file-storage/storage.module';
-import { PrincipalContext } from '#/core/http/contexts/principal.context';
-import { RequestContext } from '#/core/http/contexts/request.context';
-import { ApplicationErrorFilter } from '#/core/http/filters/application-error.filter';
-import { HttpExceptionFilter } from '#/core/http/filters/http-exception.filter';
-import { UnexpectedExceptionFilter } from '#/core/http/filters/unexpected-exception.filter';
-import { PermissionGuard } from '#/core/http/guards/permission.guard';
-import { ResponseTransformInterceptor } from '#/core/http/interceptors/response-transform.interceptor';
-import { RequestContextMiddleware } from '#/core/http/middlewares/request-context.middleware';
-import { RequestLoggingMiddleware } from '#/core/http/middlewares/request-logging.middleware';
-import { SanitizeHtmlPipe, TrimStringPipe } from '#/core/http/pipes/index';
-import { KvStoreModule } from '#/core/kv-store/kv-store.module';
-import { LogTelemetryModule } from '#/core/log-telemetry';
-import { LoggerModule } from '#/core/logger';
-import { MessageModule } from '#/core/notification/message.module';
-import { PhoneIdentityModule } from '#/core/phone-identity/phone-identity.module';
-import { RealtimeModule } from '#/core/realtime/realtime.module';
 import { env } from '#/env';
 
-const telemetryModule = env.LOKI_URL
-  ? LogTelemetryModule.forRoot({ appName: 'service-api', loki: { url: env.LOKI_URL, timeoutMs: 5000 } })
-  : null;
+import { InternalClient } from './internal-client';
+import { OrmAuthReader } from './orm-auth.reader';
+import { LocalStorageAdapter } from './storage/local-storage.adapter';
+import { S3StorageAdapter } from './storage/s3-storage.adapter';
+import { RedisTokenStore } from './stores/redis-token.store';
 
-const RESOURCE_MODULES = [
-  UserAuthModule.forRoot({ driver: 'jwt', refreshTokenStore: 'redis' }),
-  MessageModule,
-  AlertModule.forRoot(),
-  PhoneIdentityModule,
-  MachineModule.forRoot({ driver: 'jwt', connection: { targetService: 'admin-api', baseUrl: env.ADMIN_API_URL } }),
-  RealtimeModule.forRoot({ socketIo: { redis: { url: env.REDIS_URL } } }),
-  StorageModule.forRoot({
-    driver: env.STORAGE_DRIVER,
-    local: {
-      baseDir: resolve(process.cwd(), SERVICE_RUNTIME_CONFIG.storage.localDirectory),
-      publicUrlPrefix: SERVICE_RUNTIME_CONFIG.storage.publicUrlPrefix,
-      uploadUrlPrefix: SERVICE_RUNTIME_CONFIG.storage.uploadUrlPrefix,
-    },
-    ...(env.STORAGE_DRIVER === 's3'
-      ? {
-        s3: {
-          bucket: env.STORAGE_S3_BUCKET!,
-          region: env.STORAGE_S3_REGION,
-          endpoint: env.STORAGE_S3_ENDPOINT,
-          accessKeyId: env.STORAGE_S3_ACCESS_KEY_ID,
-          secretAccessKey: env.STORAGE_S3_SECRET_ACCESS_KEY,
-          publicUrlPrefix: env.STORAGE_S3_PUBLIC_URL_PREFIX,
+const PERSISTENCE_MODULES = {
+  imports: [
+    DatabaseModule,
+    KvStoreModule.forRoot({
+      driver: 'redis',
+      redis: { url: env.REDIS_URL },
+    }),
+  ],
+  exports: [DatabaseModule, KvStoreModule],
+} satisfies Pick<ModuleMetadata, 'imports' | 'exports'>;
+
+const AUTH_MODULES = {
+  imports: [
+    UserAuthModule.forRoot(
+      {
+        driver: 'jwt',
+        jwt: {
+          secret: env.USER_JWT_SECRET,
+          issuer: SERVICE_ID,
+          audience: SERVICE_ID,
+          accessTokenTtlMinutes: SECURITY_CONFIG.token.accessTokenTtlMinutes,
+          refreshIdleTimeoutMinutes: SECURITY_CONFIG.token.refreshIdleTimeoutMinutes,
+          rememberMeDays: SECURITY_CONFIG.token.rememberMeDays,
+          revokeOnLogin: SECURITY_CONFIG.token.revokeOnLogin,
         },
-      }
-      : {}),
-  }),
-  DatabaseModule,
-  KvStoreModule.forRoot({ driver: 'redis', redis: { url: env.REDIS_URL } }),
-  ThrottlerModule.forRoot([{
-    ttl: SECURITY_CONFIG.rateLimit.windowMs,
-    limit: SECURITY_CONFIG.rateLimit.maxRequests,
-    blockDuration: SECURITY_CONFIG.rateLimit.blockDurationMilliseconds,
-  }]),
-  EventBrokerModule.forRoot({ defaultAdapter: 'redis-pubsub', redisPubSub: { url: env.REDIS_URL, topic: 'events' } }),
-  LoggerModule.forRoot({ appName: 'service-api' }),
-  ...(telemetryModule ? [telemetryModule] : []),
-];
+        policy: {
+          requirePhoneNumberVerification: SECURITY_CONFIG.registration.requirePhoneNumberVerification,
+          passwordExpirationDays: SECURITY_CONFIG.password.expirationDays,
+          passwordChangeDeferDays: SECURITY_CONFIG.password.changeDeferDays,
+          twoFactorRequired: SECURITY_CONFIG.twoFactor.required,
+        },
+      },
+      { reader: OrmAuthReader, tokenStore: RedisTokenStore },
+    ),
+    MachineAuthModule.forRoot(
+      {
+        driver: 'jwt',
+        connection: { targetService: 'admin-api', baseUrl: env.ADMIN_API_URL },
+        auth: {
+          serviceId: SERVICE_ID,
+          allowedIssuers: MACHINE_ALLOWED_LIST,
+          secret: env.MACHINE_JWT_SECRET,
+          tokenTtlMinutes: SECURITY_CONFIG.token.machineTokenTtlMinutes,
+          apiKeys: [],
+        },
+      },
+      { internalClient: InternalClient },
+    ),
+  ],
+  exports: [UserAuthModule, MachineAuthModule],
+} satisfies Pick<ModuleMetadata, 'imports' | 'exports'>;
 
-const RESOURCE_MODULE_EXPORTS = [
-  UserAuthModule,
-  MachineModule,
-  MessageModule,
-  AlertModule,
-  PhoneIdentityModule,
-  RealtimeModule,
-  StorageModule,
-  DatabaseModule,
-  KvStoreModule,
-  EventBrokerModule,
-  LoggerModule,
-  ...(telemetryModule ? [LogTelemetryModule] : []),
-];
+const INTEGRATION_MODULES = {
+  imports: [
+    NotificationModule.forRoot({
+      requestTimeoutSeconds: SECURITY_CONFIG.integrations.notificationProviderRequestTimeoutSeconds,
+      pushMessageTtlMinutes: SECURITY_CONFIG.integrations.pushMessageTtlMinutes,
+      smtpConnectionTimeoutSeconds: SECURITY_CONFIG.integrations.smtp.connectionTimeoutSeconds,
+      smtpGreetingTimeoutSeconds: SECURITY_CONFIG.integrations.smtp.greetingTimeoutSeconds,
+      smtpSocketTimeoutSeconds: SECURITY_CONFIG.integrations.smtp.socketTimeoutSeconds,
+    }),
+    WebhookModule,
+    PhoneIdentityModule.forRoot({
+      apiSecret: env.PORTONE_API_SECRET,
+      requestTimeoutSeconds: SECURITY_CONFIG.identityVerification.requestTimeoutSeconds,
+      retry: {
+        maxRetries: SECURITY_CONFIG.identityVerification.maxRetries,
+        initialDelayMs: SECURITY_CONFIG.identityVerification.retryDelayMilliseconds,
+        maxDelayMs: SECURITY_CONFIG.identityVerification.retryMaxDelayMilliseconds,
+        backoffFactor: SECURITY_CONFIG.identityVerification.retryBackoffFactor,
+        jitter: SECURITY_CONFIG.identityVerification.retryJitterEnabled,
+      },
+    }),
+  ],
+  exports: [NotificationModule, WebhookModule, PhoneIdentityModule],
+} satisfies Pick<ModuleMetadata, 'imports' | 'exports'>;
+
+const MESSAGING_MODULES = {
+  imports: [
+    EventBrokerModule.forRoot({
+      defaultAdapter: 'redis-pubsub',
+      redisPubSub: { url: env.REDIS_URL, topic: 'events' },
+    }),
+    RealtimeModule.forRoot({
+      socketIo: {
+        redis: { url: env.REDIS_URL, key: 'service-api:socket.io' },
+      },
+      sse: {
+        redis: { url: env.REDIS_URL, key: 'service-api:sse' },
+      },
+    }),
+  ],
+  exports: [EventBrokerModule, RealtimeModule],
+} satisfies Pick<ModuleMetadata, 'imports' | 'exports'>;
+
+const STORAGE_MODULES = {
+  imports: [StorageModule.forRoot({ local: LocalStorageAdapter, s3: S3StorageAdapter })],
+  exports: [StorageModule],
+} satisfies Pick<ModuleMetadata, 'imports' | 'exports'>;
+
+const OBSERVABILITY_MODULES = {
+  imports: [
+    LoggerModule.forRoot({ appName: 'service-api' }),
+    LogTelemetryModule.forRoot({ appName: 'service-api', loki: { url: env.LOKI_URL, timeoutMs: 5000 } }),
+  ],
+  exports: [LoggerModule, LogTelemetryModule],
+} satisfies Pick<ModuleMetadata, 'imports' | 'exports'>;
+
+const REQUEST_MODULES = {
+  imports: [
+    ThrottlerModule.forRoot([{
+      ttl: SECURITY_CONFIG.rateLimit.windowMs,
+      limit: SECURITY_CONFIG.rateLimit.maxRequests,
+      blockDuration: SECURITY_CONFIG.rateLimit.blockDurationMilliseconds,
+    }]),
+  ],
+  exports: [],
+} satisfies Pick<ModuleMetadata, 'imports' | 'exports'>;
 
 const GLOBAL_GUARDS = [
   ...(process.env.NODE_ENV === 'development' ? [] : [ThrottlerGuard]),
@@ -145,14 +209,20 @@ const GLOBAL_PIPES = [
         saveRes: true,
       },
     }),
-    ...RESOURCE_MODULES,
+    ...PERSISTENCE_MODULES.imports,
+    ...AUTH_MODULES.imports,
+    ...INTEGRATION_MODULES.imports,
+    ...MESSAGING_MODULES.imports,
+    ...STORAGE_MODULES.imports,
+    ...OBSERVABILITY_MODULES.imports,
+    ...REQUEST_MODULES.imports,
   ],
   providers: [
     PrincipalContext,
     RequestContext,
-    MachineAuthGuard,
     RequestContextMiddleware,
     RequestLoggingMiddleware,
+    { provide: REQUEST_LOGGING_PII_HASH_KEY, useValue: env.PII_HASH_KEY },
     ...GLOBAL_GUARDS,
     ...GLOBAL_FILTERS,
     ...GLOBAL_INTERCEPTORS,
@@ -163,7 +233,13 @@ const GLOBAL_PIPES = [
     RequestContext,
     RequestContextMiddleware,
     RequestLoggingMiddleware,
-    ...RESOURCE_MODULE_EXPORTS,
+    ...PERSISTENCE_MODULES.exports,
+    ...AUTH_MODULES.exports,
+    ...INTEGRATION_MODULES.exports,
+    ...MESSAGING_MODULES.exports,
+    ...STORAGE_MODULES.exports,
+    ...OBSERVABILITY_MODULES.exports,
+    ...REQUEST_MODULES.exports,
   ],
 })
 export class CoreModule {}

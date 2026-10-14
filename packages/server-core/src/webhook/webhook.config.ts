@@ -1,0 +1,1 @@
+export const WEBHOOK_HTTP_TIMEOUT_MS = 5000;

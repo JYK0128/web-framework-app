@@ -1,20 +1,19 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
+import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
+import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
 import { AdminPermission } from '@pkg/shared';
 
-import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
-import { Permissions } from '#/core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-import { InternalClient } from '#/core/http/internal-client';
-
-import { CreateServiceTermGroupRequestDto } from './create-service-term-group.request.dto';
-import { CreateServiceTermGroupResponseDto } from './create-service-term-group.response.dto';
-import { DeleteServiceTermGroupRequestDto } from './delete-service-term-group.request.dto';
-import { DeleteServiceTermGroupResponseDto } from './delete-service-term-group.response.dto';
-import { GetServiceTermGroupsRequestDto } from './get-service-term-groups.request.dto';
-import { GetServiceTermGroupsResponseDto } from './get-service-term-groups.response.dto';
-import { UpdateServiceTermGroupRequestDto } from './update-service-term-group.request.dto';
-import { UpdateServiceTermGroupResponseDto } from './update-service-term-group.response.dto';
+import { InternalClient } from '#/core/internal-client';
+import { CreateServiceTermGroupRequestDto } from '#/modules/service-terms/groups/create-service-term-group.request.dto';
+import { CreateServiceTermGroupResponseDto } from '#/modules/service-terms/groups/create-service-term-group.response.dto';
+import { DeleteServiceTermGroupRequestDto } from '#/modules/service-terms/groups/delete-service-term-group.request.dto';
+import { DeleteServiceTermGroupResponseDto } from '#/modules/service-terms/groups/delete-service-term-group.response.dto';
+import { GetServiceTermGroupsRequestDto } from '#/modules/service-terms/groups/get-service-term-groups.request.dto';
+import { GetServiceTermGroupsResponseDto } from '#/modules/service-terms/groups/get-service-term-groups.response.dto';
+import { UpdateServiceTermGroupRequestDto } from '#/modules/service-terms/groups/update-service-term-group.request.dto';
+import { UpdateServiceTermGroupResponseDto } from '#/modules/service-terms/groups/update-service-term-group.response.dto';
 
 @ApiTags('service-terms')
 @UserAuth()

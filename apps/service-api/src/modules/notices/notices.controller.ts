@@ -1,12 +1,15 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Public } from '@pkg/server-core/http/decorators/auth-mode.decorator';
+import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
 
-import { Public } from '#/core/http/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-
-import { GetPublicNoticesRequestDto, NoticeCursorResponseDto, NoticeItemDto } from '.';
-import { GetNoticeQuery, GetPublicNoticesQuery } from './notices.messages';
+import { GetNoticeQuery } from '#/modules/notices/get-notice.query';
+import { GetNoticeRequestDto } from '#/modules/notices/get-notice.request.dto';
+import { GetNoticeResponseDto } from '#/modules/notices/get-notice.response.dto';
+import { GetPublicNoticesQuery } from '#/modules/notices/get-public-notices.query';
+import { GetPublicNoticesRequestDto } from '#/modules/notices/get-public-notices.request.dto';
+import { GetPublicNoticesResponseDto } from '#/modules/notices/get-public-notices.response.dto';
 
 @ApiTags('notices')
 @Public()
@@ -15,16 +18,17 @@ export class NoticesController {
   constructor(private readonly queryBus: QueryBus) {}
 
   @ApiOperation({ summary: '공개 공지사항 목록 조회' })
-  @SwaggerApiResponse(NoticeCursorResponseDto)
+  @SwaggerApiResponse(GetPublicNoticesResponseDto)
   @Get()
-  list(@Query() query: GetPublicNoticesRequestDto): Promise<NoticeCursorResponseDto> {
+  list(@Query() query: GetPublicNoticesRequestDto): Promise<GetPublicNoticesResponseDto> {
     return this.queryBus.execute(new GetPublicNoticesQuery(query));
   }
 
   @ApiOperation({ summary: '공개 공지사항 상세 조회' })
-  @SwaggerApiResponse(NoticeItemDto)
+  @SwaggerApiResponse(GetNoticeResponseDto)
   @Get(':id')
-  detail(@Param('id') id: string): Promise<NoticeItemDto> {
-    return this.queryBus.execute(new GetNoticeQuery(id, true));
+  detail(@Param('id') id: string): Promise<GetNoticeResponseDto> {
+    const request = GetNoticeRequestDto.parse({ noticeId: id }).validate();
+    return this.queryBus.execute(new GetNoticeQuery(request, true));
   }
 }

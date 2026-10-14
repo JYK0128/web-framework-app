@@ -1,15 +1,14 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
+import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
+import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
 import { AdminPermission } from '@pkg/shared';
 
-import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
-import { Permissions } from '#/core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
-
-import { TestAdminEmailCommand } from './test-admin-email.command';
-import { TestAdminEmailRequestDto } from './test-admin-email.request.dto';
-import { TestAdminEmailResponseDto } from './test-admin-email.response.dto';
+import { TestAdminEmailCommand } from '#/modules/system-config/admin-email/test-admin-email.command';
+import { TestAdminEmailRequestDto } from '#/modules/system-config/admin-email/test-admin-email.request.dto';
+import { TestAdminEmailResponseDto } from '#/modules/system-config/admin-email/test-admin-email.response.dto';
 
 @ApiTags('system-configs')
 @UserAuth()
