@@ -34,7 +34,7 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
     await updateCredentialPassword(account, input.newPassword, SECURITY_CONFIG.password);
     user.updateMetadata({ failedLoginAttempts: 0, loginFailureWindowStartedAt: null, lockedUntil: null });
     await this.em.flush();
-    return ResetPasswordResponseDto.parse({ ok: true });
+    return ResetPasswordResponseDto.ok();
   }
 }
 

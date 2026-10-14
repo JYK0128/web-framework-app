@@ -18,6 +18,6 @@ export class TestWebhookHandler implements ICommandHandler<TestWebhookCommand, T
       text: `${type} 웹훅 연동이 정상적으로 확인되었습니다.`,
       webhookUrl,
     });
-    return TestWebhookResponseDto.parse({ ok: true });
+    return TestWebhookResponseDto.ok();
   }
 }

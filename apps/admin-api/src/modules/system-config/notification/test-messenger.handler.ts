@@ -20,6 +20,6 @@ export class TestMessengerHandler implements ICommandHandler<TestMessengerComman
     await this.notifications.send(alimtalk
       ? { channel: 'alimtalk', message: { ...alimtalk, recipient }, config: config.messenger }
       : { channel: 'messenger', message: { recipient, body: '[시스템 설정] 메신저 연동이 정상적으로 작동하고 있습니다.' }, config: config.messenger });
-    return TestMessengerResponseDto.parse({ ok: true });
+    return TestMessengerResponseDto.ok();
   }
 }

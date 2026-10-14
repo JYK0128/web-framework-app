@@ -15,6 +15,6 @@ export class TestPushHandler implements ICommandHandler<TestPushCommand, TestPus
   async execute(command: TestPushCommand): Promise<TestPushResponseDto> {
     const config = await this.internalClient.fetch<NotificationConfigDto>('/internal/system-config/notification/config-for-test', { method: 'POST', body: command.input.config ? { push: command.input.config } : {} });
     await this.notifications.send({ channel: 'push', message: { token: command.input.token, title: '시스템 설정 테스트', body: '푸시 알림 연동이 정상적으로 작동하고 있습니다.' }, config: config.push });
-    return TestPushResponseDto.parse({ ok: true });
+    return TestPushResponseDto.ok();
   }
 }

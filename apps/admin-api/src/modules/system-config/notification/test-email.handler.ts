@@ -25,6 +25,6 @@ export class TestEmailHandler implements ICommandHandler<TestEmailCommand, TestE
       config,
     });
 
-    return TestEmailResponseDto.parse({ ok: true });
+    return TestEmailResponseDto.ok();
   }
 }

@@ -5,7 +5,7 @@ import { type IUserAuthService, USER_AUTH_SERVICE } from '@pkg/server-core/auth/
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { DeleteCustomerCommand } from '#/modules/customer/account/delete-customer.command';
 import { DeleteCustomerResponseDto } from '#/modules/customer/account/delete-customer.response.dto';
-import { findCustomer, ok } from '#/modules/customer/customer-actions.helpers';
+import { findCustomer } from '#/modules/customer/customer.helper';
 
 @Injectable()
 @CommandHandler(DeleteCustomerCommand)
@@ -16,6 +16,6 @@ export class DeleteCustomerHandler implements ICommandHandler<DeleteCustomerComm
     const customer = await findCustomer(this.em, command.customerId);
     customer.deletedAt = new Date();
     await this.userAuthService.revokeUserTokens?.(customer.id);
-    return ok();
+    return DeleteCustomerResponseDto.ok();
   }
 }

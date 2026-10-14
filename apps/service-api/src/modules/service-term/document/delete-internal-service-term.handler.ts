@@ -14,6 +14,6 @@ export class DeleteInternalServiceTermHandler implements ICommandHandler<DeleteI
     const term = await findServiceTerm(this.em, input.termId);
     assertEditable(term);
     term.deletedAt = new Date();
-    return DeleteInternalServiceTermResponseDto.parse({ ok: true });
+    return DeleteInternalServiceTermResponseDto.ok();
   }
 }

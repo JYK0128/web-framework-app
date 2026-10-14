@@ -19,6 +19,6 @@ export class DeleteOperatorHandler implements ICommandHandler<DeleteOperatorComm
     assertNotSuperAdmin(operator);
     operator.deletedAt = new Date();
     await this.userAuthService.revokeUserTokens?.(operator.id);
-    return DeleteOperatorResponseDto.parse({ ok: true });
+    return DeleteOperatorResponseDto.ok();
   }
 }

@@ -27,6 +27,6 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
     if (!consumed || consumed.token !== input.token) throw new ApplicationError({ code: 'INVALID_EMAIL_VERIFICATION_TOKEN', status: HttpStatus.BAD_REQUEST });
     user.emailVerified = true;
     await this.em.flush();
-    return VerifyEmailResponseDto.parse({ ok: true });
+    return VerifyEmailResponseDto.ok();
   }
 }

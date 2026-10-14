@@ -29,6 +29,6 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
       throw new ApplicationError({ code: 'INVALID_CURRENT_PASSWORD', status: HttpStatus.BAD_REQUEST });
     }
     await updateCredentialPassword(account, command.input.newPassword, SECURITY_CONFIG.password);
-    return ChangePasswordResponseDto.parse({ ok: true });
+    return ChangePasswordResponseDto.ok();
   }
 }

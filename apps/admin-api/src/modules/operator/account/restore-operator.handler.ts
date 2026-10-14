@@ -19,6 +19,6 @@ export class RestoreOperatorHandler implements ICommandHandler<RestoreOperatorCo
     }
     operator.deletedAt = null;
     operator.deletedBy = null;
-    return RestoreOperatorResponseDto.parse({ ok: true });
+    return RestoreOperatorResponseDto.ok();
   }
 }

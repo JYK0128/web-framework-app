@@ -38,7 +38,7 @@ export class InternalCustomerSessionsController {
       throw new ApplicationError({ code: 'CUSTOMER_SESSION_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
     await this.tokenStore.revokeTokenFamily(request.familyId);
-    return RevokeCustomerSessionResponseDto.parse({ ok: true });
+    return RevokeCustomerSessionResponseDto.ok();
   }
 
   @ApiOperation({ operationId: 'InternalCustomersController_revokeCustomerSessions_v1', summary: 'Machine: 고객 전체 세션 해제' })
@@ -47,6 +47,6 @@ export class InternalCustomerSessionsController {
   async revokeCustomerSessions(@Param('id') id: string): Promise<RevokeCustomerSessionsResponseDto> {
     const request = RevokeCustomerSessionsRequestDto.parse({ customerId: id }).validate();
     await this.tokenStore.revokeUserTokens(request.customerId);
-    return RevokeCustomerSessionsResponseDto.parse({ ok: true });
+    return RevokeCustomerSessionsResponseDto.ok();
   }
 }

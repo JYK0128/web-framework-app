@@ -13,6 +13,6 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
   constructor(private readonly em: AppEntityManager, private readonly kv: KvStore) {}
   async execute(command: VerifyEmailCommand): Promise<VerifyEmailResponseDto> {
     await verifyEmailChallenge(this.em, this.kv, command.input.challengeId, command.input.token);
-    return VerifyEmailResponseDto.parse({ ok: true });
+    return VerifyEmailResponseDto.ok();
   }
 }

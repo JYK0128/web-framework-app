@@ -15,6 +15,6 @@ export class DeleteQnaHandler implements ICommandHandler<DeleteQnaCommand, Delet
     const qna = await findQna(this.em, this.principal, id, mine);
     qna.deletedAt = new Date();
     await this.em.flush();
-    return DeleteQnaResponseDto.parse({ ok: true });
+    return DeleteQnaResponseDto.ok();
   }
 }

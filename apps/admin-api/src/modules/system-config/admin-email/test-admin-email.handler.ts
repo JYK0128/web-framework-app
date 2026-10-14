@@ -21,6 +21,6 @@ export class TestAdminEmailHandler implements ICommandHandler<TestAdminEmailComm
       },
       config: await this.queryBus.execute(new GetAdminSmtpConfigQuery()),
     });
-    return TestAdminEmailResponseDto.parse({ ok: true });
+    return TestAdminEmailResponseDto.ok();
   }
 }

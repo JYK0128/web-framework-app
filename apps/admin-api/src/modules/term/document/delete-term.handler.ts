@@ -21,6 +21,6 @@ export class DeleteTermHandler implements ICommandHandler<DeleteTermCommand, Del
       throw new ApplicationError({ code: 'PUBLISHED_TERM_CANNOT_BE_DELETED', status: HttpStatus.CONFLICT });
     }
     term.deletedAt = new Date();
-    return DeleteTermResponseDto.parse({ ok: true });
+    return DeleteTermResponseDto.ok();
   }
 }

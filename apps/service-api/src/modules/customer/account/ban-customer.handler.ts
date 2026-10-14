@@ -6,7 +6,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { BanCustomerCommand } from '#/modules/customer/account/ban-customer.command';
 import { BanCustomerResponseDto } from '#/modules/customer/account/ban-customer.response.dto';
-import { findCustomer, ok } from '#/modules/customer/customer-actions.helpers';
+import { findCustomer } from '#/modules/customer/customer.helper';
 
 @Injectable()
 @CommandHandler(BanCustomerCommand)
@@ -22,6 +22,6 @@ export class BanCustomerHandler implements ICommandHandler<BanCustomerCommand, B
     customer.banReason = command.input.dto.reason?.trim() || null;
     customer.banExpires = command.input.dto.expiresAt ?? null;
     await this.userAuthService.revokeUserTokens?.(customer.id);
-    return ok();
+    return BanCustomerResponseDto.ok();
   }
 }

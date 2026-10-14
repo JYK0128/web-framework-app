@@ -12,6 +12,6 @@ export class LogoutHandler implements ICommandHandler<LogoutCommand, LogoutRespo
 
   async execute(command: LogoutCommand): Promise<LogoutResponseDto> {
     await this.userAuthService.logout(command.input.refreshToken);
-    return LogoutResponseDto.parse({ ok: true });
+    return LogoutResponseDto.ok();
   }
 }

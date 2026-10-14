@@ -25,6 +25,6 @@ export class BanOperatorHandler implements ICommandHandler<BanOperatorCommand, B
     operator.banReason = command.input.data.reason?.trim() || null;
     operator.banExpires = command.input.data.expiresAt ?? null;
     await this.userAuthService.revokeUserTokens?.(operator.id);
-    return BanOperatorResponseDto.parse({ ok: true });
+    return BanOperatorResponseDto.ok();
   }
 }

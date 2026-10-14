@@ -15,6 +15,6 @@ export class CheckAdminEmailConfigHandler implements IQueryHandler<CheckAdminEma
   async execute(): Promise<CheckAdminEmailConfigResponseDto> {
     const { adminEmail } = await this.systemContext.getConfig();
     if (!AdminEmailConfigDto.parse(adminEmail).isConfigured()) throw new ApplicationError({ code: 'EMAIL_NOTIFICATION_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
-    return CheckAdminEmailConfigResponseDto.parse({ ok: true });
+    return CheckAdminEmailConfigResponseDto.ok();
   }
 }

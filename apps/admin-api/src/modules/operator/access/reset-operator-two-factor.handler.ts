@@ -19,6 +19,6 @@ export class ResetOperatorTwoFactorHandler implements ICommandHandler<ResetOpera
     if (twoFactor) this.em.remove(twoFactor);
     operator.twoFactorEnabled = false;
     await this.userAuthService.revokeUserTokens?.(operator.id);
-    return ResetOperatorTwoFactorResponseDto.parse({ ok: true });
+    return ResetOperatorTwoFactorResponseDto.ok();
   }
 }

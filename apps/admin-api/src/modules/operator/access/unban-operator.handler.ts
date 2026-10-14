@@ -16,6 +16,6 @@ export class UnbanOperatorHandler implements ICommandHandler<UnbanOperatorComman
     operator.banned = false;
     operator.banReason = null;
     operator.banExpires = null;
-    return UnbanOperatorResponseDto.parse({ ok: true });
+    return UnbanOperatorResponseDto.ok();
   }
 }

@@ -34,6 +34,6 @@ export class UpdateOperatorRoleHandler implements ICommandHandler<UpdateOperator
     }
     operator.role = role;
     await this.userAuthService.revokeUserTokens?.(operator.id);
-    return UpdateOperatorRoleResponseDto.parse({ ok: true });
+    return UpdateOperatorRoleResponseDto.ok();
   }
 }

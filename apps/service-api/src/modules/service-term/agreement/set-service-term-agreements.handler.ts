@@ -32,6 +32,6 @@ export class SetServiceTermAgreementsHandler implements ICommandHandler<SetServi
     }
     this.em.persist(records);
     await this.em.flush();
-    return SetServiceTermAgreementsResponseDto.parse({ ok: true });
+    return SetServiceTermAgreementsResponseDto.ok();
   }
 }

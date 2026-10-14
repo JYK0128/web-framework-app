@@ -4,7 +4,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { UnbanCustomerCommand } from '#/modules/customer/account/unban-customer.command';
 import { UnbanCustomerResponseDto } from '#/modules/customer/account/unban-customer.response.dto';
-import { findCustomer, ok } from '#/modules/customer/customer-actions.helpers';
+import { findCustomer } from '#/modules/customer/customer.helper';
 
 @Injectable()
 @CommandHandler(UnbanCustomerCommand)
@@ -16,6 +16,6 @@ export class UnbanCustomerHandler implements ICommandHandler<UnbanCustomerComman
     customer.banned = false;
     customer.banReason = null;
     customer.banExpires = null;
-    return ok();
+    return UnbanCustomerResponseDto.ok();
   }
 }

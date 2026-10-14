@@ -51,6 +51,6 @@ export class SetAgreementsHandler implements ICommandHandler<SetAgreementsComman
       this.em.persist(agreement);
     }
 
-    return SetAgreementsResponseDto.parse({ ok: true });
+    return SetAgreementsResponseDto.ok();
   }
 }

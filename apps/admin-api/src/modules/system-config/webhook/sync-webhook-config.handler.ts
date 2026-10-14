@@ -18,6 +18,6 @@ export class SyncWebhookConfigHandler implements ICommandHandler<SyncWebhookConf
     const { webhook: value } = await this.systemContext.getConfig();
     const webhook = AdminWebhookConfigResponseDto.parse(value);
     await this.internalClient.fetch<string[]>('/internal/system-config', { method: 'PATCH', body: { webhook } });
-    return SyncWebhookConfigResponseDto.parse({ ok: true });
+    return SyncWebhookConfigResponseDto.ok();
   }
 }

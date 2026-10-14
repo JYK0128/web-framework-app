@@ -5,7 +5,7 @@ import { ApplicationError } from '@pkg/shared/common';
 
 import { Role } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { findCustomer, ok } from '#/modules/customer/customer-actions.helpers';
+import { findCustomer } from '#/modules/customer/customer.helper';
 import { UpdateCustomerRoleCommand } from '#/modules/customer/membership/update-customer-role.command';
 import { UpdateCustomerRoleResponseDto } from '#/modules/customer/membership/update-customer-role.response.dto';
 
@@ -22,6 +22,6 @@ export class UpdateCustomerRoleHandler implements ICommandHandler<UpdateCustomer
     }
     customer.role = role;
     await this.userAuthService.revokeUserTokens?.(customer.id);
-    return ok();
+    return UpdateCustomerRoleResponseDto.ok();
   }
 }

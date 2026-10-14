@@ -1,5 +1,3 @@
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { OkResponseDto } from '@pkg/server-core/http/dto/response/ok.response.dto';
 
-export class CheckAdminEmailConfigResponseDto extends BaseDto {
-  ok!: boolean;
-}
+export class CheckAdminEmailConfigResponseDto extends OkResponseDto {}
