@@ -98,3 +98,26 @@ Tailwind sm(640px) 미만에서 아이콘만 표시합니다. standalone 화면�
 `ScreenLayout.Logo`도 같은 공통 로고 구현입니다.
 `ScreenLayout.Logo.Icon`과 `ScreenLayout.Logo.Label`로 아이콘과 텍스트를
 직접 구성하거나 앱의 BrandLogo를 사용할 수 있습니다.
+
+## Navi
+
+`Navi` reuses one app-owned `items` array for side and bar presentations.
+Responsive variants follow the mobile-first Tailwind rule; a breakpoint changes
+the presentation at that width and above. Supported keys are `base`, `sm`,
+`md`, `lg`, `xl`, and `2xl`. The side panel's placement/open state stays with
+the app, while the package supplies vertical/horizontal link styling, active
+state, and accessible icon-only labels when collapsed. Route targets remain
+TanStack Router targets so app route types are preserved.
+
+```tsx
+<Navi
+  items={[
+    { id: 'home', label: '홈', to: '/', icon: <Home />, active: pathname === '/' },
+    { id: 'support', label: '고객지원', to: '/support', icon: <MessagesSquare />, active: pathname.startsWith('/support') },
+  ]}
+  variant={{ base: 'side', lg: 'bar' }}
+  sideOpen={mobileMenuOpen}
+  sideClassName="absolute inset-x-0 top-full lg:hidden"
+  onNavigate={() => setMobileMenuOpen(false)}
+/>
+```
