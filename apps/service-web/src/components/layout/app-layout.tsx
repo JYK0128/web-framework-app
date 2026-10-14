@@ -1,11 +1,11 @@
 import { useI18n } from '@pkg/web-core/i18n';
-import { ThemeToggle } from '@pkg/web-core/ui';
+import { Navi, ThemeToggle, type NaviItem } from '@pkg/web-core/ui';
 import { cn } from '@pkg/web-core/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link, useLocation, useNavigate, useRouter } from '@tanstack/react-router';
-import { Bell, Check, Globe, LogIn, LogOut, Menu, Moon, Sun, User } from 'lucide-react';
+import { Bell, CalendarDays, Check, CircleHelp, Globe, Home, LogIn, LogOut, Megaphone, Menu, MessageCircle, MessageCircleQuestion, Moon, Sun, User } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 
 import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
 import type { MeResponse } from '#/.generated/api/model';
@@ -16,12 +16,12 @@ import { type AppLocale, locales } from '#/i18n/i18n';
 import { isSupportChatOpen } from '#/lib/support-chat-state';
 
 const navigation = [
-  { label: 'service.navigation.home', to: '/' as const },
-  { label: 'service.navigation.support', to: '/support' as const },
-  { label: 'service.navigation.notices', to: '/notices' as const },
-  { label: 'service.navigation.events', to: '/events' as const },
-  { label: 'service.navigation.qna', to: '/qna' as const },
-  { label: 'service.navigation.faq', to: '/faq' as const },
+  { label: 'service.navigation.home', to: '/' as const, icon: <Home /> },
+  { label: 'service.navigation.support', to: '/support' as const, icon: <MessageCircle /> },
+  { label: 'service.navigation.notices', to: '/notices' as const, icon: <Megaphone /> },
+  { label: 'service.navigation.events', to: '/events' as const, icon: <CalendarDays /> },
+  { label: 'service.navigation.qna', to: '/qna' as const, icon: <MessageCircleQuestion /> },
+  { label: 'service.navigation.faq', to: '/faq' as const, icon: <CircleHelp /> },
 ];
 
 type UserNotification = {
@@ -46,9 +46,30 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
   const router = useRouter();
   const queryClient = useQueryClient();
   const logoutMutation = useAuthControllerLogoutV1();
+  const [isNavigationOpen, setIsNavigationOpen] = useState(false);
+  const navigationContainerRef = useRef<HTMLDivElement>(null);
+  const navigationTriggerRef = useRef<HTMLButtonElement>(null);
   const [notificationState, setNotificationState] = useState<{ userId: string | null, items: UserNotification[] }>({ userId: user?.id ?? null, items: [] });
   const currentUserId = user?.id ?? null;
   const notifications = notificationState.userId === currentUserId ? notificationState.items : [];
+  useEffect(() => {
+    if (!isNavigationOpen) return;
+    const closeOnOutsidePointer = (event: PointerEvent) => {
+      if (event.target instanceof Node && !navigationContainerRef.current?.contains(event.target)) {
+        setIsNavigationOpen(false);
+      }
+    };
+    window.addEventListener('pointerdown', closeOnOutsidePointer);
+    return () => window.removeEventListener('pointerdown', closeOnOutsidePointer);
+  }, [isNavigationOpen]);
+
+  const navigationItems: NaviItem[] = navigation.map((item) => ({
+    id: item.to,
+    label: t(item.label),
+    to: item.to,
+    icon: item.icon,
+    active: location.pathname === item.to || (item.to !== '/' && location.pathname.startsWith(`${item.to}/`)),
+  }));
   const { resolvedTheme, setTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
   const currentLocale = i18n.language;
@@ -96,30 +117,27 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
       <header className="shrink-0 border-b bg-background/95 backdrop-blur-sm">
         <div className="
           mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4
-          px-4
+          relative px-4
           md:px-6
         "
+          ref={navigationContainerRef}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape' && isNavigationOpen) {
+              setIsNavigationOpen(false);
+              navigationTriggerRef.current?.focus();
+            }
+          }}
         >
-          <BrandLogo />
-          <nav
-            className="
-              hidden items-center gap-1
-              lg:flex
-            "
-            aria-label="서비스 메뉴"
-          >
-            {navigation.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), location.pathname === item.to && `
-                  bg-accent text-accent-foreground
-                `)}
-              >
-                {t(item.label)}
-              </Link>
-            ))}
-          </nav>
+          <BrandLogo labelClassName="hidden sm:inline" />
+          <Navi
+            items={navigationItems}
+            variant={{ base: 'side', lg: 'bar' }}
+            sideOpen={isNavigationOpen}
+            sideId="service-navigation-side"
+            label={t('service.navigation.menu')}
+            onNavigate={() => setIsNavigationOpen(false)}
+            sideClassName="absolute left-0 right-0 top-full z-40 max-h-[calc(100dvh-4rem)] overflow-y-auto border-b bg-background p-4 shadow-lg lg:hidden"
+          />
           <div className="flex items-center gap-2">
             <div className="
               hidden items-center gap-2
@@ -262,6 +280,19 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
                   <LogIn className="size-4" />
                 </Link>
               )}
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="lg:hidden"
+              aria-label={t('service.navigation.openMenu')}
+              aria-expanded={isNavigationOpen}
+              aria-controls="service-navigation-side"
+              ref={navigationTriggerRef}
+              onClick={() => setIsNavigationOpen((open) => !open)}
+            >
+              <Menu className="size-4" />
+            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={(props) => (
@@ -270,35 +301,14 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
                     type="button"
                     variant="outline"
                     size="icon"
+                    aria-label={t('app.localeSwitcher.language')}
                     className="lg:hidden"
-                    aria-label={t('service.navigation.openMenu')}
                   >
-                    <Menu className="size-4" />
+                    <Globe className="size-4" />
                   </Button>
                 )}
               />
-              <DropdownMenuContent
-                align="end"
-                className="
-                  w-56
-                  lg:hidden
-                "
-              >
-                <DropdownMenuGroup>
-                  <DropdownMenuLabel>{t('service.navigation.menu')}</DropdownMenuLabel>
-                  {navigation.map((item) => (
-                    <DropdownMenuItem
-                      key={item.to}
-                      render={<Link to={item.to} />}
-                      className={location.pathname === item.to
-                        ? `bg-accent text-accent-foreground`
-                        : undefined}
-                    >
-                      {t(item.label)}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
+              <DropdownMenuContent align="end" className="w-56 lg:hidden">
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>
                     <Globe />
