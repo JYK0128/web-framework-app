@@ -37,7 +37,7 @@ import { InternalClient } from './internal-client';
 import { OrmAuthReader } from './orm-auth.reader';
 import { LocalStorageAdapter } from './storage/local-storage.adapter';
 import { S3StorageAdapter } from './storage/s3-storage.adapter';
-import { RedisTokenStore } from './stores/redis-token.store';
+import { RedisTokenStore } from './store/redis-token.store';
 
 const PERSISTENCE_MODULES = {
   imports: [
