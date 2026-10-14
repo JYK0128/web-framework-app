@@ -1,3 +1,4 @@
+import { BrandLogo } from '@pkg/web-core/ui';
 import { cn } from '@pkg/web-core/utils';
 import type { ComponentProps } from 'react';
 
@@ -22,10 +23,6 @@ function ScreenLayoutHeader({ className, ...props }: ComponentProps<'header'>) {
   return <header {...props} className={cn('flex items-center justify-between gap-4', className)} />;
 }
 
-function ScreenLayoutLogo({ className, ...props }: ComponentProps<'div'>) {
-  return <div {...props} className={cn('flex shrink-0 items-center justify-center', className)} />;
-}
-
 function ScreenLayoutTools({ className, ...props }: ComponentProps<'div'>) {
   return <div {...props} className={cn('flex items-center gap-2', className)} />;
 }
@@ -41,7 +38,7 @@ function ScreenLayoutFooter({ className, ...props }: ComponentProps<'footer'>) {
 /** Semantic regions render in JSX order; the app owns their placement. */
 export const ScreenLayout = Object.assign(ScreenLayoutRoot, {
   Header: ScreenLayoutHeader,
-  Logo: ScreenLayoutLogo,
+  Logo: BrandLogo,
   Tools: ScreenLayoutTools,
   Content: ScreenLayoutContent,
   Footer: ScreenLayoutFooter,

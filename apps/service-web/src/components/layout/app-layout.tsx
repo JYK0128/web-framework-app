@@ -100,7 +100,7 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
           md:px-6
         "
         >
-          <BrandLogo />
+          <BrandLogo labelClassName="hidden sm:inline" />
           <nav
             className="
               hidden items-center gap-1

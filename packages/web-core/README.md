@@ -75,3 +75,26 @@ grid/flex 구성, 영역 순서와 위치, 브랜드·언어 도구는 앱에서
   <ScreenLayout.Footer className="text-center">서비스 안내</ScreenLayout.Footer>
 </ScreenLayout>
 ```
+
+## BrandLogo
+
+`ui`의 `BrandLogo`, `BrandLogo.Icon`, `BrandLogo.Label`은 기존 로고의
+아이콘 박스(size-8), 아이콘(size-4), 글자 굵기와 간격을 제공합니다.
+`collapsed`이면 Label을 숨기고 아이콘을 유지합니다. 링크와 접근성 이름은
+앱에서 제공합니다. 화면 너비에 따른 숨김은 Label의 `className`으로
+앱에서 결정합니다. Service 헤더는 `hidden sm:inline`을 사용하므로 기본
+Tailwind sm(640px) 미만에서 아이콘만 표시합니다. standalone 화면은
+텍스트를 유지하고, Admin 사이드바는 기존 접기 상태로 제어합니다.
+
+```tsx
+<Link to="/" aria-label="Service Web">
+  <BrandLogo collapsed={collapsed}>
+    <BrandLogo.Icon><Layers3 aria-hidden="true" /></BrandLogo.Icon>
+    <BrandLogo.Label className="hidden sm:inline">Service Web</BrandLogo.Label>
+  </BrandLogo>
+</Link>
+```
+
+`ScreenLayout.Logo`도 같은 공통 로고 구현입니다.
+`ScreenLayout.Logo.Icon`과 `ScreenLayout.Logo.Label`로 아이콘과 텍스트를
+직접 구성하거나 앱의 BrandLogo를 사용할 수 있습니다.

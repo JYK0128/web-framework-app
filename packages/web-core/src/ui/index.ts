@@ -23,3 +23,4 @@ export * from './dialog';
 export * from './tabs';
 export * from './theme-provider';
 export * from './theme-toggle';
+export * from './brand-logo';

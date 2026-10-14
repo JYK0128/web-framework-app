@@ -1,21 +1,21 @@
+import { BrandLogo as CoreBrandLogo } from '@pkg/web-core/ui';
 import { Link } from '@tanstack/react-router';
 import { Layers3 } from 'lucide-react';
 
-export function BrandLogo({ collapsed = false }: { collapsed?: boolean }) {
+type BrandLogoProps = {
+  collapsed?: boolean
+  labelClassName?: string
+};
+
+export function BrandLogo({ collapsed = false, labelClassName }: BrandLogoProps) {
   return (
-    <Link
-      to="/"
-      className="flex items-center gap-2.5 font-extrabold tracking-tight"
-      aria-label={collapsed ? '운영자 웹' : undefined}
-    >
-      <span className="
-        flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary
-        text-primary-foreground shadow-xs
-      "
-      >
-        <Layers3 className="size-4" aria-hidden="true" />
-      </span>
-      {!collapsed && <span>운영자 웹</span>}
+    <Link to="/" aria-label="운영자 웹" className="shrink-0">
+      <CoreBrandLogo collapsed={collapsed}>
+        <CoreBrandLogo.Icon>
+          <Layers3 aria-hidden="true" />
+        </CoreBrandLogo.Icon>
+        <CoreBrandLogo.Label className={labelClassName}>운영자 웹</CoreBrandLogo.Label>
+      </CoreBrandLogo>
     </Link>
   );
 }
