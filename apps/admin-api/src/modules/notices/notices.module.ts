@@ -1,6 +1,0 @@
-import { Module } from '@nestjs/common';
-
-import { NoticesController } from '#/modules/notices/notices.controller';
-
-@Module({ controllers: [NoticesController] })
-export class NoticesModule {}

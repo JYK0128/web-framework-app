@@ -1,23 +1,23 @@
 import { Module } from '@nestjs/common';
 
-import { AlertsModule } from '#/modules/alerts/alerts.module';
+import { AlertsModule } from '#/modules/alert/alerts.module';
 import { AuthModule } from '#/modules/auth/auth.module';
-import { CustomersModule } from '#/modules/customers/customers.module';
-import { EventsModule } from '#/modules/events/events.module';
-import { FaqsModule } from '#/modules/faqs/faqs.module';
+import { CustomersModule } from '#/modules/customer/customers.module';
+import { EventsModule } from '#/modules/event/events.module';
+import { FaqsModule } from '#/modules/faq/faqs.module';
 import { HealthModule } from '#/modules/health/health.module';
-import { LogsModule } from '#/modules/logs/logs.module';
-import { MembershipsModule } from '#/modules/memberships/memberships.module';
-import { NoticesModule } from '#/modules/notices/notices.module';
-import { OperatorsModule } from '#/modules/operators/operators.module';
-import { PermissionsModule } from '#/modules/permissions/permissions.module';
+import { LogsModule } from '#/modules/log/logs.module';
+import { MembershipsModule } from '#/modules/membership/memberships.module';
+import { NoticesModule } from '#/modules/notice/notices.module';
+import { OperatorsModule } from '#/modules/operator/operators.module';
+import { PermissionsModule } from '#/modules/permission/permissions.module';
 import { QnaModule } from '#/modules/qna/qna.module';
-import { RolesModule } from '#/modules/roles/roles.module';
+import { RolesModule } from '#/modules/role/roles.module';
 import { ServiceConfigModule } from '#/modules/service-config/service-config.module';
-import { ServiceTermsModule } from '#/modules/service-terms/service-terms.module';
+import { ServiceTermsModule } from '#/modules/service-term/service-terms.module';
 import { SupportModule } from '#/modules/support/support.module';
 import { SystemConfigModule } from '#/modules/system-config/system-config.module';
-import { TermsModule } from '#/modules/terms/terms.module';
+import { TermsModule } from '#/modules/term/terms.module';
 
 const DOMAIN_MODULES = [
   AuthModule,
