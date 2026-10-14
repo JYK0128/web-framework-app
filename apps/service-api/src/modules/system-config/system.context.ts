@@ -10,22 +10,11 @@ import { transformNotificationSecrets } from '#/modules/system-config/notificati
 import { SERVICE_SYSTEM_CONTEXT_REDIS_KEY } from '#/modules/system-config/system-config.constants';
 
 export const SystemContextSnapshotSchema = z.object({
-  webhook: z.object({ enabled: z.boolean(), type: z.enum(['SLACK', 'DISCORD', 'CHANNEL_TALK', 'TEAMS']), cooldownMinutes: z.number().int().min(1).max(1440), webhookUrl: z.string() }).superRefine((webhook, ctx) => {
-    if (!webhook.enabled) return;
-    try {
-      const url = new URL(webhook.webhookUrl.trim());
-      if (!['http:', 'https:'].includes(url.protocol)) throw new Error('Unsupported protocol');
-    }
-    catch {
-      ctx.addIssue({ code: 'custom', path: ['webhookUrl'], message: '활성화된 웹훅 URL이 올바르지 않습니다.' });
-    }
-  }),
   notification: z.record(z.string(), z.unknown()).nullable(),
   oauth: z.record(z.string(), z.unknown()).nullable(),
 });
 
 export type SystemContextSnapshot = z.infer<typeof SystemContextSnapshotSchema>;
-export type WebhookConfig = SystemContextSnapshot['webhook'];
 
 @Injectable()
 export class SystemContext {
@@ -58,7 +47,7 @@ export class SystemContext {
       throw ApplicationError.from(error, { code: 'SYSTEM_CONFIG_INVALID', status: HttpStatus.SERVICE_UNAVAILABLE });
     }
     this.cached = { value, expiresAt: Date.now() + SERVICE_RUNTIME_CONFIG.systemConfigCacheTtlMilliseconds };
-    return this.cached.value;
+    return value;
   }
 
   async getNotificationConfig(): Promise<NotificationConfigDto | null> {

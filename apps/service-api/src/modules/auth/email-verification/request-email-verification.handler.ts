@@ -10,10 +10,10 @@ import { SECURITY_CONFIG } from '#/app.config';
 import { User } from '#/core/database/entities/auth';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { env } from '#/env';
-import { ensureEmailNotificationConfigured } from '#/modules/system-config/notification/service-email-config.helper';
 import { sendEmailVerificationChallenge } from '#/modules/auth/email-verification/email-verification.helper';
 import { RequestEmailVerificationCommand } from '#/modules/auth/email-verification/request-email-verification.command';
 import { RequestEmailVerificationResponseDto } from '#/modules/auth/email-verification/request-email-verification.response.dto';
+import { ensureEmailNotificationConfigured } from '#/modules/system-config/notification/service-email-config.helper';
 import { SystemContext } from '#/modules/system-config/system.context';
 
 @Injectable()
@@ -25,6 +25,7 @@ export class RequestEmailVerificationHandler implements ICommandHandler<RequestE
     private readonly systemContext: SystemContext,
     @Inject(EVENT_BROKER.REDIS_STREAMS) private readonly eventBroker: EventBroker,
   ) {}
+
   async execute(command: RequestEmailVerificationCommand): Promise<RequestEmailVerificationResponseDto> {
     if (!SECURITY_CONFIG.registration.requireEmailVerification) return RequestEmailVerificationResponseDto.parse({ accepted: true });
     await ensureEmailNotificationConfigured(this.systemContext);

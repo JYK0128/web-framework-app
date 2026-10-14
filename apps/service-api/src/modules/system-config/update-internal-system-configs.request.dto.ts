@@ -19,11 +19,6 @@ export class UpdateInternalSystemConfigsRequestDto {
   @IsObject()
   inquiry?: Record<string, unknown>;
 
-  @ApiPropertyOptional({ type: Object })
-  @IsOptional()
-  @IsObject()
-  webhook?: Record<string, unknown>;
-
   @ApiPropertyOptional({ type: NotificationConfigDto })
   @IsOptional()
   @ValidateNested()

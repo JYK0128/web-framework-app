@@ -1,9 +1,9 @@
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { assertPasswordPolicy } from '@pkg/server-core/auth/user/password.policy';
 import { EVENT_BROKER } from '@pkg/server-core/event-broker/event-broker.interface';
 import { EventBroker } from '@pkg/server-core/event-broker/event-broker.service';
-import { assertPasswordPolicy } from '@pkg/server-core/auth/user/password.policy';
 import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
 import { ApplicationError } from '@pkg/shared/common';
 import { encrypt, hashPassword, hashWithSecret } from '@pkg/shared/server';
@@ -15,8 +15,8 @@ import { AppEntityManager } from '#/core/database/entity-manager';
 import { env } from '#/env';
 import { RegisterCommand } from '#/modules/auth/account/register.command';
 import { RegisterResponseDto } from '#/modules/auth/account/register.response.dto';
-import { ensureEmailNotificationConfigured } from '#/modules/system-config/notification/service-email-config.helper';
 import { sendEmailVerificationChallenge } from '#/modules/auth/email-verification/email-verification.helper';
+import { ensureEmailNotificationConfigured } from '#/modules/system-config/notification/service-email-config.helper';
 import { SystemContext } from '#/modules/system-config/system.context';
 
 @Injectable()

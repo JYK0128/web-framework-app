@@ -11,7 +11,6 @@ import { env } from '#/env';
 import { AdminEmailConfigDto } from '#/modules/system-config/admin-email/admin-email-config.dto';
 import { UpdateSystemConfigCommand } from '#/modules/system-config/update-system-config.command';
 import { UpdateSystemConfigResponseDto } from '#/modules/system-config/update-system-config.response.dto';
-import { AdminWebhookConfigResponseDto } from '#/modules/system-config/webhook/admin-webhook-config.response.dto';
 import { WebhookConfigDto } from '#/modules/system-config/webhook/webhook-config.dto';
 
 @Injectable()
@@ -26,7 +25,6 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
   async execute(command: UpdateSystemConfigCommand): Promise<UpdateSystemConfigResponseDto> {
     const { adminEmail, webhook, ...serviceConfig } = command.input;
     const updatedKeys: string[] = [];
-    let savedWebhook: AdminWebhookConfigResponseDto | undefined;
     if (adminEmail || webhook) {
       await this.em.transactional(async (em) => {
         if (adminEmail) {
@@ -55,7 +53,6 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
           const entity = await em.findOne(SystemConfig, { code: AdminSystemConfigCode.WEBHOOK }, { filters: false });
           if (!entity) throw new NotFoundException('Admin 웹훅 설정을 찾을 수 없습니다.');
           entity.value = WebhookConfigDto.parse(webhook).validate();
-          savedWebhook = AdminWebhookConfigResponseDto.parseEntity(entity);
         }
       });
       this.systemContext.invalidateCache();
@@ -63,7 +60,7 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
       if (webhook) updatedKeys.push('webhook');
     }
 
-    const remoteConfig = { ...serviceConfig, ...(savedWebhook ? { webhook: savedWebhook } : {}) };
+    const remoteConfig = { ...serviceConfig };
     const remoteKeys = Object.keys(remoteConfig);
     if (remoteKeys.length > 0) {
       try {
@@ -71,15 +68,16 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
         updatedKeys.push(...remoteUpdatedKeys.filter((key) => !updatedKeys.includes(key)));
       }
       catch (cause) {
+        const unconfirmedKeys = remoteKeys.filter((key) => !updatedKeys.includes(key));
         const error = new ApplicationError({
           code: 'SYSTEM_CONFIG_UPDATE_INCOMPLETE',
           status: HttpStatus.SERVICE_UNAVAILABLE,
-          details: UpdateSystemConfigResponseDto.toPlain(UpdateSystemConfigResponseDto.parse({ ok: false, updatedKeys, syncedKeys: [], unconfirmedKeys: remoteKeys })),
+          details: UpdateSystemConfigResponseDto.toPlain(UpdateSystemConfigResponseDto.parse({ ok: false, updatedKeys, syncedKeys: [], unconfirmedKeys })),
         });
         error.cause = cause;
         throw error;
       }
     }
-    return UpdateSystemConfigResponseDto.parse({ ok: true, updatedKeys, syncedKeys: savedWebhook ? ['webhook'] : [], unconfirmedKeys: [] });
+    return UpdateSystemConfigResponseDto.parse({ ok: true, updatedKeys, syncedKeys: [], unconfirmedKeys: [] });
   }
 }

@@ -1,10 +1,10 @@
 import { ApplicationError } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { RefreshCw, Save } from 'lucide-react';
+import { Save } from 'lucide-react';
 import { useRef, useState } from 'react';
 
-import { useSystemConfigControllerSyncConfigsV1, useSystemConfigControllerUpdateConfigsV1 } from '#/.generated/api/endpoints/system-configs/system-configs';
+import { useSystemConfigControllerUpdateConfigsV1 } from '#/.generated/api/endpoints/system-configs/system-configs';
 import type { UpdateSystemConfigResponseDto, UpdateSystemSettingsRequestDto } from '#/.generated/api/model';
 import { SystemConfigControllerUpdateConfigsV1Response } from '#/.generated/api/zod/system-configs/system-configs';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
@@ -30,7 +30,6 @@ function SystemSettingsPage() {
   const queryClient = useQueryClient();
   const settingsQuery = useSystemSettingsQuery();
   const updateMutation = useSystemConfigControllerUpdateConfigsV1();
-  const syncMutation = useSystemConfigControllerSyncConfigsV1();
   const [activeTab, setActiveTab] = useHashTab<SystemSettingKey>(SYSTEM_SETTING_TABS, 'notification');
   const notificationRef = useRef<NotificationTabHandle>(null);
   const oauthRef = useRef<OAuthTabHandle>(null);
@@ -104,19 +103,6 @@ function SystemSettingsPage() {
   return (
     <PageSection icon="server-cog" title="시스템 설정" description="발송 채널, 소셜 로그인 키와 시스템 알림 설정을 관리합니다.">
       <PageSection.Actions>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => syncMutation.mutate()}
-          disabled={syncMutation.isPending || isSaving || !config || retryInput !== null}
-          className="h-9 min-w-28 gap-2 font-semibold cursor-pointer"
-        >
-          <RefreshCw className={cn('size-4', syncMutation.isPending && `
-            animate-spin
-          `)}
-          />
-          {syncMutation.isPending ? '동기화 중...' : '동기화'}
-        </Button>
         <Button
           type="button"
           onClick={() => void handleSave()}

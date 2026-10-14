@@ -26,7 +26,9 @@ export async function sendEmailVerificationChallenge(eventBroker: EventBroker, k
     await eventBroker.publish(new EmailVerificationEvent(challengeId, ttlMinutes));
   }
   catch (error) {
-    try { await kv.del(key); }
+    try {
+      await kv.del(key);
+    }
     catch (cleanupError) {
       logger.error(`Failed to remove email challenge after event publication failure: ${cleanupError instanceof Error ? cleanupError.message : String(cleanupError)}`);
     }

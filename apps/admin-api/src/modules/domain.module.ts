@@ -18,6 +18,7 @@ import { ServiceTermsModule } from '#/modules/service-term/service-terms.module'
 import { SupportModule } from '#/modules/support/support.module';
 import { SystemConfigModule } from '#/modules/system-config/system-config.module';
 import { TermsModule } from '#/modules/term/terms.module';
+import { WebhooksModule } from '#/modules/webhook/webhooks.module';
 
 const DOMAIN_MODULES = [
   AuthModule,
@@ -38,6 +39,7 @@ const DOMAIN_MODULES = [
   MembershipsModule,
   SystemConfigModule,
   ServiceConfigModule,
+  WebhooksModule,
 ];
 
 @Module({

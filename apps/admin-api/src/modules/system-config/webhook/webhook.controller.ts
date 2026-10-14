@@ -6,9 +6,6 @@ import { Permissions } from '@pkg/server-core/http/decorators/permission.decorat
 import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
 import { AdminPermission } from '@pkg/shared';
 
-import { SyncWebhookConfigCommand } from '#/modules/system-config/webhook/sync-webhook-config.command';
-import { SyncWebhookConfigRequestDto } from '#/modules/system-config/webhook/sync-webhook-config.request.dto';
-import { SyncWebhookConfigResponseDto } from '#/modules/system-config/webhook/sync-webhook-config.response.dto';
 import { TestWebhookCommand } from '#/modules/system-config/webhook/test-webhook.command';
 import { TestWebhookRequestDto } from '#/modules/system-config/webhook/test-webhook.request.dto';
 import { TestWebhookResponseDto } from '#/modules/system-config/webhook/test-webhook.response.dto';
@@ -25,13 +22,5 @@ export class SystemConfigWebhookController {
   @ApiOperation({ summary: '웹훅 테스트 전송', operationId: 'SystemConfigController_testWebhook_v1' })
   testWebhook(@Body() input: TestWebhookRequestDto): Promise<TestWebhookResponseDto> {
     return this.commandBus.execute(new TestWebhookCommand(input));
-  }
-
-  @Post('sync')
-  @Permissions(AdminPermission.system.update)
-  @SwaggerApiResponse(SyncWebhookConfigResponseDto)
-  @ApiOperation({ summary: '웹훅 설정 동기화', operationId: 'SystemConfigController_syncConfigs_v1' })
-  syncWebhookConfig(): Promise<SyncWebhookConfigResponseDto> {
-    return this.commandBus.execute(new SyncWebhookConfigCommand(new SyncWebhookConfigRequestDto()));
   }
 }

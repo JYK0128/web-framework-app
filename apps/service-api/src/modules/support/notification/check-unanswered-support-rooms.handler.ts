@@ -14,13 +14,12 @@ import { AppEntityManager } from '#/core/database/entity-manager';
 import { CheckUnansweredSupportRoomsCommand } from '#/modules/support/notification/check-unanswered-support-rooms.command';
 import { InquiryWebhookService } from '#/modules/support/notification/inquiry-webhook.service';
 import { ServiceContext } from '#/modules/system-config/service.context';
-import { SystemContext, type WebhookConfig } from '#/modules/system-config/system.context';
 
 const UNANSWERED_JOB_LOCK = 'service:support:scheduler:unanswered';
 
 @CommandHandler(CheckUnansweredSupportRoomsCommand)
 export class CheckUnansweredSupportRoomsHandler implements ICommandHandler<CheckUnansweredSupportRoomsCommand, void> {
-  constructor(private readonly em: AppEntityManager, private readonly kvStore: KvStore, private readonly serviceContext: ServiceContext, private readonly systemContext: SystemContext, private readonly inquiryWebhooks: InquiryWebhookService, @Inject(EVENT_BROKER.REDIS_PUBSUB) private readonly eventBroker: EventBroker) {}
+  constructor(private readonly em: AppEntityManager, private readonly kvStore: KvStore, private readonly serviceContext: ServiceContext, private readonly inquiryWebhooks: InquiryWebhookService, @Inject(EVENT_BROKER.REDIS_PUBSUB) private readonly eventBroker: EventBroker) {}
   async execute(_command: CheckUnansweredSupportRoomsCommand): Promise<void> {
     const lockToken = uuid();
     try {
@@ -31,8 +30,7 @@ export class CheckUnansweredSupportRoomsHandler implements ICommandHandler<Check
       )) return;
       try {
         await MikroRequestContext.create(this.em, async () => {
-          const [serviceConfig, systemConfig] = await Promise.all([this.serviceContext.getConfig(), this.systemContext.getConfig()]);
-          const { webhook } = systemConfig;
+          const serviceConfig = await this.serviceContext.getConfig();
           if (!isWithinOperatingHours(serviceConfig.operation, new Date())) return;
 
           const threshold = new Date(Date.now() - serviceConfig.inquiry.unansweredThresholdMinutes * TimeUtil.ms.minute(1));
@@ -42,7 +40,7 @@ export class CheckUnansweredSupportRoomsHandler implements ICommandHandler<Check
           });
 
           for (const room of rooms) {
-            await this.processUnansweredRoom(room, threshold, webhook);
+            await this.processUnansweredRoom(room, threshold);
           }
         });
       }
@@ -56,7 +54,7 @@ export class CheckUnansweredSupportRoomsHandler implements ICommandHandler<Check
   }
 
   private readonly logger = new Logger(CheckUnansweredSupportRoomsHandler.name);
-  private async processUnansweredRoom(room: SupportRoom, threshold: Date, webhook: WebhookConfig): Promise<void> {
+  private async processUnansweredRoom(room: SupportRoom, threshold: Date): Promise<void> {
     const lastHumanMessage = await this.em.findOne(
       SupportMessage,
       { room: room.id, senderType: { $in: [SupportMessageSenderType.USER, SupportMessageSenderType.AGENT] } },
@@ -64,28 +62,15 @@ export class CheckUnansweredSupportRoomsHandler implements ICommandHandler<Check
     );
     if (!lastHumanMessage || lastHumanMessage.senderType !== SupportMessageSenderType.USER || lastHumanMessage.createdAt > threshold) return;
 
-    const cooldownKey = `service:support:unanswered-alert:${room.id}`;
-    const acquired = await this.kvStore.setIfAbsent(cooldownKey, '1', TimeUtil.s.minute(webhook.cooldownMinutes));
-    if (!acquired) return;
-
     const elapsedMinutes = Math.floor((Date.now() - lastHumanMessage.createdAt.getTime()) / TimeUtil.ms.minute(1));
     try {
+      const accepted = await this.inquiryWebhooks.sendUnansweredWebhook(room.id, elapsedMinutes);
+      if (!accepted) return;
       await this.eventBroker.publish(
         new SupportUnansweredAlertEvent(room.id, elapsedMinutes, new Date().toISOString()),
       );
-      if (webhook.enabled && webhook.webhookUrl.trim()) {
-        await this.inquiryWebhooks.sendUnansweredWebhook(room.id, elapsedMinutes);
-      }
     }
     catch (error) {
-      try {
-        await this.kvStore.del(cooldownKey);
-      }
-      catch (cleanupError) {
-        this.logger.error(
-          `미응답 알림 쿨다운 해제에 실패했습니다. 상담 ID: ${room.id}, 오류: ${cleanupError instanceof Error ? cleanupError.message : String(cleanupError)}`,
-        );
-      }
       this.logger.error(
         `미응답 고객지원 알림 발송에 실패했습니다. 상담 ID: ${room.id}, 오류: ${error instanceof Error ? error.message : String(error)}`,
       );

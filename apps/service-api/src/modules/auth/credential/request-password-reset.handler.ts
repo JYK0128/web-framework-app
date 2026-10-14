@@ -10,10 +10,10 @@ import { SECURITY_CONFIG } from '#/app.config';
 import { Account, User } from '#/core/database/entities/auth';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { env } from '#/env';
-import { ensureEmailNotificationConfigured } from '#/modules/system-config/notification/service-email-config.helper';
 import { sendPasswordResetChallenge } from '#/modules/auth/credential/password-reset.helper';
 import { RequestPasswordResetCommand } from '#/modules/auth/credential/request-password-reset.command';
 import { RequestPasswordResetResponseDto } from '#/modules/auth/credential/request-password-reset.response.dto';
+import { ensureEmailNotificationConfigured } from '#/modules/system-config/notification/service-email-config.helper';
 import { SystemContext } from '#/modules/system-config/system.context';
 
 @Injectable()

@@ -8,14 +8,12 @@ import { InquiryConfigDto } from '#/modules/service-config/inquiry/inquiry-confi
 import { MaintenanceConfigDto } from '#/modules/service-config/maintenance/maintenance-config.dto';
 import { OperationConfigDto } from '#/modules/service-config/operation/operation-config.dto';
 import { OAuthConfigDto } from '#/modules/system-config/oauth/oauth-config.dto';
-import { WebhookConfigDto } from '#/modules/system-config/webhook/webhook-config.dto';
 
 @ApiSchema({ name: 'SystemConfigResponseDto' })
 export class ServiceSystemConfigResponseDto extends BaseDto {
   @ApiProperty({ type: OperationConfigDto }) @ValidateNested() @Type(() => OperationConfigDto) operation!: OperationConfigDto;
   @ApiProperty({ type: MaintenanceConfigDto }) @ValidateNested() @Type(() => MaintenanceConfigDto) maintenance!: MaintenanceConfigDto;
   @ApiProperty({ type: InquiryConfigDto }) @ValidateNested() @Type(() => InquiryConfigDto) inquiry!: InquiryConfigDto;
-  @ApiProperty({ type: WebhookConfigDto }) @ValidateNested() @Type(() => WebhookConfigDto) webhook!: WebhookConfigDto;
   @ApiProperty({ type: NotificationConfigDto }) @ValidateNested() @Type(() => NotificationConfigDto) notification!: NotificationConfigDto;
   @ApiProperty({ type: OAuthConfigDto }) @ValidateNested() @Type(() => OAuthConfigDto) oauth!: OAuthConfigDto;
 }

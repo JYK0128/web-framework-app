@@ -30,7 +30,6 @@ const SERVICE_CONTEXT_CODES = [
   ServiceSystemConfigCode.INQUIRY,
 ] as const;
 const SYSTEM_CONTEXT_CODES = [
-  ServiceSystemConfigCode.WEBHOOK,
   ServiceSystemConfigCode.NOTIFICATION,
   ServiceSystemConfigCode.OAUTH,
 ] as const;
@@ -170,11 +169,9 @@ export class SystemConfigService implements OnModuleInit {
   private async syncSystemContextToRedis(em: AppEntityManager): Promise<void> {
     const configs = await em.find(SystemConfig, { code: { $in: SYSTEM_CONTEXT_CODES } }, { filters: false });
     const values = new Map(configs.map((config) => [config.code, config.value]));
-    const webhook = values.get(ServiceSystemConfigCode.WEBHOOK);
     const notification = values.get(ServiceSystemConfigCode.NOTIFICATION);
     const oauth = values.get(ServiceSystemConfigCode.OAUTH);
     const result = SystemContextSnapshotSchema.safeParse({
-      webhook,
       notification: isPlainObject(notification) ? notification : null,
       oauth: isPlainObject(oauth) ? oauth : null,
     });
@@ -283,7 +280,6 @@ export class SystemConfigService implements OnModuleInit {
       inquiry: updates.inquiry ?? configs.get(ServiceSystemConfigCode.INQUIRY)?.value,
     };
     const systemContext = {
-      webhook: updates.webhook ?? configs.get(ServiceSystemConfigCode.WEBHOOK)?.value,
       notification: updates.notification ?? configs.get(ServiceSystemConfigCode.NOTIFICATION)?.value ?? null,
       oauth: updates.oauth ?? configs.get(ServiceSystemConfigCode.OAUTH)?.value ?? null,
     };
