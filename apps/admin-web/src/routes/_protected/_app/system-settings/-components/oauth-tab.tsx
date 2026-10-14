@@ -1,4 +1,8 @@
 import { ApplicationError } from '@pkg/shared/common';
+import { FormLayout, useAppForm } from '@pkg/web-core/form';
+import { SectionCard } from '@pkg/web-core/layout';
+import { openModal } from '@pkg/web-core/modal';
+import { OAuthProviderIcon } from '@pkg/web-core/ui';
 import { useMutation } from '@tanstack/react-query';
 import { Plus, Search, Trash2 } from 'lucide-react';
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
@@ -7,10 +11,6 @@ import { toast } from 'sonner';
 import { systemConfigControllerCreateOAuthIconPresignedUrlV1 } from '#/.generated/api/endpoints/system-configs/system-configs';
 import type { OAuthConfigDto, OAuthProviderDetailDto } from '#/.generated/api/model';
 import { Badge, Button, Input } from '#/.generated/shadcn/components/ui';
-import { OAuthProviderIcon } from '#/components/app';
-import { FormLayout, useAppForm } from '#/components/form';
-import { SectionCard } from '#/components/layout';
-import { openModal } from '#/components/modal';
 import { getI18n } from '#/i18n/i18n';
 
 import { hasOAuthProviderConnectionFields, type OAuthProviderMeta } from './oauth-provider.types';

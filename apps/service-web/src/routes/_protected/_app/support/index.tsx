@@ -1,3 +1,6 @@
+import { DataGrid, DataGridToolbar, useDataGrid } from '@pkg/web-core/data-grid';
+import { PageSection, SectionCard } from '@pkg/web-core/layout';
+import { openModal } from '@pkg/web-core/modal';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { type ColumnFiltersState, createColumnHelper } from '@tanstack/react-table';
@@ -6,9 +9,6 @@ import { useCallback, useMemo, useState } from 'react';
 import { getSupportControllerListRoomsV1QueryKey, supportControllerListRoomsV1 } from '#/.generated/api/endpoints/support/support';
 import type { SupportRoomItem } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
-import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
-import { PageSection, SectionCard } from '#/components/layout';
-import { openModal } from '#/components/modal';
 import { OperationNotice } from '#/routes/_protected/-components/operation-notice';
 
 import { SupportRoomDetailModal } from './-components/support-room-detail-modal';

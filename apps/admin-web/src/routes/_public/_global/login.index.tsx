@@ -1,12 +1,12 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
+import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router';
 
 import { getAuthControllerMeV1QueryKey, useAuthControllerLoginV1, useOAuthControllerProvidersV1 } from '#/.generated/api/endpoints/auth/auth';
 import { AuthControllerLoginV1Body } from '#/.generated/api/zod/auth/auth';
 import { Card, CardContent, CardHeader, CardTitle, Separator } from '#/.generated/shadcn/components/ui';
-import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
 import { ScreenLayout } from '#/components/layout';
 
 export const Route = createFileRoute('/_public/_global/login/')({

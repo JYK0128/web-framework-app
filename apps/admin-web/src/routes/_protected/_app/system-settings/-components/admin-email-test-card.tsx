@@ -1,11 +1,11 @@
 import { z } from '@pkg/shared/common';
+import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
+import { SectionCard } from '@pkg/web-core/layout';
 import { useMutation } from '@tanstack/react-query';
 import { Send } from 'lucide-react';
 
 import type { SystemConfigControllerTestAdminEmailV1200 } from '#/.generated/api/model/systemConfigControllerTestAdminEmailV1200';
 import type { TestAdminEmailRequestDto } from '#/.generated/api/model/testAdminEmailRequestDto';
-import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
-import { SectionCard } from '#/components/layout';
 import { axios } from '#/lib/axios';
 
 export function AdminEmailTestCard() {

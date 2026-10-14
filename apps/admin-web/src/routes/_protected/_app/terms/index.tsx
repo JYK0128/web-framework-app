@@ -1,3 +1,7 @@
+import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '@pkg/web-core/data-grid';
+import { confirm } from '@pkg/web-core/feedback';
+import { PageSection, SectionCard, SideMainSection } from '@pkg/web-core/layout';
+import { openModal } from '@pkg/web-core/modal';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper, type SortingState } from '@tanstack/react-table';
@@ -8,10 +12,6 @@ import { getTermsControllerGetTermGroupsV1QueryKey, getTermsControllerGetTermsV1
 import type { TermGroupItemDto, TermItemDto, TermsControllerGetTermsV1Params } from '#/.generated/api/model';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { Action } from '#/components/app/action';
-import { confirm } from '#/components/app/system-dialog';
-import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
-import { PageSection, SectionCard, SideMainSection } from '#/components/layout';
-import { openModal } from '#/components/modal';
 
 import { TermEditorModal, TermGroupEditorModal, TermViewModal } from './-components/modals';
 import { TermGroupList } from './-components/term-group-list';

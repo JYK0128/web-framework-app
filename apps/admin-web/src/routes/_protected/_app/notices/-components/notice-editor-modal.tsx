@@ -1,13 +1,13 @@
 import { z } from '@pkg/shared/common';
 import { hasEditorContent, toEditorHtml } from '@pkg/shared/editor';
+import { EditorViewer } from '@pkg/web-core/editor';
+import { FormLayout, useAppForm } from '@pkg/web-core/form';
+import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { getNoticesControllerListV1QueryKey, noticesControllerCreateV1, noticesControllerUpdateV1 } from '#/.generated/api/endpoints/notices/notices';
 import type { CreateNoticeRequestDto, NoticeItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { EditorViewer } from '#/components/editor';
-import { FormLayout, useAppForm } from '#/components/form';
-import { Modal, type ModalComponentProps } from '#/components/modal';
 
 export type NoticeEditorModalProps = ModalComponentProps<boolean> & { notice?: NoticeItemDto, readOnly?: boolean };
 const importanceOptions = [{ label: '일반', value: 'normal' }, { label: '중요', value: 'important' }, { label: '긴급', value: 'urgent' }] as const;

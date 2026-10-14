@@ -1,10 +1,11 @@
+import { ActionCard, SectionCard } from '@pkg/web-core/layout';
+import { openModal } from '@pkg/web-core/modal';
 import { useQueryClient } from '@tanstack/react-query';
+import { FileText } from 'lucide-react';
 
 import { getTermsControllerGetAgreementHistoryV1QueryKey, getTermsControllerGetAgreementsV1QueryKey, useTermsControllerSetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
 import type { GetAgreementsResponseDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Button, Checkbox } from '#/.generated/shadcn/components/ui';
-import { ActionCard, SectionCard } from '#/components/layout';
-import { openModal } from '#/components/modal';
 
 import { AgreementHistoryModal } from './agreement-history-modal';
 import { ProfileTermDetailModal } from './term-detail-modal';
@@ -53,7 +54,17 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
           const hasOptions = !term.isRequired && keys.length > 0;
           return (
             <div key={term.termId} className="grid gap-2">
-              <ActionCard icon="file-text" iconColor={term.isAgreed ? 'text-primary' : 'text-muted-foreground'} title={term.title} description={`v${term.version}${term.isRequired ? ' · 필수' : ' · 선택'}`} variant="outline">
+              <ActionCard
+                icon={(
+                  <FileText className={term.isAgreed
+                    ? `text-primary`
+                    : `text-muted-foreground`}
+                  />
+                )}
+                title={term.title}
+                description={`v${term.version}${term.isRequired ? ' · 필수' : ' · 선택'}`}
+                variant="outline"
+              >
                 <ActionCard.Actions>
                   <Button type="button" size="sm" variant="ghost" onClick={() => void openModal(TermRevisionHistoryModal, { term })}>개정 이력</Button>
                   <Button type="button" size="sm" variant="ghost" onClick={() => void openModal(AgreementHistoryModal, { term })}>동의 이력</Button>

@@ -1,4 +1,6 @@
 import { ApplicationError } from '@pkg/shared/common';
+import { PageSection } from '@pkg/web-core/layout';
+import { cn } from '@pkg/web-core/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { Save } from 'lucide-react';
@@ -8,8 +10,6 @@ import { useSystemConfigControllerUpdateConfigsV1 } from '#/.generated/api/endpo
 import type { UpdateSystemConfigResponseDto, UpdateSystemSettingsRequestDto } from '#/.generated/api/model';
 import { SystemConfigControllerUpdateConfigsV1Response } from '#/.generated/api/zod/system-configs/system-configs';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
-import { cn } from '#/.generated/shadcn/lib/utils';
-import { PageSection } from '#/components/layout';
 import { useHashTab } from '#/hooks/use-hash-tab';
 
 import { AdminEmailSettingsTab, type AdminEmailSettingsTabHandle } from './-components/admin-email-settings-tab';

@@ -1,8 +1,9 @@
+import { getSlotElements } from '@pkg/web-core/slot';
+import { ThemeToggle } from '@pkg/web-core/ui';
+import { cn } from '@pkg/web-core/utils';
 import type { ReactNode } from 'react';
 
-import { cn } from '#/.generated/shadcn/lib/utils';
-import { BrandLogo, LocaleSwitcher, ThemeToggle } from '#/components/app';
-import { getSlotElements } from '#/components/slot';
+import { BrandLogo, LocaleSwitcher } from '#/components/app';
 
 export type ScreenLayoutSize = 'sm' | 'md' | 'lg' | 'xl';
 

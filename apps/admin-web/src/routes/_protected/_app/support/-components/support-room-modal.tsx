@@ -1,4 +1,6 @@
 import { z } from '@pkg/shared/common';
+import { FormLayout, useAppForm } from '@pkg/web-core/form';
+import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -6,8 +8,6 @@ import { getSupportControllerGetRoomV1QueryKey, getSupportControllerListMessageP
 import type { SupportMessageItem, SupportRoomItem } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
 import { Action } from '#/components/app/action';
-import { FormLayout, useAppForm } from '#/components/form';
-import { Modal, type ModalComponentProps } from '#/components/modal';
 import { useSupportSocket } from '#/hooks/use-support-socket';
 
 export type SupportRoomModalProps = ModalComponentProps & { room: SupportRoomItem, onChanged?: () => void | Promise<void> };

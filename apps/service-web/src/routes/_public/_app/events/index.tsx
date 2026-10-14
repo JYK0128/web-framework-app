@@ -1,3 +1,6 @@
+import { DataGrid, DataGridToolbar, useDataGrid } from '@pkg/web-core/data-grid';
+import { EditorViewer } from '@pkg/web-core/editor';
+import { PageSection, SectionCard } from '@pkg/web-core/layout';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -7,9 +10,6 @@ import { useMemo, useState } from 'react';
 import { eventsControllerListV1 } from '#/.generated/api/endpoints/events/events';
 import type { EventItem, EventsControllerListV1Phase } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
-import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
-import { EditorViewer } from '#/components/editor';
-import { PageSection, SectionCard } from '#/components/layout';
 
 export const Route = createFileRoute('/_public/_app/events/')({ component: EventsPage });
 

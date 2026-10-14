@@ -1,11 +1,11 @@
 import { ApplicationError, getValidationFieldErrors } from '@pkg/shared/common';
 import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
+import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
+import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 
 import { useAuthControllerChangePasswordV1 } from '#/.generated/api/endpoints/auth/auth';
 import { AuthControllerChangePasswordV1Body } from '#/.generated/api/zod/auth/auth';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
-import { Modal, type ModalComponentProps } from '#/components/modal';
 import { describePasswordPolicy, getPasswordPolicyError } from '#/lib/password-policy';
 
 export function ProfileChangePasswordModal({ open, onOpenChange, close }: ModalComponentProps<boolean>) {

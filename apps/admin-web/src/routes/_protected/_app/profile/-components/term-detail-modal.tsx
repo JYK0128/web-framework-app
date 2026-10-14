@@ -1,7 +1,8 @@
+import { Modal, type ModalComponentProps, openModal } from '@pkg/web-core/modal';
+
 import { useTermsControllerGetTermV1 } from '#/.generated/api/endpoints/terms/terms';
 import type { TermAgreementItemDto } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
-import { Modal, type ModalComponentProps, openModal } from '#/components/modal';
 import { TermRevisionHistoryModal } from '#/routes/_protected/_app/profile/-components/term-revision-history-modal';
 
 type TermDetailModalProps = ModalComponentProps & {

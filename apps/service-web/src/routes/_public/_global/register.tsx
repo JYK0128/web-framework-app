@@ -1,11 +1,11 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
+import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
 import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { useAuthControllerRegisterV1, useAuthControllerRequestEmailVerificationV1 } from '#/.generated/api/endpoints/auth/auth';
 import { AuthControllerRegisterV1Body } from '#/.generated/api/zod/auth/auth';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
-import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
 import { ScreenLayout } from '#/components/layout';
 import { describePasswordPolicy, getPasswordPolicyError } from '#/lib/password-policy';
 

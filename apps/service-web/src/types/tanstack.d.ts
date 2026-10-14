@@ -2,7 +2,6 @@ import '@tanstack/react-router';
 
 import type { i18n } from '@pkg/shared/common';
 import type {} from '@tanstack/history';
-import type { RowData } from '@tanstack/react-table';
 
 declare module '@tanstack/history' {
   interface HistoryState {
@@ -17,13 +16,5 @@ declare module '@tanstack/router-core' {
         i18n: i18n
       }
     }
-  }
-}
-
-declare module '@tanstack/react-table' {
-  interface ColumnMeta<_TData extends RowData, _TValue> {
-    filterType?: 'text' | 'number' | 'date' | 'faceted'
-    filterMultiple?: boolean
-    filterOptions?: Array<{ label: string, value: string }>
   }
 }

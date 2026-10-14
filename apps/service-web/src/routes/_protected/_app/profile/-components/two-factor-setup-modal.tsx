@@ -1,4 +1,6 @@
 import { z } from '@pkg/shared/common';
+import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
+import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 import { Copy } from 'lucide-react';
 import { toString as qrToString } from 'qrcode';
 import { useEffect, useState } from 'react';
@@ -6,8 +8,6 @@ import { toast } from 'sonner';
 
 import { useAuthControllerEnableTwoFactorV1, useAuthControllerGenerateTwoFactorV1 } from '#/.generated/api/endpoints/auth/auth';
 import { Button, InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '#/.generated/shadcn/components/ui';
-import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
-import { Modal, type ModalComponentProps } from '#/components/modal';
 
 export function ProfileTwoFactorSetupModal({ open, onOpenChange, close, email }: ModalComponentProps<boolean> & { email?: string }) {
   const generate = useAuthControllerGenerateTwoFactorV1();

@@ -1,3 +1,5 @@
+import { FormLayout, useAppForm } from '@pkg/web-core/form';
+import { SectionCard } from '@pkg/web-core/layout';
 import { useMutation } from '@tanstack/react-query';
 import { Send } from 'lucide-react';
 import { forwardRef, useImperativeHandle } from 'react';
@@ -5,8 +7,6 @@ import { forwardRef, useImperativeHandle } from 'react';
 import { systemConfigControllerTestWebhookV1 } from '#/.generated/api/endpoints/system-configs/system-configs';
 import type { TestWebhookRequestDto, WebhookConfigDto, WebhookConfigDtoType } from '#/.generated/api/model';
 import { Button, Switch } from '#/.generated/shadcn/components/ui';
-import { FormLayout, useAppForm } from '#/components/form';
-import { SectionCard } from '#/components/layout';
 
 export interface WebhookTabHandle {
   submitData: () => Promise<WebhookConfigDto | null | undefined>

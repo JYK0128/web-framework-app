@@ -1,13 +1,13 @@
 import { z } from '@pkg/shared/common';
 import { hasEditorContent, toEditorHtml } from '@pkg/shared/editor';
+import { EditorViewer } from '@pkg/web-core/editor';
+import { FormLayout, useAppForm } from '@pkg/web-core/form';
+import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { eventsControllerCreateV1, eventsControllerUpdateV1, getEventsControllerListV1QueryKey } from '#/.generated/api/endpoints/events/events';
 import type { CreateEventRequestDto, EventItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { EditorViewer } from '#/components/editor';
-import { FormLayout, useAppForm } from '#/components/form';
-import { Modal, type ModalComponentProps } from '#/components/modal';
 
 export type EventEditorModalProps = ModalComponentProps<boolean> & { event?: EventItemDto, readOnly?: boolean };
 

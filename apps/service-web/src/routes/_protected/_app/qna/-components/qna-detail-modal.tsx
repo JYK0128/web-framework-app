@@ -1,7 +1,8 @@
+import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
+
 import { useQnaControllerGetV1 } from '#/.generated/api/endpoints/qna/qna';
 import type { QnaItem } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
-import { Modal, type ModalComponentProps } from '#/components/modal';
 
 export type QnaDetailModalProps = ModalComponentProps & { item: QnaItem };
 

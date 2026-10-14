@@ -1,3 +1,5 @@
+import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '@pkg/web-core/data-grid';
+import { PageSection, SectionCard, StatsCard } from '@pkg/web-core/layout';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { type ColumnFiltersState, createColumnHelper, type SortingState } from '@tanstack/react-table';
@@ -5,8 +7,6 @@ import { useMemo, useState } from 'react';
 
 import { getLogsControllerGetLogsV1QueryKey, useLogsControllerGetLogsV1, useLogsControllerGetStatsV1 } from '#/.generated/api/endpoints/logs/logs';
 import type { LogItemDto, LogsControllerGetLogsV1Params } from '#/.generated/api/model';
-import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
-import { PageSection, SectionCard, StatsCard } from '#/components/layout';
 
 export const Route = createFileRoute('/_protected/_app/logs/')({ component: LogsPage });
 

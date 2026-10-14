@@ -1,7 +1,8 @@
+import { LinkButton } from '@pkg/web-core/layout';
 import { useRouter } from '@tanstack/react-router';
 
 import { Button, Card, CardContent, CardFooter } from '#/.generated/shadcn/components/ui';
-import { LinkButton, ScreenLayout } from '#/components/layout';
+import { ScreenLayout } from '#/components/layout';
 
 export function RouterNotFound() {
   const router = useRouter();

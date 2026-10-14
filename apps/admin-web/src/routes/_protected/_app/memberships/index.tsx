@@ -1,3 +1,6 @@
+import { confirm } from '@pkg/web-core/feedback';
+import { PageSection, SectionCard } from '@pkg/web-core/layout';
+import { openModal } from '@pkg/web-core/modal';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { Pencil, Plus, ShieldCheck, Trash2 } from 'lucide-react';
@@ -6,9 +9,6 @@ import { useMemo, useState } from 'react';
 import { getMembershipsControllerListV1QueryKey, useMembershipsControllerDeleteV1, useMembershipsControllerListV1 } from '#/.generated/api/endpoints/memberships/memberships';
 import type { MembershipItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { confirm } from '#/components/app/system-dialog';
-import { PageSection, SectionCard } from '#/components/layout';
-import { openModal } from '#/components/modal';
 
 import { MembershipEditor } from './-components/membership-editor-modal';
 

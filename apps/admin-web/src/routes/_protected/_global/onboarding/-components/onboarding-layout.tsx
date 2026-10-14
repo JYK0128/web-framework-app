@@ -1,3 +1,4 @@
+import { AppIcon } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useRouter } from '@tanstack/react-router';
 import { Loader2, LogOut } from 'lucide-react';
@@ -6,7 +7,6 @@ import type { ReactNode } from 'react';
 
 import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
-import { AppIcon } from '#/components/app';
 import { ScreenLayout } from '#/components/layout';
 
 type OnboardingLayoutProps = {

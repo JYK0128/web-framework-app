@@ -1,3 +1,7 @@
+import { DataGrid, DataGridToolbar, useDataGrid } from '@pkg/web-core/data-grid';
+import { confirm } from '@pkg/web-core/feedback';
+import { PageSection, SectionCard } from '@pkg/web-core/layout';
+import { openModal } from '@pkg/web-core/modal';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { type ColumnFiltersState, createColumnHelper, type SortingState } from '@tanstack/react-table';
@@ -7,10 +11,6 @@ import { useCallback, useMemo, useState } from 'react';
 import { qnaControllerListV1, useQnaControllerRemoveV1 } from '#/.generated/api/endpoints/qna/qna';
 import type { QnaControllerListV1Params, QnaControllerListV1SortItem, QnaItem } from '#/.generated/api/model';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Skeleton } from '#/.generated/shadcn/components/ui';
-import { confirm } from '#/components/app/system-dialog';
-import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
-import { PageSection, SectionCard } from '#/components/layout';
-import { openModal } from '#/components/modal';
 import { OperationNotice } from '#/routes/_protected/-components/operation-notice';
 
 import { QnaCreateModal } from './-components/qna-create-modal';

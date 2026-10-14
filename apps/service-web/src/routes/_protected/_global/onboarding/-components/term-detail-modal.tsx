@@ -1,6 +1,7 @@
+import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
+
 import type { ServiceTermAgreementItem } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { Modal, type ModalComponentProps } from '#/components/modal';
 
 type TermDetailModalProps = ModalComponentProps & {
   term: ServiceTermAgreementItem

@@ -1,10 +1,10 @@
 import { getMaintenanceMessage } from '@pkg/shared/policy';
+import { LoadingRouter } from '@pkg/web-core/feedback';
 import { type PropsWithChildren, useEffect, useState } from 'react';
 
 import { useSystemConfigsControllerGetConfigsV1 } from '#/.generated/api/endpoints/system-configs/system-configs';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { SYSTEM_CONFIG_REFRESH_INTERVAL_MS } from '#/app.config';
-import { LoadingRouter } from '#/components/app/loading-router';
 import { ScreenLayout } from '#/components/layout';
 
 export function Maintenance({ children }: PropsWithChildren) {

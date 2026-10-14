@@ -1,12 +1,12 @@
 import { z } from '@pkg/shared/common';
+import { FormLayout, useAppForm } from '@pkg/web-core/form';
+import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { getCustomersControllerGetCustomerV1QueryKey, getCustomersControllerListCustomersV1QueryKey, useCustomersControllerUpdateCustomerRoleV1 } from '#/.generated/api/endpoints/customers/customers';
 import { useMembershipsControllerListV1 } from '#/.generated/api/endpoints/memberships/memberships';
 import type { AdminCustomerItem } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { FormLayout, useAppForm } from '#/components/form';
-import { Modal, type ModalComponentProps } from '#/components/modal';
 
 type CustomerRoleModalProps = ModalComponentProps<boolean> & {
   customer: AdminCustomerItem

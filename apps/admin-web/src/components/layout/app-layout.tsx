@@ -1,3 +1,6 @@
+import { LinkCard } from '@pkg/web-core/layout';
+import { AppIcon, ThemeToggle } from '@pkg/web-core/ui';
+import { cn } from '@pkg/web-core/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { type ToOptions, useLocation, useNavigate, useRouter } from '@tanstack/react-router';
 import { Bell, LogOut, Menu, PanelLeftClose, PanelLeftOpen, User, X } from 'lucide-react';
@@ -7,12 +10,9 @@ import { type ReactNode, useState } from 'react';
 import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
 import type { MeResponse } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { cn } from '#/.generated/shadcn/lib/utils';
-import { BrandLogo, LocaleSwitcher, ThemeToggle } from '#/components/app';
+import { BrandLogo, LocaleSwitcher } from '#/components/app';
 import { useSSE } from '#/hooks/use-sse';
 import { isSupportChatOpen } from '#/lib/support-chat-state';
-
-import { LinkCard } from './link-card';
 
 type AdminAlert = {
   kind: 'support.unanswered'
@@ -107,7 +107,7 @@ function NavigationMenu({
             {group.title}
           </h2>
           {group.items.map((item) => (
-            <LinkCard key={item.href} to={item.href} title={item.title} icon={item.icon} iconColor={item.iconColor} mini collapsed={collapsed} isActive={activeHref === item.href} onClick={onItemClick} />
+            <LinkCard key={item.href} to={item.href} title={item.title} icon={<AppIcon name={item.icon} />} iconColor={item.iconColor} mini collapsed={collapsed} isActive={activeHref === item.href} onClick={onItemClick} />
           ))}
         </section>
       ))}

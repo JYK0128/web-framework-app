@@ -1,6 +1,7 @@
+import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
+
 import type { OperatingHolidayItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { Modal, type ModalComponentProps } from '#/components/modal';
 
 type HolidayDetailModalProps = ModalComponentProps<boolean> & {
   holiday: OperatingHolidayItemDto & { dayOfWeek: string }

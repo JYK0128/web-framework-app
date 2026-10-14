@@ -1,3 +1,5 @@
+import { AppIcon } from '@pkg/web-core/ui';
+import { cn } from '@pkg/web-core/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useRouter } from '@tanstack/react-router';
 import { Loader2, LogOut } from 'lucide-react';
@@ -6,8 +8,6 @@ import type { ReactNode } from 'react';
 
 import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
-import { cn } from '#/.generated/shadcn/lib/utils';
-import { AppIcon } from '#/components/app';
 import { ScreenLayout } from '#/components/layout';
 
 type OnboardingLayoutProps = {

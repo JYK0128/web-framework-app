@@ -1,4 +1,8 @@
 import { ApplicationError } from '@pkg/shared/common';
+import { GlobalLoading, SystemDialog } from '@pkg/web-core/feedback';
+import { I18nContext } from '@pkg/web-core/i18n';
+import { ModalContainer } from '@pkg/web-core/modal';
+import { ThemeProvider } from '@pkg/web-core/ui';
 import type { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts, useRouter } from '@tanstack/react-router';
 import type { i18n } from 'i18next';
@@ -8,9 +12,7 @@ import { type PropsWithChildren, useEffect, useSyncExternalStore } from 'react';
 import { getAuthControllerMeV1QueryKey, getAuthControllerMeV1QueryOptions } from '#/.generated/api/endpoints/auth/auth';
 import { getServiceTermsControllerGetAgreementsV1QueryKey, getServiceTermsControllerGetAgreementsV1QueryOptions } from '#/.generated/api/endpoints/service-terms/service-terms';
 import { Toaster } from '#/.generated/shadcn/components/ui';
-import { GlobalLoading, RouterError, RouterNotFound, SystemDialog, ThemeProvider } from '#/components/app';
-import { ModalContainer } from '#/components/modal';
-import { I18nContext } from '#/hooks';
+import { RouterError, RouterNotFound } from '#/components/app';
 import appStylesHref from '#/styles/styles.css?url';
 
 export type AppRouterContext = {

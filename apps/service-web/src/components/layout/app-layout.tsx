@@ -1,3 +1,6 @@
+import { useI18n } from '@pkg/web-core/i18n';
+import { ThemeToggle } from '@pkg/web-core/ui';
+import { cn } from '@pkg/web-core/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link, useLocation, useNavigate, useRouter } from '@tanstack/react-router';
 import { Bell, Check, Globe, LogIn, LogOut, Menu, Moon, Sun, User } from 'lucide-react';
@@ -7,9 +10,7 @@ import { type ReactNode, useState } from 'react';
 import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
 import type { MeResponse } from '#/.generated/api/model';
 import { Button, buttonVariants, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
-import { cn } from '#/.generated/shadcn/lib/utils';
-import { BrandLogo, LocaleSwitcher, ThemeToggle } from '#/components/app';
-import { useI18n } from '#/hooks';
+import { BrandLogo, LocaleSwitcher } from '#/components/app';
 import { useSSE } from '#/hooks/use-sse';
 import { type AppLocale, locales } from '#/i18n/i18n';
 import { isSupportChatOpen } from '#/lib/support-chat-state';

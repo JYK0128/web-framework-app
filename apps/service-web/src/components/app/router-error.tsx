@@ -1,10 +1,11 @@
 import { ApplicationError } from '@pkg/shared/common';
+import { LinkButton } from '@pkg/web-core/layout';
 import type { ErrorComponentProps } from '@tanstack/react-router';
 import { AlertTriangle, Copy, Home, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
-import { LinkButton, ScreenLayout } from '#/components/layout';
+import { ScreenLayout } from '#/components/layout';
 import { getI18n } from '#/i18n/i18n';
 
 export function RouterError({ error }: Partial<ErrorComponentProps<unknown>> & { error: unknown }) {

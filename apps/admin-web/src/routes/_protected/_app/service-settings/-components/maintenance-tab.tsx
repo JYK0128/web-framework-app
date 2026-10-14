@@ -1,10 +1,10 @@
+import { FormLayout, useAppForm } from '@pkg/web-core/form';
+import { SectionCard } from '@pkg/web-core/layout';
+import { cn } from '@pkg/web-core/utils';
 import { forwardRef, useImperativeHandle } from 'react';
 
 import type { MaintenanceConfigDto } from '#/.generated/api/model';
 import { Button, Switch } from '#/.generated/shadcn/components/ui';
-import { cn } from '#/.generated/shadcn/lib/utils';
-import { FormLayout, useAppForm } from '#/components/form';
-import { SectionCard } from '#/components/layout';
 import { DAYS_OF_WEEK } from '#/routes/_protected/_app/service-settings/-constants/operations';
 
 interface DaySelectorProps {

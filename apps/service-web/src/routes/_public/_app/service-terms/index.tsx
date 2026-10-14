@@ -1,8 +1,8 @@
+import { PageSection, SectionCard } from '@pkg/web-core/layout';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { useServiceTermsControllerGetTermsV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
 import { Skeleton } from '#/.generated/shadcn/components/ui';
-import { PageSection, SectionCard } from '#/components/layout';
 
 export const Route = createFileRoute('/_public/_app/service-terms/')({ component: PublicServiceTermsPage });
 

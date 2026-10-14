@@ -1,3 +1,5 @@
+import { FormLayout, useAppForm } from '@pkg/web-core/form';
+import { SectionCard } from '@pkg/web-core/layout';
 import { Send } from 'lucide-react';
 import { forwardRef, useImperativeHandle } from 'react';
 import { toast } from 'sonner';
@@ -7,8 +9,6 @@ import { useSystemConfigControllerTestEmailV1, useSystemConfigControllerTestMess
 import { type KakaoMessengerDetailsDtoAgency, type MessengerConfigDtoProvider, type NotificationConfigDto, type PushConfigDtoProvider, type SmsConfigDtoProvider } from '#/.generated/api/model';
 import { SystemConfigControllerTestMessengerV1Body } from '#/.generated/api/zod/system-configs/system-configs';
 import { Button, Label, Switch } from '#/.generated/shadcn/components/ui';
-import { FormLayout, useAppForm } from '#/components/form';
-import { SectionCard } from '#/components/layout';
 
 export interface NotificationTabHandle {
   submitData: () => Promise<NotificationConfigDto | null | undefined>

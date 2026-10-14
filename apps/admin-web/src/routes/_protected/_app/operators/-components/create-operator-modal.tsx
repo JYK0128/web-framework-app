@@ -1,12 +1,12 @@
 import { ApplicationError, z } from '@pkg/shared/common';
 import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
+import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
+import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 
 import { useOperatorsControllerCreateOperatorV1 } from '#/.generated/api/endpoints/operators/operators';
 import { useRolesControllerGetRolesV1 } from '#/.generated/api/endpoints/roles/roles';
 import { OperatorsControllerCreateOperatorV1Body } from '#/.generated/api/zod/operators/operators';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
-import { Modal, type ModalComponentProps } from '#/components/modal';
 import { describePasswordPolicy, getPasswordPolicyError } from '#/lib/password-policy';
 
 type CreateOperatorModalProps = ModalComponentProps<boolean>;

@@ -208,6 +208,9 @@ importers:
       '@pkg/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      '@pkg/web-core':
+        specifier: workspace:*
+        version: link:../../packages/web-core
       '@portone/browser-sdk':
         specifier: 0.1.9
         version: 0.1.9
@@ -524,6 +527,9 @@ importers:
       '@pkg/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      '@pkg/web-core':
+        specifier: workspace:*
+        version: link:../../packages/web-core
       '@portone/browser-sdk':
         specifier: 0.1.9
         version: 0.1.9
@@ -920,6 +926,85 @@ importers:
       react:
         specifier: 19.2.8
         version: 19.2.8
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+
+  packages/web-core:
+    dependencies:
+      '@base-ui/react':
+        specifier: 1.7.0
+        version: 1.7.0(@date-fns/tz@1.5.0)(@types/react@19.2.18)(date-fns@4.4.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@pkg/shared':
+        specifier: workspace:*
+        version: link:../shared
+      '@tanstack/react-form':
+        specifier: 1.33.3
+        version: 1.33.3(@tanstack/react-start@1.168.37(@rsbuild/core@2.2.7)(@rspack/core@2.2.5(@swc/helpers@0.5.23))(crossws@0.4.10(srvx@0.11.22))(esbuild@0.28.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rolldown@1.2.3)(rollup@4.62.2)(vite@8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.21.0)(yaml@2.9.0)))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@tanstack/react-query':
+        specifier: 5.101.4
+        version: 5.101.4(react@19.2.8)
+      '@tanstack/react-router':
+        specifier: 1.170.20
+        version: 1.170.20(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@tanstack/react-table':
+        specifier: 8.21.3
+        version: 8.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@tanstack/react-virtual':
+        specifier: 3.14.9
+        version: 3.14.9(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      class-variance-authority:
+        specifier: 0.7.1
+        version: 0.7.1
+      clsx:
+        specifier: 2.1.1
+        version: 2.1.1
+      date-fns:
+        specifier: 4.4.0
+        version: 4.4.0
+      input-otp:
+        specifier: 1.4.2
+        version: 1.4.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      lucide-react:
+        specifier: 1.28.0
+        version: 1.28.0(react@19.2.8)
+      next-themes:
+        specifier: 0.4.6
+        version: 0.4.6(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-day-picker:
+        specifier: 10.0.1
+        version: 10.0.1(@types/react@19.2.18)(react@19.2.8)
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+      sonner:
+        specifier: 2.0.7
+        version: 2.0.7(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      suneditor:
+        specifier: 3.3.3
+        version: 3.3.3
+      tailwind-merge:
+        specifier: 3.6.0
+        version: 3.6.0
+    devDependencies:
+      '@pkg/config':
+        specifier: workspace:*
+        version: link:../config
+      '@types/react':
+        specifier: 19.2.18
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: 19.2.4
+        version: 19.2.4(@types/react@19.2.18)
+      eslint:
+        specifier: 9.39.5
+        version: 9.39.5(jiti@2.7.0)
+      tailwindcss:
+        specifier: 4.3.3
+        version: 4.3.3
       typescript:
         specifier: 5.9.3
         version: 5.9.3

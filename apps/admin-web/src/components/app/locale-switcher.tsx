@@ -1,10 +1,10 @@
+import { useI18n } from '@pkg/web-core/i18n';
+import { cn } from '@pkg/web-core/utils';
 import { useLocation, useNavigate } from '@tanstack/react-router';
 import { Check, Globe } from 'lucide-react';
 
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
-import { cn } from '#/.generated/shadcn/lib/utils';
 import { type AppLocale, locales } from '#/i18n/i18n';
-import { useI18n } from '#/i18n/use-i18n';
 
 export function LocaleSwitcher() {
   const { i18n, t } = useI18n();

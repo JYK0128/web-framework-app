@@ -1,3 +1,7 @@
+import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '@pkg/web-core/data-grid';
+import { confirm } from '@pkg/web-core/feedback';
+import { PageSection, SectionCard } from '@pkg/web-core/layout';
+import { openModal } from '@pkg/web-core/modal';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -8,10 +12,6 @@ import { getNoticesControllerListV1QueryKey, noticesControllerListV1, noticesCon
 import type { NoticeItemDto } from '#/.generated/api/model';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { Action } from '#/components/app/action';
-import { confirm } from '#/components/app/system-dialog';
-import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
-import { PageSection, SectionCard } from '#/components/layout';
-import { openModal } from '#/components/modal';
 
 import { NoticeEditorModal } from './-components/notice-editor-modal';
 

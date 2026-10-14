@@ -1,18 +1,18 @@
 import { DateUtil, z } from '@pkg/shared/common';
 import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
+import { confirm } from '@pkg/web-core/feedback';
+import { ActionCard, PageSection, SectionCard } from '@pkg/web-core/layout';
+import { openModal } from '@pkg/web-core/modal';
 import * as PortOne from '@portone/browser-sdk/v2';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router';
-import { FileText, User } from 'lucide-react';
+import { FileText, KeyRound, Mail, Phone, ShieldCheck, TriangleAlert, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import { getAuthControllerMeV1QueryKey, useAuthControllerDisableTwoFactorV1, useAuthControllerUnregisterV1, useAuthControllerVerifyPhoneNumberV1 } from '#/.generated/api/endpoints/auth/auth';
 import { useServiceTermsControllerGetAgreementsV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
 import type { MeResponse } from '#/.generated/api/model';
 import { Button, Separator, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
-import { confirm } from '#/components/app/system-dialog';
-import { ActionCard, PageSection, SectionCard } from '#/components/layout';
-import { openModal } from '#/components/modal';
 import { useHashTab } from '#/lib/use-hash-tab';
 
 import { ProfileChangePasswordModal } from './profile/-components/change-password-modal';
@@ -249,8 +249,7 @@ function ProfilePage() {
                     <div className="grid content-start gap-2 text-xs">
                       {(policy.phoneNumberVerificationRequired || user.phoneNumberVerified) && (
                         <ActionCard
-                          icon="phone"
-                          iconColor={getSecurityIconColor(Boolean(user.phoneNumberVerified))}
+                          icon={<Phone className={getSecurityIconColor(Boolean(user.phoneNumberVerified))} />}
                           title="전화번호"
                           description={`${user.phoneNumber || '미등록'} · ${user.phoneNumberVerified ? '인증 완료' : '본인인증 필요'}`}
                           descriptionTone={getSecurityTone(Boolean(user.phoneNumberVerified))}
@@ -270,8 +269,7 @@ function ProfilePage() {
                       )}
                       {(policy.emailVerificationRequired || user.emailVerified) && (
                         <ActionCard
-                          icon="mail"
-                          iconColor={getSecurityIconColor(Boolean(user.emailVerified))}
+                          icon={<Mail className={getSecurityIconColor(Boolean(user.emailVerified))} />}
                           title="이메일 계정"
                           description={`${user.email} · ${user.emailVerified ? '인증 완료' : '인증 필요'}`}
                           descriptionTone={getSecurityTone(Boolean(user.emailVerified))}
@@ -280,8 +278,7 @@ function ProfilePage() {
                       )}
                       {policy.credentialAvailable && (
                         <ActionCard
-                          icon="key-round"
-                          iconColor={getSecurityIconColor(passwordStatus.isSecure)}
+                          icon={<KeyRound className={getSecurityIconColor(passwordStatus.isSecure)} />}
                           title="비밀번호 보안"
                           description={passwordStatus.description}
                           descriptionTone={passwordStatus.isSecure ? 'default' : 'error'}
@@ -296,8 +293,9 @@ function ProfilePage() {
                       )}
                       {(policy.twoFactorEnabled || policy.twoFactorRequired) && (
                         <ActionCard
-                          icon={user.twoFactorEnabled ? 'shield-check' : 'triangle-alert'}
-                          iconColor={getSecurityIconColor(Boolean(user.twoFactorEnabled))}
+                          icon={user.twoFactorEnabled
+                            ? <ShieldCheck className={getSecurityIconColor(Boolean(user.twoFactorEnabled))} />
+                            : <TriangleAlert className={getSecurityIconColor(Boolean(user.twoFactorEnabled))} />}
                           title="2단계 인증"
                           description={getTwoFactorDescription(user.twoFactorEnabled)}
                           descriptionTone={getSecurityTone(Boolean(user.twoFactorEnabled))}
@@ -312,8 +310,7 @@ function ProfilePage() {
                       )}
                       <Separator className="my-1.5" />
                       <ActionCard
-                        icon="triangle-alert"
-                        iconColor="text-destructive"
+                        icon={<TriangleAlert className="text-destructive" />}
                         title="위험 영역"
                         description="계정을 탈퇴하면 다시 로그인할 수 없습니다."
                         variant="destructive"

@@ -1,3 +1,5 @@
+import { DataGrid, DataGridToolbar, useDataGrid } from '@pkg/web-core/data-grid';
+import { PageSection, SectionCard } from '@pkg/web-core/layout';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -8,8 +10,6 @@ import { z } from 'zod';
 import { faqsControllerGetFaqsV1 } from '#/.generated/api/endpoints/faqs/faqs';
 import type { FaqItem, FaqsControllerGetFaqsV1Category, FaqsControllerGetFaqsV1SortItem, SortDirection } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
-import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
-import { PageSection, SectionCard } from '#/components/layout';
 
 const searchSchema = z.object({ search: z.string().optional(), category: z.string().optional() });
 

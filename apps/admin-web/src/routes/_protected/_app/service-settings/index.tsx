@@ -1,3 +1,5 @@
+import { PageSection } from '@pkg/web-core/layout';
+import { cn } from '@pkg/web-core/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { Save } from 'lucide-react';
@@ -5,8 +7,6 @@ import { useRef } from 'react';
 
 import type { UpdateServiceConfigRequestDto } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
-import { cn } from '#/.generated/shadcn/lib/utils';
-import { PageSection } from '#/components/layout';
 import { useHashTab } from '#/hooks/use-hash-tab';
 
 import { InquiryTab, type InquiryTabHandle } from './-components/inquiry-tab';

@@ -1,3 +1,7 @@
+import { confirm } from '@pkg/web-core/feedback';
+import { useFieldContext } from '@pkg/web-core/form';
+import { PageSection, SectionCard } from '@pkg/web-core/layout';
+import { openModal } from '@pkg/web-core/modal';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { Pencil, Plus, ShieldCheck, Trash2 } from 'lucide-react';
@@ -7,10 +11,6 @@ import { usePermissionsControllerGetPermissionsV1 } from '#/.generated/api/endpo
 import { getRolesControllerGetRolesV1QueryKey, useRolesControllerDeleteRoleV1, useRolesControllerGetRolesV1 } from '#/.generated/api/endpoints/roles/roles';
 import type { PermissionItemDto, RoleItemDto } from '#/.generated/api/model';
 import { Button, Checkbox, FieldLabel } from '#/.generated/shadcn/components/ui';
-import { confirm } from '#/components/app/system-dialog';
-import { useFieldContext } from '#/components/form/core/context';
-import { PageSection, SectionCard } from '#/components/layout';
-import { openModal } from '#/components/modal';
 
 import { RoleEditor } from './-components/role-editor-modal';
 

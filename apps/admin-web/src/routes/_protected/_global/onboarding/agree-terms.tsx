@@ -1,4 +1,7 @@
 import { z } from '@pkg/shared/common';
+import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
+import { SectionCard } from '@pkg/web-core/layout';
+import { openModal } from '@pkg/web-core/modal';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { ArrowRight, Check, ChevronRight, Loader2 } from 'lucide-react';
@@ -7,9 +10,6 @@ import { useMemo } from 'react';
 import { getTermsControllerGetAgreementsV1QueryKey, useTermsControllerGetAgreementsV1, useTermsControllerSetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
 import type { TermAgreementItemDto } from '#/.generated/api/model';
 import { Button, Checkbox, Field, FieldContent, FieldDescription, FieldLabel, Skeleton } from '#/.generated/shadcn/components/ui';
-import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
-import { SectionCard } from '#/components/layout';
-import { openModal } from '#/components/modal';
 
 import { OnboardingLayout } from './-components/onboarding-layout';
 import { OnboardingTermDetailModal } from './-components/term-detail-modal';

@@ -1,4 +1,5 @@
 import { z } from '@pkg/shared/common';
+import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { Copy } from 'lucide-react';
@@ -9,7 +10,6 @@ import { toast } from 'sonner';
 import { getAuthControllerMeV1QueryKey, useAuthControllerEnableTwoFactorV1, useAuthControllerGenerateTwoFactorV1 } from '#/.generated/api/endpoints/auth/auth';
 import { AuthControllerEnableTwoFactorV1Body, authControllerEnableTwoFactorV1BodyCodeMin } from '#/.generated/api/zod/auth/auth';
 import { Button, InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '#/.generated/shadcn/components/ui';
-import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
 
 import { OnboardingLayout } from './-components/onboarding-layout';
 

@@ -1,4 +1,6 @@
 import { z } from '@pkg/shared/common';
+import { FormLayout, useAppForm } from '@pkg/web-core/form';
+import { SectionCard } from '@pkg/web-core/layout';
 import { useMutation } from '@tanstack/react-query';
 import { Send } from 'lucide-react';
 import { forwardRef, useImperativeHandle } from 'react';
@@ -8,8 +10,6 @@ import type { AdminEmailConfigResponseDto } from '#/.generated/api/model/adminEm
 import type { SystemConfigControllerTestAdminEmailV1200 } from '#/.generated/api/model/systemConfigControllerTestAdminEmailV1200';
 import type { UpdateAdminEmailConfigRequestDto } from '#/.generated/api/model/updateAdminEmailConfigRequestDto';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { FormLayout, useAppForm } from '#/components/form';
-import { SectionCard } from '#/components/layout';
 import { axios } from '#/lib/axios';
 
 export interface AdminEmailSettingsTabProps {
