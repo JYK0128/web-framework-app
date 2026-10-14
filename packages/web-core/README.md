@@ -34,7 +34,7 @@ Tailwind를 사용하는 앱의 스타일 진입점에 공통 소스 경로를 �
 
 React와 React DOM은 앱에서 공급합니다. 라우트, 생성 API 클라이언트,
 폼 제출과 업로드 API, 화면별 컬럼, 인증·권한 정책, 브랜드와 스타일 토큰은
-앱에서 관리합니다. 앱 아이콘이나 브랜드 헤더에 결합된 화면 레이아웃은 앱에 유지합니다. 공통 전역 로딩과 확인 다이얼로그는 `feedback`, 링크 버튼과 좌우 레이아웃은 `layout`에서 제공합니다.
+앱에서 관리합니다. 브랜드와 화면 배치 조합은 앱에 유지하고, 의미 있는 화면 영역은 공통 `ScreenLayout`으로 제공합니다. 공통 전역 로딩과 확인 다이얼로그는 `feedback`, 링크 버튼과 좌우 레이아웃은 `layout`에서 제공합니다.
 
 `ui`에는 폼과 DataGrid의 공통 기반 primitive 및 두 앱이 공유하는 shadcn
 컴포넌트를 둡니다. Card, Dialog, DropdownMenu, Skeleton, Tabs, Toaster, Spinner는
@@ -49,4 +49,29 @@ pnpm --filter @pkg/web-core typecheck
 pnpm --filter @pkg/web-core lint
 pnpm --filter admin-web typecheck
 pnpm --filter service-web typecheck
+```
+
+## ScreenLayout
+
+`ScreenLayout.Header`, `Logo`, `Tools`, `Content`, `Footer`는 JSX 순서대로
+렌더링합니다. 자식을 추출하거나 위치를 재배치하지 않습니다. `Addon`은
+`Footer`의 호환 이름입니다. 각 영역은 네이티브 HTML props와 ref를 전달하며
+`className`은 기본 스타일 뒤에 병합합니다.
+
+Root는 전체 크기·여백·간격, Header는 가로 정렬, Tools는 도구 간격,
+Content는 크기별 높이·최대 너비, Footer는 보조 글자 스타일을 제공합니다.
+grid/flex 구성, 영역 순서와 위치, 브랜드·언어 도구는 앱에서 결정합니다.
+`Content`는 `main`이므로 같은 화면에 중복 main을 만들지 않습니다.
+
+```tsx
+<ScreenLayout className="grid grid-rows-[auto_1fr_auto]">
+  <ScreenLayout.Header>
+    <ScreenLayout.Logo><BrandLogo /></ScreenLayout.Logo>
+    <ScreenLayout.Tools><LocaleSwitcher /></ScreenLayout.Tools>
+  </ScreenLayout.Header>
+  <ScreenLayout.Content size="md" className="mx-auto h-auto scroll-y">
+    <LoginForm />
+  </ScreenLayout.Content>
+  <ScreenLayout.Footer className="text-center">서비스 안내</ScreenLayout.Footer>
+</ScreenLayout>
 ```
