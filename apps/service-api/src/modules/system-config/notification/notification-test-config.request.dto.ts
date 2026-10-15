@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { EmailConfigDto, MessengerConfigDto, PushConfigDto, SmsConfigDto } from '@pkg/shared/server';
+import { EmailConfigDto, MessengerConfigDto, PushConfigDto, SmsConfigDto } from '@pkg/server-core/notification/dto';
 import { Type } from 'class-transformer';
 import { IsOptional, ValidateNested } from 'class-validator';
 

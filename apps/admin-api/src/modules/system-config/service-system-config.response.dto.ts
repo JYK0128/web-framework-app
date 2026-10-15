@@ -1,6 +1,6 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
-import { NotificationConfigDto } from '@pkg/shared/server';
+import { NotificationConfigDto } from '@pkg/server-core/notification/dto';
 import { Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
 

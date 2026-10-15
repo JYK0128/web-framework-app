@@ -6,7 +6,7 @@ import { validate } from 'class-validator';
 import { AlimtalkAdapter } from '../src/core/notification/adapters/messenger/alimtalk.adapter';
 import { NotificationTemplateService } from '../src/core/notification/notification-template.service';
 import { ApplicationError } from '@pkg/shared/common';
-import { AlimtalkMessageDto, type MessengerConfigDto } from '@pkg/shared/server';
+import { AlimtalkMessageDto, type MessengerConfigDto } from '@pkg/server-core/notification/dto';
 
 const adapter = new AlimtalkAdapter(new NotificationTemplateService());
 const message: AlimtalkMessageDto & { recipient: string } = { recipient: '01012345678', templateCode: 'approved', content: '#{이름}님 주문 #{주문} 확인', variables: { 이름: '홍길동', 주문: '123' }, buttons: [{ type: 'WL', name: '확인', linkMo: 'https://example.com/#{주문}' }], sender: '0212345678', title: '주문 확인' };

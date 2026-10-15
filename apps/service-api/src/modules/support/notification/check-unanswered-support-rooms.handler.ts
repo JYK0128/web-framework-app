@@ -3,10 +3,10 @@ import { Inject, Logger } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { EVENT_BROKER } from '@pkg/server-core/event-broker/event-broker.interface';
 import { EventBroker } from '@pkg/server-core/event-broker/event-broker.service';
+import { SupportUnansweredAlertEvent } from '@pkg/server-core/event-broker/events';
 import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
 import { TimeUtil, uuid } from '@pkg/shared/common';
 import { isWithinOperatingHours } from '@pkg/shared/policy';
-import { SupportUnansweredAlertEvent } from '@pkg/shared/server';
 
 import { SERVICE_RUNTIME_CONFIG } from '#/app.config';
 import { SupportMessage, SupportMessageSenderType, SupportRoom, SupportRoomStatus } from '#/core/database/entities/support';

@@ -1,8 +1,8 @@
 import { CommandHandler, EventBus, type ICommandHandler } from '@nestjs/cqrs';
 import { EventBroker } from '@pkg/server-core/event-broker/event-broker.service';
+import { AdminQnaCreatedEvent } from '@pkg/server-core/event-broker/events';
 import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
 import { QnaPriority, QnaStatus } from '@pkg/shared/constants';
-import { AdminQnaCreatedEvent } from '@pkg/shared/server';
 
 import { User } from '#/core/database/entities/auth';
 import { Qna } from '#/core/database/entities/qna';

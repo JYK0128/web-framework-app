@@ -2,11 +2,11 @@ import { createHash } from 'node:crypto';
 
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
-import type { PushConfigDto } from '@pkg/shared/server';
 import axios from 'axios';
 import { importPKCS8, SignJWT } from 'jose';
 import { z } from 'zod';
 
+import type { PushConfigDto } from '#notification/dto';
 import { NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions, type PushMessage } from '#notification/notification.interface';
 import { type NotificationProvider, parseNotificationResult } from '#notification/provider-response';
 

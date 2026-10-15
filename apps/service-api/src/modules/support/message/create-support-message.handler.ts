@@ -1,10 +1,10 @@
 import { HttpStatus } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { EventBroker } from '@pkg/server-core/event-broker/event-broker.service';
+import { UserNotificationCreatedEvent } from '@pkg/server-core/event-broker/events';
 import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
 import { RealtimeService } from '@pkg/server-core/realtime/realtime.service';
 import { ApplicationError } from '@pkg/shared/common';
-import { UserNotificationCreatedEvent } from '@pkg/shared/server';
 
 import { SupportMessage, SupportMessageSenderType, SupportRoom, SupportRoomStatus } from '#/core/database/entities/support';
 import { AppEntityManager } from '#/core/database/entity-manager';

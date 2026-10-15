@@ -2,9 +2,9 @@ import { createHmac, randomBytes } from 'node:crypto';
 
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
-import type { SmsConfigDto } from '@pkg/shared/server';
 import axios from 'axios';
 
+import type { SmsConfigDto } from '#notification/dto';
 import { NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions, type SmsMessage } from '#notification/notification.interface';
 import { type NotificationProvider, parseNotificationResult } from '#notification/provider-response';
 

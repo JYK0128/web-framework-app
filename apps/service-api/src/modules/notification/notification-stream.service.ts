@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { UserNotificationCreatedEvent } from '@pkg/server-core/event-broker/events';
 import { RealtimeService } from '@pkg/server-core/realtime/realtime.service';
-import { UserNotificationCreatedEvent } from '@pkg/shared/server';
 
 @Injectable()
 export class NotificationStreamService {

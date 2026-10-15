@@ -3,10 +3,11 @@ import { randomUUID } from 'node:crypto';
 import { HttpStatus, Injectable, NotFoundException, type OnModuleInit } from '@nestjs/common';
 import { StorageService } from '@pkg/server-core/file-storage/storage.service';
 import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
+import { type NotificationConfigDto } from '@pkg/server-core/notification/dto';
 import { assertEnabledOAuthProvidersAreConfigured } from '@pkg/server-core/oauth/oauth-provider-validation';
 import { ApplicationError, TimeUtil, z } from '@pkg/shared/common';
 import { ServiceSystemConfigCode } from '@pkg/shared/constants';
-import { decrypt, encrypt, isEncrypted, type NotificationConfigDto } from '@pkg/shared/server';
+import { decrypt, encrypt, isEncrypted } from '@pkg/shared/server';
 import { cloneDeep, isPlainObject, merge } from 'lodash-es';
 
 import { SECURITY_CONFIG } from '#/app.config';

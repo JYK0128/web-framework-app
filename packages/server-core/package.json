@@ -342,6 +342,14 @@
     "./webhook/webhook.service": {
       "types": "./src/webhook/webhook.service.ts",
       "default": "./src/webhook/webhook.service.ts"
+    },
+    "./notification/dto": {
+      "types": "./src/notification/dto/index.ts",
+      "default": "./src/notification/dto/index.ts"
+    },
+    "./event-broker/events": {
+      "types": "./src/event-broker/events/index.ts",
+      "default": "./src/event-broker/events/index.ts"
     }
   },
   "scripts": {

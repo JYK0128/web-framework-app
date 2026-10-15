@@ -1,8 +1,8 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
-import type { AlimtalkMessageDto, MessengerConfigDto } from '@pkg/shared/server';
 import axios from 'axios';
 
+import type { AlimtalkMessageDto, MessengerConfigDto } from '#notification/dto';
 import { type MessengerMessage, NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions } from '#notification/notification.interface';
 import { type NotificationProvider, parseNotificationResult } from '#notification/provider-response';
 

@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
-import type { EmailConfigDto } from '@pkg/shared/server';
+import type { EmailConfigDto } from '@pkg/server-core/notification/dto';
 import { Type } from 'class-transformer';
 import { IsDefined, IsEmail, ValidateNested } from 'class-validator';
 

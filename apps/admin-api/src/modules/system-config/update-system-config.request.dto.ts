@@ -1,6 +1,6 @@
 import { ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
-import { NotificationConfigDto } from '@pkg/shared/server';
+import { NotificationConfigDto } from '@pkg/server-core/notification/dto';
 import { Type } from 'class-transformer';
 import { IsObject, IsOptional, Validate, ValidateNested } from 'class-validator';
 

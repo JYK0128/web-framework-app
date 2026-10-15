@@ -1,7 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
+import { type NotificationConfigDto } from '@pkg/server-core/notification/dto';
 import { ApplicationError, z } from '@pkg/shared/common';
-import { decrypt, isEncrypted, type NotificationConfigDto } from '@pkg/shared/server';
+import { decrypt, isEncrypted } from '@pkg/shared/server';
 import { cloneDeep } from 'lodash-es';
 
 import { SERVICE_RUNTIME_CONFIG } from '#/app.config';

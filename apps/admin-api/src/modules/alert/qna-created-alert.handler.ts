@@ -1,8 +1,8 @@
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 import { BrokerConsumer } from '@pkg/server-core/event-broker/broker-consumer.decorator';
 import { EVENT_BROKER } from '@pkg/server-core/event-broker/event-broker.interface';
+import { AdminQnaCreatedEvent } from '@pkg/server-core/event-broker/events';
 import { RealtimeService } from '@pkg/server-core/realtime/realtime.service';
-import { AdminQnaCreatedEvent } from '@pkg/shared/server';
 
 import { QNA_CREATED_ALERT_TOPIC } from '#/modules/alert/alerts.constants';
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import type { NotificationConfigDto } from '@pkg/server-core/notification/dto';
 import { NotificationService } from '@pkg/server-core/notification/notification.service';
-import type { NotificationConfigDto } from '@pkg/shared/server';
 
 import { InternalClient } from '#/core/internal-client';
 import { TestSmsCommand } from '#/modules/system-config/notification/test-sms.command';
