@@ -1,5 +1,5 @@
 import { ApplicationError } from '@pkg/shared/common';
-import { GlobalLoading, RouterError, RouterNotFound, SystemDialog } from '@pkg/web-core/feedback';
+import { GlobalLoading, RouterError, RouterNotFound, SystemDialog } from '@pkg/web-core/application';
 import { I18nContext, useI18nContextValue } from '@pkg/web-core/i18n';
 import { ModalContainer } from '@pkg/web-core/modal';
 import { PermissionProvider } from '@pkg/web-core/permission';

@@ -1,4 +1,4 @@
-import { confirm } from '@pkg/web-core/feedback';
+import { confirm } from '@pkg/web-core/application';
 import { useFieldContext } from '@pkg/web-core/form';
 import { openModal } from '@pkg/web-core/modal';
 import { PageSection, SectionCard } from '@pkg/web-core/template';

@@ -1,3 +1,4 @@
+import { useHashTab } from '@pkg/web-core/hooks';
 import { PageSection } from '@pkg/web-core/template';
 import { cn } from '@pkg/web-core/utils';
 import { useQueryClient } from '@tanstack/react-query';
@@ -7,7 +8,6 @@ import { useRef } from 'react';
 
 import type { UpdateServiceConfigRequestDto } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
-import { useHashTab } from '#/hooks/use-hash-tab';
 
 import { InquiryTab, type InquiryTabHandle } from './-components/inquiry-tab';
 import { MaintenanceTab, type MaintenanceTabHandle } from './-components/maintenance-tab';

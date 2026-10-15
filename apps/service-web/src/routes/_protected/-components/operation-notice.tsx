@@ -1,5 +1,5 @@
 import { getOperationNotice } from '@pkg/shared/policy';
-import { NoticeBanner } from '@pkg/web-core/feedback';
+import { NoticeBanner } from '@pkg/web-core/application';
 import { useEffect, useState } from 'react';
 
 import { useSystemConfigsControllerGetConfigsV1 } from '#/.generated/api/endpoints/system-configs/system-configs';

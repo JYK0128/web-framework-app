@@ -1,6 +1,6 @@
 import { DateUtil } from '@pkg/shared';
 import { DEFAULT_TIMEZONE } from '@pkg/shared/common';
-import { LoadingRouter } from '@pkg/web-core/feedback';
+import { LoadingRouter } from '@pkg/web-core/application';
 import { QueryClient } from '@tanstack/react-query';
 import { createRouter } from '@tanstack/react-router';
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query';

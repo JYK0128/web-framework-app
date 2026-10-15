@@ -1,12 +1,13 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
+import { useI18n } from '@pkg/web-core/i18n';
+import { describePasswordPolicy, getPasswordPolicyError } from '@pkg/web-core/password-policy';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 
 import { getAuthControllerMeV1QueryKey, useAuthControllerChangePasswordV1 } from '#/.generated/api/endpoints/auth/auth';
 import { AuthControllerChangePasswordV1Body } from '#/.generated/api/zod/auth/auth';
-import { describePasswordPolicy, getPasswordPolicyError } from '#/lib/password-policy';
 
 import { OnboardingLayout } from './-components/onboarding-layout';
 
@@ -16,6 +17,7 @@ export const Route = createFileRoute('/_protected/_global/onboarding/change-pass
 });
 
 function ChangePasswordOnboardingPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const queryClient = useQueryClient();
   const policy = ADMIN_AUTH_POLICY_CONFIG;
@@ -24,7 +26,7 @@ function ChangePasswordOnboardingPage() {
     defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
     validators: {
       onSubmit: AuthControllerChangePasswordV1Body.superRefine((value, context) => {
-        const passwordError = getPasswordPolicyError(value.newPassword, policy);
+        const passwordError = getPasswordPolicyError(value.newPassword, policy, t);
         if (passwordError) context.addIssue({ code: 'custom', path: ['newPassword'], message: passwordError });
         if (value.newPassword !== value.confirmPassword) context.addIssue({ code: 'custom', path: ['confirmPassword'], message: '새 비밀번호가 일치하지 않습니다.' });
       }),
@@ -54,7 +56,7 @@ function ChangePasswordOnboardingPage() {
           onSubmit={() => void form.handleSubmit()}
           className="grid gap-4"
         >
-          <p className="text-sm text-muted-foreground">{describePasswordPolicy(policy)}</p>
+          <p className="text-sm text-muted-foreground">{describePasswordPolicy(policy, t)}</p>
           <form.AppField name="currentPassword">{(field) => <field.Input type="password" label="현재 비밀번호" autoComplete="current-password" required />}</form.AppField>
           <form.AppField name="newPassword">{(field) => <field.Input type="password" label="새 비밀번호" minLength={policy.passwordMinLength} maxLength={policy.passwordMaxLength} autoComplete="new-password" required />}</form.AppField>
           <form.AppField name="confirmPassword">{(field) => <field.Input type="password" label="새 비밀번호 확인" autoComplete="new-password" required />}</form.AppField>

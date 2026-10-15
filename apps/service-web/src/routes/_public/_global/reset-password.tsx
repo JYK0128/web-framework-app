@@ -1,13 +1,14 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
+import { useI18n } from '@pkg/web-core/i18n';
+import { describePasswordPolicy, getPasswordPolicyError } from '@pkg/web-core/password-policy';
 import { ScreenLayout } from '@pkg/web-core/template';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@pkg/web-core/ui';
 import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { useAuthControllerResetPasswordV1 } from '#/.generated/api/endpoints/auth/auth';
 import { AuthControllerResetPasswordV1Body } from '#/.generated/api/zod/auth/auth';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
-import { describePasswordPolicy, getPasswordPolicyError } from '#/lib/password-policy';
 
 export const Route = createFileRoute('/_public/_global/reset-password')({
   validateSearch: z.object({ challengeId: z.string().optional(), token: z.string().optional() }),
@@ -15,6 +16,7 @@ export const Route = createFileRoute('/_public/_global/reset-password')({
 });
 
 function ResetPasswordPage() {
+  const { t } = useI18n();
   const { challengeId = '', token = '' } = Route.useSearch();
   const policy = SERVICE_AUTH_POLICY_CONFIG;
   const mutation = useAuthControllerResetPasswordV1();
@@ -23,7 +25,7 @@ function ResetPasswordPage() {
     validators: {
       onSubmit: AuthControllerResetPasswordV1Body.pick({ newPassword: true }).extend({ newPassword: z.string(), confirmPassword: z.string() })
         .superRefine((value, context) => {
-          const passwordError = getPasswordPolicyError(value.newPassword, policy);
+          const passwordError = getPasswordPolicyError(value.newPassword, policy, t);
           if (passwordError) context.addIssue({ code: 'custom', path: ['newPassword'], message: passwordError });
           if (value.newPassword !== value.confirmPassword) {
             context.addIssue({ code: 'custom', path: ['confirmPassword'], message: '비밀번호가 일치하지 않습니다.' });
@@ -77,7 +79,7 @@ function ResetPasswordPage() {
                     onSubmit={() => void form.handleSubmit()}
                     className="gap-4"
                   >
-                    <p className="text-sm text-muted-foreground">{describePasswordPolicy(policy)}</p>
+                    <p className="text-sm text-muted-foreground">{describePasswordPolicy(policy, t)}</p>
                     {(!challengeId || !token) && (
                       <p
                         role="alert"

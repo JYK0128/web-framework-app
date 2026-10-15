@@ -1,11 +1,11 @@
 import { z } from '@pkg/shared/common';
+import { Button } from '@pkg/web-core/ui';
 import * as PortOne from '@portone/browser-sdk/v2';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 
 import { getAuthControllerMeV1QueryKey, useAuthControllerVerifyPhoneNumberV1 } from '#/.generated/api/endpoints/auth/auth';
-import { Button } from '#/.generated/shadcn/components/ui';
 
 import { OnboardingLayout } from './-components/onboarding-layout';
 

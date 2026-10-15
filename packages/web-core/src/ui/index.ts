@@ -19,6 +19,5 @@ export * from '../.generated/shadcn/components/ui/spinner';
 export * from '../.generated/shadcn/components/ui/table';
 export * from '../.generated/shadcn/components/ui/tabs';
 export * from '../.generated/shadcn/components/ui/textarea';
-export * from './navigation';
+export * from './application';
 export * from './theme';
-export * from './visuals';

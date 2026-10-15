@@ -1,10 +1,10 @@
 import { z } from '@pkg/shared/common';
 import { ScreenLayout } from '@pkg/web-core/template';
+import { Button, Card, CardContent } from '@pkg/web-core/ui';
 import { createFileRoute, Link, notFound } from '@tanstack/react-router';
 import { ShieldCheck } from 'lucide-react';
 
 import { useAuthControllerVerifyEmailV1 } from '#/.generated/api/endpoints/auth/auth';
-import { Button, Card, CardContent } from '#/.generated/shadcn/components/ui';
 
 export const Route = createFileRoute('/_public/_global/verify-email')({
   validateSearch: z.object({

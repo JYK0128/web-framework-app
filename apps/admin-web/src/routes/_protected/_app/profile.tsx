@@ -1,6 +1,7 @@
 import { DateUtil, z } from '@pkg/shared/common';
 import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
-import { confirm } from '@pkg/web-core/feedback';
+import { confirm } from '@pkg/web-core/application';
+import { useHashTab } from '@pkg/web-core/hooks';
 import { openModal } from '@pkg/web-core/modal';
 import { ActionCard, PageSection, SectionCard } from '@pkg/web-core/template';
 import * as PortOne from '@portone/browser-sdk/v2';
@@ -13,7 +14,6 @@ import { getAuthControllerMeV1QueryKey, useAuthControllerDisableTwoFactorV1, use
 import { useTermsControllerGetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
 import type { MeResponse } from '#/.generated/api/model';
 import { Button, Separator, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
-import { useHashTab } from '#/hooks/use-hash-tab';
 
 import { ProfileChangePasswordModal } from './profile/-components/change-password-modal';
 import { ProfileTermsTab } from './profile/-components/terms-tab';

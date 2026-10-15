@@ -1,4 +1,4 @@
-import { confirm } from '@pkg/web-core/feedback';
+import { confirm } from '@pkg/web-core/application';
 import { openModal } from '@pkg/web-core/modal';
 import { Action } from '@pkg/web-core/template';
 import { useQueryClient } from '@tanstack/react-query';

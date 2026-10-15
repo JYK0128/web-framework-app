@@ -1,5 +1,6 @@
+import { AppIcon } from '@pkg/web-core/application';
 import { ScreenLayout } from '@pkg/web-core/template';
-import { AppIcon } from '@pkg/web-core/ui';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@pkg/web-core/ui';
 import { cn } from '@pkg/web-core/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useRouter } from '@tanstack/react-router';
@@ -8,7 +9,6 @@ import type { IconName } from 'lucide-react/dynamic';
 import type { ReactNode } from 'react';
 
 import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 
 type OnboardingLayoutProps = {
   icon?: IconName

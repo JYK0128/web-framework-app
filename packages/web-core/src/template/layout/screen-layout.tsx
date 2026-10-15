@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { ThemeToggle } from '#ui';
-import { LocaleSwitcher } from '#ui/locale';
+import { LocaleSwitcher } from '#ui/application/navigation/index';
 import { getSlotElements } from '#ui/slot';
 import { cn } from '#utils';
 

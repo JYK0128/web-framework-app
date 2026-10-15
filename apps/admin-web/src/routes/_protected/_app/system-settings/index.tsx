@@ -1,4 +1,5 @@
 import { ApplicationError } from '@pkg/shared/common';
+import { useHashTab } from '@pkg/web-core/hooks';
 import { PageSection } from '@pkg/web-core/template';
 import { cn } from '@pkg/web-core/utils';
 import { useQueryClient } from '@tanstack/react-query';
@@ -10,7 +11,6 @@ import { useSystemConfigControllerUpdateConfigsV1 } from '#/.generated/api/endpo
 import type { UpdateSystemConfigResponseDto, UpdateSystemSettingsRequestDto } from '#/.generated/api/model';
 import { SystemConfigControllerUpdateConfigsV1Response } from '#/.generated/api/zod/system-configs/system-configs';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
-import { useHashTab } from '#/hooks/use-hash-tab';
 
 import { AdminEmailSettingsTab, type AdminEmailSettingsTabHandle } from './-components/admin-email-settings-tab';
 import { NotificationTab, type NotificationTabHandle } from './-components/notification-tab';

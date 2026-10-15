@@ -2,6 +2,7 @@ import { z } from '@pkg/shared/common';
 import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
 import { openModal } from '@pkg/web-core/modal';
 import { SectionCard } from '@pkg/web-core/template';
+import { Button, Checkbox, Field, FieldContent, FieldDescription, FieldLabel, Skeleton } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { ArrowRight, Check, ChevronRight, Loader2 } from 'lucide-react';
@@ -9,7 +10,6 @@ import { useMemo } from 'react';
 
 import { getServiceTermsControllerGetAgreementsV1QueryKey, useServiceTermsControllerGetAgreementsV1, useServiceTermsControllerSetAgreementsV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
 import type { ServiceTermAgreementItem } from '#/.generated/api/model';
-import { Button, Checkbox, Field, FieldContent, FieldDescription, FieldLabel, Skeleton } from '#/.generated/shadcn/components/ui';
 
 import { OnboardingLayout } from './-components/onboarding-layout';
 import { OnboardingTermDetailModal } from './-components/term-detail-modal';

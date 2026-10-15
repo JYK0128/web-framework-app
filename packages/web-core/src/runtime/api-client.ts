@@ -1,0 +1,123 @@
+import { ApplicationError } from '@pkg/shared/common';
+import { createIsomorphicFn } from '@tanstack/react-start';
+import { getRequest, getResponseHeaders } from '@tanstack/react-start/server';
+import Axios, { AxiosHeaders, type AxiosRequestConfig, isAxiosError } from 'axios';
+import type { i18n } from 'i18next';
+import { toast } from 'sonner';
+
+type ApiResult<T> = T extends { data?: infer D } ? D : T;
+type AxiosFunction = <T>(config: AxiosRequestConfig, options?: AxiosRequestConfig) => Promise<ApiResult<T>>;
+
+type ApiErrorResponseDto = {
+  errorCode?: string
+  message?: string
+  statusCode?: number
+  details?: unknown
+  meta?: { params?: unknown }
+};
+
+export type ApiClientOptions = {
+  getI18n: () => Pick<i18n, 'language' | 'resolvedLanguage' | 't'>
+  silentQueryPaths: ReadonlySet<string>
+  getServerOrigin: () => string | undefined
+};
+
+function toAxiosHeaders(headers: AxiosRequestConfig['headers']): AxiosHeaders {
+  return AxiosHeaders.concat(headers as unknown as AxiosHeaders);
+}
+
+function handleResponseError(error: unknown): never {
+  if (error instanceof Error && Axios.isCancel(error)) throw error;
+  if (!isAxiosError(error)) {
+    if (error instanceof Error) throw error;
+    throw new Error(String(error));
+  }
+  const body = error.response?.data as ApiErrorResponseDto | undefined;
+  throw new ApplicationError({
+    code: body?.errorCode ?? 'API_REQUEST_FAILED',
+    message: body?.message,
+    status: body?.statusCode ?? error.response?.status,
+    details: body?.details,
+    params: body?.meta?.params as Record<string, unknown> | undefined,
+  });
+}
+
+export function createAxiosClient({ getI18n, silentQueryPaths, getServerOrigin }: ApiClientOptions): AxiosFunction {
+  const browserClient = Axios.create({ withCredentials: true });
+  browserClient.interceptors.request.use((config) => {
+    if (!config.headers.has('accept-language')) {
+      const i18n = getI18n();
+      config.headers.set('accept-language', i18n.resolvedLanguage ?? i18n.language);
+    }
+    return config;
+  });
+  browserClient.interceptors.response.use((response) => response, (error: unknown) => {
+    if (isAxiosError(error) && error.response?.status === 401) {
+      const path = new URL(error.config?.url ?? '', window.location.origin).pathname;
+      if (!['/api/v1/auth/login', '/api/v1/auth/login/2fa'].includes(path)) {
+        window.dispatchEvent(new Event('auth-session-expired'));
+      }
+    }
+    return handleResponseError(error);
+  });
+
+  const isomorphicAxios = createIsomorphicFn()
+    .server(async <T>(config: AxiosRequestConfig, options?: AxiosRequestConfig): Promise<ApiResult<T>> => {
+      const request = getRequest();
+      const origin = getServerOrigin();
+      if (!origin) throw new Error('APP_BASE_URL is required');
+      const i18n = getI18n();
+      const client = Axios.create({
+        baseURL: origin,
+        headers: {
+          'cookie': request.headers.get('cookie') ?? undefined,
+          'origin': new URL(origin).origin,
+          'accept-language': i18n.resolvedLanguage ?? i18n.language,
+        },
+      });
+      function forwardCookies(cookies: unknown) {
+        if (Array.isArray(cookies)) {
+          const headers = getResponseHeaders();
+          for (const cookie of cookies) {
+            if (typeof cookie === 'string') headers.append('Set-Cookie', cookie);
+          }
+        }
+      }
+      client.interceptors.response.use(
+        (response) => {
+          forwardCookies(response.headers['set-cookie']);
+          return response;
+        },
+        (error: unknown) => {
+          if (isAxiosError(error)) forwardCookies(error.response?.headers['set-cookie']);
+          return handleResponseError(error);
+        },
+      );
+      const headers = AxiosHeaders.concat(toAxiosHeaders(config.headers), toAxiosHeaders(options?.headers));
+      const response = await client<T>({ ...config, ...options, headers });
+      return (response.data as { data: ApiResult<T> }).data;
+    })
+    .client(async <T>(config: AxiosRequestConfig, options?: AxiosRequestConfig): Promise<ApiResult<T>> => {
+      const headers = AxiosHeaders.concat(toAxiosHeaders(config.headers), toAxiosHeaders(options?.headers));
+      const requestConfig = { ...config, ...options, headers };
+      const path = new URL(requestConfig.url ?? '', 'http://localhost').pathname;
+      const showToast = !silentQueryPaths.has(path);
+      try {
+        const response = await browserClient<T>(requestConfig);
+        const body: unknown = response.data;
+        if (showToast && !path.startsWith('/api/v1/auth/') && (requestConfig.method ?? 'get').toLowerCase() !== 'get'
+          && typeof body === 'object' && body !== null && 'message' in body
+          && typeof body.message === 'string' && body.message.trim()) toast.success(body.message);
+        return (response.data as { data: ApiResult<T> }).data;
+      }
+      catch (error) {
+        const hasValidationDetails = error instanceof ApplicationError && Array.isArray(error.details);
+        let displayMessage = error instanceof Error ? error.message : undefined;
+        if (error instanceof ApplicationError) displayMessage = error.translate(getI18n());
+        if (showToast && !Axios.isCancel(error) && !hasValidationDetails && displayMessage) toast.error(displayMessage);
+        throw error;
+      }
+    }) as AxiosFunction;
+
+  return isomorphicAxios;
+}

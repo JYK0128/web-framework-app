@@ -1,4 +1,4 @@
-import { confirm } from '@pkg/web-core/feedback';
+import { confirm } from '@pkg/web-core/application';
 import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 import { useQueryClient } from '@tanstack/react-query';
 import { LogOut, Monitor } from 'lucide-react';

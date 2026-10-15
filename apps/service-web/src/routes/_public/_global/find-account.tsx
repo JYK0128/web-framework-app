@@ -1,14 +1,14 @@
 import { z } from '@pkg/shared/common';
 import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
+import { useHashTab } from '@pkg/web-core/hooks';
 import { ScreenLayout } from '@pkg/web-core/template';
+import { Button, Card, CardContent, Tabs, TabsList, TabsTrigger } from '@pkg/web-core/ui';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ArrowRight, Check, CheckCircle2, Copy, Mail, Phone, RefreshCw, Search, Sparkles, User } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { useAuthControllerFindIdV1, useAuthControllerRequestPasswordResetV1 } from '#/.generated/api/endpoints/auth/auth';
-import { Button, Card, CardContent, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
-import { useHashTab } from '#/lib/use-hash-tab';
 
 type FindAccountTab = 'id' | 'password';
 type FoundAccount = { maskedEmail: string, provider: string };

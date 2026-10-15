@@ -1,6 +1,6 @@
 import { AdminPermission } from '@pkg/shared';
+import { alert } from '@pkg/web-core/application';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '@pkg/web-core/data-grid';
-import { alert } from '@pkg/web-core/feedback';
 import { openModal } from '@pkg/web-core/modal';
 import { Action, PageSection, SectionCard } from '@pkg/web-core/template';
 import { useQueryClient } from '@tanstack/react-query';

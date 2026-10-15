@@ -9,35 +9,40 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AppRouteRouteImport } from './routes/_app/route'
 import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as PublicRouteRouteImport } from './routes/_public/route'
-import { Route as ProtectedAppRouteRouteImport } from './routes/_protected/_app/route'
+import { Route as AppProtectedRouteRouteImport } from './routes/_app/_protected/route'
+import { Route as AppPublicRouteRouteImport } from './routes/_app/_public/route'
 import { Route as ProtectedGlobalRouteRouteImport } from './routes/_protected/_global/route'
-import { Route as PublicAppRouteRouteImport } from './routes/_public/_app/route'
 import { Route as PublicGlobalRouteRouteImport } from './routes/_public/_global/route'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
-import { Route as ProtectedAppProfileRouteImport } from './routes/_protected/_app/profile'
+import { Route as AppProtectedProfileRouteImport } from './routes/_app/_protected/profile'
+import { Route as AppPublicChar123LocaleChar125RouteRouteImport } from './routes/_app/_public/{-$locale}/route'
 import { Route as ProtectedGlobalOnboardingRouteRouteImport } from './routes/_protected/_global/onboarding/route'
-import { Route as PublicAppChar123LocaleChar125RouteRouteImport } from './routes/_public/_app/{-$locale}/route'
 import { Route as PublicGlobalFindAccountRouteImport } from './routes/_public/_global/find-account'
 import { Route as PublicGlobalLoginRouteImport } from './routes/_public/_global/login'
 import { Route as PublicGlobalRegisterRouteImport } from './routes/_public/_global/register'
 import { Route as PublicGlobalResetPasswordRouteImport } from './routes/_public/_global/reset-password'
 import { Route as PublicGlobalVerifyEmailRouteImport } from './routes/_public/_global/verify-email'
-import { Route as ProtectedAppQnaIndexRouteImport } from './routes/_protected/_app/qna/index'
-import { Route as ProtectedAppSupportIndexRouteImport } from './routes/_protected/_app/support/index'
+import { Route as AppProtectedQnaIndexRouteImport } from './routes/_app/_protected/qna/index'
+import { Route as AppProtectedSupportIndexRouteImport } from './routes/_app/_protected/support/index'
+import { Route as AppPublicEventsIndexRouteImport } from './routes/_app/_public/events/index'
+import { Route as AppPublicFaqIndexRouteImport } from './routes/_app/_public/faq/index'
+import { Route as AppPublicNoticesIndexRouteImport } from './routes/_app/_public/notices/index'
+import { Route as AppPublicServiceTermsIndexRouteImport } from './routes/_app/_public/service-terms/index'
+import { Route as AppPublicChar123LocaleChar125IndexRouteImport } from './routes/_app/_public/{-$locale}/index'
 import { Route as ProtectedGlobalOnboardingAgreeTermsRouteImport } from './routes/_protected/_global/onboarding/agree-terms'
 import { Route as ProtectedGlobalOnboardingChangePasswordRouteImport } from './routes/_protected/_global/onboarding/change-password'
 import { Route as ProtectedGlobalOnboardingSetup2faRouteImport } from './routes/_protected/_global/onboarding/setup-2fa'
 import { Route as ProtectedGlobalOnboardingVerifyPhoneRouteImport } from './routes/_protected/_global/onboarding/verify-phone'
-import { Route as PublicAppEventsIndexRouteImport } from './routes/_public/_app/events/index'
-import { Route as PublicAppFaqIndexRouteImport } from './routes/_public/_app/faq/index'
-import { Route as PublicAppNoticesIndexRouteImport } from './routes/_public/_app/notices/index'
-import { Route as PublicAppServiceTermsIndexRouteImport } from './routes/_public/_app/service-terms/index'
-import { Route as PublicAppChar123LocaleChar125IndexRouteImport } from './routes/_public/_app/{-$locale}/index'
 import { Route as PublicGlobalLoginIndexRouteImport } from './routes/_public/_global/login.index'
 import { Route as PublicGlobalLogin2faRouteImport } from './routes/_public/_global/login.2fa'
 
+const AppRouteRoute = AppRouteRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
   id: '/_protected',
   getParentRoute: () => rootRouteImport,
@@ -46,17 +51,17 @@ const PublicRouteRoute = PublicRouteRouteImport.update({
   id: '/_public',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProtectedAppRouteRoute = ProtectedAppRouteRouteImport.update({
-  id: '/_app',
-  getParentRoute: () => ProtectedRouteRoute,
+const AppProtectedRouteRoute = AppProtectedRouteRouteImport.update({
+  id: '/_protected',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppPublicRouteRoute = AppPublicRouteRouteImport.update({
+  id: '/_public',
+  getParentRoute: () => AppRouteRoute,
 } as any)
 const ProtectedGlobalRouteRoute = ProtectedGlobalRouteRouteImport.update({
   id: '/_global',
   getParentRoute: () => ProtectedRouteRoute,
-} as any)
-const PublicAppRouteRoute = PublicAppRouteRouteImport.update({
-  id: '/_app',
-  getParentRoute: () => PublicRouteRoute,
 } as any)
 const PublicGlobalRouteRoute = PublicGlobalRouteRouteImport.update({
   id: '/_global',
@@ -67,22 +72,22 @@ const ApiSplatRoute = ApiSplatRouteImport.update({
   path: '/api/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProtectedAppProfileRoute = ProtectedAppProfileRouteImport.update({
+const AppProtectedProfileRoute = AppProtectedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
-  getParentRoute: () => ProtectedAppRouteRoute,
+  getParentRoute: () => AppProtectedRouteRoute,
 } as any)
+const AppPublicChar123LocaleChar125RouteRoute =
+  AppPublicChar123LocaleChar125RouteRouteImport.update({
+    id: '/{-$locale}',
+    path: '/{-$locale}',
+    getParentRoute: () => AppPublicRouteRoute,
+  } as any)
 const ProtectedGlobalOnboardingRouteRoute =
   ProtectedGlobalOnboardingRouteRouteImport.update({
     id: '/onboarding',
     path: '/onboarding',
     getParentRoute: () => ProtectedGlobalRouteRoute,
-  } as any)
-const PublicAppChar123LocaleChar125RouteRoute =
-  PublicAppChar123LocaleChar125RouteRouteImport.update({
-    id: '/{-$locale}',
-    path: '/{-$locale}',
-    getParentRoute: () => PublicAppRouteRoute,
   } as any)
 const PublicGlobalFindAccountRoute = PublicGlobalFindAccountRouteImport.update({
   id: '/find-account',
@@ -110,16 +115,43 @@ const PublicGlobalVerifyEmailRoute = PublicGlobalVerifyEmailRouteImport.update({
   path: '/verify-email',
   getParentRoute: () => PublicGlobalRouteRoute,
 } as any)
-const ProtectedAppQnaIndexRoute = ProtectedAppQnaIndexRouteImport.update({
+const AppProtectedQnaIndexRoute = AppProtectedQnaIndexRouteImport.update({
   id: '/qna/',
   path: '/qna/',
-  getParentRoute: () => ProtectedAppRouteRoute,
+  getParentRoute: () => AppProtectedRouteRoute,
 } as any)
-const ProtectedAppSupportIndexRoute =
-  ProtectedAppSupportIndexRouteImport.update({
+const AppProtectedSupportIndexRoute =
+  AppProtectedSupportIndexRouteImport.update({
     id: '/support/',
     path: '/support/',
-    getParentRoute: () => ProtectedAppRouteRoute,
+    getParentRoute: () => AppProtectedRouteRoute,
+  } as any)
+const AppPublicEventsIndexRoute = AppPublicEventsIndexRouteImport.update({
+  id: '/events/',
+  path: '/events/',
+  getParentRoute: () => AppPublicRouteRoute,
+} as any)
+const AppPublicFaqIndexRoute = AppPublicFaqIndexRouteImport.update({
+  id: '/faq/',
+  path: '/faq/',
+  getParentRoute: () => AppPublicRouteRoute,
+} as any)
+const AppPublicNoticesIndexRoute = AppPublicNoticesIndexRouteImport.update({
+  id: '/notices/',
+  path: '/notices/',
+  getParentRoute: () => AppPublicRouteRoute,
+} as any)
+const AppPublicServiceTermsIndexRoute =
+  AppPublicServiceTermsIndexRouteImport.update({
+    id: '/service-terms/',
+    path: '/service-terms/',
+    getParentRoute: () => AppPublicRouteRoute,
+  } as any)
+const AppPublicChar123LocaleChar125IndexRoute =
+  AppPublicChar123LocaleChar125IndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppPublicChar123LocaleChar125RouteRoute,
   } as any)
 const ProtectedGlobalOnboardingAgreeTermsRoute =
   ProtectedGlobalOnboardingAgreeTermsRouteImport.update({
@@ -145,33 +177,6 @@ const ProtectedGlobalOnboardingVerifyPhoneRoute =
     path: '/verify-phone',
     getParentRoute: () => ProtectedGlobalOnboardingRouteRoute,
   } as any)
-const PublicAppEventsIndexRoute = PublicAppEventsIndexRouteImport.update({
-  id: '/events/',
-  path: '/events/',
-  getParentRoute: () => PublicAppRouteRoute,
-} as any)
-const PublicAppFaqIndexRoute = PublicAppFaqIndexRouteImport.update({
-  id: '/faq/',
-  path: '/faq/',
-  getParentRoute: () => PublicAppRouteRoute,
-} as any)
-const PublicAppNoticesIndexRoute = PublicAppNoticesIndexRouteImport.update({
-  id: '/notices/',
-  path: '/notices/',
-  getParentRoute: () => PublicAppRouteRoute,
-} as any)
-const PublicAppServiceTermsIndexRoute =
-  PublicAppServiceTermsIndexRouteImport.update({
-    id: '/service-terms/',
-    path: '/service-terms/',
-    getParentRoute: () => PublicAppRouteRoute,
-  } as any)
-const PublicAppChar123LocaleChar125IndexRoute =
-  PublicAppChar123LocaleChar125IndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => PublicAppChar123LocaleChar125RouteRoute,
-  } as any)
 const PublicGlobalLoginIndexRoute = PublicGlobalLoginIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -186,9 +191,9 @@ const PublicGlobalLogin2faRoute = PublicGlobalLogin2faRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof PublicGlobalRouteRouteWithChildren
   '/api/$': typeof ApiSplatRoute
+  '/{-$locale}': typeof AppPublicChar123LocaleChar125RouteRouteWithChildren
   '/onboarding': typeof ProtectedGlobalOnboardingRouteRouteWithChildren
-  '/{-$locale}': typeof PublicAppChar123LocaleChar125RouteRouteWithChildren
-  '/profile': typeof ProtectedAppProfileRoute
+  '/profile': typeof AppProtectedProfileRoute
   '/find-account': typeof PublicGlobalFindAccountRoute
   '/login': typeof PublicGlobalLoginRouteWithChildren
   '/register': typeof PublicGlobalRegisterRoute
@@ -199,20 +204,20 @@ export interface FileRoutesByFullPath {
   '/onboarding/setup-2fa': typeof ProtectedGlobalOnboardingSetup2faRoute
   '/onboarding/verify-phone': typeof ProtectedGlobalOnboardingVerifyPhoneRoute
   '/login/2fa': typeof PublicGlobalLogin2faRoute
-  '/qna/': typeof ProtectedAppQnaIndexRoute
-  '/support/': typeof ProtectedAppSupportIndexRoute
-  '/events/': typeof PublicAppEventsIndexRoute
-  '/faq/': typeof PublicAppFaqIndexRoute
-  '/notices/': typeof PublicAppNoticesIndexRoute
-  '/service-terms/': typeof PublicAppServiceTermsIndexRoute
-  '/{-$locale}/': typeof PublicAppChar123LocaleChar125IndexRoute
+  '/qna/': typeof AppProtectedQnaIndexRoute
+  '/support/': typeof AppProtectedSupportIndexRoute
+  '/events/': typeof AppPublicEventsIndexRoute
+  '/faq/': typeof AppPublicFaqIndexRoute
+  '/notices/': typeof AppPublicNoticesIndexRoute
+  '/service-terms/': typeof AppPublicServiceTermsIndexRoute
+  '/{-$locale}/': typeof AppPublicChar123LocaleChar125IndexRoute
   '/login/': typeof PublicGlobalLoginIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicGlobalRouteRouteWithChildren
   '/api/$': typeof ApiSplatRoute
   '/onboarding': typeof ProtectedGlobalOnboardingRouteRouteWithChildren
-  '/profile': typeof ProtectedAppProfileRoute
+  '/profile': typeof AppProtectedProfileRoute
   '/find-account': typeof PublicGlobalFindAccountRoute
   '/register': typeof PublicGlobalRegisterRoute
   '/reset-password': typeof PublicGlobalResetPasswordRoute
@@ -222,27 +227,28 @@ export interface FileRoutesByTo {
   '/onboarding/setup-2fa': typeof ProtectedGlobalOnboardingSetup2faRoute
   '/onboarding/verify-phone': typeof ProtectedGlobalOnboardingVerifyPhoneRoute
   '/login/2fa': typeof PublicGlobalLogin2faRoute
-  '/qna': typeof ProtectedAppQnaIndexRoute
-  '/support': typeof ProtectedAppSupportIndexRoute
-  '/events': typeof PublicAppEventsIndexRoute
-  '/faq': typeof PublicAppFaqIndexRoute
-  '/notices': typeof PublicAppNoticesIndexRoute
-  '/service-terms': typeof PublicAppServiceTermsIndexRoute
-  '/{-$locale}': typeof PublicAppChar123LocaleChar125IndexRoute
+  '/qna': typeof AppProtectedQnaIndexRoute
+  '/support': typeof AppProtectedSupportIndexRoute
+  '/events': typeof AppPublicEventsIndexRoute
+  '/faq': typeof AppPublicFaqIndexRoute
+  '/notices': typeof AppPublicNoticesIndexRoute
+  '/service-terms': typeof AppPublicServiceTermsIndexRoute
+  '/{-$locale}': typeof AppPublicChar123LocaleChar125IndexRoute
   '/login': typeof PublicGlobalLoginIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/_app': typeof AppRouteRouteWithChildren
   '/_protected': typeof ProtectedRouteRouteWithChildren
   '/_public': typeof PublicRouteRouteWithChildren
-  '/_protected/_app': typeof ProtectedAppRouteRouteWithChildren
+  '/_app/_protected': typeof AppProtectedRouteRouteWithChildren
+  '/_app/_public': typeof AppPublicRouteRouteWithChildren
   '/_protected/_global': typeof ProtectedGlobalRouteRouteWithChildren
-  '/_public/_app': typeof PublicAppRouteRouteWithChildren
   '/_public/_global': typeof PublicGlobalRouteRouteWithChildren
   '/api/$': typeof ApiSplatRoute
+  '/_app/_public/{-$locale}': typeof AppPublicChar123LocaleChar125RouteRouteWithChildren
   '/_protected/_global/onboarding': typeof ProtectedGlobalOnboardingRouteRouteWithChildren
-  '/_public/_app/{-$locale}': typeof PublicAppChar123LocaleChar125RouteRouteWithChildren
-  '/_protected/_app/profile': typeof ProtectedAppProfileRoute
+  '/_app/_protected/profile': typeof AppProtectedProfileRoute
   '/_public/_global/find-account': typeof PublicGlobalFindAccountRoute
   '/_public/_global/login': typeof PublicGlobalLoginRouteWithChildren
   '/_public/_global/register': typeof PublicGlobalRegisterRoute
@@ -253,13 +259,13 @@ export interface FileRoutesById {
   '/_protected/_global/onboarding/setup-2fa': typeof ProtectedGlobalOnboardingSetup2faRoute
   '/_protected/_global/onboarding/verify-phone': typeof ProtectedGlobalOnboardingVerifyPhoneRoute
   '/_public/_global/login/2fa': typeof PublicGlobalLogin2faRoute
-  '/_protected/_app/qna/': typeof ProtectedAppQnaIndexRoute
-  '/_protected/_app/support/': typeof ProtectedAppSupportIndexRoute
-  '/_public/_app/events/': typeof PublicAppEventsIndexRoute
-  '/_public/_app/faq/': typeof PublicAppFaqIndexRoute
-  '/_public/_app/notices/': typeof PublicAppNoticesIndexRoute
-  '/_public/_app/service-terms/': typeof PublicAppServiceTermsIndexRoute
-  '/_public/_app/{-$locale}/': typeof PublicAppChar123LocaleChar125IndexRoute
+  '/_app/_protected/qna/': typeof AppProtectedQnaIndexRoute
+  '/_app/_protected/support/': typeof AppProtectedSupportIndexRoute
+  '/_app/_public/events/': typeof AppPublicEventsIndexRoute
+  '/_app/_public/faq/': typeof AppPublicFaqIndexRoute
+  '/_app/_public/notices/': typeof AppPublicNoticesIndexRoute
+  '/_app/_public/service-terms/': typeof AppPublicServiceTermsIndexRoute
+  '/_app/_public/{-$locale}/': typeof AppPublicChar123LocaleChar125IndexRoute
   '/_public/_global/login/': typeof PublicGlobalLoginIndexRoute
 }
 export interface FileRouteTypes {
@@ -267,8 +273,8 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/api/$'
-    | '/onboarding'
     | '/{-$locale}'
+    | '/onboarding'
     | '/profile'
     | '/find-account'
     | '/login'
@@ -313,16 +319,17 @@ export interface FileRouteTypes {
     | '/login'
   id:
     | '__root__'
+    | '/_app'
     | '/_protected'
     | '/_public'
-    | '/_protected/_app'
+    | '/_app/_protected'
+    | '/_app/_public'
     | '/_protected/_global'
-    | '/_public/_app'
     | '/_public/_global'
     | '/api/$'
+    | '/_app/_public/{-$locale}'
     | '/_protected/_global/onboarding'
-    | '/_public/_app/{-$locale}'
-    | '/_protected/_app/profile'
+    | '/_app/_protected/profile'
     | '/_public/_global/find-account'
     | '/_public/_global/login'
     | '/_public/_global/register'
@@ -333,17 +340,18 @@ export interface FileRouteTypes {
     | '/_protected/_global/onboarding/setup-2fa'
     | '/_protected/_global/onboarding/verify-phone'
     | '/_public/_global/login/2fa'
-    | '/_protected/_app/qna/'
-    | '/_protected/_app/support/'
-    | '/_public/_app/events/'
-    | '/_public/_app/faq/'
-    | '/_public/_app/notices/'
-    | '/_public/_app/service-terms/'
-    | '/_public/_app/{-$locale}/'
+    | '/_app/_protected/qna/'
+    | '/_app/_protected/support/'
+    | '/_app/_public/events/'
+    | '/_app/_public/faq/'
+    | '/_app/_public/notices/'
+    | '/_app/_public/service-terms/'
+    | '/_app/_public/{-$locale}/'
     | '/_public/_global/login/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  AppRouteRoute: typeof AppRouteRouteWithChildren
   ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
   ApiSplatRoute: typeof ApiSplatRoute
@@ -351,6 +359,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_protected': {
       id: '/_protected'
       path: ''
@@ -365,12 +380,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_protected/_app': {
-      id: '/_protected/_app'
+    '/_app/_protected': {
+      id: '/_app/_protected'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof ProtectedAppRouteRouteImport
-      parentRoute: typeof ProtectedRouteRoute
+      preLoaderRoute: typeof AppProtectedRouteRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/_public': {
+      id: '/_app/_public'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppPublicRouteRouteImport
+      parentRoute: typeof AppRouteRoute
     }
     '/_protected/_global': {
       id: '/_protected/_global'
@@ -378,13 +400,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof ProtectedGlobalRouteRouteImport
       parentRoute: typeof ProtectedRouteRoute
-    }
-    '/_public/_app': {
-      id: '/_public/_app'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof PublicAppRouteRouteImport
-      parentRoute: typeof PublicRouteRoute
     }
     '/_public/_global': {
       id: '/_public/_global'
@@ -400,12 +415,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_protected/_app/profile': {
-      id: '/_protected/_app/profile'
+    '/_app/_protected/profile': {
+      id: '/_app/_protected/profile'
       path: '/profile'
       fullPath: '/profile'
-      preLoaderRoute: typeof ProtectedAppProfileRouteImport
-      parentRoute: typeof ProtectedAppRouteRoute
+      preLoaderRoute: typeof AppProtectedProfileRouteImport
+      parentRoute: typeof AppProtectedRouteRoute
+    }
+    '/_app/_public/{-$locale}': {
+      id: '/_app/_public/{-$locale}'
+      path: '/{-$locale}'
+      fullPath: '/{-$locale}'
+      preLoaderRoute: typeof AppPublicChar123LocaleChar125RouteRouteImport
+      parentRoute: typeof AppPublicRouteRoute
     }
     '/_protected/_global/onboarding': {
       id: '/_protected/_global/onboarding'
@@ -413,13 +435,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/onboarding'
       preLoaderRoute: typeof ProtectedGlobalOnboardingRouteRouteImport
       parentRoute: typeof ProtectedGlobalRouteRoute
-    }
-    '/_public/_app/{-$locale}': {
-      id: '/_public/_app/{-$locale}'
-      path: '/{-$locale}'
-      fullPath: '/{-$locale}'
-      preLoaderRoute: typeof PublicAppChar123LocaleChar125RouteRouteImport
-      parentRoute: typeof PublicAppRouteRoute
     }
     '/_public/_global/find-account': {
       id: '/_public/_global/find-account'
@@ -456,19 +471,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicGlobalVerifyEmailRouteImport
       parentRoute: typeof PublicGlobalRouteRoute
     }
-    '/_protected/_app/qna/': {
-      id: '/_protected/_app/qna/'
+    '/_app/_protected/qna/': {
+      id: '/_app/_protected/qna/'
       path: '/qna'
       fullPath: '/qna/'
-      preLoaderRoute: typeof ProtectedAppQnaIndexRouteImport
-      parentRoute: typeof ProtectedAppRouteRoute
+      preLoaderRoute: typeof AppProtectedQnaIndexRouteImport
+      parentRoute: typeof AppProtectedRouteRoute
     }
-    '/_protected/_app/support/': {
-      id: '/_protected/_app/support/'
+    '/_app/_protected/support/': {
+      id: '/_app/_protected/support/'
       path: '/support'
       fullPath: '/support/'
-      preLoaderRoute: typeof ProtectedAppSupportIndexRouteImport
-      parentRoute: typeof ProtectedAppRouteRoute
+      preLoaderRoute: typeof AppProtectedSupportIndexRouteImport
+      parentRoute: typeof AppProtectedRouteRoute
+    }
+    '/_app/_public/events/': {
+      id: '/_app/_public/events/'
+      path: '/events'
+      fullPath: '/events/'
+      preLoaderRoute: typeof AppPublicEventsIndexRouteImport
+      parentRoute: typeof AppPublicRouteRoute
+    }
+    '/_app/_public/faq/': {
+      id: '/_app/_public/faq/'
+      path: '/faq'
+      fullPath: '/faq/'
+      preLoaderRoute: typeof AppPublicFaqIndexRouteImport
+      parentRoute: typeof AppPublicRouteRoute
+    }
+    '/_app/_public/notices/': {
+      id: '/_app/_public/notices/'
+      path: '/notices'
+      fullPath: '/notices/'
+      preLoaderRoute: typeof AppPublicNoticesIndexRouteImport
+      parentRoute: typeof AppPublicRouteRoute
+    }
+    '/_app/_public/service-terms/': {
+      id: '/_app/_public/service-terms/'
+      path: '/service-terms'
+      fullPath: '/service-terms/'
+      preLoaderRoute: typeof AppPublicServiceTermsIndexRouteImport
+      parentRoute: typeof AppPublicRouteRoute
+    }
+    '/_app/_public/{-$locale}/': {
+      id: '/_app/_public/{-$locale}/'
+      path: '/'
+      fullPath: '/{-$locale}/'
+      preLoaderRoute: typeof AppPublicChar123LocaleChar125IndexRouteImport
+      parentRoute: typeof AppPublicChar123LocaleChar125RouteRoute
     }
     '/_protected/_global/onboarding/agree-terms': {
       id: '/_protected/_global/onboarding/agree-terms'
@@ -498,41 +548,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedGlobalOnboardingVerifyPhoneRouteImport
       parentRoute: typeof ProtectedGlobalOnboardingRouteRoute
     }
-    '/_public/_app/events/': {
-      id: '/_public/_app/events/'
-      path: '/events'
-      fullPath: '/events/'
-      preLoaderRoute: typeof PublicAppEventsIndexRouteImport
-      parentRoute: typeof PublicAppRouteRoute
-    }
-    '/_public/_app/faq/': {
-      id: '/_public/_app/faq/'
-      path: '/faq'
-      fullPath: '/faq/'
-      preLoaderRoute: typeof PublicAppFaqIndexRouteImport
-      parentRoute: typeof PublicAppRouteRoute
-    }
-    '/_public/_app/notices/': {
-      id: '/_public/_app/notices/'
-      path: '/notices'
-      fullPath: '/notices/'
-      preLoaderRoute: typeof PublicAppNoticesIndexRouteImport
-      parentRoute: typeof PublicAppRouteRoute
-    }
-    '/_public/_app/service-terms/': {
-      id: '/_public/_app/service-terms/'
-      path: '/service-terms'
-      fullPath: '/service-terms/'
-      preLoaderRoute: typeof PublicAppServiceTermsIndexRouteImport
-      parentRoute: typeof PublicAppRouteRoute
-    }
-    '/_public/_app/{-$locale}/': {
-      id: '/_public/_app/{-$locale}/'
-      path: '/'
-      fullPath: '/{-$locale}/'
-      preLoaderRoute: typeof PublicAppChar123LocaleChar125IndexRouteImport
-      parentRoute: typeof PublicAppChar123LocaleChar125RouteRoute
-    }
     '/_public/_global/login/': {
       id: '/_public/_global/login/'
       path: '/'
@@ -550,20 +565,70 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface ProtectedAppRouteRouteChildren {
-  ProtectedAppProfileRoute: typeof ProtectedAppProfileRoute
-  ProtectedAppQnaIndexRoute: typeof ProtectedAppQnaIndexRoute
-  ProtectedAppSupportIndexRoute: typeof ProtectedAppSupportIndexRoute
+interface AppProtectedRouteRouteChildren {
+  AppProtectedProfileRoute: typeof AppProtectedProfileRoute
+  AppProtectedQnaIndexRoute: typeof AppProtectedQnaIndexRoute
+  AppProtectedSupportIndexRoute: typeof AppProtectedSupportIndexRoute
 }
 
-const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
-  ProtectedAppProfileRoute: ProtectedAppProfileRoute,
-  ProtectedAppQnaIndexRoute: ProtectedAppQnaIndexRoute,
-  ProtectedAppSupportIndexRoute: ProtectedAppSupportIndexRoute,
+const AppProtectedRouteRouteChildren: AppProtectedRouteRouteChildren = {
+  AppProtectedProfileRoute: AppProtectedProfileRoute,
+  AppProtectedQnaIndexRoute: AppProtectedQnaIndexRoute,
+  AppProtectedSupportIndexRoute: AppProtectedSupportIndexRoute,
 }
 
-const ProtectedAppRouteRouteWithChildren =
-  ProtectedAppRouteRoute._addFileChildren(ProtectedAppRouteRouteChildren)
+const AppProtectedRouteRouteWithChildren =
+  AppProtectedRouteRoute._addFileChildren(AppProtectedRouteRouteChildren)
+
+interface AppPublicChar123LocaleChar125RouteRouteChildren {
+  AppPublicChar123LocaleChar125IndexRoute: typeof AppPublicChar123LocaleChar125IndexRoute
+}
+
+const AppPublicChar123LocaleChar125RouteRouteChildren: AppPublicChar123LocaleChar125RouteRouteChildren =
+  {
+    AppPublicChar123LocaleChar125IndexRoute:
+      AppPublicChar123LocaleChar125IndexRoute,
+  }
+
+const AppPublicChar123LocaleChar125RouteRouteWithChildren =
+  AppPublicChar123LocaleChar125RouteRoute._addFileChildren(
+    AppPublicChar123LocaleChar125RouteRouteChildren,
+  )
+
+interface AppPublicRouteRouteChildren {
+  AppPublicChar123LocaleChar125RouteRoute: typeof AppPublicChar123LocaleChar125RouteRouteWithChildren
+  AppPublicEventsIndexRoute: typeof AppPublicEventsIndexRoute
+  AppPublicFaqIndexRoute: typeof AppPublicFaqIndexRoute
+  AppPublicNoticesIndexRoute: typeof AppPublicNoticesIndexRoute
+  AppPublicServiceTermsIndexRoute: typeof AppPublicServiceTermsIndexRoute
+}
+
+const AppPublicRouteRouteChildren: AppPublicRouteRouteChildren = {
+  AppPublicChar123LocaleChar125RouteRoute:
+    AppPublicChar123LocaleChar125RouteRouteWithChildren,
+  AppPublicEventsIndexRoute: AppPublicEventsIndexRoute,
+  AppPublicFaqIndexRoute: AppPublicFaqIndexRoute,
+  AppPublicNoticesIndexRoute: AppPublicNoticesIndexRoute,
+  AppPublicServiceTermsIndexRoute: AppPublicServiceTermsIndexRoute,
+}
+
+const AppPublicRouteRouteWithChildren = AppPublicRouteRoute._addFileChildren(
+  AppPublicRouteRouteChildren,
+)
+
+interface AppRouteRouteChildren {
+  AppProtectedRouteRoute: typeof AppProtectedRouteRouteWithChildren
+  AppPublicRouteRoute: typeof AppPublicRouteRouteWithChildren
+}
+
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppProtectedRouteRoute: AppProtectedRouteRouteWithChildren,
+  AppPublicRouteRoute: AppPublicRouteRouteWithChildren,
+}
+
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
+)
 
 interface ProtectedGlobalOnboardingRouteRouteChildren {
   ProtectedGlobalOnboardingAgreeTermsRoute: typeof ProtectedGlobalOnboardingAgreeTermsRoute
@@ -602,53 +667,15 @@ const ProtectedGlobalRouteRouteWithChildren =
   ProtectedGlobalRouteRoute._addFileChildren(ProtectedGlobalRouteRouteChildren)
 
 interface ProtectedRouteRouteChildren {
-  ProtectedAppRouteRoute: typeof ProtectedAppRouteRouteWithChildren
   ProtectedGlobalRouteRoute: typeof ProtectedGlobalRouteRouteWithChildren
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
-  ProtectedAppRouteRoute: ProtectedAppRouteRouteWithChildren,
   ProtectedGlobalRouteRoute: ProtectedGlobalRouteRouteWithChildren,
 }
 
 const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
   ProtectedRouteRouteChildren,
-)
-
-interface PublicAppChar123LocaleChar125RouteRouteChildren {
-  PublicAppChar123LocaleChar125IndexRoute: typeof PublicAppChar123LocaleChar125IndexRoute
-}
-
-const PublicAppChar123LocaleChar125RouteRouteChildren: PublicAppChar123LocaleChar125RouteRouteChildren =
-  {
-    PublicAppChar123LocaleChar125IndexRoute:
-      PublicAppChar123LocaleChar125IndexRoute,
-  }
-
-const PublicAppChar123LocaleChar125RouteRouteWithChildren =
-  PublicAppChar123LocaleChar125RouteRoute._addFileChildren(
-    PublicAppChar123LocaleChar125RouteRouteChildren,
-  )
-
-interface PublicAppRouteRouteChildren {
-  PublicAppChar123LocaleChar125RouteRoute: typeof PublicAppChar123LocaleChar125RouteRouteWithChildren
-  PublicAppEventsIndexRoute: typeof PublicAppEventsIndexRoute
-  PublicAppFaqIndexRoute: typeof PublicAppFaqIndexRoute
-  PublicAppNoticesIndexRoute: typeof PublicAppNoticesIndexRoute
-  PublicAppServiceTermsIndexRoute: typeof PublicAppServiceTermsIndexRoute
-}
-
-const PublicAppRouteRouteChildren: PublicAppRouteRouteChildren = {
-  PublicAppChar123LocaleChar125RouteRoute:
-    PublicAppChar123LocaleChar125RouteRouteWithChildren,
-  PublicAppEventsIndexRoute: PublicAppEventsIndexRoute,
-  PublicAppFaqIndexRoute: PublicAppFaqIndexRoute,
-  PublicAppNoticesIndexRoute: PublicAppNoticesIndexRoute,
-  PublicAppServiceTermsIndexRoute: PublicAppServiceTermsIndexRoute,
-}
-
-const PublicAppRouteRouteWithChildren = PublicAppRouteRoute._addFileChildren(
-  PublicAppRouteRouteChildren,
 )
 
 interface PublicGlobalLoginRouteChildren {
@@ -684,12 +711,10 @@ const PublicGlobalRouteRouteWithChildren =
   PublicGlobalRouteRoute._addFileChildren(PublicGlobalRouteRouteChildren)
 
 interface PublicRouteRouteChildren {
-  PublicAppRouteRoute: typeof PublicAppRouteRouteWithChildren
   PublicGlobalRouteRoute: typeof PublicGlobalRouteRouteWithChildren
 }
 
 const PublicRouteRouteChildren: PublicRouteRouteChildren = {
-  PublicAppRouteRoute: PublicAppRouteRouteWithChildren,
   PublicGlobalRouteRoute: PublicGlobalRouteRouteWithChildren,
 }
 
@@ -698,6 +723,7 @@ const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  AppRouteRoute: AppRouteRouteWithChildren,
   ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
   PublicRouteRoute: PublicRouteRouteWithChildren,
   ApiSplatRoute: ApiSplatRoute,
