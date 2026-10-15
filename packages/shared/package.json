@@ -20,10 +20,6 @@
       "types": "./src/server/index.ts",
       "default": "./src/server/index.ts"
     },
-    "./web": {
-      "types": "./src/web/index.ts",
-      "default": "./src/web/index.ts"
-    },
     "./policy": {
       "types": "./src/policy/index.ts",
       "default": "./src/policy/index.ts"
@@ -31,6 +27,14 @@
     "./editor": {
       "types": "./src/editor/index.ts",
       "default": "./src/editor/index.ts"
+    },
+    "./web/browser-environment": {
+      "types": "./src/web/browser-environment.ts",
+      "default": "./src/web/browser-environment.ts"
+    },
+    "./web/cookie": {
+      "types": "./src/web/cookie.ts",
+      "default": "./src/web/cookie.ts"
     }
   },
   "imports": {
