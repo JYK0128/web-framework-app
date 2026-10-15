@@ -847,15 +847,6 @@ importers:
       '@date-fns/tz':
         specifier: 1.5.0
         version: 1.5.0
-      '@nestjs/swagger':
-        specifier: 11.4.6
-        version: 11.4.6(@nestjs/common@11.1.28(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.28)(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)
-      class-transformer:
-        specifier: 0.5.1
-        version: 0.5.1
-      class-validator:
-        specifier: 0.15.1
-        version: 0.15.1
       consola:
         specifier: 3.4.2
         version: 3.4.2
@@ -868,12 +859,6 @@ importers:
       i18next:
         specifier: 26.3.6
         version: 26.3.6(typescript@5.9.3)
-      i18next-browser-languagedetector:
-        specifier: 8.2.1
-        version: 8.2.1
-      i18next-http-middleware:
-        specifier: 3.9.8
-        version: 3.9.8
       libphonenumber-js:
         specifier: 1.13.11
         version: 1.13.11
@@ -896,18 +881,12 @@ importers:
       '@types/node':
         specifier: 26.1.2
         version: 26.1.2
-      '@types/react':
-        specifier: 19.2.18
-        version: 19.2.18
       '@types/sanitize-html':
         specifier: 2.16.2
         version: 2.16.2
       eslint:
         specifier: 9.39.5
         version: 9.39.5(jiti@2.7.0)
-      react:
-        specifier: 19.2.8
-        version: 19.2.8
       typescript:
         specifier: 5.9.3
         version: 5.9.3
