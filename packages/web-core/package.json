@@ -12,6 +12,7 @@
     "#ui/editor": "./src/ui/editor/index.ts",
     "#ui/form/components": "./src/ui/form/components/index.ts",
     "#ui/form/fields": "./src/ui/form/fields/index.ts",
+    "#ui/slot": "./src/ui/slot/index.ts",
     "#context/i18n": "./src/context/i18n/index.ts",
     "#ui/locale": "./src/ui/locale/index.ts",
     "#context/permission": "./src/context/permission/index.ts",
@@ -75,8 +76,8 @@
       "default": "./src/styles/index.css"
     },
     "./slot": {
-      "types": "./src/ui/internal/index.ts",
-      "default": "./src/ui/internal/index.ts"
+      "types": "./src/ui/slot/index.ts",
+      "default": "./src/ui/slot/index.ts"
     },
     "./ui": {
       "types": "./src/ui/index.ts",

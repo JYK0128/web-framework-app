@@ -3,7 +3,7 @@ import type { IconName } from 'lucide-react/dynamic';
 import type { ReactNode } from 'react';
 
 import { AppIcon, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#ui';
-import { getSlotElements } from '#ui/internal/react-slots';
+import { getSlotElements } from '#ui/slot';
 import { cn } from '#utils';
 
 type SectionCardProps = {

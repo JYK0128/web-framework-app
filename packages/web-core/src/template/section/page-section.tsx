@@ -2,7 +2,7 @@ import type { IconName } from 'lucide-react/dynamic';
 import type { ReactNode } from 'react';
 
 import { AppIcon } from '#ui';
-import { getSlotElements } from '#ui/internal/react-slots';
+import { getSlotElements } from '#ui/slot';
 import { cn } from '#utils';
 
 type PageSectionProps = {

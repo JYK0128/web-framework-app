@@ -1,7 +1,7 @@
 import { X } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 
-import { Button } from '#/.generated/shadcn/components/ui';
+import { Button } from '#ui';
 
 const toneClasses = {
   info: 'border-sky-300/60 bg-sky-50 text-sky-950 dark:border-sky-800 dark:bg-sky-950/30 dark:text-sky-100',

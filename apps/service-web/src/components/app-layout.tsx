@@ -2,17 +2,16 @@ import { BrandLogo } from '@pkg/web-core/branding';
 import { useI18n } from '@pkg/web-core/i18n';
 import { LocaleSwitcher } from '@pkg/web-core/locale';
 import { AppLayout as AppLayoutParts } from '@pkg/web-core/template';
-import { ThemeToggle } from '@pkg/web-core/ui';
-import { cn } from '@pkg/web-core/utils';
+import { buttonVariants, Navi, type NaviItem, ThemeToggle } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link, useLocation, useNavigate, useRouter } from '@tanstack/react-router';
-import { Bell, LogIn, LogOut, Menu, Moon, Sun, User } from 'lucide-react';
+import { Bell, Globe, LogIn, LogOut, Menu, Moon, Sun, User } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 
 import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
 import type { MeResponse } from '#/.generated/api/model';
-import { Button, buttonVariants, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { useSSE } from '#/hooks/use-sse';
 import { isSupportChatOpen } from '#/lib/support-chat-state';
 
@@ -47,11 +46,34 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
   const router = useRouter();
   const queryClient = useQueryClient();
   const logoutMutation = useAuthControllerLogoutV1();
+  const [isNavigationOpen, setIsNavigationOpen] = useState(false);
+  const navigationContainerRef = useRef<HTMLDivElement>(null);
+  const navigationTriggerRef = useRef<HTMLButtonElement>(null);
   const [notificationState, setNotificationState] = useState<{ userId: string | null, items: UserNotification[] }>({ userId: user?.id ?? null, items: [] });
   const currentUserId = user?.id ?? null;
   const notifications = notificationState.userId === currentUserId ? notificationState.items : [];
   const { resolvedTheme, setTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
+  const navigationItems: NaviItem[] = navigation.map((item) => ({
+    id: item.to,
+    label: t(item.label),
+    to: item.to,
+    active: location.pathname === item.to
+      || (item.to !== '/' && location.pathname.startsWith(`${item.to}/`)),
+  }));
+
+  useEffect(() => {
+    if (!isNavigationOpen) return;
+
+    const closeOnOutsidePointer = (event: PointerEvent) => {
+      if (event.target instanceof Node && !navigationContainerRef.current?.contains(event.target)) {
+        setIsNavigationOpen(false);
+      }
+    };
+
+    window.addEventListener('pointerdown', closeOnOutsidePointer);
+    return () => window.removeEventListener('pointerdown', closeOnOutsidePointer);
+  }, [isNavigationOpen]);
   useSSE<UserNotification>({
     url: user ? '/api/v1/notifications/events' : null,
     onEvent: (event) => {
@@ -83,32 +105,30 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
           shrink-0 bg-background/95 backdrop-blur-sm
         "
         >
-          <div className="
-            mx-auto flex h-16 w-full max-w-6xl items-center justify-between
-            gap-4 px-4
-            md:px-6
-          "
+          <div
+            className="
+              mx-auto flex h-16 w-full max-w-6xl items-center justify-between
+              relative gap-4 px-4
+              md:px-6
+            "
+            ref={navigationContainerRef}
+            onKeyDown={(event) => {
+              if (event.key === 'Escape' && isNavigationOpen) {
+                setIsNavigationOpen(false);
+                navigationTriggerRef.current?.focus();
+              }
+            }}
           >
             <BrandLogo />
-            <nav
-              className="
-                hidden items-center gap-1
-                lg:flex
-              "
-              aria-label="서비스 메뉴"
-            >
-              {navigation.map((item) => (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), location.pathname === item.to && `
-                    bg-accent text-accent-foreground
-                  `)}
-                >
-                  {t(item.label)}
-                </Link>
-              ))}
-            </nav>
+            <Navi
+              items={navigationItems}
+              variant={{ base: 'side', lg: 'bar' }}
+              sideOpen={isNavigationOpen}
+              sideId="service-navigation-side"
+              label={t('service.navigation.menu')}
+              onNavigate={() => setIsNavigationOpen(false)}
+              sideClassName="absolute left-0 right-0 top-full z-40 max-h-[calc(100dvh-4rem)] overflow-y-auto border-b bg-background p-4 shadow-lg lg:hidden"
+            />
             <div className="flex items-center gap-2">
               <div className="
                 hidden items-center gap-2
@@ -251,6 +271,19 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
                     <LogIn className="size-4" />
                   </Link>
                 )}
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="lg:hidden"
+                aria-label={t('service.navigation.openMenu')}
+                aria-expanded={isNavigationOpen}
+                aria-controls="service-navigation-side"
+                ref={navigationTriggerRef}
+                onClick={() => setIsNavigationOpen((open) => !open)}
+              >
+                <Menu className="size-4" />
+              </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger
                   render={(props) => (
@@ -260,9 +293,9 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
                       variant="outline"
                       size="icon"
                       className="lg:hidden"
-                      aria-label={t('service.navigation.openMenu')}
+                      aria-label={t('webCore.localeSwitcher.language')}
                     >
-                      <Menu className="size-4" />
+                      <Globe className="size-4" />
                     </Button>
                   )}
                 />
@@ -273,21 +306,6 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
                     lg:hidden
                   "
                 >
-                  <DropdownMenuGroup>
-                    <DropdownMenuLabel>{t('service.navigation.menu')}</DropdownMenuLabel>
-                    {navigation.map((item) => (
-                      <DropdownMenuItem
-                        key={item.to}
-                        render={<Link to={item.to} />}
-                        className={location.pathname === item.to
-                          ? `bg-accent text-accent-foreground`
-                          : undefined}
-                      >
-                        {t(item.label)}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuGroup>
-                  <DropdownMenuSeparator />
                   <LocaleSwitcher presentation="submenu" />
                   <DropdownMenuItem onClick={() => setTheme(isDark ? 'light' : 'dark')}>
                     {isDark ? <Sun /> : <Moon />}

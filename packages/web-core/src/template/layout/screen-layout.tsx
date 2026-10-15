@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 
 import { ThemeToggle } from '#ui';
-import { getSlotElements } from '#ui/internal/react-slots';
 import { LocaleSwitcher } from '#ui/locale';
+import { getSlotElements } from '#ui/slot';
 import { cn } from '#utils';
 
 export type ScreenLayoutSize = 'sm' | 'md' | 'lg' | 'xl';

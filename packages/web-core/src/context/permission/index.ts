@@ -1,1 +1,1 @@
-export * from './permission-context';
+export * from './use-permissions';
