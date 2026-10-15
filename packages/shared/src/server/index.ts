@@ -5,6 +5,5 @@ export * from './encryption';
 export * from './hash';
 export * from './key-derivation';
 export * from './password-hash';
-export { type SessionData, SessionProxy } from './session';
 export * from './support-unanswered-alert.event';
 export * from './user-notification-created.event';

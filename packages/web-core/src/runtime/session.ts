@@ -1,5 +1,6 @@
-import { type SessionData, SessionProxy } from '@pkg/shared/server';
 import { useSession } from '@tanstack/react-start/server';
+
+import { type SessionData, SessionProxy } from './session-proxy';
 
 export type SessionHandlerOptions = {
   backend: string
@@ -41,3 +42,5 @@ export function createSessionRequestHandler({ backend, appBaseUrl, appName, pass
     return response;
   };
 }
+
+export { type SessionData, SessionProxy } from './session-proxy';
