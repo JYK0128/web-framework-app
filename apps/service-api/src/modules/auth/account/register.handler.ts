@@ -1,11 +1,11 @@
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { assertPasswordPolicy } from '@pkg/server-core/auth/user/password.policy';
 import { EVENT_BROKER } from '@pkg/server-core/event-broker/event-broker.interface';
 import { EventBroker } from '@pkg/server-core/event-broker/event-broker.service';
 import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
 import { ApplicationError } from '@pkg/shared/common';
+import { assertPasswordPolicy } from '@pkg/shared/policy';
 import { encrypt, hashPassword, hashWithSecret } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';

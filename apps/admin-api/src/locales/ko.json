@@ -58,7 +58,7 @@
     "PASSWORD_EXPIRED": "비밀번호가 만료됐습니다. 비밀번호 재설정 후 다시 로그인해 주세요.",
     "IDENTITY_VERIFICATION_REQUIRED": "계속하려면 먼저 본인인증을 완료해 주세요.",
     "TWO_FACTOR_SETUP_REQUIRED": "계속하려면 먼저 2단계 인증을 설정해 주세요.",
-    "PASSWORD_LENGTH_INVALID": "비밀번호가 너무 짧거나 깁니다. 길이를 조정해 주세요.",
+    "PASSWORD_LENGTH_INVALID": "비밀번호는 {{minLength}}~{{maxLength}}자로 입력해 주세요.",
     "PASSWORD_NUMBER_REQUIRED": "비밀번호에 숫자를 포함해야 합니다.",
     "PASSWORD_UPPERCASE_REQUIRED": "비밀번호에 영문 대문자를 포함해야 합니다.",
     "PASSWORD_SPECIAL_CHAR_REQUIRED": "비밀번호에 특수문자를 포함해야 합니다.",
@@ -127,6 +127,7 @@
     "SERVICE_TERM_GROUP_HAS_PUBLISHED_TERMS": "게시된 서비스 약관이 있는 그룹입니다.",
     "SERVICE_TERM_GROUP_MISMATCH": "서비스 약관 그룹이 일치하지 않습니다.",
     "SERVICE_TERM_GROUP_NOT_FOUND": "서비스 약관 그룹을 찾을 수 없습니다.",
-    "SERVICE_TERM_PUBLISH_DATE_MUST_BE_FUTURE": "서비스 약관 게시일은 미래여야 합니다."
+    "SERVICE_TERM_PUBLISH_DATE_MUST_BE_FUTURE": "서비스 약관 게시일은 미래여야 합니다.",
+    "PASSWORD_LENGTH_INVALID_byteLimitExceeded": "비밀번호가 너무 깁니다. 길이를 줄여 주세요."
   }
 }

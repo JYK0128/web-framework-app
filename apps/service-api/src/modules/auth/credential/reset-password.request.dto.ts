@@ -15,9 +15,9 @@ export class ResetPasswordRequestDto {
   @IsNotEmpty()
   token!: string;
 
-  @ApiProperty({ type: String, minLength: SECURITY_CONFIG.password.minLength, maxLength: SECURITY_CONFIG.password.maxLength })
+  @ApiProperty({ type: String, minLength: SECURITY_CONFIG.password.passwordMinLength, maxLength: SECURITY_CONFIG.password.passwordMaxLength })
   @IsString()
-  @MinLength(SECURITY_CONFIG.password.minLength)
-  @MaxLength(SECURITY_CONFIG.password.maxLength)
+  @MinLength(SECURITY_CONFIG.password.passwordMinLength)
+  @MaxLength(SECURITY_CONFIG.password.passwordMaxLength)
   newPassword!: string;
 }

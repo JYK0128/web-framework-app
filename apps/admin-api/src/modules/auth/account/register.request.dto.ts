@@ -11,10 +11,10 @@ export class RegisterRequestDto extends BaseDto {
   @IsEmail()
   email!: string;
 
-  @ApiProperty({ type: String, minLength: SECURITY_CONFIG.password.minLength, maxLength: SECURITY_CONFIG.password.maxLength })
+  @ApiProperty({ type: String, minLength: SECURITY_CONFIG.password.passwordMinLength, maxLength: SECURITY_CONFIG.password.passwordMaxLength })
   @IsString()
-  @MinLength(SECURITY_CONFIG.password.minLength)
-  @MaxLength(SECURITY_CONFIG.password.maxLength)
+  @MinLength(SECURITY_CONFIG.password.passwordMinLength)
+  @MaxLength(SECURITY_CONFIG.password.passwordMaxLength)
   password!: string;
 
   @ApiProperty({ type: String, maxLength: 120 })

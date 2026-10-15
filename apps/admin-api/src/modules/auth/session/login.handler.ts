@@ -73,7 +73,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResponse
       });
     }
 
-    const isPasswordValid = Buffer.byteLength(input.password, 'utf8') <= SECURITY_CONFIG.password.maxBytes
+    const isPasswordValid = Buffer.byteLength(input.password, 'utf8') <= SECURITY_CONFIG.password.passwordMaxBytes
       && await verifyPassword(input.password, account.password);
     if (!isPasswordValid) {
       const now = new Date();

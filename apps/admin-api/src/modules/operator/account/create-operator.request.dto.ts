@@ -18,10 +18,10 @@ export class CreateOperatorRequestDto extends BaseDto {
   @IsEmail()
   email!: string;
 
-  @ApiProperty({ minLength: SECURITY_CONFIG.password.minLength, maxLength: SECURITY_CONFIG.password.maxLength, description: '초기 비밀번호' })
+  @ApiProperty({ minLength: SECURITY_CONFIG.password.passwordMinLength, maxLength: SECURITY_CONFIG.password.passwordMaxLength, description: '초기 비밀번호' })
   @IsString()
-  @MinLength(SECURITY_CONFIG.password.minLength)
-  @MaxLength(SECURITY_CONFIG.password.maxLength)
+  @MinLength(SECURITY_CONFIG.password.passwordMinLength)
+  @MaxLength(SECURITY_CONFIG.password.passwordMaxLength)
   password!: string;
 
   @ApiPropertyOptional({ type: String, default: 'admin', example: 'admin' })

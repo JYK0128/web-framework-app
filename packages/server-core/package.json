@@ -35,9 +35,9 @@
       "types": "./src/auth/machine/machine-auth.module.ts",
       "default": "./src/auth/machine/machine-auth.module.ts"
     },
-    "./auth/user/password.policy": {
-      "types": "./src/auth/user/password.policy.ts",
-      "default": "./src/auth/user/password.policy.ts"
+    "./auth/user/credential-password": {
+      "types": "./src/auth/user/credential-password.ts",
+      "default": "./src/auth/user/credential-password.ts"
     },
     "./auth/user/session/session.store": {
       "types": "./src/auth/user/session/session.store.ts",
@@ -55,9 +55,9 @@
       "types": "./src/auth/user/user-auth.interface.ts",
       "default": "./src/auth/user/user-auth.interface.ts"
     },
-    "./auth/user/user.module": {
-      "types": "./src/auth/user/user.module.ts",
-      "default": "./src/auth/user/user.module.ts"
+    "./auth/user/user-auth.module": {
+      "types": "./src/auth/user/user-auth.module.ts",
+      "default": "./src/auth/user/user-auth.module.ts"
     },
     "./event-broker/broker-consumer.decorator": {
       "types": "./src/event-broker/broker-consumer.decorator.ts",

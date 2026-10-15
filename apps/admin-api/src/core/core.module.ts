@@ -3,7 +3,7 @@ import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AuthenticationGuard } from '@pkg/server-core/auth/authentication.guard';
 import { MachineAuthModule } from '@pkg/server-core/auth/machine/machine-auth.module';
-import { UserAuthModule } from '@pkg/server-core/auth/user/user.module';
+import { UserAuthModule } from '@pkg/server-core/auth/user/user-auth.module';
 import { EventBrokerModule } from '@pkg/server-core/event-broker/event-broker.module';
 import { FileStorageModule } from '@pkg/server-core/file-storage/file-storage.module';
 import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';

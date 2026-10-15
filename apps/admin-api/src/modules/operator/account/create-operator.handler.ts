@@ -1,7 +1,8 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CommandBus, CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { assertPasswordPolicy, updateCredentialPassword } from '@pkg/server-core/auth/user/password.policy';
+import { updateCredentialPassword } from '@pkg/server-core/auth/user/credential-password';
 import { ApplicationError } from '@pkg/shared/common';
+import { assertPasswordPolicy } from '@pkg/shared/policy';
 import { encrypt, hashWithSecret } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';

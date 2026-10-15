@@ -2,7 +2,7 @@ import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import type { Request, Response } from 'express';
 
-import { getCredentialPasswordExpiresAt } from '#auth/user/password.policy';
+import { getCredentialPasswordExpiresAt } from '#auth/user/credential-password';
 import { AUTH_READER, type AuthAccount, type AuthReader, type AuthUser, type CreateTokenPairOptions, type IUserAuthService, type RefreshInput, type TokenPairResult, USER_AUTH_POLICY_OPTIONS, USER_SESSION_OPTIONS, type UserAuthPolicyOptions, type UserSessionOptions } from '#auth/user/user-auth.interface';
 import { RequestContext } from '#http/contexts/request.context';
 import type { AuthPrincipal } from '#http/types/principal.type';

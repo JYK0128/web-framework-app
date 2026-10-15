@@ -48,7 +48,7 @@
     "CUSTOMER_ROLE_NOT_FOUND": "The customer membership role could not be found.",
     "CUSTOMER_SESSION_NOT_FOUND": "The customer session could not be found.",
     "OAUTH_PROVIDER_CONFIG_INVALID": "Check the required credentials and HTTPS endpoints for the enabled OAuth provider.",
-    "PASSWORD_LENGTH_INVALID": "Your password is too short or too long. Please adjust its length.",
+    "PASSWORD_LENGTH_INVALID": "Your password must be between {{minLength}} and {{maxLength}} characters.",
     "NOTIFICATION_PROVIDER_CONFIG_INVALID": "Provide credentials for the selected notification provider.",
     "OAUTH_ICON_UPLOAD_INVALID": "The OAuth icon does not meet the upload requirements.",
     "SYSTEM_CONFIG_INVALID": "The service configuration is invalid.",
@@ -112,6 +112,7 @@
     "SESSION_TOKEN_RESPONSE_INVALID": "Unable to verify your login. Please sign in again.",
     "SESSION_REFRESH_FAILED": "Unable to renew your login. Please sign in again.",
     "SESSION_OAUTH_EXCHANGE_FAILED": "Unable to complete social login. Please try again.",
-    "SESSION_LOGOUT_FAILED": "Unable to complete logout. Please try again shortly."
+    "SESSION_LOGOUT_FAILED": "Unable to complete logout. Please try again shortly.",
+    "PASSWORD_LENGTH_INVALID_byteLimitExceeded": "Password is too long. Please shorten it."
   }
 }

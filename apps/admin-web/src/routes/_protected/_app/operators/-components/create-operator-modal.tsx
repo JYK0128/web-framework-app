@@ -1,9 +1,8 @@
 import { ApplicationError, z } from '@pkg/shared/common';
-import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
+import { ADMIN_AUTH_POLICY_CONFIG, assertPasswordPolicy } from '@pkg/shared/policy';
 import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
 import { useI18n } from '@pkg/web-core/i18n';
 import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
-import { describePasswordPolicy, getPasswordPolicyError } from '@pkg/web-core/password-policy';
 
 import { useOperatorsControllerCreateOperatorV1 } from '#/.generated/api/endpoints/operators/operators';
 import { useRolesControllerGetRolesV1 } from '#/.generated/api/endpoints/roles/roles';
@@ -13,7 +12,7 @@ import { Button } from '#/.generated/shadcn/components/ui';
 type CreateOperatorModalProps = ModalComponentProps<boolean>;
 
 export function CreateOperatorModal({ open, onOpenChange, close }: CreateOperatorModalProps) {
-  const { t } = useI18n();
+  const { t, i18n } = useI18n();
   const rolesQuery = useRolesControllerGetRolesV1({ query: { enabled: open } });
   const policy = ADMIN_AUTH_POLICY_CONFIG;
   const createMutation = useOperatorsControllerCreateOperatorV1({
@@ -30,8 +29,14 @@ export function CreateOperatorModal({ open, onOpenChange, close }: CreateOperato
         password: z.string(),
         role: z.string().min(1, '역할을 선택해 주세요.'),
       }).superRefine((value, context) => {
-        const passwordError = getPasswordPolicyError(value.password, policy, t);
-        if (passwordError) context.addIssue({ code: 'custom', path: ['password'], message: passwordError });
+        try {
+          assertPasswordPolicy(value.password, policy);
+        }
+        catch (error) {
+          if (!(error instanceof ApplicationError)) throw error;
+          const message = error.translate(i18n);
+          context.addIssue({ code: 'custom', path: ['password'], message });
+        }
       }),
     },
     onSubmit: async ({ value }) => {
@@ -102,7 +107,22 @@ export function CreateOperatorModal({ open, onOpenChange, close }: CreateOperato
               </form.AppField>
               {rolesQuery.isError && <p className="text-sm text-destructive">역할 목록을 불러오지 못했습니다.</p>}
               <Modal.Description className="text-xs text-muted-foreground">
-                {describePasswordPolicy(policy, t)}
+                {t('passwordPolicy.description', {
+                  minLength: policy.passwordMinLength,
+                  maxLength: policy.passwordMaxLength,
+                })}
+                {(policy.passwordRequiresNumbers || policy.passwordRequiresSpecialChar || policy.passwordRequiresUppercase) && (
+                  <>
+                    {' '}
+                    {t('passwordPolicy.requirements', {
+                      requirements: [
+                        policy.passwordRequiresNumbers && t('passwordPolicy.number'),
+                        policy.passwordRequiresSpecialChar && t('passwordPolicy.specialCharacter'),
+                        policy.passwordRequiresUppercase && t('passwordPolicy.uppercase'),
+                      ].filter((requirement): requirement is string => typeof requirement === 'string').join(', '),
+                    })}
+                  </>
+                )}
               </Modal.Description>
             </Modal.Body>
             <Modal.Footer className="pt-2">

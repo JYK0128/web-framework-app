@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { updateCredentialPassword } from '@pkg/server-core/auth/user/password.policy';
+import { updateCredentialPassword } from '@pkg/server-core/auth/user/credential-password';
 import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
 import { ApplicationError } from '@pkg/shared/common';
 import { verifyPassword } from '@pkg/shared/server';

@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { isCredentialPasswordExpired } from '@pkg/server-core/auth/user/password.policy';
+import { isCredentialPasswordExpired } from '@pkg/server-core/auth/user/credential-password';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { SECURITY_CONFIG } from '#/app.config';

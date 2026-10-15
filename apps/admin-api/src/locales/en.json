@@ -58,7 +58,7 @@
     "PASSWORD_EXPIRED": "Your password has expired. Reset it and sign in again.",
     "IDENTITY_VERIFICATION_REQUIRED": "Verify your identity to continue.",
     "TWO_FACTOR_SETUP_REQUIRED": "Set up two-factor authentication to continue.",
-    "PASSWORD_LENGTH_INVALID": "Your password is too short or too long. Please adjust its length.",
+    "PASSWORD_LENGTH_INVALID": "Your password must be between {{minLength}} and {{maxLength}} characters.",
     "PASSWORD_NUMBER_REQUIRED": "Your password must contain a number.",
     "PASSWORD_UPPERCASE_REQUIRED": "Your password must contain an uppercase letter.",
     "PASSWORD_SPECIAL_CHAR_REQUIRED": "Your password must contain a special character.",
@@ -127,6 +127,7 @@
     "SERVICE_TERM_GROUP_HAS_PUBLISHED_TERMS": "This group contains published service terms.",
     "SERVICE_TERM_GROUP_MISMATCH": "The service terms group does not match.",
     "SERVICE_TERM_GROUP_NOT_FOUND": "The service terms group could not be found.",
-    "SERVICE_TERM_PUBLISH_DATE_MUST_BE_FUTURE": "The service terms publication date must be in the future."
+    "SERVICE_TERM_PUBLISH_DATE_MUST_BE_FUTURE": "The service terms publication date must be in the future.",
+    "PASSWORD_LENGTH_INVALID_byteLimitExceeded": "Password is too long. Please shorten it."
   }
 }

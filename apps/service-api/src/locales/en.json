@@ -18,7 +18,6 @@
   "error": {
     "INTERNAL_SERVER_ERROR": "Internal server error.",
     "NOTIFICATION_SEND_FAILED": "Notification notification failed.",
-    "WEBHOOK_SEND_FAILED": "Webhook delivery failed.",
     "WEBHOOK_SEND_FAILED": "Webhook notification failed.",
     "UNKNOWN_ERROR": "An unknown error occurred.",
     "VALIDATION_ERROR": "Please check your input.",
@@ -67,7 +66,7 @@
     "CUSTOMER_ROLE_NOT_FOUND": "The customer membership role could not be found.",
     "CUSTOMER_SESSION_NOT_FOUND": "The customer session could not be found.",
     "OAUTH_PROVIDER_CONFIG_INVALID": "Check the required credentials and HTTPS endpoints for the enabled OAuth provider.",
-    "PASSWORD_LENGTH_INVALID": "Your password is too short or too long. Please adjust its length.",
+    "PASSWORD_LENGTH_INVALID": "Your password must be between {{minLength}} and {{maxLength}} characters.",
     "NOTIFICATION_PROVIDER_CONFIG_INVALID": "Provide credentials for the selected notification provider.",
     "OAUTH_ICON_UPLOAD_INVALID": "The OAuth icon does not meet the upload requirements.",
     "SYSTEM_CONFIG_INVALID": "The service configuration is invalid.",
@@ -126,6 +125,7 @@
     "TWO_FACTOR_LOCKED": "Two-factor authentication is locked. Try again later.",
     "TWO_FACTOR_SETUP_LOCKED": "Two-factor setup is locked. Try again later.",
     "USER_PROFILE_NOT_FOUND": "The user profile could not be found.",
-    "CREDENTIAL_AUTH_UNAVAILABLE": "Email and password authentication is unavailable."
+    "CREDENTIAL_AUTH_UNAVAILABLE": "Email and password authentication is unavailable.",
+    "PASSWORD_LENGTH_INVALID_byteLimitExceeded": "Password is too long. Please shorten it."
   }
 }

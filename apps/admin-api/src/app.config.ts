@@ -11,7 +11,7 @@ export const SECURITY_CONFIG = {
   session: { cookieName: 'session' },
   token: { revokeOnLogin: false, refreshCookieName: 'admin_refresh_token', refreshIdleTimeoutMinutes: 30, accessTokenTtlMinutes: 10, machineTokenTtlMinutes: 1, oauthStateTtlMinutes: 10, passwordResetTokenTtlMinutes: 15, rememberMeDays: 30 },
   lockout: { maxFailureAttempts: 5, lockoutDurationMinutes: 15, failureWindowMinutes: 15 },
-  password: { minLength: ADMIN_AUTH_POLICY_CONFIG.passwordMinLength, maxLength: ADMIN_AUTH_POLICY_CONFIG.passwordMaxLength, maxBytes: ADMIN_AUTH_POLICY_CONFIG.passwordMaxBytes, requireSpecialChar: ADMIN_AUTH_POLICY_CONFIG.passwordRequiresSpecialChar, requireNumbers: ADMIN_AUTH_POLICY_CONFIG.passwordRequiresNumbers, requireUppercase: ADMIN_AUTH_POLICY_CONFIG.passwordRequiresUppercase, expirationDays: 90, changeDeferDays: 30, historyLimit: 3 },
+  password: { passwordMinLength: ADMIN_AUTH_POLICY_CONFIG.passwordMinLength, passwordMaxLength: ADMIN_AUTH_POLICY_CONFIG.passwordMaxLength, passwordMaxBytes: ADMIN_AUTH_POLICY_CONFIG.passwordMaxBytes, passwordRequiresSpecialChar: ADMIN_AUTH_POLICY_CONFIG.passwordRequiresSpecialChar, passwordRequiresNumbers: ADMIN_AUTH_POLICY_CONFIG.passwordRequiresNumbers, passwordRequiresUppercase: ADMIN_AUTH_POLICY_CONFIG.passwordRequiresUppercase, expirationDays: 90, changeDeferDays: 30, historyLimit: 3 },
   twoFactor: { enabled: ADMIN_AUTH_POLICY_CONFIG.twoFactorEnabled, required: ADMIN_AUTH_POLICY_CONFIG.twoFactorRequired, digits: ADMIN_AUTH_POLICY_CONFIG.twoFactorDigits, periodSeconds: 30, windowSteps: 1, challengeTtlSeconds: 300 },
   identityVerification: { maxRetries: 2, retryDelayMilliseconds: 200, retryMaxDelayMilliseconds: 10_000, retryBackoffFactor: 2, retryJitterEnabled: false },
   integrations: {

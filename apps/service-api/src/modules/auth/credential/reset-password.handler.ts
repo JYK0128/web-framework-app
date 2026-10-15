@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { assertPasswordCanBeUsed, updateCredentialPassword } from '@pkg/server-core/auth/user/password.policy';
+import { assertPasswordCanBeUsed, updateCredentialPassword } from '@pkg/server-core/auth/user/credential-password';
 import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
 import { ApplicationError } from '@pkg/shared/common';
 

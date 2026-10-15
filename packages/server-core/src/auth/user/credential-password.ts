@@ -1,14 +1,15 @@
 import { HttpStatus } from '@nestjs/common';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
+import { assertPasswordPolicy, type AuthPolicyConfig } from '@pkg/shared/policy';
 import { hashPassword, verifyPassword } from '@pkg/shared/server';
 
-export interface PasswordPolicyOptions {
-  minLength: number
-  maxLength: number
-  maxBytes: number
-  requireNumbers: boolean
-  requireUppercase: boolean
-  requireSpecialChar: boolean
+export interface PasswordPolicyOptions extends Pick<AuthPolicyConfig,
+  | 'passwordMinLength'
+  | 'passwordMaxLength'
+  | 'passwordMaxBytes'
+  | 'passwordRequiresNumbers'
+  | 'passwordRequiresUppercase'
+  | 'passwordRequiresSpecialChar'> {
   historyLimit: number
   expirationDays: number
   changeDeferDays: number
@@ -19,15 +20,6 @@ export interface CredentialAccount {
   password: string | null
   metadata: { passwordUpdatedAt?: Date | null, passwordHistory?: string[] } | null
   updateMetadata(patch: { passwordUpdatedAt: Date, passwordHistory: string[] }): void
-}
-
-export function assertPasswordPolicy(password: string, policy: PasswordPolicyOptions): void {
-  if (password.length < policy.minLength || password.length > policy.maxLength || Buffer.byteLength(password, 'utf8') > policy.maxBytes) {
-    throw new ApplicationError({ code: 'PASSWORD_LENGTH_INVALID', params: { minLength: policy.minLength, maxLength: policy.maxLength, maxBytes: policy.maxBytes }, status: HttpStatus.BAD_REQUEST });
-  }
-  if (policy.requireNumbers && !/\d/u.test(password)) throw new ApplicationError({ code: 'PASSWORD_NUMBER_REQUIRED', status: HttpStatus.BAD_REQUEST });
-  if (policy.requireUppercase && !/[A-Z]/u.test(password)) throw new ApplicationError({ code: 'PASSWORD_UPPERCASE_REQUIRED', status: HttpStatus.BAD_REQUEST });
-  if (policy.requireSpecialChar && !/[^\p{L}\p{N}]/u.test(password)) throw new ApplicationError({ code: 'PASSWORD_SPECIAL_CHAR_REQUIRED', status: HttpStatus.BAD_REQUEST });
 }
 
 export async function updateCredentialPassword(account: CredentialAccount, password: string, policy: PasswordPolicyOptions): Promise<void> {

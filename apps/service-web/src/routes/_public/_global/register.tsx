@@ -1,8 +1,7 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
-import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
+import { assertPasswordPolicy, SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
 import { useI18n } from '@pkg/web-core/i18n';
-import { describePasswordPolicy, getPasswordPolicyError } from '@pkg/web-core/password-policy';
 import { ScreenLayout } from '@pkg/web-core/template';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@pkg/web-core/ui';
 import { createFileRoute, Link } from '@tanstack/react-router';
@@ -13,7 +12,7 @@ import { AuthControllerRegisterV1Body } from '#/.generated/api/zod/auth/auth';
 export const Route = createFileRoute('/_public/_global/register')({ component: RegisterPage });
 
 function RegisterPage() {
-  const { t } = useI18n();
+  const { t, i18n } = useI18n();
   const policy = SERVICE_AUTH_POLICY_CONFIG;
   const registerMutation = useAuthControllerRegisterV1();
   const requestVerificationMutation = useAuthControllerRequestEmailVerificationV1();
@@ -23,8 +22,14 @@ function RegisterPage() {
     validators: {
       onSubmit: AuthControllerRegisterV1Body.extend({ password: z.string(), confirmPassword: z.string() })
         .superRefine((value, context) => {
-          const passwordError = getPasswordPolicyError(value.password, policy, t);
-          if (passwordError) context.addIssue({ code: 'custom', path: ['password'], message: passwordError });
+          try {
+            assertPasswordPolicy(value.password, policy);
+          }
+          catch (error) {
+            if (!(error instanceof ApplicationError)) throw error;
+            const message = error.translate(i18n);
+            context.addIssue({ code: 'custom', path: ['password'], message });
+          }
           if (value.password !== value.confirmPassword) {
             context.addIssue({ code: 'custom', path: ['confirmPassword'], message: '비밀번호가 일치하지 않습니다.' });
           }
@@ -90,7 +95,24 @@ function RegisterPage() {
           onSubmit={() => void form.handleSubmit()}
           className="gap-4"
         >
-          <p className="text-sm text-muted-foreground">{describePasswordPolicy(policy, t)}</p>
+          <p className="text-sm text-muted-foreground">
+            {t('passwordPolicy.description', {
+              minLength: policy.passwordMinLength,
+              maxLength: policy.passwordMaxLength,
+            })}
+            {(policy.passwordRequiresNumbers || policy.passwordRequiresSpecialChar || policy.passwordRequiresUppercase) && (
+              <>
+                {' '}
+                {t('passwordPolicy.requirements', {
+                  requirements: [
+                    policy.passwordRequiresNumbers && t('passwordPolicy.number'),
+                    policy.passwordRequiresSpecialChar && t('passwordPolicy.specialCharacter'),
+                    policy.passwordRequiresUppercase && t('passwordPolicy.uppercase'),
+                  ].filter((requirement): requirement is string => typeof requirement === 'string').join(', '),
+                })}
+              </>
+            )}
+          </p>
           <form.AppField name="name">
             {(field) => <field.Input label="이름" autoComplete="name" required />}
           </form.AppField>

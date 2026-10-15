@@ -10,13 +10,13 @@ export class ChangePasswordRequestDto extends BaseDto {
   @IsNotEmpty()
   currentPassword!: string;
 
-  @ApiProperty({ type: String, minLength: SECURITY_CONFIG.password.minLength, maxLength: SECURITY_CONFIG.password.maxLength })
+  @ApiProperty({ type: String, minLength: SECURITY_CONFIG.password.passwordMinLength, maxLength: SECURITY_CONFIG.password.passwordMaxLength })
   @IsString()
-  @Length(SECURITY_CONFIG.password.minLength, SECURITY_CONFIG.password.maxLength)
+  @Length(SECURITY_CONFIG.password.passwordMinLength, SECURITY_CONFIG.password.passwordMaxLength)
   newPassword!: string;
 
-  @ApiProperty({ type: String, minLength: SECURITY_CONFIG.password.minLength, maxLength: SECURITY_CONFIG.password.maxLength })
+  @ApiProperty({ type: String, minLength: SECURITY_CONFIG.password.passwordMinLength, maxLength: SECURITY_CONFIG.password.passwordMaxLength })
   @IsString()
-  @Length(SECURITY_CONFIG.password.minLength, SECURITY_CONFIG.password.maxLength)
+  @Length(SECURITY_CONFIG.password.passwordMinLength, SECURITY_CONFIG.password.passwordMaxLength)
   confirmPassword!: string;
 }

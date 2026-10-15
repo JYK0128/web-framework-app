@@ -1,8 +1,7 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
-import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
+import { assertPasswordPolicy, SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
 import { useI18n } from '@pkg/web-core/i18n';
-import { describePasswordPolicy, getPasswordPolicyError } from '@pkg/web-core/password-policy';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 
@@ -17,7 +16,7 @@ export const Route = createFileRoute('/_protected/_global/onboarding/change-pass
 });
 
 function ChangePasswordOnboardingPage() {
-  const { t } = useI18n();
+  const { t, i18n } = useI18n();
   const router = useRouter();
   const queryClient = useQueryClient();
   const policy = SERVICE_AUTH_POLICY_CONFIG;
@@ -26,8 +25,14 @@ function ChangePasswordOnboardingPage() {
     defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
     validators: {
       onSubmit: AuthControllerChangePasswordV1Body.superRefine((value, context) => {
-        const passwordError = getPasswordPolicyError(value.newPassword, policy, t);
-        if (passwordError) context.addIssue({ code: 'custom', path: ['newPassword'], message: passwordError });
+        try {
+          assertPasswordPolicy(value.newPassword, policy);
+        }
+        catch (error) {
+          if (!(error instanceof ApplicationError)) throw error;
+          const message = error.translate(i18n);
+          context.addIssue({ code: 'custom', path: ['newPassword'], message });
+        }
         if (value.newPassword !== value.confirmPassword) context.addIssue({ code: 'custom', path: ['confirmPassword'], message: '새 비밀번호가 일치하지 않습니다.' });
       }),
     },
@@ -56,7 +61,24 @@ function ChangePasswordOnboardingPage() {
           onSubmit={() => void form.handleSubmit()}
           className="grid gap-4"
         >
-          <p className="text-sm text-muted-foreground">{describePasswordPolicy(policy, t)}</p>
+          <p className="text-sm text-muted-foreground">
+            {t('passwordPolicy.description', {
+              minLength: policy.passwordMinLength,
+              maxLength: policy.passwordMaxLength,
+            })}
+            {(policy.passwordRequiresNumbers || policy.passwordRequiresSpecialChar || policy.passwordRequiresUppercase) && (
+              <>
+                {' '}
+                {t('passwordPolicy.requirements', {
+                  requirements: [
+                    policy.passwordRequiresNumbers && t('passwordPolicy.number'),
+                    policy.passwordRequiresSpecialChar && t('passwordPolicy.specialCharacter'),
+                    policy.passwordRequiresUppercase && t('passwordPolicy.uppercase'),
+                  ].filter((requirement): requirement is string => typeof requirement === 'string').join(', '),
+                })}
+              </>
+            )}
+          </p>
           <form.AppField name="currentPassword">{(field) => <field.Input type="password" label="현재 비밀번호" autoComplete="current-password" required />}</form.AppField>
           <form.AppField name="newPassword">{(field) => <field.Input type="password" label="새 비밀번호" minLength={policy.passwordMinLength} maxLength={policy.passwordMaxLength} autoComplete="new-password" required />}</form.AppField>
           <form.AppField name="confirmPassword">{(field) => <field.Input type="password" label="새 비밀번호 확인" autoComplete="new-password" required />}</form.AppField>

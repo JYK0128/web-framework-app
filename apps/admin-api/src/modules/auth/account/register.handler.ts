@@ -1,8 +1,8 @@
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CommandBus, CommandHandler, type ICommandHandler, QueryBus } from '@nestjs/cqrs';
-import { assertPasswordPolicy } from '@pkg/server-core/auth/user/password.policy';
 import { ApplicationError } from '@pkg/shared/common';
+import { assertPasswordPolicy } from '@pkg/shared/policy';
 import { encrypt, hashPassword, hashWithSecret } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
