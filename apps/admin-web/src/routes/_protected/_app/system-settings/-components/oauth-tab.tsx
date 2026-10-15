@@ -1,7 +1,7 @@
 import { ApplicationError } from '@pkg/shared/common';
 import { FormLayout, useAppForm } from '@pkg/web-core/form';
-import { SectionCard } from '@pkg/web-core/layout';
 import { openModal } from '@pkg/web-core/modal';
+import { SectionCard } from '@pkg/web-core/template';
 import { OAuthProviderIcon } from '@pkg/web-core/ui';
 import { useMutation } from '@tanstack/react-query';
 import { Plus, Search, Trash2 } from 'lucide-react';

@@ -1,3 +1,4 @@
+import { ScreenLayout } from '@pkg/web-core/template';
 import { AppIcon } from '@pkg/web-core/ui';
 import { cn } from '@pkg/web-core/utils';
 import { useQueryClient } from '@tanstack/react-query';
@@ -8,7 +9,6 @@ import type { ReactNode } from 'react';
 
 import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
-import { ScreenLayout } from '#/components/layout';
 
 type OnboardingLayoutProps = {
   icon?: IconName
@@ -37,7 +37,7 @@ export function OnboardingLayout({ icon, title, description, footer, children, s
   };
 
   return (
-    <ScreenLayout>
+    <ScreenLayout.Root>
       <ScreenLayout.Content size="md">
         <Card className="
           grid size-full grid-rows-[auto_minmax(0,1fr)_auto] shadow-xl
@@ -85,6 +85,6 @@ export function OnboardingLayout({ icon, title, description, footer, children, s
           로그인으로 돌아가기
         </button>
       </ScreenLayout.Addon>
-    </ScreenLayout>
+    </ScreenLayout.Root>
   );
 }

@@ -1,5 +1,6 @@
 import { z } from '@pkg/shared/common';
 import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
+import { ScreenLayout } from '@pkg/web-core/template';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ArrowRight, Check, CheckCircle2, Copy, Mail, Phone, RefreshCw, Search, Sparkles, User } from 'lucide-react';
 import { useState } from 'react';
@@ -7,7 +8,6 @@ import { toast } from 'sonner';
 
 import { useAuthControllerFindIdV1, useAuthControllerRequestPasswordResetV1 } from '#/.generated/api/endpoints/auth/auth';
 import { Button, Card, CardContent, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
-import { ScreenLayout } from '#/components/layout';
 import { useHashTab } from '#/lib/use-hash-tab';
 
 type FindAccountTab = 'id' | 'password';
@@ -74,7 +74,7 @@ function FindAccountPage() {
   };
 
   return (
-    <ScreenLayout>
+    <ScreenLayout.Root>
       <ScreenLayout.Content size="md">
         <Card className="size-full shadow-xl">
           <CardContent className="grid size-full grid-rows-[1fr] p-6">
@@ -384,7 +384,7 @@ function FindAccountPage() {
           ← 로그인으로 돌아가기
         </Link>
       </ScreenLayout.Addon>
-    </ScreenLayout>
+    </ScreenLayout.Root>
   );
 }
 

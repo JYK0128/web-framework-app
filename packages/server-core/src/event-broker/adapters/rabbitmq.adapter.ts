@@ -1,8 +1,9 @@
 import { HttpStatus, Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
 import type { IEvent } from '@nestjs/cqrs';
-import type { BrokerAdapter, BrokerConsumerOptions, BrokerListener } from '@pkg/server-core/event-broker/event-broker.interface';
 import { ApplicationError } from '@pkg/shared/common';
 import { type Channel, type ChannelModel, type ConfirmChannel, connect } from 'amqplib';
+
+import type { BrokerAdapter, BrokerConsumerOptions, BrokerListener } from '#event-broker/event-broker.interface';
 
 export interface RabbitMQAdapterOptions {
   url: string

@@ -1,8 +1,9 @@
 import { CanActivate, ExecutionContext, HttpStatus, Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { MACHINE_AUTH_VERIFIER, type MachineAuthVerifier } from '@pkg/server-core/auth/machine/machine-auth.interface';
 import { ApplicationError } from '@pkg/shared/common';
 import type { Request } from 'express';
+
+import { MACHINE_AUTH_VERIFIER, type MachineAuthVerifier } from '#auth/machine/machine-auth.interface';
 
 @Injectable()
 export class MachineAuthGuard implements CanActivate {

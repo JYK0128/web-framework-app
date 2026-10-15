@@ -2,7 +2,7 @@ import reactConfig from '@pkg/config/eslint/react';
 import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
-  { ignores: ['src/ui/**'] },
+  { ignores: ['src/.generated/**'] },
   {
     files: ['src/**/*.{ts,tsx}'],
     extends: [reactConfig],

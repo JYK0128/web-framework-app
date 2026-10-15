@@ -1,8 +1,9 @@
 import { HttpStatus, Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
 import type { IEvent } from '@nestjs/cqrs';
-import type { BrokerAdapter, BrokerListener } from '@pkg/server-core/event-broker/event-broker.interface';
 import { ApplicationError } from '@pkg/shared/common';
 import { createClient, type RedisClientOptions } from 'redis';
+
+import type { BrokerAdapter, BrokerListener } from '#event-broker/event-broker.interface';
 
 export interface RedisPubSubAdapterOptions extends RedisClientOptions {
   topic: string

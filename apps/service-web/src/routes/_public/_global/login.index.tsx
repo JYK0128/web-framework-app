@@ -1,13 +1,13 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
+import { ScreenLayout } from '@pkg/web-core/template';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router';
 
 import { getAuthControllerMeV1QueryKey, useAuthControllerLoginV1, useOAuthControllerProvidersV1 } from '#/.generated/api/endpoints/auth/auth';
 import { AuthControllerLoginV1Body } from '#/.generated/api/zod/auth/auth';
 import { Card, CardContent, CardHeader, CardTitle, Separator } from '#/.generated/shadcn/components/ui';
-import { ScreenLayout } from '#/components/layout';
 
 export const Route = createFileRoute('/_public/_global/login/')({
   validateSearch: z.object({ callback: z.string().optional(), error: z.string().optional() }),
@@ -70,7 +70,7 @@ function LoginPage() {
   });
 
   return (
-    <ScreenLayout>
+    <ScreenLayout.Root>
       <ScreenLayout.Content size="md" className="h-auto">
         <Card className="
           grid max-h-full w-full grid-rows-[auto_minmax(0,1fr)] shadow-xl
@@ -207,7 +207,7 @@ function LoginPage() {
           ← 홈으로 돌아가기
         </Link>
       </ScreenLayout.Addon>
-    </ScreenLayout>
+    </ScreenLayout.Root>
   );
 }
 

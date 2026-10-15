@@ -1,5 +1,6 @@
-import type { NormalizedLogError } from '@pkg/server-core/log-telemetry/log-normalizer';
 import type { Observable } from 'rxjs';
+
+import type { NormalizedLogError } from '#log-telemetry/log-normalizer';
 
 export interface LokiConfig {
   url: string

@@ -1,12 +1,12 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
+import { ScreenLayout } from '@pkg/web-core/template';
 import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { useAuthControllerResetPasswordV1 } from '#/.generated/api/endpoints/auth/auth';
 import { AuthControllerResetPasswordV1Body } from '#/.generated/api/zod/auth/auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
-import { ScreenLayout } from '#/components/layout';
 import { describePasswordPolicy, getPasswordPolicyError } from '#/lib/password-policy';
 
 export const Route = createFileRoute('/_public/_global/reset-password')({
@@ -46,7 +46,7 @@ function ResetPasswordPage() {
   });
 
   return (
-    <ScreenLayout>
+    <ScreenLayout.Root>
       <ScreenLayout.Content size="md">
         <Card className="
           grid size-full grid-rows-[auto_minmax(0,1fr)] shadow-xl border
@@ -95,6 +95,6 @@ function ResetPasswordPage() {
           </CardContent>
         </Card>
       </ScreenLayout.Content>
-    </ScreenLayout>
+    </ScreenLayout.Root>
   );
 }

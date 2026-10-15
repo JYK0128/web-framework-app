@@ -1,6 +1,7 @@
 import { type DynamicModule, Module } from '@nestjs/common';
-import type { FileStorageAdapter, FileStorageModuleOptions } from '@pkg/server-core/file-storage/file-storage.interface';
-import { FileStorageService } from '@pkg/server-core/file-storage/file-storage.service';
+
+import type { FileStorageAdapter, FileStorageModuleOptions } from '#file-storage/file-storage.interface';
+import { FileStorageService } from '#file-storage/file-storage.service';
 
 @Module({})
 export class FileStorageModule {

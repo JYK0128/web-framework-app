@@ -1,5 +1,5 @@
-import { ActionCard, SectionCard } from '@pkg/web-core/layout';
 import { openModal } from '@pkg/web-core/modal';
+import { ActionCard, SectionCard } from '@pkg/web-core/template';
 import { useQueryClient } from '@tanstack/react-query';
 import { FileText } from 'lucide-react';
 

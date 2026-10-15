@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import type { IncrementWithBlockResult, KvAdapter } from '@pkg/server-core/kv-store/kv-store.interface';
 import { ApplicationError, jsonSafeParse, valueIf } from '@pkg/shared/common';
+
+import type { IncrementWithBlockResult, KvAdapter } from '#kv-store/kv-store.interface';
 
 interface MemoryStoreItem {
   value: string

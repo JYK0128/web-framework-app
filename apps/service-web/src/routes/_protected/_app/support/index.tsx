@@ -1,6 +1,6 @@
 import { DataGrid, DataGridToolbar, useDataGrid } from '@pkg/web-core/data-grid';
-import { PageSection, SectionCard } from '@pkg/web-core/layout';
 import { openModal } from '@pkg/web-core/modal';
+import { PageSection, SectionCard } from '@pkg/web-core/template';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { type ColumnFiltersState, createColumnHelper } from '@tanstack/react-table';

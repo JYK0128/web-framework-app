@@ -1,11 +1,12 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { getCredentialPasswordExpiresAt } from '@pkg/server-core/auth/user/password.policy';
-import { TokenStore } from '@pkg/server-core/auth/user/token/stores/token.store';
-import { AUTH_READER, type AuthReader, type AuthUser, type CreateTokenPairOptions, type IUserAuthService, type RefreshInput, type TokenPairResult, USER_AUTH_POLICY_OPTIONS, USER_JWT_OPTIONS, type UserAuthPolicyOptions, type UserJwtOptions } from '@pkg/server-core/auth/user/user-auth.interface';
-import type { AuthPrincipal } from '@pkg/server-core/http/types/principal.type';
 import { ApplicationError, TimeUtil, uuid, z } from '@pkg/shared/common';
 import type { Request } from 'express';
 import { jwtVerify, SignJWT } from 'jose';
+
+import { getCredentialPasswordExpiresAt } from '#auth/user/password.policy';
+import { TokenStore } from '#auth/user/token/stores/token.store';
+import { AUTH_READER, type AuthReader, type AuthUser, type CreateTokenPairOptions, type IUserAuthService, type RefreshInput, type TokenPairResult, USER_AUTH_POLICY_OPTIONS, USER_JWT_OPTIONS, type UserAuthPolicyOptions, type UserJwtOptions } from '#auth/user/user-auth.interface';
+import type { AuthPrincipal } from '#http/types/principal.type';
 
 const tokenClaimsSchema = z.object({
   sub: z.string(),

@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { MessengerAdapter } from '@pkg/server-core/notification/adapters/messenger.adapter';
-import { PushAdapter } from '@pkg/server-core/notification/adapters/push.adapter';
-import { SmsAdapter } from '@pkg/server-core/notification/adapters/sms.adapter';
-import { SmtpAdapter } from '@pkg/server-core/notification/adapters/smtp.adapter';
+
+import { MessengerAdapter } from '#notification/adapters/messenger.adapter';
+import { PushAdapter } from '#notification/adapters/push.adapter';
+import { SmsAdapter } from '#notification/adapters/sms.adapter';
+import { SmtpAdapter } from '#notification/adapters/smtp.adapter';
 
 import { MessageTemplateService } from './message-template.service';
 import type { SendNotificationInput } from './notification.interface';

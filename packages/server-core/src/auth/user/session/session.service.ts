@@ -1,10 +1,11 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { getCredentialPasswordExpiresAt } from '@pkg/server-core/auth/user/password.policy';
-import { AUTH_READER, type AuthAccount, type AuthReader, type AuthUser, type CreateTokenPairOptions, type IUserAuthService, type RefreshInput, type TokenPairResult, USER_AUTH_POLICY_OPTIONS, USER_SESSION_OPTIONS, type UserAuthPolicyOptions, type UserSessionOptions } from '@pkg/server-core/auth/user/user-auth.interface';
-import { RequestContext } from '@pkg/server-core/http/contexts/request.context';
-import type { AuthPrincipal } from '@pkg/server-core/http/types/principal.type';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import type { Request, Response } from 'express';
+
+import { getCredentialPasswordExpiresAt } from '#auth/user/password.policy';
+import { AUTH_READER, type AuthAccount, type AuthReader, type AuthUser, type CreateTokenPairOptions, type IUserAuthService, type RefreshInput, type TokenPairResult, USER_AUTH_POLICY_OPTIONS, USER_SESSION_OPTIONS, type UserAuthPolicyOptions, type UserSessionOptions } from '#auth/user/user-auth.interface';
+import { RequestContext } from '#http/contexts/request.context';
+import type { AuthPrincipal } from '#http/types/principal.type';
 
 @Injectable()
 export class SessionService implements IUserAuthService {

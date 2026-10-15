@@ -1,10 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { SessionMiddleware } from '@pkg/server-core/auth/user/session/session.interface';
-import { SessionStore } from '@pkg/server-core/auth/user/session/session.store';
-import { USER_SESSION_OPTIONS, type UserSessionOptions } from '@pkg/server-core/auth/user/user-auth.interface';
 import { ApplicationError, randomBase64Url, TimeUtil } from '@pkg/shared/common';
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import session from 'express-session';
+
+import { SessionMiddleware } from '#auth/user/session/session.interface';
+import { SessionStore } from '#auth/user/session/session.store';
+import { USER_SESSION_OPTIONS, type UserSessionOptions } from '#auth/user/user-auth.interface';
 
 @Injectable()
 export class ExpressSessionMiddleware extends SessionMiddleware {

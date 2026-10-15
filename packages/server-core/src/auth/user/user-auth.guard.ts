@@ -1,11 +1,12 @@
 import { CanActivate, ExecutionContext, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { type IUserAuthService, USER_AUTH_POLICY_OPTIONS, USER_AUTH_SERVICE, type UserAuthPolicyOptions } from '@pkg/server-core/auth/user/user-auth.interface';
-import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
-import { SKIP_PASSWORD_EXPIRY_KEY, SKIP_PHONE_VERIFICATION_KEY, SKIP_TWO_FACTOR_SETUP_KEY } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import type { AuthPrincipal } from '@pkg/server-core/http/types/principal.type';
 import { ApplicationError } from '@pkg/shared/common';
 import type { Request } from 'express';
+
+import { type IUserAuthService, USER_AUTH_POLICY_OPTIONS, USER_AUTH_SERVICE, type UserAuthPolicyOptions } from '#auth/user/user-auth.interface';
+import { PrincipalContext } from '#http/contexts/principal.context';
+import { SKIP_PASSWORD_EXPIRY_KEY, SKIP_PHONE_VERIFICATION_KEY, SKIP_TWO_FACTOR_SETUP_KEY } from '#http/decorators/auth-mode.decorator';
+import type { AuthPrincipal } from '#http/types/principal.type';
 
 @Injectable()
 export class UserAuthGuard implements CanActivate {

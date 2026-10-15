@@ -1,4 +1,4 @@
-import { PageSection, SectionCard } from '@pkg/web-core/layout';
+import { PageSection, SectionCard } from '@pkg/web-core/template';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { useServiceTermsControllerGetTermsV1 } from '#/.generated/api/endpoints/service-terms/service-terms';

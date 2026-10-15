@@ -1,9 +1,10 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { MACHINE_AUTH_OPTIONS, type MachineAuthIssuer, type MachineAuthOptions, type MachineAuthVerifier } from '@pkg/server-core/auth/machine/machine-auth.interface';
-import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
 import { ApplicationError, TimeUtil, uuid } from '@pkg/shared/common';
 import type { Request } from 'express';
 import { jwtVerify, SignJWT } from 'jose';
+
+import { MACHINE_AUTH_OPTIONS, type MachineAuthIssuer, type MachineAuthOptions, type MachineAuthVerifier } from '#auth/machine/machine-auth.interface';
+import { PrincipalContext } from '#http/contexts/principal.context';
 
 @Injectable()
 export class MachineJwtService implements MachineAuthVerifier, MachineAuthIssuer {

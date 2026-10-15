@@ -1,0 +1,5 @@
+@import "tw-animate-css";
+@import "./fonts.css";
+@import "../.generated/shadcn/styles.css";
+@import "./custom.css";
+@source "..";

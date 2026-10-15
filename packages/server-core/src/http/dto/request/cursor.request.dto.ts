@@ -1,8 +1,9 @@
 import type { QueryOrderMap } from '@mikro-orm/core';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { ToNumber } from '@pkg/server-core/http/decorators/to-number.decorator';
-import { ToString } from '@pkg/server-core/http/decorators/to-string.decorator';
 import { IsInt, IsOptional, IsString, Min } from 'class-validator';
+
+import { ToNumber } from '#http/decorators/to-number.decorator';
+import { ToString } from '#http/decorators/to-string.decorator';
 
 import { SearchableRequestDto } from './searchable.request.dto';
 import { type SortKey } from './sortable.request.dto';

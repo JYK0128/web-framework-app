@@ -3,7 +3,10 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "#/*": [
+      "#utils": [
+        "./src/.generated/shadcn/lib/utils.ts"
+      ],
+      "#*": [
         "./src/*"
       ]
     }

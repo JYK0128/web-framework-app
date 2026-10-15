@@ -1,5 +1,5 @@
 import { DataGrid, DataGridToolbar, useDataGrid } from '@pkg/web-core/data-grid';
-import { PageSection, SectionCard } from '@pkg/web-core/layout';
+import { PageSection, SectionCard } from '@pkg/web-core/template';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';

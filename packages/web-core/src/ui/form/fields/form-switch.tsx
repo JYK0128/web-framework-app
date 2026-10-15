@@ -1,0 +1,64 @@
+import { Switch as SwitchPrimitive } from '@base-ui/react/switch';
+
+import { FormField } from '#ui/form/components';
+import { useFieldContext } from '#ui/form/core/context';
+import type { FormProps } from '#ui/form/core/types';
+import { cn } from '#utils';
+
+import { getFieldAnchorStyle } from './field-anchor';
+
+type FormSwitchProps = FormProps<typeof SwitchPrimitive.Root>;
+
+export function FormSwitch({ label, description, className, showError, orientation, labelWidth, required, ...props }: FormSwitchProps) {
+  const field = useFieldContext<boolean | null | undefined>();
+  const hasError = field.state.meta.errors.length > 0;
+
+  return (
+    <FormField
+      label={label}
+      description={description}
+      layout="choice"
+      showError={showError}
+      orientation={orientation}
+      labelWidth={labelWidth}
+      required={required}
+    >
+      <SwitchPrimitive.Root
+        {...props}
+        id={field.name}
+        style={{ ...props.style, ...getFieldAnchorStyle(field.name) }}
+        checked={Boolean(field.state.value)}
+        aria-invalid={hasError || undefined}
+        className={cn(
+          `
+            group relative inline-flex h-[18.4px] w-8 shrink-0 items-center
+            rounded-full border border-transparent transition-all outline-none
+          `,
+          `
+            focus-visible:ring-3 focus-visible:ring-ring/50
+            data-checked:bg-primary
+            data-unchecked:bg-input
+          `,
+          'disabled:cursor-not-allowed disabled:opacity-50',
+          'anchor-name-field',
+          className,
+        )}
+        onCheckedChange={(checked, eventDetails) => {
+          field.handleChange(checked);
+          props.onCheckedChange?.(checked, eventDetails);
+        }}
+        onBlur={(event) => {
+          field.handleBlur();
+          props.onBlur?.(event);
+        }}
+      >
+        <SwitchPrimitive.Thumb className="
+          pointer-events-none block size-4 rounded-full bg-background
+          transition-transform
+          group-data-checked:translate-x-[calc(100%-2px)]
+        "
+        />
+      </SwitchPrimitive.Root>
+    </FormField>
+  );
+}

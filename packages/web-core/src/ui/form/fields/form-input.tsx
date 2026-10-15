@@ -1,0 +1,87 @@
+import { valueIf } from '@pkg/shared/common';
+import { Eye, EyeOff } from 'lucide-react';
+import { useState } from 'react';
+
+import { Input, InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '#ui';
+import { FormField } from '#ui/form/components';
+import { useFieldContext } from '#ui/form/core/context';
+import type { FormAdornmentProps, FormProps } from '#ui/form/core/types';
+import { cn } from '#utils';
+
+import { getFieldAnchorStyle } from './field-anchor';
+
+type FormInputProps = FormProps<typeof Input> & FormAdornmentProps;
+
+export function FormInput({
+  label,
+  description,
+  orientation,
+  showError,
+  labelWidth,
+  required,
+  leftSide,
+  rightSide,
+  topSide,
+  bottomSide,
+  type,
+  style,
+  ...props
+}: FormInputProps) {
+  const field = useFieldContext<string | number | readonly string[]>();
+  const hasError = field.state.meta.errors.length > 0;
+  const [showPassword, setShowPassword] = useState(false);
+
+  const isPassword = type === 'password';
+  let effectiveType = type;
+  if (isPassword) effectiveType = showPassword ? 'text' : 'password';
+  const effectiveAutoComplete = props.autoComplete ?? valueIf(isPassword, 'current-password');
+
+  return (
+    <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required}>
+      <InputGroup>
+        {topSide && <InputGroupAddon align="block-start">{topSide}</InputGroupAddon>}
+        {leftSide && <InputGroupAddon align="inline-start">{leftSide}</InputGroupAddon>}
+        <InputGroupInput
+          {...props}
+          autoComplete={effectiveAutoComplete}
+          id={field.name}
+          type={effectiveType}
+          style={{ ...style, ...getFieldAnchorStyle(field.name) }}
+          className={cn('anchor-name-field', props.className)}
+          value={field.state.value}
+          aria-invalid={hasError || undefined}
+          onBlur={(event) => {
+            field.handleBlur();
+            props.onBlur?.(event);
+          }}
+          onChange={(event) => {
+            field.handleChange(
+              type === 'number'
+                ? event.target.valueAsNumber
+                : event.target.value,
+            );
+            props.onChange?.(event);
+          }}
+        />
+        {rightSide && <InputGroupAddon align="inline-end">{rightSide}</InputGroupAddon>}
+        {isPassword && (
+          <InputGroupAddon align="inline-end">
+            <InputGroupButton
+              type="button"
+              tabIndex={-1}
+              onClick={() => setShowPassword((prev) => !prev)}
+              aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
+            >
+              {showPassword
+                ? <EyeOff className="size-4" />
+                : (
+                  <Eye className="size-4" />
+                )}
+            </InputGroupButton>
+          </InputGroupAddon>
+        )}
+        {bottomSide && <InputGroupAddon align="block-end">{bottomSide}</InputGroupAddon>}
+      </InputGroup>
+    </FormField>
+  );
+}

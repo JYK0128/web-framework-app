@@ -1,10 +1,11 @@
 import { randomUUID } from 'node:crypto';
 
 import { Inject, Injectable, Logger, type MessageEvent, type OnModuleDestroy, type OnModuleInit, Optional } from '@nestjs/common';
-import type { SSEEvent } from '@pkg/server-core/realtime/adapters/sse.interface';
-import { REALTIME_MODULE_OPTIONS, type RealtimeModuleOptions } from '@pkg/server-core/realtime/realtime.interface';
 import { createClient } from 'redis';
 import { Observable, Subject, type Subscription } from 'rxjs';
+
+import type { SSEEvent } from '#realtime/adapters/sse.interface';
+import { REALTIME_MODULE_OPTIONS, type RealtimeModuleOptions } from '#realtime/realtime.interface';
 
 interface DistributedSSEMessage {
   origin: string

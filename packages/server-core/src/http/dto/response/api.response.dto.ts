@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+
+import { BaseDto } from '#http/dto/base/base.dto';
 
 // Translation keys are app-owned, so apps can provide their own key union.
 export type SuccessCode<TCode extends string = string> = TCode;

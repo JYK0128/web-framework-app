@@ -1,9 +1,10 @@
 import { CanActivate, ExecutionContext, HttpStatus, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
-import { PERMISSIONS_KEY } from '@pkg/server-core/http/decorators/permission.decorator';
-import type { AuthPrincipal } from '@pkg/server-core/http/types/principal.type';
 import { ApplicationError } from '@pkg/shared/common';
+
+import { PrincipalContext } from '#http/contexts/principal.context';
+import { PERMISSIONS_KEY } from '#http/decorators/permission.decorator';
+import type { AuthPrincipal } from '#http/types/principal.type';
 
 @Injectable()
 export class PermissionGuard implements CanActivate {

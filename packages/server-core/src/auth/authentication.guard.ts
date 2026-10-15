@@ -1,9 +1,10 @@
 import { CanActivate, ExecutionContext, HttpStatus, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { MachineAuthGuard } from '@pkg/server-core/auth/machine/machine-auth.guard';
-import { UserAuthGuard } from '@pkg/server-core/auth/user/user-auth.guard';
-import { AUTH_MODE_KEY, type AuthMode } from '@pkg/server-core/http/decorators/auth-mode.decorator';
 import { ApplicationError } from '@pkg/shared/common';
+
+import { MachineAuthGuard } from '#auth/machine/machine-auth.guard';
+import { UserAuthGuard } from '#auth/user/user-auth.guard';
+import { AUTH_MODE_KEY, type AuthMode } from '#http/decorators/auth-mode.decorator';
 
 @Injectable()
 export class AuthenticationGuard implements CanActivate {

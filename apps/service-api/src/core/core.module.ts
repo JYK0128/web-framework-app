@@ -119,6 +119,7 @@ const MESSAGING_MODULES = {
     EventBrokerModule.forRoot({
       defaultAdapter: 'redis-pubsub',
       redisPubSub: { url: env.REDIS_URL, topic: 'events' },
+      redisStreams: { url: env.REDIS_URL, stream: 'service-events' },
     }),
     RealtimeModule.forRoot({
       socketIo: {
@@ -234,6 +235,7 @@ const GLOBAL_PIPES = [
     RequestContext,
     RequestContextMiddleware,
     RequestLoggingMiddleware,
+    REQUEST_LOGGING_PII_HASH_KEY,
     ...PERSISTENCE_MODULES.exports,
     ...AUTH_MODULES.exports,
     ...INTEGRATION_MODULES.exports,

@@ -1,7 +1,7 @@
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '@pkg/web-core/data-grid';
 import { confirm } from '@pkg/web-core/feedback';
-import { PageSection, SectionCard } from '@pkg/web-core/layout';
 import { openModal } from '@pkg/web-core/modal';
+import { Action, PageSection, SectionCard } from '@pkg/web-core/template';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -11,7 +11,6 @@ import { useCallback, useState } from 'react';
 import { eventsControllerListV1, eventsControllerRemoveV1, getEventsControllerListV1QueryKey } from '#/.generated/api/endpoints/events/events';
 import type { EventItemDto } from '#/.generated/api/model';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
-import { Action } from '#/components/app/action';
 
 import { EventEditorModal } from './-components/event-editor-modal';
 

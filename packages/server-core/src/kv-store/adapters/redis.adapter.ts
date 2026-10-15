@@ -1,7 +1,8 @@
 import { HttpStatus, Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
-import { type IncrementWithBlockResult, KV_STORE_MODULE_OPTIONS, type KvAdapter, type KvStoreModuleOptions } from '@pkg/server-core/kv-store/kv-store.interface';
 import { ApplicationError, jsonSafeParse } from '@pkg/shared/common';
 import { createClient } from 'redis';
+
+import { type IncrementWithBlockResult, KV_STORE_MODULE_OPTIONS, type KvAdapter, type KvStoreModuleOptions } from '#kv-store/kv-store.interface';
 
 const INCREMENT_WITH_BLOCK_SCRIPT = `
 redis.replicate_commands()

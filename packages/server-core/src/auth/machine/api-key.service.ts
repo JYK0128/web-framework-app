@@ -1,10 +1,11 @@
 import { timingSafeEqual } from 'node:crypto';
 
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { MACHINE_AUTH_OPTIONS, type MachineAuthOptions, type MachineAuthVerifier } from '@pkg/server-core/auth/machine/machine-auth.interface';
-import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
 import { ApplicationError } from '@pkg/shared/common';
 import type { Request } from 'express';
+
+import { MACHINE_AUTH_OPTIONS, type MachineAuthOptions, type MachineAuthVerifier } from '#auth/machine/machine-auth.interface';
+import { PrincipalContext } from '#http/contexts/principal.context';
 
 @Injectable()
 export class ApiKeyService implements MachineAuthVerifier {

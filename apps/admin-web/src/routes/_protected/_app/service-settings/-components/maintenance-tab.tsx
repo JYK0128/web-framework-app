@@ -1,5 +1,5 @@
 import { FormLayout, useAppForm } from '@pkg/web-core/form';
-import { SectionCard } from '@pkg/web-core/layout';
+import { SectionCard } from '@pkg/web-core/template';
 import { cn } from '@pkg/web-core/utils';
 import { forwardRef, useImperativeHandle } from 'react';
 

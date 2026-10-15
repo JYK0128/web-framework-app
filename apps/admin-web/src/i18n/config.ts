@@ -1,21 +1,19 @@
 import type { CreateI18nOptions } from '@pkg/shared/common';
+import { webCoreLocaleResources } from '@pkg/web-core/locale/resources';
 
 import en from '#/i18n/locales/en';
 import ko from '#/i18n/locales/ko';
 
-export const locales = [
-  { code: 'ko', label: '한국어' },
-  { code: 'en', label: 'English' },
-] as const;
+const resources = {
+  en: { translation: { ...en, ...webCoreLocaleResources.en } },
+  ko: { translation: { ...ko, ...webCoreLocaleResources.ko } },
+};
 
-export type AppLocale = (typeof locales)[number]['code'];
+export type AppLocale = keyof typeof resources;
 export const defaultLocale: AppLocale = 'en';
 
 export const i18nOptions = {
   fallbackLng: defaultLocale,
-  resources: {
-    en: { translation: en },
-    ko: { translation: ko },
-  },
-  supportedLngs: locales.map(({ code }) => code),
+  resources,
+  supportedLngs: Object.keys(resources) as AppLocale[],
 } satisfies CreateI18nOptions;

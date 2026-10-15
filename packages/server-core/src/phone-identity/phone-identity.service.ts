@@ -1,6 +1,7 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { PortOneAdapter } from '@pkg/server-core/phone-identity/adapters/portone.adapter';
 import { ApplicationError, normalizePhoneNumber } from '@pkg/shared/common';
+
+import { PortOneAdapter } from '#phone-identity/adapters/portone.adapter';
 
 import { PHONE_IDENTITY_MODULE_OPTIONS, type PhoneIdentityModuleOptions } from './phone-identity.interface';
 

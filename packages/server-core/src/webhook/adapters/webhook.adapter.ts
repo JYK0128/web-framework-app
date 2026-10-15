@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { ChannelTalkWebhookAdapter } from '@pkg/server-core/webhook/adapters/channel-talk.adapter';
-import { DiscordWebhookAdapter } from '@pkg/server-core/webhook/adapters/discord.adapter';
-import { SlackWebhookAdapter } from '@pkg/server-core/webhook/adapters/slack.adapter';
-import { TeamsWebhookAdapter } from '@pkg/server-core/webhook/adapters/teams.adapter';
-import { type IWebhookAdapter, type WebhookMessage } from '@pkg/server-core/webhook/webhook.interface';
+
+import { ChannelTalkWebhookAdapter } from '#webhook/adapters/channel-talk.adapter';
+import { DiscordWebhookAdapter } from '#webhook/adapters/discord.adapter';
+import { SlackWebhookAdapter } from '#webhook/adapters/slack.adapter';
+import { TeamsWebhookAdapter } from '#webhook/adapters/teams.adapter';
+import { type IWebhookAdapter, type WebhookMessage } from '#webhook/webhook.interface';
 
 @Injectable()
 export class WebhookAdapter implements IWebhookAdapter {

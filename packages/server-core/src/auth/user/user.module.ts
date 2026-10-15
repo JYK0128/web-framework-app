@@ -1,13 +1,14 @@
 import { type DynamicModule, HttpStatus, Inject, MiddlewareConsumer, Module, type NestModule, Optional, type Provider, RequestMethod, type Type } from '@nestjs/common';
-import { ExpressSessionMiddleware } from '@pkg/server-core/auth/user/adapters/express-session.middleware';
-import { UserJwtService } from '@pkg/server-core/auth/user/adapters/user-jwt.service';
-import { SESSION_MIDDLEWARE_TYPE, type SessionMiddlewareType } from '@pkg/server-core/auth/user/session/session.interface';
-import { SessionService } from '@pkg/server-core/auth/user/session/session.service';
-import { SessionStore } from '@pkg/server-core/auth/user/session/session.store';
-import { TokenStore } from '@pkg/server-core/auth/user/token/stores/token.store';
-import { UserAuthGuard } from '@pkg/server-core/auth/user/user-auth.guard';
-import { AUTH_READER, type AuthReader, type IUserAuthService, USER_AUTH_OPTIONS, USER_AUTH_POLICY_OPTIONS, USER_AUTH_SERVICE, USER_JWT_OPTIONS, USER_SESSION_OPTIONS, type UserAuthModuleOptions } from '@pkg/server-core/auth/user/user-auth.interface';
 import { ApplicationError } from '@pkg/shared/common';
+
+import { ExpressSessionMiddleware } from '#auth/user/adapters/express-session.middleware';
+import { UserJwtService } from '#auth/user/adapters/user-jwt.service';
+import { SESSION_MIDDLEWARE_TYPE, type SessionMiddlewareType } from '#auth/user/session/session.interface';
+import { SessionService } from '#auth/user/session/session.service';
+import { SessionStore } from '#auth/user/session/session.store';
+import { TokenStore } from '#auth/user/token/stores/token.store';
+import { UserAuthGuard } from '#auth/user/user-auth.guard';
+import { AUTH_READER, type AuthReader, type IUserAuthService, USER_AUTH_OPTIONS, USER_AUTH_POLICY_OPTIONS, USER_AUTH_SERVICE, USER_JWT_OPTIONS, USER_SESSION_OPTIONS, type UserAuthModuleOptions } from '#auth/user/user-auth.interface';
 
 interface UserAuthModuleAdapterBase {
   reader: Type<AuthReader>

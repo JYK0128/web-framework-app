@@ -1,12 +1,12 @@
 import { confirm } from '@pkg/web-core/feedback';
 import { openModal } from '@pkg/web-core/modal';
+import { Action } from '@pkg/web-core/template';
 import { useQueryClient } from '@tanstack/react-query';
 import { BadgeCheck, Ban, CheckCircle2, Eye, FileText, KeyRound, MoreHorizontal } from 'lucide-react';
 
 import { getCustomersControllerListCustomersV1QueryKey, useCustomersControllerBanCustomerV1, useCustomersControllerUnbanCustomerV1 } from '#/.generated/api/endpoints/customers/customers';
 import type { AdminCustomerItem } from '#/.generated/api/model';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
-import { Action } from '#/components/app/action';
 
 import { CustomerRoleModal } from './customer-role-modal';
 

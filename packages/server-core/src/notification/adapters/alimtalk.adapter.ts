@@ -1,11 +1,12 @@
 import { createHmac, randomBytes } from 'node:crypto';
 
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { MessageTemplateService } from '@pkg/server-core/notification/message-template.service';
-import { NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions } from '@pkg/server-core/notification/notification.interface';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import type { AlimtalkMessageDto, MessengerConfigDto } from '@pkg/shared/server';
 import axios from 'axios';
+
+import { MessageTemplateService } from '#notification/message-template.service';
+import { NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions } from '#notification/notification.interface';
 
 type Message = AlimtalkMessageDto & { recipient: string };
 type ProviderResponse = {

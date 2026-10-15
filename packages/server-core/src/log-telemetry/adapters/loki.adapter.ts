@@ -1,10 +1,11 @@
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
-import { normalizeLogError } from '@pkg/server-core/log-telemetry/log-normalizer';
-import { type ILogTelemetryAdapter, LOG_TELEMETRY_MODULE_OPTIONS, type LogEntry, type LogStatsResult, type LogTelemetryModuleOptions, type QueryLogOptions, type QueryLogResult } from '@pkg/server-core/log-telemetry/log-telemetry.interface';
-import { LOG_DEFAULT_LOOKBACK_MS, LOG_QUERY_DEFAULT_LIMIT, LOG_QUERY_MAX_LIMIT, LOG_QUERY_RANGE_LIMIT, LOG_WATCH_LOOKBACK_MS, LOG_WATCH_MAX_SEEN_IDS, LOG_WATCH_POLL_INTERVAL_MS, LOG_WATCH_TRIM_SEEN_IDS } from '@pkg/server-core/log-telemetry/loki.config';
 import { ApplicationError, jsonSafeParse, uuid, when } from '@pkg/shared/common';
 import axios from 'axios';
 import { Observable } from 'rxjs';
+
+import { normalizeLogError } from '#log-telemetry/log-normalizer';
+import { type ILogTelemetryAdapter, LOG_TELEMETRY_MODULE_OPTIONS, type LogEntry, type LogStatsResult, type LogTelemetryModuleOptions, type QueryLogOptions, type QueryLogResult } from '#log-telemetry/log-telemetry.interface';
+import { LOG_DEFAULT_LOOKBACK_MS, LOG_QUERY_DEFAULT_LIMIT, LOG_QUERY_MAX_LIMIT, LOG_QUERY_RANGE_LIMIT, LOG_WATCH_LOOKBACK_MS, LOG_WATCH_MAX_SEEN_IDS, LOG_WATCH_POLL_INTERVAL_MS, LOG_WATCH_TRIM_SEEN_IDS } from '#log-telemetry/loki.config';
 
 export interface LokiStreamEntry {
   stream: Record<string, string>

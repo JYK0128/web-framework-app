@@ -3,10 +3,11 @@ import http from 'node:http';
 import { Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { IoAdapter } from '@nestjs/platform-socket.io';
-import { REALTIME_MODULE_OPTIONS, type RealtimeModuleOptions, type SocketClientPolicy, type SocketTarget } from '@pkg/server-core/realtime/realtime.interface';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { createClient } from 'redis';
 import { Server, type ServerOptions } from 'socket.io';
+
+import { REALTIME_MODULE_OPTIONS, type RealtimeModuleOptions, type SocketClientPolicy, type SocketTarget } from '#realtime/realtime.interface';
 
 interface RealtimeSocket<TData> {
   data: TData

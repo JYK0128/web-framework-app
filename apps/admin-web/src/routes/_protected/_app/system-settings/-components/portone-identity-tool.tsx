@@ -1,4 +1,4 @@
-import { SectionCard } from '@pkg/web-core/layout';
+import { SectionCard } from '@pkg/web-core/template';
 import { useNavigate } from '@tanstack/react-router';
 import { CircleAlert, CircleCheck, ExternalLink } from 'lucide-react';
 

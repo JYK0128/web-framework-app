@@ -132,7 +132,10 @@ const MESSAGING_MODULES = {
 } satisfies Pick<ModuleMetadata, 'imports' | 'exports'>;
 
 const STORAGE_MODULES = {
-  imports: [FileStorageModule.forRoot({ local: LocalStorageAdapter, s3: S3StorageAdapter })],
+  imports: [FileStorageModule.forRoot({
+    local: LocalStorageAdapter,
+    s3: S3StorageAdapter,
+  })],
   exports: [FileStorageModule],
 } satisfies Pick<ModuleMetadata, 'imports' | 'exports'>;
 
@@ -226,6 +229,7 @@ const GLOBAL_PIPES = [
     SystemContext,
     RequestContextMiddleware,
     RequestLoggingMiddleware,
+    REQUEST_LOGGING_PII_HASH_KEY,
     ...PERSISTENCE_MODULES.exports,
     ...AUTH_MODULES.exports,
     ...INTEGRATION_MODULES.exports,

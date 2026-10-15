@@ -1,24 +1,29 @@
 import { ApplicationError } from '@pkg/shared/common';
-import { GlobalLoading, SystemDialog } from '@pkg/web-core/feedback';
-import { I18nContext } from '@pkg/web-core/i18n';
+import { GlobalLoading, RouterError, RouterNotFound, SystemDialog } from '@pkg/web-core/feedback';
+import { I18nContext, useI18nContextValue } from '@pkg/web-core/i18n';
 import { ModalContainer } from '@pkg/web-core/modal';
+import { PermissionProvider } from '@pkg/web-core/permission';
 import { ThemeProvider } from '@pkg/web-core/ui';
 import type { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts, useRouter } from '@tanstack/react-router';
 import type { i18n } from 'i18next';
 import { Provider as JotaiProvider } from 'jotai';
-import { type PropsWithChildren, useEffect, useSyncExternalStore } from 'react';
+import { type PropsWithChildren, useEffect } from 'react';
 
 import { getAuthControllerMeV1QueryKey, getAuthControllerMeV1QueryOptions } from '#/.generated/api/endpoints/auth/auth';
 import { getServiceTermsControllerGetAgreementsV1QueryKey, getServiceTermsControllerGetAgreementsV1QueryOptions } from '#/.generated/api/endpoints/service-terms/service-terms';
 import { Toaster } from '#/.generated/shadcn/components/ui';
-import { RouterError, RouterNotFound } from '#/components/app';
 import appStylesHref from '#/styles/styles.css?url';
 
 export type AppRouterContext = {
   queryClient: QueryClient
   i18n: i18n
 };
+
+function AppRouterNotFound() {
+  const router = useRouter();
+  return <RouterNotFound onBack={() => router.history.back()} />;
+}
 
 export const Route = createRootRouteWithContext<AppRouterContext>()({
   beforeLoad: async ({ context }) => {
@@ -45,7 +50,7 @@ export const Route = createRootRouteWithContext<AppRouterContext>()({
   }),
   shellComponent: ShellDocument,
   errorComponent: RouterError,
-  notFoundComponent: RouterNotFound,
+  notFoundComponent: AppRouterNotFound,
   component: RootComponent,
 });
 
@@ -67,7 +72,9 @@ function RootComponent() {
   return (
     <JotaiProvider>
       <ThemeProvider nonce={router.options.ssr?.nonce} attribute="class" defaultTheme="system" enableSystem>
-        <Outlet />
+        <PermissionProvider permissions={user?.permissions}>
+          <Outlet />
+        </PermissionProvider>
         <SystemDialog />
         <ModalContainer />
         <GlobalLoading />
@@ -79,25 +86,16 @@ function RootComponent() {
 
 function ShellDocument({ children }: PropsWithChildren) {
   const { i18n } = useRouter().options.context;
-  const language = useSyncExternalStore(
-    (notify) => {
-      i18n.on('languageChanged', notify);
-      return () => {
-        i18n.off('languageChanged', notify);
-      };
-    },
-    () => i18n.resolvedLanguage ?? i18n.language,
-    () => i18n.resolvedLanguage ?? i18n.language,
-  );
+  const i18nContextValue = useI18nContextValue(i18n);
   return (
-    <html lang={language} suppressHydrationWarning>
+    <html lang={i18nContextValue.language} suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
         <HeadContent />
       </head>
       <body>
-        <I18nContext.Provider value={i18n}>{children}</I18nContext.Provider>
+        <I18nContext.Provider value={i18nContextValue}>{children}</I18nContext.Provider>
         <Scripts />
       </body>
     </html>

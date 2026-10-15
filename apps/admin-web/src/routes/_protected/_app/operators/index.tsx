@@ -1,7 +1,7 @@
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '@pkg/web-core/data-grid';
 import { alert } from '@pkg/web-core/feedback';
-import { PageSection, SectionCard } from '@pkg/web-core/layout';
 import { openModal } from '@pkg/web-core/modal';
+import { PageSection, SectionCard } from '@pkg/web-core/template';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import type { ColumnDef, ColumnFiltersState } from '@tanstack/react-table';

@@ -1,15 +1,15 @@
 import { useI18n } from '@pkg/web-core/i18n';
-import { LinkButton, SectionCard } from '@pkg/web-core/layout';
-import { createFileRoute, Link } from '@tanstack/react-router';
-
-import { getI18n, locales } from '#/i18n/i18n';
+import { getSupportedLocales } from '@pkg/web-core/locale';
+import { Link, SectionCard } from '@pkg/web-core/template';
+import { createFileRoute, Link as RouterLink } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_public/_app/{-$locale}/')({
   component: ServiceHome,
 });
 
 function ServiceHome() {
-  const { t } = useI18n();
+  const { i18n, t } = useI18n();
+  const locales = getSupportedLocales(i18n);
   return (
     <>
       <div className="
@@ -28,20 +28,20 @@ function ServiceHome() {
               className="flex justify-end gap-4 text-sm"
             >
               {locales.map(({ code, label }) => (
-                <Link
+                <RouterLink
                   key={code}
                   to="/{-$locale}"
                   params={{ locale: code }}
-                  onClick={() => void getI18n().changeLanguage(code)}
+                  onClick={() => void i18n.changeLanguage(code)}
                   className="underline underline-offset-4"
                 >
                   {label}
-                </Link>
+                </RouterLink>
               ))}
             </nav>
             <div className="flex justify-end gap-2">
-              <LinkButton variant="outline" to="/qna">{t('service.home.qna')}</LinkButton>
-              <LinkButton variant="outline" to="/login">{t('service.navigation.login')}</LinkButton>
+              <Link variant="outline" to="/qna">{t('service.home.qna')}</Link>
+              <Link variant="outline" to="/login">{t('service.navigation.login')}</Link>
             </div>
           </SectionCard.Content>
         </SectionCard>

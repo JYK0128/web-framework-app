@@ -1,8 +1,9 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { ApiBaseResponseDto, ApiErrorResponseDto, type ApiResponseDto, ApiSuccessResponseDto, type ErrorCode } from '@pkg/server-core/http/dto/response/api.response.dto';
 import { ApplicationError } from '@pkg/shared/common';
 import { getMetadataStorage, type ValidationError } from 'class-validator';
 import type { Request, Response } from 'express';
+
+import { ApiBaseResponseDto, ApiErrorResponseDto, type ApiResponseDto, ApiSuccessResponseDto, type ErrorCode } from '#http/dto/response/api.response.dto';
 
 export class ApiResponse {
   static from<T, TSuccessCode extends string = string, TErrorCode extends string = string>(

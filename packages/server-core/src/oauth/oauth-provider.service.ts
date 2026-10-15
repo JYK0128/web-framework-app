@@ -1,10 +1,11 @@
 import { createHash, randomBytes } from 'node:crypto';
 
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { decrypt, isEncrypted } from '@pkg/shared/server';
 import { createRemoteJWKSet, customFetch, jwtVerify } from 'jose';
+
+import { KvStore } from '#kv-store/kv-store.service';
 
 import type { OAuthIdentity, OAuthProtocolCompletion, OAuthProviderConfig, PublicOAuthProvider } from './oauth-provider.config';
 import { OAUTH_PROVIDER_OPTIONS, type OAuthProviderModuleOptions } from './oauth-provider.interface';

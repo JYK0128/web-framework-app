@@ -1,6 +1,7 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
+import { ScreenLayout } from '@pkg/web-core/template';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, redirect, useLocation, useNavigate } from '@tanstack/react-router';
 import { ArrowRight, ShieldCheck } from 'lucide-react';
@@ -8,7 +9,6 @@ import { ArrowRight, ShieldCheck } from 'lucide-react';
 import { getAuthControllerMeV1QueryKey, useAuthControllerCompleteTwoFactorLoginV1 } from '#/.generated/api/endpoints/auth/auth';
 import { authControllerCompleteTwoFactorLoginV1BodyCodeMax, authControllerCompleteTwoFactorLoginV1BodyCodeMin } from '#/.generated/api/zod/auth/auth';
 import { Card, CardContent, Separator } from '#/.generated/shadcn/components/ui';
-import { ScreenLayout } from '#/components/layout';
 
 export const Route = createFileRoute('/_public/_global/login/2fa')({
   validateSearch: z.object({ callback: z.string().optional() }),
@@ -57,7 +57,7 @@ function TwoFactorLoginPage() {
   });
 
   return (
-    <ScreenLayout>
+    <ScreenLayout.Root>
       <ScreenLayout.Content size="md">
         <Card className="flex size-full flex-col shadow-xl">
           <CardContent className="flex-1 p-6">
@@ -123,7 +123,7 @@ function TwoFactorLoginPage() {
           ← 로그인으로 돌아가기
         </Link>
       </ScreenLayout.Addon>
-    </ScreenLayout>
+    </ScreenLayout.Root>
   );
 }
 

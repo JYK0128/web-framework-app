@@ -1,5 +1,6 @@
-import type { SocketIoAdapterOptions } from '@pkg/server-core/realtime/adapters/socket-io.interface';
 import type { RedisClientOptions } from 'redis';
+
+import type { SocketIoAdapterOptions } from '#realtime/adapters/socket-io.interface';
 
 export const REALTIME_MODULE_OPTIONS = Symbol('REALTIME_MODULE_OPTIONS');
 export const SOCKET_IO_REDIS_KEY = 'web-framework:socket.io';

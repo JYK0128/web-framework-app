@@ -1,8 +1,9 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { type EmailAdapter, type EmailMessage, NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions } from '@pkg/server-core/notification/notification.interface';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import type { EmailConfigDto } from '@pkg/shared/server';
 import { createTransport } from 'nodemailer';
+
+import { type EmailAdapter, type EmailMessage, NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions } from '#notification/notification.interface';
 
 type SmtpConfig = Partial<EmailConfigDto>;
 

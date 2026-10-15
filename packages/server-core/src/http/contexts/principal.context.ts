@@ -1,7 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import type { AuthPrincipal } from '@pkg/server-core/http/types/principal.type';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
+
+import type { AuthPrincipal } from '#http/types/principal.type';
 
 @Injectable()
 export class PrincipalContext {

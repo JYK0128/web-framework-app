@@ -70,6 +70,7 @@ services:
       APP_SECRET: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/service_db
       REDIS_URL: redis://redis:6379
+      LOKI_URL: http://loki:3100
       ADMIN_API_URL: http://admin-api:14000
       APP_BASE_URL: http://localhost:3000
     depends_on:

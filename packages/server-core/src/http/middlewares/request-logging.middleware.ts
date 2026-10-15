@@ -1,9 +1,10 @@
 import { Inject, Injectable, type NestMiddleware } from '@nestjs/common';
-import { normalizeLogError } from '@pkg/server-core/log-telemetry/log-normalizer';
-import { LoggerService } from '@pkg/server-core/logger/logger.service';
 import { maskUrl } from '@pkg/shared';
 import { hashWithSecret } from '@pkg/shared/server';
 import type { NextFunction, Request, Response } from 'express';
+
+import { normalizeLogError } from '#log-telemetry/log-normalizer';
+import { LoggerService } from '#logger/logger.service';
 
 export const REQUEST_LOGGING_PII_HASH_KEY = Symbol('REQUEST_LOGGING_PII_HASH_KEY');
 

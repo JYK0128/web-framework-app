@@ -1,8 +1,9 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
-import { WEBHOOK_HTTP_TIMEOUT_MS } from '@pkg/server-core/webhook/webhook.config';
-import { type IWebhookAdapter, type WebhookMessage, type WebhookNotificationLevel } from '@pkg/server-core/webhook/webhook.interface';
 import { ApplicationError } from '@pkg/shared/common';
 import axios from 'axios';
+
+import { WEBHOOK_HTTP_TIMEOUT_MS } from '#webhook/webhook.config';
+import { type IWebhookAdapter, type WebhookMessage, type WebhookNotificationLevel } from '#webhook/webhook.interface';
 
 const LEVEL_COLORS: Record<WebhookNotificationLevel, number> = {
   info: 0x3b82f6, // Blue

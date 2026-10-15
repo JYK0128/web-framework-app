@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EventBus, type IEvent } from '@nestjs/cqrs';
-import type { BrokerAdapter, BrokerListener } from '@pkg/server-core/event-broker/event-broker.interface';
+
+import type { BrokerAdapter, BrokerListener } from '#event-broker/event-broker.interface';
 
 @Injectable()
 export class InMemoryAdapter implements BrokerAdapter {

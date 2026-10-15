@@ -1,5 +1,6 @@
 import { type DynamicModule, Global, Module } from '@nestjs/common';
-import { PortOneAdapter } from '@pkg/server-core/phone-identity/adapters/portone.adapter';
+
+import { PortOneAdapter } from '#phone-identity/adapters/portone.adapter';
 
 import { PHONE_IDENTITY_MODULE_OPTIONS, type PhoneIdentityModuleOptions } from './phone-identity.interface';
 import { PhoneIdentityService } from './phone-identity.service';

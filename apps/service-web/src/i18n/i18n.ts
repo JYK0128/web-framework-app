@@ -6,7 +6,7 @@ import BrowserLanguageDetector from 'i18next-browser-languagedetector';
 import { i18nOptions } from '#/i18n/config';
 
 export type { AppLocale } from '#/i18n/config';
-export { defaultLocale, locales } from '#/i18n/config';
+export { defaultLocale } from '#/i18n/config';
 
 const clientI18n = createI18n({
   ...i18nOptions,

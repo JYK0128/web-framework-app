@@ -1,5 +1,6 @@
-import type { AuthPrincipal } from '@pkg/server-core/http/types/principal.type';
 import type { Request } from 'express';
+
+import type { AuthPrincipal } from '#http/types/principal.type';
 
 export interface AuthUser {
   id: string

@@ -1,4 +1,6 @@
-import { LinkCard } from '@pkg/web-core/layout';
+import { BrandLogo } from '@pkg/web-core/branding';
+import { LocaleSwitcher } from '@pkg/web-core/locale';
+import { AppLayout as AppLayoutParts, LinkCard } from '@pkg/web-core/template';
 import { AppIcon, ThemeToggle } from '@pkg/web-core/ui';
 import { cn } from '@pkg/web-core/utils';
 import { useQueryClient } from '@tanstack/react-query';
@@ -10,7 +12,6 @@ import { type ReactNode, useState } from 'react';
 import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
 import type { MeResponse } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { BrandLogo, LocaleSwitcher } from '#/components/app';
 import { useSSE } from '#/hooks/use-sse';
 import { isSupportChatOpen } from '#/lib/support-chat-state';
 
@@ -173,7 +174,7 @@ export function AppLayout({ user, children }: AppLayoutProps) {
   };
 
   return (
-    <div className="flex size-full">
+    <AppLayoutParts.Root>
       {isMobileOpen && (
         <button
           type="button"
@@ -185,17 +186,17 @@ export function AppLayout({ user, children }: AppLayoutProps) {
           onClick={() => setIsMobileOpen(false)}
         />
       )}
-      <aside className={cn(`
+      <AppLayoutParts.Sidebar className={cn(`
         hidden border-r transition-all duration-300
         md:grid md:grid-rows-[auto_1fr]
       `, isCollapsed
         ? `w-18`
         : `w-64`)}
       >
-        <div className="flex h-16 items-center border-b px-5"><BrandLogo collapsed={isCollapsed} /></div>
+        <div className="flex h-16 items-center border-b px-5"><BrandLogo /></div>
         <NavigationMenu groups={visibleNavigationGroups} activeHref={activeItem?.href} collapsed={isCollapsed} />
-      </aside>
-      <aside
+      </AppLayoutParts.Sidebar>
+      <AppLayoutParts.Sidebar
         className={cn(
           `
             fixed inset-y-0 left-0 z-50 grid w-72 grid-rows-[auto_1fr] border-r
@@ -212,10 +213,10 @@ export function AppLayout({ user, children }: AppLayoutProps) {
           </Button>
         </div>
         <NavigationMenu groups={visibleNavigationGroups} activeHref={activeItem?.href} onItemClick={() => setIsMobileOpen(false)} />
-      </aside>
+      </AppLayoutParts.Sidebar>
 
-      <div className="grid min-w-0 flex-1 grid-rows-[auto_1fr]">
-        <header className="
+      <AppLayoutParts.Main>
+        <AppLayoutParts.Header className="
           flex min-h-16 flex-wrap items-center justify-between gap-2 border-b
           px-4 py-2
         "
@@ -373,9 +374,9 @@ export function AppLayout({ user, children }: AppLayoutProps) {
               )}
             </div>
           </div>
-        </header>
-        <main className="scroll-y min-w-0">{children}</main>
-      </div>
-    </div>
+        </AppLayoutParts.Header>
+        <AppLayoutParts.Content>{children}</AppLayoutParts.Content>
+      </AppLayoutParts.Main>
+    </AppLayoutParts.Root>
   );
 }

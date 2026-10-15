@@ -1,7 +1,7 @@
 import { confirm } from '@pkg/web-core/feedback';
 import { useFieldContext } from '@pkg/web-core/form';
-import { PageSection, SectionCard } from '@pkg/web-core/layout';
 import { openModal } from '@pkg/web-core/modal';
+import { PageSection, SectionCard } from '@pkg/web-core/template';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { Pencil, Plus, ShieldCheck, Trash2 } from 'lucide-react';

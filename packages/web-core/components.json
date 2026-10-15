@@ -5,17 +5,17 @@
   "tsx": true,
   "tailwind": {
     "config": "",
-    "css": "../../apps/admin-web/src/styles/styles.css",
+    "css": "src/.generated/shadcn/styles.css",
     "baseColor": "neutral",
     "cssVariables": true,
     "prefix": ""
   },
   "aliases": {
-    "components": "src",
+    "components": "#.generated/shadcn/components",
     "utils": "@pkg/web-core/utils",
-    "lib": "src/lib",
-    "ui": "src/ui",
-    "hooks": "src/hooks"
+    "lib": "#.generated/shadcn/lib",
+    "ui": "#.generated/shadcn/components/ui",
+    "hooks": "#.generated/shadcn/hooks"
   },
   "iconLibrary": "lucide"
 }

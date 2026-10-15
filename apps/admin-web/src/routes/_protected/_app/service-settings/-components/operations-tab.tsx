@@ -1,8 +1,8 @@
 import { DEFAULT_TIMEZONE } from '@pkg/shared/common';
 import { DataGrid, DataGridToolbar, useDataGrid } from '@pkg/web-core/data-grid';
 import { FormLayout, useAppForm } from '@pkg/web-core/form';
-import { SectionCard } from '@pkg/web-core/layout';
 import { openModal } from '@pkg/web-core/modal';
+import { SectionCard } from '@pkg/web-core/template';
 import { cn } from '@pkg/web-core/utils';
 import { format } from 'date-fns';
 import { CalendarDays, CalendarIcon, Plus } from 'lucide-react';

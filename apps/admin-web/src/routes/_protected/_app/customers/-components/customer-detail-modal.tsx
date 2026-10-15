@@ -1,10 +1,10 @@
 import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
+import { Action } from '@pkg/web-core/template';
 import { Loader2, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
 
 import { useCustomersControllerGetCustomerPiiV1, useCustomersControllerGetCustomerV1 } from '#/.generated/api/endpoints/customers/customers';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { Action } from '#/components/app/action';
 
 type CustomerDetailModalProps = ModalComponentProps & { customerId: string, canReadPii: boolean };
 

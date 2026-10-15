@@ -1,9 +1,10 @@
 import { type CallHandler, type ExecutionContext, Injectable, type NestInterceptor } from '@nestjs/common';
 import { SSE_METADATA } from '@nestjs/common/constants';
-import { ApiResponse } from '@pkg/server-core/http/api.response';
-import { type ApiResponseDto } from '@pkg/server-core/http/dto/response/api.response.dto';
 import type { Request, Response } from 'express';
 import { map, type Observable, tap } from 'rxjs';
+
+import { ApiResponse } from '#http/api.response';
+import { type ApiResponseDto } from '#http/dto/response/api.response.dto';
 
 @Injectable()
 export class ResponseTransformInterceptor<T> implements NestInterceptor<T, ApiResponseDto<T> | T> {

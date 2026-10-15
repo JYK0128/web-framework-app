@@ -1,4 +1,4 @@
-import type { AuthPrincipal } from '@pkg/server-core/http/types/principal.type';
+import type { AuthPrincipal } from '#http/types/principal.type';
 
 // nestjs-cls ClsStore — 요청 스코프 유저 컨텍스트
 declare module 'nestjs-cls' {

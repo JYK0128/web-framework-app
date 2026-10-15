@@ -3,10 +3,11 @@ import { setTimeout as delay } from 'node:timers/promises';
 
 import { HttpStatus, Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
 import type { IEvent } from '@nestjs/cqrs';
-import type { BrokerAdapter, BrokerConsumerOptions, BrokerListener } from '@pkg/server-core/event-broker/event-broker.interface';
 import { ApplicationError, valueIf } from '@pkg/shared/common';
 import { createClient, type RedisClientOptions } from 'redis';
 import { z } from 'zod';
+
+import type { BrokerAdapter, BrokerConsumerOptions, BrokerListener } from '#event-broker/event-broker.interface';
 
 export interface RedisStreamsAdapterOptions extends RedisClientOptions {
   stream: string

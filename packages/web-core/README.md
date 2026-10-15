@@ -13,7 +13,7 @@ import는 공통 lint 규칙에 따라 허용합니다.
 ```tsx
 import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '@pkg/web-core/data-grid';
-import { DatePicker, DatetimePicker, TimePicker } from '@pkg/web-core/date-picker';
+import { DatePicker, DatetimePicker, TimePicker } from '@pkg/web-core/date-time';
 import { Editor, EditorViewer } from '@pkg/web-core/editor';
 import { I18nContext, useI18n } from '@pkg/web-core/i18n';
 import { Modal, ModalContainer, openModal } from '@pkg/web-core/modal';

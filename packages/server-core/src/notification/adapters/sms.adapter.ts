@@ -1,11 +1,12 @@
 import { createHmac, randomBytes } from 'node:crypto';
 
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions, type SmsMessage } from '@pkg/server-core/notification/notification.interface';
-import { type NotificationProvider, parseNotificationResult } from '@pkg/server-core/notification/provider-response';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import type { SmsConfigDto } from '@pkg/shared/server';
 import axios from 'axios';
+
+import { NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions, type SmsMessage } from '#notification/notification.interface';
+import { type NotificationProvider, parseNotificationResult } from '#notification/provider-response';
 
 @Injectable()
 export class SmsAdapter {

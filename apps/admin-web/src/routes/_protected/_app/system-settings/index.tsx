@@ -1,5 +1,5 @@
 import { ApplicationError } from '@pkg/shared/common';
-import { PageSection } from '@pkg/web-core/layout';
+import { PageSection } from '@pkg/web-core/template';
 import { cn } from '@pkg/web-core/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';

@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { type IWebhookAdapter, WEBHOOK_ADAPTER, type WebhookMessage } from '@pkg/server-core/webhook/webhook.interface';
+
+import { type IWebhookAdapter, WEBHOOK_ADAPTER, type WebhookMessage } from '#webhook/webhook.interface';
 
 @Injectable()
 export class WebhookService {

@@ -1,7 +1,7 @@
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '@pkg/web-core/data-grid';
 import { confirm } from '@pkg/web-core/feedback';
-import { PageSection, SectionCard, SideMainSection } from '@pkg/web-core/layout';
 import { openModal } from '@pkg/web-core/modal';
+import { Action, PageSection, SectionCard, SideMainLayout } from '@pkg/web-core/template';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper, type SortingState } from '@tanstack/react-table';
@@ -11,7 +11,6 @@ import { type MouseEvent, type MouseEventHandler, useCallback, useMemo, useState
 import { getTermsControllerGetTermGroupsV1QueryKey, getTermsControllerGetTermsV1QueryKey, useTermsControllerDeleteTermGroupV1, useTermsControllerDeleteTermV1, useTermsControllerGetTermGroupsV1, useTermsControllerGetTermsV1 } from '#/.generated/api/endpoints/terms/terms';
 import type { TermGroupItemDto, TermItemDto, TermsControllerGetTermsV1Params } from '#/.generated/api/model';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
-import { Action } from '#/components/app/action';
 
 import { TermEditorModal, TermGroupEditorModal, TermViewModal } from './-components/modals';
 import { TermGroupList } from './-components/term-group-list';
@@ -237,8 +236,8 @@ function TermsManagementPage() {
   return (
     <PageSection icon="file-text" title="약관 관리" description="운영자 온보딩에 적용되는 약관 그룹과 버전을 관리합니다.">
       <PageSection.Content>
-        <SideMainSection>
-          <SideMainSection.Side>
+        <SideMainLayout>
+          <SideMainLayout.Side>
             <SectionCard textSize="sm" title="약관 그룹" description="약관의 종류와 필수 동의 여부를 관리합니다.">
               <SectionCard.Actions>
                 {canCreate && (
@@ -261,9 +260,9 @@ function TermsManagementPage() {
                 />
               </SectionCard.Content>
             </SectionCard>
-          </SideMainSection.Side>
+          </SideMainLayout.Side>
 
-          <SideMainSection.Main>
+          <SideMainLayout.Main>
             <SectionCard textSize="sm" title="약관 버전" description={selectedGroup ? `${selectedGroup.title} 그룹의 약관 버전 목록입니다.` : '약관 그룹을 선택해 주세요.'}>
               {selectedGroup && canCreate && (
                 <SectionCard.Actions>
@@ -299,8 +298,8 @@ function TermsManagementPage() {
                 <DataTablePagination table={table} rowCount={response?.totalCount ?? 0} />
               </SectionCard.Content>
             </SectionCard>
-          </SideMainSection.Main>
-        </SideMainSection>
+          </SideMainLayout.Main>
+        </SideMainLayout>
       </PageSection.Content>
     </PageSection>
   );

@@ -1,10 +1,10 @@
 import { z } from '@pkg/shared/common';
+import { ScreenLayout } from '@pkg/web-core/template';
 import { createFileRoute, Link, notFound } from '@tanstack/react-router';
 import { ShieldCheck } from 'lucide-react';
 
 import { useAuthControllerVerifyEmailV1 } from '#/.generated/api/endpoints/auth/auth';
 import { Button, Card, CardContent } from '#/.generated/shadcn/components/ui';
-import { ScreenLayout } from '#/components/layout';
 
 export const Route = createFileRoute('/_public/_global/verify-email')({
   validateSearch: z.object({
@@ -26,7 +26,7 @@ function EmailVerificationPage() {
   };
 
   return (
-    <ScreenLayout>
+    <ScreenLayout.Root>
       <ScreenLayout.Content size="md">
         <Card className="grid size-full grid-rows-[minmax(0,1fr)] shadow-xl">
           <CardContent className="
@@ -69,6 +69,6 @@ function EmailVerificationPage() {
           </CardContent>
         </Card>
       </ScreenLayout.Content>
-    </ScreenLayout>
+    </ScreenLayout.Root>
   );
 }
