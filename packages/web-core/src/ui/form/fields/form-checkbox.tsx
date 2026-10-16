@@ -34,6 +34,7 @@ export function FormCheckbox({
       <Checkbox
         {...props}
         id={field.name}
+        name={field.name}
         style={{ ...props.style, ...getFieldAnchorStyle(field.name) }}
         aria-invalid={hasError || undefined}
         checked={Boolean(field.state.value)}

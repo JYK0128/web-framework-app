@@ -44,6 +44,7 @@ export function FormInput({
         <InputGroupInput
           {...props}
           autoComplete={effectiveAutoComplete}
+          name={field.name}
           id={field.name}
           type={effectiveType}
           style={{ ...style, ...getFieldAnchorStyle(field.name) }}
