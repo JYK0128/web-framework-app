@@ -1,7 +1,7 @@
 import type { IconName } from 'lucide-react/dynamic';
 
+import { cn } from '#.generated/shadcn/lib/utils';
 import { AppIcon, Card, CardContent, CardDescription, CardHeader, Skeleton } from '#ui';
-import { cn } from '#utils';
 
 type StatsCardProps = {
   label: string

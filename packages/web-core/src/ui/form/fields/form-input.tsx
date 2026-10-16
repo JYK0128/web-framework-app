@@ -2,11 +2,11 @@ import { valueIf } from '@pkg/shared/common';
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 
+import { cn } from '#.generated/shadcn/lib/utils';
 import { Input, InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '#ui';
 import { FormField } from '#ui/form/components';
 import { useFieldContext } from '#ui/form/core/context';
 import type { FormAdornmentProps, FormProps } from '#ui/form/core/types';
-import { cn } from '#utils';
 
 import { getFieldAnchorStyle } from './field-anchor';
 
@@ -37,7 +37,7 @@ export function FormInput({
   const effectiveAutoComplete = props.autoComplete ?? valueIf(isPassword, 'current-password');
 
   return (
-    <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required}>
+    <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required} disabled={props.disabled}>
       <InputGroup>
         {topSide && <InputGroupAddon align="block-start">{topSide}</InputGroupAddon>}
         {leftSide && <InputGroupAddon align="inline-start">{leftSide}</InputGroupAddon>}

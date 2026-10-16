@@ -1,8 +1,8 @@
+import { cn } from '#.generated/shadcn/lib/utils';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '#ui';
 import { FormField } from '#ui/form/components';
 import { useFieldContext } from '#ui/form/core/context';
 import type { FormProps } from '#ui/form/core/types';
-import { cn } from '#utils';
 
 import { getFieldAnchorStyle } from './field-anchor';
 
@@ -13,7 +13,7 @@ export function FormOtpInput({ label, description, orientation, showError, label
   const hasError = field.state.meta.errors.length > 0;
 
   return (
-    <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required}>
+    <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required} disabled={disabled}>
       <InputOTP
         {...props}
         maxLength={maxLength}

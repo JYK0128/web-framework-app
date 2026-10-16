@@ -4,11 +4,12 @@ import { defineConfig } from 'eslint/config';
 export default defineConfig([
   { ignores: ['src/.generated/**'] },
   {
-    files: ['src/**/*.{ts,tsx}'],
+    files: ['src/**/*.{ts,tsx}', 'stories/**/*.{ts,tsx}', '.storybook/**/*.{ts,tsx}'],
     extends: [reactConfig],
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        project: './tsconfig.eslint.json',
+        projectService: false,
         tsconfigRootDir: import.meta.dirname,
       },
     },

@@ -2,11 +2,12 @@ import { useMutation } from '@tanstack/react-query';
 import { LoaderCircle } from 'lucide-react';
 import { type ReactNode } from 'react';
 
+import { cn } from '#.generated/shadcn/lib/utils';
+import { useI18n } from '#context/i18n';
 import { Input } from '#ui';
 import { FormField } from '#ui/form/components';
 import { useFieldContext } from '#ui/form/core/context';
 import type { FormProps } from '#ui/form/core/types';
-import { cn } from '#utils';
 
 import { getFieldAnchorStyle } from './field-anchor';
 
@@ -31,7 +32,8 @@ export function FormFileInput({
   onUploadComplete,
   ...props
 }: FormFileInputProps) {
-  const uploadingMessage = loadingMessage ?? '파일 업로드 중...';
+  const { t } = useI18n();
+  const uploadingMessage = loadingMessage ?? t('core.form.fileUploading');
   const field = useFieldContext<File[]>();
   const hasError = field.state.meta.errors.length > 0;
   const upload = useMutation({
@@ -40,7 +42,7 @@ export function FormFileInput({
   });
 
   return (
-    <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required}>
+    <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required} disabled={props.disabled || upload.isPending}>
       <Input
         {...props}
         type="file"

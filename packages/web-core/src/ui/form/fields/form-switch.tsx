@@ -1,9 +1,9 @@
 import { Switch as SwitchPrimitive } from '@base-ui/react/switch';
 
+import { cn } from '#.generated/shadcn/lib/utils';
 import { FormField } from '#ui/form/components';
 import { useFieldContext } from '#ui/form/core/context';
 import type { FormProps } from '#ui/form/core/types';
-import { cn } from '#utils';
 
 import { getFieldAnchorStyle } from './field-anchor';
 
@@ -22,6 +22,7 @@ export function FormSwitch({ label, description, className, showError, orientati
       orientation={orientation}
       labelWidth={labelWidth}
       required={required}
+      disabled={props.disabled}
     >
       <SwitchPrimitive.Root
         {...props}
@@ -39,7 +40,7 @@ export function FormSwitch({ label, description, className, showError, orientati
             data-checked:bg-primary
             data-unchecked:bg-input
           `,
-          'disabled:cursor-not-allowed disabled:opacity-50',
+          'data-disabled:cursor-not-allowed data-disabled:opacity-50',
           'anchor-name-field',
           className,
         )}

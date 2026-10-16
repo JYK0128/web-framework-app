@@ -2,13 +2,16 @@ import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { useState } from 'react';
 
+import { cn } from '#.generated/shadcn/lib/utils';
+import { useI18n } from '#context/i18n';
 import { Button } from '#ui';
-import { cn } from '#utils';
 
 import { Calendar } from './calendar';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
-export function DatePicker({ value, onChange, placeholder = '날짜 선택', disabled, id, className, onBlur }: { value?: string, onChange: (value: string | undefined) => void, placeholder?: string, disabled?: boolean, id?: string, className?: string, onBlur?: () => void }) {
+export function DatePicker({ value, onChange, placeholder: placeholderProp, disabled, id, className, onBlur }: { value?: string, onChange: (value: string | undefined) => void, placeholder?: string, disabled?: boolean, id?: string, className?: string, onBlur?: () => void }) {
+  const { t } = useI18n();
+  const placeholder = placeholderProp ?? t('core.form.datePlaceholder');
   const [open, setOpen] = useState(false);
   const selected = value ? new Date(`${value}T00:00:00`) : undefined;
   return (

@@ -6,7 +6,8 @@ import { ArrowDown, ArrowUp, ChevronsUpDown, Pin, Search, X } from 'lucide-react
 import { useState } from 'react';
 
 import { Button, Input } from '#ui';
-import { cn } from '#utils';
+import { cn } from '#.generated/shadcn/lib/utils';
+import { useI18n } from '#context/i18n';
 import { DatePicker } from '#ui/date-time';
 
 export type DataGridToolHeaderProps<TData> = {
@@ -21,6 +22,8 @@ type DataGridColumnMeta = {
 };
 
 export function DataGridToolHeader<TData>({ column }: DataGridToolHeaderProps<TData>) {
+  const { t } = useI18n();
+  const columnName = typeof column.columnDef.header === 'string' ? column.columnDef.header : column.id;
   const sorted = column.getIsSorted();
   const pinned = column.getIsPinned();
   const filterValue = column.getFilterValue();
@@ -35,17 +38,17 @@ export function DataGridToolHeader<TData>({ column }: DataGridToolHeaderProps<TD
     <Popover.Root open={searchOpen} onOpenChange={setSearchOpen}>
       <div className="relative ml-auto flex shrink-0 gap-1">
         {column.getCanSort() && (
-          <Button variant="ghost" size="icon" aria-label={`${column.id} 정렬`} onClick={column.getToggleSortingHandler()}>
+          <Button variant="ghost" size="icon" aria-label={t('core.dataGrid.sortColumn', { column: columnName })} onClick={column.getToggleSortingHandler()}>
             {sortIcon}
           </Button>
         )}
         {column.getCanFilter() && (
-          <Popover.Trigger render={<Button variant="ghost" size="icon" aria-label={`${column.id} 검색`} className={cn(hasFilterValue(filterValue) && `text-primary`)} />}>
+          <Popover.Trigger render={<Button variant="ghost" size="icon" aria-label={t('core.dataGrid.searchColumn', { column: columnName })} className={cn(hasFilterValue(filterValue) && `text-primary`)} />}>
             <Search />
           </Popover.Trigger>
         )}
         {column.getCanPin() && (
-          <Button variant="ghost" size="icon" aria-label={pinned ? `${column.id} 고정 해제` : `${column.id} 고정`} onClick={() => column.pin(pinned ? false : 'left')}>
+          <Button variant="ghost" size="icon" aria-label={pinned ? t('core.dataGrid.unpinColumn', { column: columnName }) : t('core.dataGrid.pinColumn', { column: columnName })} onClick={() => column.pin(pinned ? false : 'left')}>
             <Pin className={cn(pinned && 'fill-current')} />
           </Button>
         )}
@@ -55,9 +58,9 @@ export function DataGridToolHeader<TData>({ column }: DataGridToolHeaderProps<TD
               <Popover.Popup className="flex w-56 flex-col gap-2 rounded-md border bg-popover p-2 text-popover-foreground shadow-md">
                 <ColumnFilter column={column} filterType={filterType} filterValue={filterValue} />
                 {hasFilterValue(filterValue) && (
-                  <Button variant="outline" size="sm" aria-label="필터 초기화" onClick={() => column.setFilterValue(undefined)}>
+                  <Button variant="outline" size="sm" aria-label={t('core.dataGrid.clearFilter')} onClick={() => column.setFilterValue(undefined)}>
                     <X />
-                    필터 초기화
+                    {t('core.dataGrid.clearFilter')}
                   </Button>
                 )}
               </Popover.Popup>
@@ -74,6 +77,8 @@ function ColumnFilter<TData>({ column, filterType, filterValue }: {
   filterType: ColumnFilterType
   filterValue: unknown
 }) {
+  const { t } = useI18n();
+  const columnName = typeof column.columnDef.header === 'string' ? column.columnDef.header : column.id;
   if (filterType === 'faceted') {
     const selectedValues = Array.isArray(filterValue) ? filterValue as string[] : [];
     const columnMeta = column.columnDef.meta as DataGridColumnMeta | undefined;
@@ -120,8 +125,8 @@ function ColumnFilter<TData>({ column, filterType, filterValue }: {
           type="number"
           value={getRangeValue<number>(filterValue, 0) ?? ''}
           onChange={(event) => setRangeFilterValue(column, 0, event.target.value === '' ? undefined : Number(event.target.value))}
-          placeholder="최솟값"
-          aria-label={`${column.id} 최솟값 검색`}
+          placeholder={t('core.dataGrid.min')}
+          aria-label={t('core.dataGrid.searchMinimum', { column: columnName })}
           className="h-8"
         />
         <span className="text-xs text-muted-foreground">–</span>
@@ -129,8 +134,8 @@ function ColumnFilter<TData>({ column, filterType, filterValue }: {
           type="number"
           value={getRangeValue<number>(filterValue, 1) ?? ''}
           onChange={(event) => setRangeFilterValue(column, 1, event.target.value === '' ? undefined : Number(event.target.value))}
-          placeholder="최댓값"
-          aria-label={`${column.id} 최댓값 검색`}
+          placeholder={t('core.dataGrid.max')}
+          aria-label={t('core.dataGrid.searchMaximum', { column: columnName })}
           className="h-8"
         />
       </div>
@@ -143,15 +148,15 @@ function ColumnFilter<TData>({ column, filterType, filterValue }: {
         <DatePicker
           value={getRangeValue<string>(filterValue, 0)}
           onChange={(value) => setRangeFilterValue(column, 0, value)}
-          placeholder="시작일 검색"
-          aria-label={`${column.id} 시작일 검색`}
+          placeholder={t('core.dataGrid.searchStartDate', { column: columnName })}
+          aria-label={t('core.dataGrid.searchStartDate', { column: columnName })}
           className="h-8"
         />
         <DatePicker
           value={getRangeValue<string>(filterValue, 1)}
           onChange={(value) => setRangeFilterValue(column, 1, value)}
-          placeholder="종료일 검색"
-          aria-label={`${column.id} 종료일 검색`}
+          placeholder={t('core.dataGrid.searchEndDate', { column: columnName })}
+          aria-label={t('core.dataGrid.searchEndDate', { column: columnName })}
           className="h-8"
         />
       </div>
@@ -163,8 +168,8 @@ function ColumnFilter<TData>({ column, filterType, filterValue }: {
       autoFocus
       value={typeof filterValue === 'string' ? filterValue : ''}
       onChange={(event) => column.setFilterValue(event.target.value || undefined)}
-      placeholder="검색"
-      aria-label={`${column.id} 검색`}
+      placeholder={t('core.dataGrid.searchPlaceholder', { column: columnName })}
+      aria-label={t('core.dataGrid.searchValue', { column: columnName })}
       className="h-8"
     />
   );

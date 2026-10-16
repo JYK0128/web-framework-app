@@ -86,7 +86,7 @@ function NoticesPage() {
     "
     >
       <PageSection icon="megaphone" title="공지사항" description="서비스의 주요 안내와 긴급 공지를 확인하세요." isLoading={query.isLoading}>
-        <PageSection.Loading>
+        <PageSection.Skeleton>
           <div className="grid content-start gap-3 p-4">
             {[1, 2, 3].map((item) => (
               <Skeleton
@@ -95,7 +95,7 @@ function NoticesPage() {
               />
             ))}
           </div>
-        </PageSection.Loading>
+        </PageSection.Skeleton>
         <PageSection.Content className="
           mx-auto grid size-full w-full max-w-4xl grid-rows-[minmax(0,1fr)]
           gap-4 pt-2

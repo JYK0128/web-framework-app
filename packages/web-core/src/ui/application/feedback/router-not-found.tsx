@@ -1,6 +1,6 @@
 import { useI18n } from '#context/i18n';
-import { Link, ScreenLayout } from '#template';
 import { Button, Card, CardContent, CardFooter } from '#ui';
+import { Link, ScreenLayout } from '#ui/template';
 
 export function RouterNotFound({ onBack }: { onBack: () => void }) {
   const { t } = useI18n();

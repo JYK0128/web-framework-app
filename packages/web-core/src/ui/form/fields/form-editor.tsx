@@ -19,7 +19,7 @@ export function FormEditor({
   const field = useFieldContext<string>();
 
   return (
-    <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required}>
+    <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required} disabled={props.disabled}>
       <Editor
         {...props}
         name={field.name}

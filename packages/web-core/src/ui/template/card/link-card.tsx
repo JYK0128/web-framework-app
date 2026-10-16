@@ -2,8 +2,8 @@ import { Link } from '@tanstack/react-router';
 import { cva } from 'class-variance-authority';
 import type { ReactNode } from 'react';
 
+import { cn } from '#.generated/shadcn/lib/utils';
 import { Card, CardDescription, CardHeader, CardTitle } from '#ui';
-import { cn } from '#utils';
 
 const linkCardVariants = cva(
   `

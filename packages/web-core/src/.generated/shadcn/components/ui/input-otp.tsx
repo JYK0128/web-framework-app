@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { OTPInput, OTPInputContext } from 'input-otp';
 
-import { cn } from '#utils';
+import { cn } from '#.generated/shadcn/lib/utils';
 import { MinusIcon } from 'lucide-react';
 
 function InputOTP({ className, containerClassName, ...props }: React.ComponentProps<typeof OTPInput> & { containerClassName?: string }) {

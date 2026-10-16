@@ -1,10 +1,11 @@
 import type { ComponentProps } from 'react';
 
+import { cn } from '#.generated/shadcn/lib/utils';
+import { useI18n } from '#context/i18n';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#ui';
 import { FormField } from '#ui/form/components';
 import { useFieldContext } from '#ui/form/core/context';
 import type { FormOption, FormProps } from '#ui/form/core/types';
-import { cn } from '#utils';
 
 import { getFieldAnchorStyle } from './field-anchor';
 
@@ -18,7 +19,7 @@ type FormSelectProps = FormProps<typeof SelectTrigger>
 export function FormSelect({
   label,
   description,
-  placeholder = '선택하세요',
+  placeholder: placeholderProp,
   options = [],
   orientation,
   showError,
@@ -29,10 +30,12 @@ export function FormSelect({
   disabled,
   ...triggerProps
 }: FormSelectProps) {
+  const { t } = useI18n();
+  const placeholder = placeholderProp ?? t('core.form.selectPlaceholder');
   const field = useFieldContext<string | null>();
 
   return (
-    <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required}>
+    <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required} disabled={disabled}>
       <Select
         items={options}
         value={field.state.value}

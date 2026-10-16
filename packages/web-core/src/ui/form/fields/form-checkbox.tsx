@@ -1,8 +1,8 @@
+import { cn } from '#.generated/shadcn/lib/utils';
 import { Checkbox } from '#ui';
 import { FormField } from '#ui/form/components';
 import { useFieldContext } from '#ui/form/core/context';
 import type { FormProps } from '#ui/form/core/types';
-import { cn } from '#utils';
 
 import { getFieldAnchorStyle } from './field-anchor';
 
@@ -30,6 +30,7 @@ export function FormCheckbox({
       showError={showError}
       labelWidth={labelWidth}
       required={required}
+      disabled={props.disabled}
     >
       <Checkbox
         {...props}

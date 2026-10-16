@@ -2,8 +2,9 @@ import { type Table } from '@tanstack/react-table';
 import { Eye, RotateCcw, Search } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
+import { cn } from '#.generated/shadcn/lib/utils';
+import { useI18n } from '#context/i18n';
 import { Button, Input } from '#ui';
-import { cn } from '#utils';
 
 export type DataGridToolbarProps<TData> = {
   table: Table<TData>
@@ -20,7 +21,8 @@ export function DataGridToolbar<TData>({
   debounceMs = 300,
   onReset,
 }: DataGridToolbarProps<TData>) {
-  const searchPlaceholder = searchPlaceholderProp ?? '전체 검색';
+  const { t } = useI18n();
+  const searchPlaceholder = searchPlaceholderProp ?? t('core.dataGrid.searchAll');
   const [viewOpen, setViewOpen] = useState(false);
   const viewRef = useRef<HTMLDivElement>(null);
 
@@ -80,7 +82,7 @@ export function DataGridToolbar<TData>({
             <Button variant="outline" onClick={() => setViewOpen((open) => !open)}>
               <Eye />
               {' '}
-              보기
+              {t('core.dataGrid.view')}
             </Button>
             {viewOpen && (
               <div className="
@@ -94,10 +96,10 @@ export function DataGridToolbar<TData>({
                     px-2 py-1 text-xs font-medium text-muted-foreground
                   "
                   >
-                    컬럼 표시 설정
+                    {t('core.dataGrid.toggleColumns')}
                   </p>
                   <div className="grid">
-                    <Button variant="ghost" size="sm" onClick={() => setAllColumnVisibility(!isAllColumnsVisible)}>{isAllColumnsVisible ? '전체 숨기기' : '전체 표시'}</Button>
+                    <Button variant="ghost" size="sm" onClick={() => setAllColumnVisibility(!isAllColumnsVisible)}>{isAllColumnsVisible ? t('core.dataGrid.hideAll') : t('core.dataGrid.showAll')}</Button>
                   </div>
                 </div>
                 <div className="scroll-y flex-1">
@@ -131,7 +133,7 @@ export function DataGridToolbar<TData>({
             }}
           >
             <RotateCcw />
-            초기화
+            {t('core.dataGrid.reset')}
           </Button>
         </div>
       )}

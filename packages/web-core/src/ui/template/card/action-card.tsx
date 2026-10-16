@@ -1,9 +1,9 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import type { ReactNode } from 'react';
 
+import { cn } from '#.generated/shadcn/lib/utils';
 import { Card } from '#ui';
 import { getSlotElements } from '#ui/slot';
-import { cn } from '#utils';
 
 type ActionCardDescriptionTone = 'default' | 'warning' | 'error';
 

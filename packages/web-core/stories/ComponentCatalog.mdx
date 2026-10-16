@@ -1,0 +1,67 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="웹코어/컴포넌트 카탈로그" />
+
+# 컴포넌트 카탈로그
+
+공개 import는 패키지의 진입점으로 모읍니다. 아래 경로들은 앱 코드에서 바로 사용할 수 있습니다.
+
+| 영역 | 공개 진입점 | 포함 기능 |
+| --- | --- | --- |
+| 기본 UI | `@pkg/web-core/ui` | 버튼, 카드, 다이얼로그, 메뉴, 입력, 표, 탭, 토스트, 스켈레톤 |
+| 폼 | `@pkg/web-core/form` | `useAppForm`, FormLayout, FormSubmit, 입력 필드(날짜·시간 포함) |
+| 데이터 그리드 | `@pkg/web-core/data-grid` | DataGrid, toolbar, pagination, `useDataGrid` |
+| 에디터 | `@pkg/web-core/editor` | Editor, EditorViewer |
+| 모달 | `@pkg/web-core/modal` | Modal, ModalContainer, openModal |
+| 템플릿 | `@pkg/web-core/template` | 버튼, 카드, 페이지 섹션, 레이아웃, 앱 셸 |
+| 애플리케이션 UI | `@pkg/web-core/application` | 피드백, 네비게이션, 브랜딩, 쿠키 동의 |
+
+## 확인·취소 다이얼로그
+
+`Modal`은 헤더, 제목, 설명, 본문, 푸터를 조합하는 커스텀 다이얼로그입니다. 화면에서 열림 상태를 제어하려면 `open`과 `onOpenChange`를 전달하고, 사용자 동작을 기다렸다가 이어서 처리하려면 `openModal`의 Promise 결과를 사용합니다. `openModal`을 쓰는 앱은 앱 루트에 `ModalContainer`를 한 번 마운트합니다. [모달 사용 스토리](/?path=/story/웹코어-모달-modal--usage)에서 두 패턴을 확인할 수 있습니다.
+
+```tsx
+import { Modal, ModalContainer, openModal } from '@pkg/web-core/modal';
+
+function ConfirmName({ close }: { close: (result: boolean) => void }) {
+  return <Modal open><Modal.Content size="sm"><Modal.Header><Modal.Title>이름 확인</Modal.Title><Modal.Description>입력한 이름으로 저장합니다.</Modal.Description></Modal.Header><Modal.Body>저장할까요?</Modal.Body><Modal.Footer><button onClick={() => close(false)}>취소</button><button onClick={() => close(true)}>저장</button></Modal.Footer></Modal.Content></Modal>;
+}
+
+// 앱 루트에 한 번 마운트: <ModalContainer />
+const saved = await openModal(ConfirmName);
+```
+
+## 편집기와 보기 전용 콘텐츠
+
+`Editor`는 controlled 컴포넌트입니다. `value`와 `onChange`를 연결하고 `@pkg/web-core/editor/editor.css`를 앱 스타일에서 가져옵니다. 테마와 언어를 읽으므로 `ThemeProvider`와 `I18nContext.Provider` 아래에서 렌더링해야 합니다. 저장된 HTML을 출력할 때는 `EditorViewer`를 사용합니다.
+
+```tsx
+import { Editor, EditorViewer } from '@pkg/web-core/editor';
+import '@pkg/web-core/editor/editor.css';
+
+<Editor value={html} onChange={setHtml} label="본문" />
+<EditorViewer content={html} />
+```
+
+## 앱과 라우터에 연결되는 컴포넌트
+
+`Navigation`, `ProfileDropdown`, `LocaleSwitcher`, `Notification`, `BrandLogo`, `LinkCard`는 앱의 라우터 또는 i18n 인스턴스와 함께 사용합니다. `CookieConsentBanner`는 `visible`, `pending`, `onConsentChange`를 앱의 동의 상태와 연결합니다. `ThemeToggle`은 `ThemeProvider` 안에서 동작합니다.
+
+페이지 안내에는 `NoticeBanner`를, 전역 진행 상태에는 `loading()`과 `GlobalLoading`을 사용합니다. `RouterError`와 `RouterNotFound`는 라우터의 error/not-found 경계에 배치하고 앱별 재시도·이동 동작을 전달합니다.
+
+## 레이아웃 조합
+
+```tsx
+import { ScreenLayout, SideMainLayout } from '@pkg/web-core/template';
+
+<ScreenLayout.Root>
+  <ScreenLayout.Content size="lg">
+    <SideMainLayout>
+      <SideMainLayout.Side><aside>필터</aside></SideMainLayout.Side>
+      <SideMainLayout.Main><main>페이지 콘텐츠</main></SideMainLayout.Main>
+    </SideMainLayout>
+  </ScreenLayout.Content>
+</ScreenLayout.Root>
+```
+
+앱 셸과 화면 레이아웃에 필요한 메뉴, 브랜드, 인증 정보는 각 앱에서 공급합니다. 웹코어 컴포넌트는 공통 배치 구조를 맡습니다.

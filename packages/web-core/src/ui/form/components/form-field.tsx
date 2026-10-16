@@ -1,8 +1,8 @@
 import { valueIf } from '@pkg/shared/common';
 
+import { cn } from '#.generated/shadcn/lib/utils';
 import { Field, FieldContent, FieldDescription, FieldLabel } from '#ui';
 import { useFieldContext } from '#ui/form/core/context';
-import { cn } from '#utils';
 
 const ERROR_MESSAGE_AREA_CLASS = 'min-h-[calc(var(--text-sm)*var(--text-sm--line-height))]';
 
@@ -16,6 +16,7 @@ type FormFieldProps = React.ComponentProps<typeof Field> & {
   showError?: boolean
   labelWidth?: React.CSSProperties['width']
   required?: boolean
+  disabled?: boolean
   layout?: 'default' | 'choice'
 };
 
@@ -37,6 +38,7 @@ export function FormField({
   showError = false,
   labelWidth,
   required = false,
+  disabled = false,
   orientation = 'vertical',
   layout = 'default',
   children,
@@ -54,6 +56,7 @@ export function FormField({
       <Field
         orientation={orientation}
         data-invalid={errors.length > 0 || undefined}
+        data-disabled={disabled || undefined}
         className={cn('flex flex-col items-start justify-start gap-1 w-full', className)}
         {...props}
       >
@@ -109,6 +112,7 @@ export function FormField({
     <Field
       orientation={orientation}
       data-invalid={errors.length > 0 || undefined}
+      data-disabled={disabled || undefined}
       className={cn(
         isHorizontal && 'grid grid-cols-subgrid items-start gap-x-4 gap-y-0.5',
         orientation === 'responsive' && `

@@ -20,4 +20,5 @@ export * from '../.generated/shadcn/components/ui/table';
 export * from '../.generated/shadcn/components/ui/tabs';
 export * from '../.generated/shadcn/components/ui/textarea';
 export * from './application';
+export * from './chart';
 export * from './theme';

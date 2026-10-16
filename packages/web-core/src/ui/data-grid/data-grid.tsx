@@ -4,8 +4,9 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { LoaderCircle } from 'lucide-react';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 
+import { cn } from '#.generated/shadcn/lib/utils';
+import { useI18n } from '#context/i18n';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '#ui';
-import { cn } from '#utils';
 
 import { DataGridToolHeader } from './data-grid-tool-header';
 
@@ -24,6 +25,7 @@ export type DataGridProps<TData> = {
 };
 
 export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, onScrollEnd, onRowClick, renderSubComponent, isSubComponentVisible }: DataGridProps<TData>) {
+  const { t } = useI18n();
   const [dragId, setDragId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isNearEnd, setIsNearEnd] = useState(false);
@@ -157,7 +159,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
                         data-resize-handle
                         role="separator"
                         aria-orientation="vertical"
-                        aria-label={`${header.column.id} 열 크기 조절`}
+                        aria-label={t('core.dataGrid.resizeColumn', { column: String(header.column.columnDef.header ?? header.column.id) })}
                         className={cn(`
                           absolute top-0 right-0 z-30 h-full w-1
                           cursor-col-resize touch-none select-none
@@ -270,7 +272,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
               >
                 <span className="inline-flex items-center gap-2">
                   <LoaderCircle className="size-4 animate-spin" />
-                  추가 결과를 불러오는 중입니다
+                  {t('core.dataGrid.loadingMore')}
                 </span>
               </TableCell>
             </TableRow>
@@ -290,10 +292,10 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
               ? (
                 <span className="inline-flex items-center gap-2">
                   <LoaderCircle className="size-4 animate-spin" />
-                  불러오는 중...
+                  {t('core.dataGrid.loading')}
                 </span>
               )
-              : '결과가 없습니다.'}
+              : t('core.dataGrid.noResults')}
           </span>
         </div>
       )}

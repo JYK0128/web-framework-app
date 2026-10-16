@@ -1,0 +1,47 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="웹코어/시작하기" />
+
+# 웹코어 컴포넌트 가이드
+
+`@pkg/web-core`는 `admin-web`과 `service-web`이 함께 사용하는 UI 패키지입니다. 스토리에서 각 컴포넌트의 실제 렌더링, 조합 방법, 공개 import 경로를 확인할 수 있습니다.
+
+## 앱에서 사용하기
+
+```tsx
+import { Button, Card, CardContent, CardHeader, CardTitle } from '@pkg/web-core/ui';
+import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
+import { DataGrid, useDataGrid } from '@pkg/web-core/data-grid';
+```
+
+Tailwind 앱은 스타일 진입점에서 `@pkg/web-core` 소스를 스캔해야 합니다. 이 저장소 앱처럼 `@source "../../../../packages/web-core/src";`를 등록하고 `@pkg/web-core/styles.css`를 불러오세요.
+
+## 폼
+
+`useAppForm`은 TanStack Form을 기반으로 등록된 필드 컴포넌트를 제공합니다. `form.AppField`에서 `Input`, `Select`, `Checkbox`, `DatetimePicker`, `Editor` 등 타입이 지정된 필드를 사용합니다. 폼 저장과 API 연결은 앱에서 맡고, 웹코어는 공통 입력 UI와 레이아웃을 제공합니다.
+
+Storybook의 [useAppForm 예제](/?path=/story/웹코어-폼-useappform--account-details)는 등록된 입력 필드, `Editor`, `FieldSet`과 `FieldGroup` 레이아웃, 초기화와 제출 버튼을 한 폼에서 보여줍니다. `Editor`는 앱의 `ThemeProvider`와 `I18nContext.Provider` 안에서 사용합니다.
+
+```tsx
+const form = useAppForm({
+  defaultValues: { content: '' },
+  onSubmit: async ({ value }) => save(value),
+});
+
+<form.AppForm>
+  <form.Layout onSubmit={() => void form.handleSubmit()}>
+    <form.AppField name="content">
+      {(field) => <field.Editor label="본문" description="내용을 입력하세요." />}
+    </form.AppField>
+    <form.Submit>저장</form.Submit>
+  </form.Layout>
+</form.AppForm>
+```
+
+## 제공자와 앱 설정
+
+테마가 필요한 경우 앱 루트에 `ThemeProvider`를 두고, i18n을 사용하는 컴포넌트는 앱의 `I18nContext.Provider` 아래에서 렌더링합니다. 파일 업로드 필드는 QueryClientProvider가 필요합니다. 라우터, API 요청, 인증과 권한 정책은 앱에서 연결합니다.
+
+## 실행
+
+저장소 루트에서 `pnpm --filter @pkg/web-core storybook`을 실행합니다. `pnpm --filter @pkg/web-core build-storybook`으로 정적 문서를 생성할 수 있습니다.

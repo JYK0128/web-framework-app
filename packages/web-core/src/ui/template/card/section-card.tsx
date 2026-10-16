@@ -2,9 +2,9 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import type { IconName } from 'lucide-react/dynamic';
 import type { ReactNode } from 'react';
 
+import { cn } from '#.generated/shadcn/lib/utils';
 import { AppIcon, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#ui';
 import { getSlotElements } from '#ui/slot';
-import { cn } from '#utils';
 
 type SectionCardProps = {
   icon?: IconName
@@ -64,7 +64,7 @@ function SectionCardContent({ children, className }: { children: ReactNode, clas
   return <CardContent className={cn('p-2', className)}>{children}</CardContent>;
 }
 
-function SectionCardLoading({ children }: { children: ReactNode }) {
+function SectionCardSkeleton({ children }: { children: ReactNode }) {
   return children;
 }
 
@@ -85,7 +85,7 @@ function SectionCardComponent({
   const iconSize = sectionCardIconSizes[textSize];
   const actionSlotContent = getSlotElements(children, SectionCardActions);
   const renderedContent = isLoading
-    ? getSlotElements(children, SectionCardLoading)
+    ? getSlotElements(children, SectionCardSkeleton)
     : getSlotElements(children, SectionCardContent);
   const hasHeader = Boolean(icon || title || description || actionSlotContent.length > 0);
 
@@ -134,5 +134,5 @@ function SectionCardComponent({
 export const SectionCard = Object.assign(SectionCardComponent, {
   Actions: SectionCardActions,
   Content: SectionCardContent,
-  Loading: SectionCardLoading,
+  Skeleton: SectionCardSkeleton,
 });

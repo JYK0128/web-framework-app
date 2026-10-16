@@ -1,6 +1,6 @@
 import type { ComponentPropsWithoutRef } from 'react';
 
-import { cn } from '#utils';
+import { cn } from '#.generated/shadcn/lib/utils';
 
 function AppLayoutRoot({ children, className, ...props }: ComponentPropsWithoutRef<'div'>) {
   return <div {...props} className={cn('flex size-full', className)}>{children}</div>;

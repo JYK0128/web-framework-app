@@ -20,6 +20,17 @@ import { Modal, ModalContainer, openModal } from '@pkg/web-core/modal';
 import { Button, Card, Dialog, DropdownMenu, Skeleton, Spinner, Tabs, Toaster } from '@pkg/web-core/ui';
 ```
 
+## Storybook
+
+스토리북은 공통 컴포넌트를 영역별로 살펴보고, 조합 예제와 앱 적용 시 필요한 제공자 및 연결 지점을 확인하는 문서입니다.
+
+```sh
+pnpm --filter @pkg/web-core storybook
+pnpm --filter @pkg/web-core build-storybook
+```
+
+`웹코어/시작하기`와 `웹코어/컴포넌트 카탈로그` 문서에서 전체 진입점과 앱 통합 방법을 확인할 수 있습니다.
+
 앱의 루트에서 앱별 i18next 인스턴스를 `I18nContext.Provider`에 전달합니다.
 에디터는 기존 앱의 ThemeProvider를 사용하고, 즉시 파일 업로드 필드는
 기존 QueryClientProvider를 사용합니다. 앱별 설정이나 전역 singleton을

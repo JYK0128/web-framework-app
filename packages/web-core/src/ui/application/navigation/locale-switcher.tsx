@@ -2,9 +2,9 @@ import type { i18n } from '@pkg/shared/common';
 import { useLocation, useNavigate } from '@tanstack/react-router';
 import { Check, Globe } from 'lucide-react';
 
+import { cn } from '#.generated/shadcn/lib/utils';
 import { useI18n } from '#context/i18n';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '#ui';
-import { cn } from '#utils';
 
 type LocaleSwitcherProps = {
   presentation?: 'button' | 'submenu'

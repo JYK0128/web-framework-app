@@ -72,7 +72,7 @@ function EventsPage() {
     "
     >
       <PageSection icon="calendar-days" title="이벤트" description="진행 중인 이벤트부터 예정 및 종료된 이벤트까지 확인하세요." isLoading={query.isLoading}>
-        <PageSection.Loading>
+        <PageSection.Skeleton>
           <div className="grid content-start gap-3 p-4">
             {[1, 2, 3].map((item) => (
               <Skeleton
@@ -81,7 +81,7 @@ function EventsPage() {
               />
             ))}
           </div>
-        </PageSection.Loading>
+        </PageSection.Skeleton>
         <PageSection.Content className="
           mx-auto grid size-full w-full max-w-4xl grid-rows-[minmax(0,1fr)]
           gap-4 pt-2

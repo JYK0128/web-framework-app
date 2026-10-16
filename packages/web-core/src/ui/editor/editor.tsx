@@ -7,8 +7,8 @@ import type suneditor from 'suneditor';
 import en from 'suneditor/langs/en';
 import ko from 'suneditor/langs/ko';
 
+import { cn } from '#.generated/shadcn/lib/utils';
 import { useI18n } from '#context/i18n';
-import { cn } from '#utils';
 
 export type EditorProps = Omit<WithoutChildren<'div'>, 'onChange' | 'onBlur' | 'defaultValue'> & {
   name?: string

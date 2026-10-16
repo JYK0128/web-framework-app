@@ -4,6 +4,7 @@ node_modules/
 
 # Build & Output
 dist/
+storybook-static/
 build/
 out/
 .output/

@@ -1,7 +1,7 @@
 import { type ComponentProps, createElement, type ReactNode, useSyncExternalStore } from 'react';
 
+import { cn } from '#.generated/shadcn/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#ui';
-import { cn } from '#utils';
 
 import { closeOverlay, getOverlaysSnapshot, subscribeToOverlays } from './modal-registry';
 

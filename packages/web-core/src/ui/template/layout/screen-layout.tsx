@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 
+import { cn } from '#.generated/shadcn/lib/utils';
 import { ThemeToggle } from '#ui';
-import { LocaleSwitcher } from '#ui/application/navigation/index';
+import { LocaleSwitcher } from '#ui/application/navigation';
 import { getSlotElements } from '#ui/slot';
-import { cn } from '#utils';
 
 export type ScreenLayoutSize = 'sm' | 'md' | 'lg' | 'xl';
 

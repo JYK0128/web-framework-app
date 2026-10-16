@@ -4,8 +4,8 @@ import { AlertTriangle, Copy, Home, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { useI18n } from '#context/i18n';
-import { Link, ScreenLayout } from '#template';
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#ui';
+import { Link, ScreenLayout } from '#ui/template';
 
 export function RouterError({ error }: Partial<ErrorComponentProps<unknown>> & { error: unknown }) {
   const { i18n } = useI18n();

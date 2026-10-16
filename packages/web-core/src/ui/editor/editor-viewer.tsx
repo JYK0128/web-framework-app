@@ -3,7 +3,7 @@ import './editor.css';
 import { sanitizeEditorHtml } from '@pkg/shared/editor';
 import { useMemo } from 'react';
 
-import { cn } from '#utils';
+import { cn } from '#.generated/shadcn/lib/utils';
 
 type EditorViewerProps = Omit<WithoutChildren<'div'>, 'dangerouslySetInnerHTML'> & {
   content: string

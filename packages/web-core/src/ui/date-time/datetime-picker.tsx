@@ -2,8 +2,9 @@ import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { type CSSProperties, useState } from 'react';
 
+import { cn } from '#.generated/shadcn/lib/utils';
+import { useI18n } from '#context/i18n';
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#ui';
-import { cn } from '#utils';
 
 import { Calendar } from './calendar';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
@@ -11,7 +12,9 @@ import { Popover, PopoverContent, PopoverTrigger } from './popover';
 const hours = Array.from({ length: 24 }, (_, index) => String(index).padStart(2, '0'));
 const minutes = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55'];
 
-export function DatetimePicker({ value, onChange, placeholder = '일시 선택', disabled, id, className, style, onBlur }: { value?: string, onChange: (value: string | undefined) => void, placeholder?: string, disabled?: boolean, id?: string, className?: string, style?: CSSProperties, onBlur?: () => void }) {
+export function DatetimePicker({ value, onChange, placeholder: placeholderProp, disabled, id, className, style, onBlur }: { value?: string, onChange: (value: string | undefined) => void, placeholder?: string, disabled?: boolean, id?: string, className?: string, style?: CSSProperties, onBlur?: () => void }) {
+  const { t } = useI18n();
+  const placeholder = placeholderProp ?? t('core.form.dateTimePlaceholder');
   const [open, setOpen] = useState(false);
   const selected = value ? new Date(value) : undefined;
   const validDate = selected && !Number.isNaN(selected.getTime()) ? selected : undefined;

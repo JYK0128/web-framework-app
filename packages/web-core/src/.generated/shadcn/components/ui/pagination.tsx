@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { cn } from "#utils"
+import { cn } from "#.generated/shadcn/lib/utils"
 import { Button } from "./button"
 import { ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon } from "lucide-react"
 

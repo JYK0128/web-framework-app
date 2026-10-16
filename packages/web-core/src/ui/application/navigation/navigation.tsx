@@ -1,8 +1,8 @@
 import { Link, type ToOptions } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
 
+import { cn } from '#.generated/shadcn/lib/utils';
 import { buttonVariants } from '#ui';
-import { cn } from '#utils';
 
 export type NavigationVariant = 'side' | 'bar';
 export type NavigationBreakpoint = 'sm' | 'md' | 'lg' | 'xl' | '2xl';

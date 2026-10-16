@@ -1,9 +1,9 @@
 import type { IconName } from 'lucide-react/dynamic';
 import type { ReactNode } from 'react';
 
+import { cn } from '#.generated/shadcn/lib/utils';
 import { AppIcon } from '#ui';
 import { getSlotElements } from '#ui/slot';
-import { cn } from '#utils';
 
 type PageSectionProps = {
   icon?: IconName
@@ -21,13 +21,13 @@ function PageSectionContent({ children, className }: { children: ReactNode, clas
   return <div className={cn(className)}>{children}</div>;
 }
 
-function PageSectionLoading({ children }: { children: ReactNode }) {
+function PageSectionSkeleton({ children }: { children: ReactNode }) {
   return children;
 }
 
 function PageSectionComponent({ icon, title, description, isLoading = false, children }: PageSectionProps) {
   const actionSlotContent = getSlotElements(children, PageSectionActions);
-  const loadingContent = getSlotElements(children, PageSectionLoading);
+  const skeletonContent = getSlotElements(children, PageSectionSkeleton);
   const contentSlotChildren = getSlotElements(children, PageSectionContent);
 
   return (
@@ -56,7 +56,7 @@ function PageSectionComponent({ icon, title, description, isLoading = false, chi
           <div className="absolute top-2 right-2 z-10">{actionSlotContent}</div>
         )}
       </header>
-      {isLoading ? loadingContent : contentSlotChildren}
+      {isLoading ? skeletonContent : contentSlotChildren}
     </section>
   );
 }
@@ -64,5 +64,5 @@ function PageSectionComponent({ icon, title, description, isLoading = false, chi
 export const PageSection = Object.assign(PageSectionComponent, {
   Actions: PageSectionActions,
   Content: PageSectionContent,
-  Loading: PageSectionLoading,
+  Skeleton: PageSectionSkeleton,
 });

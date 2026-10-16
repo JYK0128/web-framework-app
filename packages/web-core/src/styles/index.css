@@ -2,4 +2,5 @@
 @import "./fonts.css";
 @import "../.generated/shadcn/styles.css";
 @import "./custom.css";
+@import "./utilities.css";
 @source "..";

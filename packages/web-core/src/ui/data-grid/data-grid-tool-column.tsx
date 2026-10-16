@@ -1,8 +1,9 @@
 import { type ColumnDef, type Row, type Table } from '@tanstack/react-table';
 import { ChevronDown, ChevronRight, Pin } from 'lucide-react';
 
+import { cn } from '#.generated/shadcn/lib/utils';
+import { useI18n } from '#context/i18n';
 import { Button, Checkbox } from '#ui';
-import { cn } from '#utils';
 
 export function getDataGridToolColumn<TData>(): ColumnDef<TData> {
   return {
@@ -20,21 +21,23 @@ export function getDataGridToolColumn<TData>(): ColumnDef<TData> {
 }
 
 function DataGridToolHeader<TData>({ table }: { table: Table<TData> }) {
+  const { t } = useI18n();
   return (
     <div className="flex items-center gap-2">
-      <Checkbox checked={table.getIsAllPageRowsSelected()} onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)} aria-label="전체 선택" />
+      <Checkbox checked={table.getIsAllPageRowsSelected()} onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)} aria-label={t('core.dataGrid.selectAll')} />
     </div>
   );
 }
 
 function DataGridToolCell<TData>({ row }: { row: Row<TData> }) {
+  const { t } = useI18n();
   return (
     <div className="flex items-center gap-1">
-      <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="행 선택" />
+      <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label={t('core.dataGrid.selectRow')} />
       <Button
         variant="ghost"
         size="icon"
-        aria-label="행 펼치기"
+        aria-label={t('core.dataGrid.expandRow')}
         className={cn(!row.getCanExpand() && 'invisible')}
         onClick={row.getToggleExpandedHandler()}
       >
@@ -43,7 +46,7 @@ function DataGridToolCell<TData>({ row }: { row: Row<TData> }) {
       <Button
         variant="ghost"
         size="icon"
-        aria-label={row.getIsPinned() ? '행 고정 해제' : '행 고정'}
+        aria-label={row.getIsPinned() ? t('core.dataGrid.unpinRow') : t('core.dataGrid.pinRow')}
         className={cn(row.depth > 0 && 'invisible')}
         onClick={() => row.pin(!row.getIsPinned() && 'top', true)}
       >

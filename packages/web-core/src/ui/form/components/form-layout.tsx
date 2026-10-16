@@ -1,8 +1,8 @@
 import { useSelector } from '@tanstack/react-form';
 import { useEffect, useRef } from 'react';
 
+import { cn } from '#.generated/shadcn/lib/utils';
 import { useFormContext } from '#ui/form/core/context';
-import { cn } from '#utils';
 
 export function FormLayout({ children, className, ...props }: Readonly<React.ComponentProps<'form'>>) {
   const form = useFormContext();
