@@ -16,6 +16,7 @@ out/
 # Environment files
 # Private keys and local plaintext config stay untracked.
 .env
+.env.e2e
 .env.local
 .env.*.local
 .env.keys

@@ -14,7 +14,7 @@
     "packages:list": "pnpm --recursive list --depth -1",
     "start": "turbo run start",
     "test": "turbo run test",
-    "test:e2e": "turbo run test:e2e",
+    "test:e2e": "pnpm exec playwright test --config apps/deployment/playwright.e2e.config.ts",
     "typecheck": "turbo run typecheck",
     "prepare": "husky"
   },
