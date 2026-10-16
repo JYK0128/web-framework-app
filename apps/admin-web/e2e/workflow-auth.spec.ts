@@ -51,21 +51,6 @@ async function reviewAndAcceptTerms(page: import('@playwright/test').Page): Prom
   await page.getByRole('button', { name: /동의하고 계속하기/ }).click();
 }
 
-test('anonymous visitor is redirected from a protected page to sign in', async ({ page }) => {
-  await page.goto('/customers');
-  await expect(page).toHaveURL(/\/login/);
-});
-
 async function waitForHydration(locator: Locator): Promise<void> {
-  await expect.poll(
-    async () => {
-      try {
-        return await locator.evaluate((element) => Object.keys(element).some((key) => key.startsWith('__reactProps$')));
-      }
-      catch {
-        return false;
-      }
-    },
-    { timeout: 15_000, message: 'Wait for the browser UI to finish hydrating before interaction.' },
-  ).toBe(true);
+  await expect(locator.page().locator('html')).toHaveAttribute('data-hydrated', 'true');
 }

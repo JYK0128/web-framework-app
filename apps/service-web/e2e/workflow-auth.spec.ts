@@ -28,11 +28,6 @@ test.describe('Service Web Authentication Flow', () => {
     await page.goto('/qna');
     await expect(page).toHaveURL(/\/login/);
   });
-
-  test('anonymous visitor is redirected from /qna to sign in', async ({ page }) => {
-    await page.goto('/qna');
-    await expect(page).toHaveURL(/\/login/);
-  });
 });
 
 async function reviewAndAcceptTerms(page: import('@playwright/test').Page): Promise<void> {
@@ -55,8 +50,5 @@ async function reviewAndAcceptTerms(page: import('@playwright/test').Page): Prom
 }
 
 async function waitForHydration(locator: Locator): Promise<void> {
-  await expect.poll(
-    () => locator.evaluate((element) => Object.keys(element).some((key) => key.startsWith('__reactProps$'))),
-    { timeout: 15_000, message: 'Wait for the browser UI to finish hydrating before interaction.' },
-  ).toBe(true);
+  await expect(locator.page().locator('html')).toHaveAttribute('data-hydrated', 'true');
 }

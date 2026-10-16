@@ -30,10 +30,14 @@ export default defineConfig({
   globalSetup: './playwright.e2e.setup.ts',
   globalTeardown: './playwright.e2e.teardown.ts',
   projects: [
-    browserProject('admin', '../admin-web/e2e', adminWebURL, ['auth.spec.ts', 'faq-workflow.spec.ts']),
-    browserProject('service-auth', '../service-web/e2e', serviceWebURL, 'auth.spec.ts'),
+    browserProject('admin-auth', '../admin-web/e2e', adminWebURL, 'workflow-auth.spec.ts'),
     {
-      ...browserProject('service', '../service-web/e2e', serviceWebURL, ['faq-grid-width.spec.ts', 'faq-qna-auth.spec.ts', 'qna-workflow.spec.ts']),
+      ...browserProject('admin', '../admin-web/e2e', adminWebURL, ['action-auth-redirect.spec.ts', 'workflow-content.spec.ts', 'workflow-faq.spec.ts', 'feature-routes.spec.ts', 'workflow-access-management.spec.ts']),
+      dependencies: ['admin-auth'],
+    },
+    browserProject('service-auth', '../service-web/e2e', serviceWebURL, ['feature-auth-forms.spec.ts', 'workflow-auth.spec.ts', 'feature-routes.spec.ts']),
+    {
+      ...browserProject('service', '../service-web/e2e', serviceWebURL, ['feature-faq-grid.spec.ts', 'action-auth-redirect.spec.ts', 'action-faq-qna-auth.spec.ts', 'action-navigation.spec.ts', 'workflow-qna.spec.ts', 'workflow-support.spec.ts']),
       dependencies: ['service-auth'],
     },
   ],

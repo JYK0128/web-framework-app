@@ -2,9 +2,9 @@ import { expect, test } from '@playwright/test';
 
 test('operator creates, edits, and searches an FAQ from the admin screens', async ({ page }) => {
   await page.goto('/login');
-  await page.waitForLoadState('networkidle');
+  await expect(page.locator('html')).toHaveAttribute('data-hydrated', 'true');
   const email = page.getByLabel('이메일');
-  await expect.poll(() => email.evaluate((element) => Object.keys(element).some((key) => key.startsWith('__reactProps$')))).toBe(true);
+  await expect(page.locator('html')).toHaveAttribute('data-hydrated', 'true');
   await email.fill('admin@test.com');
   await page.getByRole('textbox', { name: '비밀번호' }).fill('1q2w3e4r1@');
   await page.getByRole('button', { name: '로그인', exact: true }).click();
@@ -19,10 +19,7 @@ test('operator creates, edits, and searches an FAQ from the admin screens', asyn
   const updatedQuestion = `${question} 수정`;
   await page.goto('/faqs');
   const addButton = page.getByRole('button', { name: 'FAQ 추가' });
-  await expect.poll(async () => {
-    try { return await addButton.evaluate((element) => Object.keys(element).some((key) => key.startsWith('__reactProps$'))); }
-    catch { return false; }
-  }).toBe(true);
+  await expect(page.locator('html')).toHaveAttribute('data-hydrated', 'true');
   await addButton.click();
   const dialog = page.getByRole('dialog');
   await dialog.getByLabel('카테고리').click();
@@ -41,4 +38,15 @@ test('operator creates, edits, and searches an FAQ from the admin screens', asyn
   await expect(page.getByRole('row').filter({ hasText: updatedQuestion })).toBeVisible();
   await page.getByPlaceholder('질문 또는 답변 검색...').fill(updatedQuestion);
   await expect(page.getByRole('row').filter({ hasText: updatedQuestion })).toBeVisible();
+
+  await page.reload();
+  await page.getByPlaceholder('질문 또는 답변 검색...').fill(updatedQuestion);
+  const persistedRow = page.getByRole('row').filter({ hasText: updatedQuestion });
+  await expect(persistedRow).toBeVisible();
+  await persistedRow.getByRole('button', { name: '도구' }).click();
+  await page.getByRole('menuitem', { name: '삭제' }).click();
+  const confirmation = page.getByRole('alertdialog');
+  await expect(confirmation).toContainText(updatedQuestion);
+  await confirmation.getByRole('button', { name: '확인' }).click();
+  await expect(page.getByRole('row').filter({ hasText: updatedQuestion })).toHaveCount(0);
 });

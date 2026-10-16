@@ -51,6 +51,7 @@ export class CreateSupportRoomHandler implements ICommandHandler<CreateSupportRo
     this.em.persist(messages);
     await this.em.flush();
     this.eventBus.publish(new SupportRoomCreatedEvent(room.id));
-    return CreateSupportRoomResponseDto.parseEntity(room);
+    const createdRoom = await this.em.findOneOrFail(SupportRoom, { id: room.id }, { populate: ['user.profile', 'assignee.profile'] });
+    return CreateSupportRoomResponseDto.parseEntity(createdRoom);
   }
 }

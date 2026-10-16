@@ -18,6 +18,16 @@ Start with the business result, not the UI structure:
 
 Use UI actions when the behavior is a user workflow. Use API or service-level tests when the behavior does not depend on the UI. Do not add DOM assertions just to make a test appear comprehensive.
 
+## Test file naming
+
+Name every Playwright E2E spec with one of these prefixes, followed by a concise feature name:
+
+- `workflow-*.spec.ts` covers a multi-step user or business flow and verifies its resulting state, such as authentication across reload, content CRUD, or submitting and closing a support conversation.
+- `feature-*.spec.ts` covers a focused application capability or screen behavior, such as route coverage, form validation, or data-grid sizing and interaction.
+- `action-*.spec.ts` covers a single user action and its immediate outcome, such as opening mobile navigation, following a link, or redirecting an anonymous visitor.
+
+Keep each spec file focused on one category. Split unrelated workflow and action cases into separate files. When renaming a spec, update the matching `testMatch` entry in the Playwright configuration and confirm the runner discovers it.
+
 ## Required shape for mutation flows
 
 For create, update, delete, assignment, or permission flows, cover this sequence as appropriate:

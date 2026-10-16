@@ -7,7 +7,7 @@ async function width(locator: import('@playwright/test').Locator): Promise<numbe
 test('FAQ keeps the category width while the question fills remaining space', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/faq');
-  await page.waitForLoadState('networkidle');
+  await expect(page.locator('html')).toHaveAttribute('data-hydrated', 'true');
   const category = page.getByRole('columnheader', { name: /카테고리/ });
   const question = page.getByRole('columnheader', { name: /질문/ });
   await expect.poll(() => width(category)).toBeCloseTo(100, 0);
@@ -34,7 +34,7 @@ test('FAQ keeps the category width while the question fills remaining space', as
 test('FAQ keeps specified widths during horizontal scrolling on a narrow screen', async ({ page }) => {
   await page.setViewportSize({ width: 480, height: 800 });
   await page.goto('/faq');
-  await page.waitForLoadState('networkidle');
+  await expect(page.locator('html')).toHaveAttribute('data-hydrated', 'true');
   const category = page.getByRole('columnheader', { name: /카테고리/ });
   const question = page.getByRole('columnheader', { name: /질문/ });
   await expect.poll(() => width(category)).toBeCloseTo(100, 0);
@@ -57,7 +57,7 @@ test('FAQ keeps specified widths during horizontal scrolling on a narrow screen'
 test('FAQ respects column resizing, minimum width and reordered columns', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/faq');
-  await page.waitForLoadState('networkidle');
+  await expect(page.locator('html')).toHaveAttribute('data-hydrated', 'true');
   const category = page.getByRole('columnheader', { name: /카테고리/ });
   const handle = page.getByRole('separator', { name: 'category 열 크기 조절' });
   const box = await handle.boundingBox();

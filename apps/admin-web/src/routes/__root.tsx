@@ -1,5 +1,6 @@
 import { ApplicationError } from '@pkg/shared/common';
 import { GlobalLoading, RouterError, RouterNotFound, SystemDialog } from '@pkg/web-core/application';
+import { useHydrationMarker } from '@pkg/web-core/hooks';
 import { I18nContext, useI18nContextValue } from '@pkg/web-core/i18n';
 import { ModalContainer } from '@pkg/web-core/modal';
 import { PermissionProvider } from '@pkg/web-core/permission';
@@ -57,6 +58,7 @@ export const Route = createRootRouteWithContext<AppRouterContext>()({
 function RootComponent() {
   const router = useRouter();
   const { user, queryClient } = Route.useRouteContext();
+  useHydrationMarker();
   useEffect(() => {
     if (!user) return;
     let invalidating = false;

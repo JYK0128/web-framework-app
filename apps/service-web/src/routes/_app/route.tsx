@@ -69,7 +69,7 @@ function ServiceAppLayout({ children, user }: { children: ReactNode, user: MeRes
     <AppLayoutParts.Root className="flex-col">
       <AppLayoutParts.Main>
         <AppLayoutParts.Header className="
-          shrink-0 bg-background/95 backdrop-blur-sm
+          relative z-50 shrink-0 bg-background/95 backdrop-blur-sm
         "
         >
           <div
