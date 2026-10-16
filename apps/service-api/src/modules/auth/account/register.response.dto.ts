@@ -6,5 +6,5 @@ export class RegisterResponseDto extends BaseDto {
   emailVerificationRequired!: boolean;
 
   @ApiProperty({ type: Boolean })
-  verificationEmailSent!: boolean;
+  verificationEmailQueued!: boolean;
 }

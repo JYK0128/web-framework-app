@@ -8,9 +8,10 @@ import { SECURITY_CONFIG } from '#/app.config';
 import { Account, User } from '#/core/database/entities/auth';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { AuthKvStoreKey } from '#/modules/auth/auth.key';
-import { type PasswordResetRecord } from '#/modules/auth/credential/password-reset.helper';
 import { ResetPasswordCommand } from '#/modules/auth/credential/reset-password.command';
 import { ResetPasswordResponseDto } from '#/modules/auth/credential/reset-password.response.dto';
+
+type PasswordResetRecord = { userId: string, emailHash: string, emailEncrypted: string, token: string };
 
 @Injectable()
 @CommandHandler(ResetPasswordCommand)

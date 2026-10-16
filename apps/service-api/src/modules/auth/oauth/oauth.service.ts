@@ -105,6 +105,8 @@ export class OAuthService {
   }
 
   private async getProviderMap(): Promise<Record<string, OAuthProviderConfig>> {
-    return await this.systemContext.getOAuthConfig() as Record<string, OAuthProviderConfig>;
+    const { oauth } = await this.systemContext.getConfig();
+    if (!oauth || typeof oauth !== 'object' || Array.isArray(oauth)) return {};
+    return oauth as Record<string, OAuthProviderConfig>;
   }
 }

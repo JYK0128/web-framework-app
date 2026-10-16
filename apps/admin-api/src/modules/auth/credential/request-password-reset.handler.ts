@@ -1,12 +1,12 @@
 import { randomBytes, randomUUID } from 'node:crypto';
 
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler, QueryBus } from '@nestjs/cqrs';
 import { EVENT_BROKER } from '@pkg/server-core/event-broker/event-broker.interface';
 import { EventBroker } from '@pkg/server-core/event-broker/event-broker.service';
 import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
-import { TimeUtil } from '@pkg/shared/common';
-import { encrypt, hashWithSecret } from '@pkg/shared/server';
+import { ApplicationError, TimeUtil } from '@pkg/shared/common';
+import { hashWithSecret } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
 import { Account, User } from '#/core/database/entities/auth';
@@ -27,29 +27,48 @@ export class RequestPasswordResetHandler implements ICommandHandler<RequestPassw
     private readonly queryBus: QueryBus,
     private readonly em: AppEntityManager,
     private readonly kvStore: KvStore,
-    @Inject(EVENT_BROKER.REDIS_STREAMS)
-    private readonly eventBroker: EventBroker,
+    @Inject(EVENT_BROKER.REDIS_STREAMS) private readonly eventBroker: EventBroker,
   ) {}
 
-  async execute({ input }: RequestPasswordResetCommand): Promise<RequestPasswordResetResponseDto> {
-    if (!SECURITY_CONFIG.credentialAvailable) return RequestPasswordResetResponseDto.parse({ accepted: true });
+  async execute(command: RequestPasswordResetCommand): Promise<RequestPasswordResetResponseDto> {
+    const identity = this.identify(command);
+    const verified = await this.verify(identity);
+    if (verified) await this.process(verified);
+    return RequestPasswordResetResponseDto.parse({ accepted: true });
+  }
+
+  private identify(command: RequestPasswordResetCommand): { emailHash: string, phoneNumberHash: string } {
+    const email = command.input.email.trim().toLowerCase();
+    return {
+      emailHash: hashWithSecret(email, env.PII_HASH_KEY),
+      phoneNumberHash: hashWithSecret(command.input.phoneNumber, env.PII_HASH_KEY),
+    };
+  }
+
+  private async verify(identity: { emailHash: string, phoneNumberHash: string }): Promise<{ user: User, profile: NonNullable<User['profile']> } | null> {
+    if (!SECURITY_CONFIG.credentialAvailable) return null;
     await this.queryBus.execute(new CheckAdminEmailConfigQuery());
 
-    const email = input.email.trim().toLowerCase();
     const user = await this.em.findOne(User, {
-      profile: { emailHash: hashWithSecret(email, env.PII_HASH_KEY), phoneNumberHash: hashWithSecret(input.phoneNumber, env.PII_HASH_KEY) },
-    }, { filters: false });
-    if (!user || user.isDeleted) return RequestPasswordResetResponseDto.parse({ accepted: true });
-    const account = await this.em.findOne(Account, { user: user.id, providerId: Account.PROVIDER_CREDENTIAL });
-    if (!account?.password) return RequestPasswordResetResponseDto.parse({ accepted: true });
+      profile: { emailHash: identity.emailHash, phoneNumberHash: identity.phoneNumberHash },
+    }, { populate: ['profile'], filters: false });
+    if (!user || user.isDeleted) return null;
+    const profile = user.profile;
+    if (!profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
 
+    const account = await this.em.findOne(Account, { user: user.id, providerId: Account.PROVIDER_CREDENTIAL });
+    if (!account?.password) return null;
+    return { user, profile };
+  }
+
+  private async process({ user, profile }: { user: User, profile: NonNullable<User['profile']> }): Promise<void> {
     const challengeId = randomUUID();
     const token = randomBytes(32).toString('base64url');
     const key = AuthKvStoreKey.passwordResetChallenge(challengeId);
     await this.kvStore.set(key, {
       userId: user.id,
-      emailHash: hashWithSecret(email, env.PII_HASH_KEY),
-      emailEncrypted: encrypt(email, env.PII_ENCRYPTION_KEY),
+      emailHash: profile.emailHash,
+      emailEncrypted: profile.emailEncrypted,
       token,
     }, TimeUtil.s.minute(SECURITY_CONFIG.token.passwordResetTokenTtlMinutes));
 
@@ -60,7 +79,6 @@ export class RequestPasswordResetHandler implements ICommandHandler<RequestPassw
       await this.removeChallenge(key);
       throw error;
     }
-    return RequestPasswordResetResponseDto.parse({ accepted: true });
   }
 
   private async removeChallenge(key: string): Promise<void> {

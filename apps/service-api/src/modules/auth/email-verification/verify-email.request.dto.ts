@@ -1,7 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiSchema } from '@nestjs/swagger';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class VerifyEmailRequestDto {
+@ApiSchema({ name: 'VerifyEmailDto' })
+export class VerifyEmailRequestDto extends BaseDto {
   @ApiProperty({ type: String })
   @IsString()
   @IsNotEmpty()

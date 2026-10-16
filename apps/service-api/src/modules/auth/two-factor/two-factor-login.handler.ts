@@ -12,9 +12,9 @@ import { User } from '#/core/database/entities/auth';
 import { TwoFactor } from '#/core/database/entities/auth.extensions';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { env } from '#/env';
+import { AuthKvStoreKey } from '#/modules/auth/auth.key';
 import { TwoFactorLoginCommand } from '#/modules/auth/two-factor/two-factor-login.command';
 import { TwoFactorLoginResponseDto } from '#/modules/auth/two-factor/two-factor-login.response.dto';
-import { TwoFactorLoginKvStoreKey } from '#/modules/auth/two-factor/two-factor-login-kv-store';
 
 interface TwoFactorLoginChallenge {
   userId: string
@@ -34,7 +34,7 @@ export class TwoFactorLoginHandler implements ICommandHandler<TwoFactorLoginComm
 
   async execute(command: TwoFactorLoginCommand): Promise<TwoFactorLoginResponseDto> {
     const { twoFactorChallengeToken, code } = command.input;
-    const key = TwoFactorLoginKvStoreKey.challenge(twoFactorChallengeToken);
+    const key = AuthKvStoreKey.twoFactorLoginChallenge(twoFactorChallengeToken);
     const rawRecord = await this.kvStore.get<string>(key);
     const challenge = parseChallenge(rawRecord);
     if (!SECURITY_CONFIG.credentialAvailable || !rawRecord || !challenge) {

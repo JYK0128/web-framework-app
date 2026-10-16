@@ -1,9 +1,6 @@
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
-import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
-import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { EVENT_BROKER } from '@pkg/server-core/event-broker/event-broker.interface';
-import { EventBroker } from '@pkg/server-core/event-broker/event-broker.service';
-import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { CommandBus, CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { assertPasswordPolicy } from '@pkg/shared/policy';
 import { encrypt, hashPassword, hashWithSecret } from '@pkg/shared/server';
@@ -15,7 +12,8 @@ import { AppEntityManager } from '#/core/database/entity-manager';
 import { env } from '#/env';
 import { RegisterCommand } from '#/modules/auth/account/register.command';
 import { RegisterResponseDto } from '#/modules/auth/account/register.response.dto';
-import { sendEmailVerificationChallenge } from '#/modules/auth/email-verification/email-verification.helper';
+import { RequestEmailVerificationCommand } from '#/modules/auth/email-verification/request-email-verification.command';
+import { RequestEmailVerificationRequestDto } from '#/modules/auth/email-verification/request-email-verification.request.dto';
 import { ensureEmailNotificationConfigured } from '#/modules/system-config/notification/service-email-config.helper';
 import { SystemContext } from '#/modules/system-config/system.context';
 
@@ -26,9 +24,8 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
 
   constructor(
     private readonly em: AppEntityManager,
-    private readonly kv: KvStore,
+    private readonly commandBus: CommandBus,
     private readonly systemContext: SystemContext,
-    @Inject(EVENT_BROKER.REDIS_STREAMS) private readonly eventBroker: EventBroker,
   ) {}
 
   async execute(command: RegisterCommand): Promise<RegisterResponseDto> {
@@ -43,7 +40,7 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
       throw new ApplicationError({ code: 'EMAIL_ALREADY_EXISTS', status: HttpStatus.CONFLICT });
     }
     const role = await this.em.findOne(Role, { code: RoleCode.MEMBER }, { filters: false });
-    if (!role) throw new ApplicationError({ code: 'REGISTRATION_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
+    if (!role || role.deletedAt) throw new ApplicationError({ code: 'REGISTRATION_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
 
     const passwordHash = await hashPassword(command.input.password);
     const user = this.em.create(User, {
@@ -72,16 +69,18 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
       throw error;
     }
 
-    let verificationEmailSent = false;
+    let verificationEmailQueued = false;
     if (SECURITY_CONFIG.registration.requireEmailVerification) {
       try {
-        await sendEmailVerificationChallenge(this.eventBroker, this.kv, user, profile, email);
-        verificationEmailSent = true;
+        const result = await this.commandBus.execute(new RequestEmailVerificationCommand(
+          RequestEmailVerificationRequestDto.parse({ email }),
+        ));
+        verificationEmailQueued = result.accepted;
       }
       catch (error) {
-        this.logger.warn(`Registration email verification could not be sent: ${error instanceof Error ? error.message : String(error)}`);
+        this.logger.warn(`Registration email verification could not be queued: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
-    return RegisterResponseDto.parse({ emailVerificationRequired: SECURITY_CONFIG.registration.requireEmailVerification, verificationEmailSent });
+    return RegisterResponseDto.parse({ emailVerificationRequired: SECURITY_CONFIG.registration.requireEmailVerification, verificationEmailQueued });
   }
 }

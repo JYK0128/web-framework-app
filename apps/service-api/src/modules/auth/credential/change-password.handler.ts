@@ -6,7 +6,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { verifyPassword } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { Account, User } from '#/core/database/entities/auth';
+import { Account } from '#/core/database/entities/auth';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { ChangePasswordCommand } from '#/modules/auth/credential/change-password.command';
 import { ChangePasswordResponseDto } from '#/modules/auth/credential/change-password.response.dto';
@@ -18,8 +18,7 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
 
   async execute(command: ChangePasswordCommand): Promise<ChangePasswordResponseDto> {
     if (!SECURITY_CONFIG.credentialAvailable) throw new ApplicationError({ code: 'CREDENTIAL_AUTH_UNAVAILABLE', status: HttpStatus.FORBIDDEN });
-    const user = await this.em.findOne(User, { id: this.principal.ensureUser().id }, { filters: false });
-    if (!user) throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
+    const user = this.principal.ensureUser();
     const account = await this.em.findOne(Account, { user: user.id, providerId: Account.PROVIDER_CREDENTIAL });
     if (!account?.password) throw new ApplicationError({ code: 'PASSWORD_CHANGE_UNAVAILABLE', status: HttpStatus.BAD_REQUEST });
     if (command.input.newPassword !== command.input.confirmPassword) {

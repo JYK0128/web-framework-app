@@ -96,7 +96,7 @@ test('PostgreSQL: concurrent setup/login failures commit, lock the account, surv
     const tokens = Array.from({ length: 8 }, (_, index) => `challenge-${index}`);
     tokens.forEach(challenge);
     const loginFailures = await Promise.allSettled(tokens.map((token) => login(token, 'invalid')));
-    assert.ok(loginFailures.every((result) => result.status === 'rejected' && ['ADMIN_TWO_FACTOR_INVALID', 'TWO_FACTOR_LOCKED'].includes(result.reason.code)));
+    assert.ok(loginFailures.every((result) => result.status === 'rejected' && ['TWO_FACTOR_INVALID', 'TWO_FACTOR_LOCKED'].includes(result.reason.code)));
     assert.equal((await orm.em.fork().findOneOrFail(User, user.id)).isLocked, false);
     assert.equal((await read()).failedVerificationCount, 5);
     assert.equal((await read()).isLocked, true);
@@ -105,7 +105,7 @@ test('PostgreSQL: concurrent setup/login failures commit, lock the account, surv
     assert.equal(logins, 0);
     await orm.em.fork().nativeUpdate(TwoFactor, factor.id, { lockedUntil: new Date(Date.now() - 1000) });
     challenge('after-expiry');
-    await assert.rejects(() => login('after-expiry', 'invalid'), errorCode('ADMIN_TWO_FACTOR_INVALID'));
+    await assert.rejects(() => login('after-expiry', 'invalid'), errorCode('TWO_FACTOR_INVALID'));
     assert.equal((await read()).failedVerificationCount, 1);
     challenge('success');
     const successes = await Promise.allSettled([login('success', validCode()), login('success', validCode())]);

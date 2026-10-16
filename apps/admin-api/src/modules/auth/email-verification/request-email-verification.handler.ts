@@ -1,12 +1,12 @@
 import { randomBytes, randomUUID } from 'node:crypto';
 
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler, QueryBus } from '@nestjs/cqrs';
 import { EVENT_BROKER } from '@pkg/server-core/event-broker/event-broker.interface';
 import { EventBroker } from '@pkg/server-core/event-broker/event-broker.service';
 import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
-import { TimeUtil } from '@pkg/shared/common';
-import { encrypt, hashWithSecret } from '@pkg/shared/server';
+import { ApplicationError, TimeUtil } from '@pkg/shared/common';
+import { hashWithSecret } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
 import { User } from '#/core/database/entities/auth';
@@ -27,27 +27,41 @@ export class RequestEmailVerificationHandler implements ICommandHandler<RequestE
     private readonly queryBus: QueryBus,
     private readonly em: AppEntityManager,
     private readonly kvStore: KvStore,
-    @Inject(EVENT_BROKER.REDIS_STREAMS)
-    private readonly eventBroker: EventBroker,
+    @Inject(EVENT_BROKER.REDIS_STREAMS) private readonly eventBroker: EventBroker,
   ) {}
 
-  async execute({ input }: RequestEmailVerificationCommand): Promise<RequestEmailVerificationResponseDto> {
-    if (!SECURITY_CONFIG.registration.requireEmailVerification) return RequestEmailVerificationResponseDto.parse({ accepted: true });
+  async execute(command: RequestEmailVerificationCommand): Promise<RequestEmailVerificationResponseDto> {
+    const identity = this.identify(command);
+    const user = await this.verify(identity);
+    if (user) await this.process(user);
+    return RequestEmailVerificationResponseDto.parse({ accepted: true });
+  }
+
+  private identify(command: RequestEmailVerificationCommand): { emailHash: string } {
+    const email = command.input.email.trim().toLowerCase();
+    return { emailHash: hashWithSecret(email, env.PII_HASH_KEY) };
+  }
+
+  private async verify(identity: { emailHash: string }): Promise<{ user: User, profile: NonNullable<User['profile']> } | null> {
+    if (!SECURITY_CONFIG.registration.requireEmailVerification) return null;
     await this.queryBus.execute(new CheckAdminEmailConfigQuery());
 
-    const email = input.email.trim().toLowerCase();
-    const emailHash = hashWithSecret(email, env.PII_HASH_KEY);
-    const user = await this.em.findOne(User, { profile: { emailHash } }, { filters: false });
-    if (!user || user.isDeleted || user.emailVerified) return RequestEmailVerificationResponseDto.parse({ accepted: true });
+    const user = await this.em.findOne(User, { profile: { emailHash: identity.emailHash } }, { populate: ['profile'], filters: false });
+    if (!user || user.isDeleted || user.emailVerified) return null;
+    const profile = user.profile;
+    if (!profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
+    return { user, profile };
+  }
 
+  private async process({ user, profile }: { user: User, profile: NonNullable<User['profile']> }): Promise<void> {
     const challengeId = randomUUID();
     const token = randomBytes(32).toString('base64url');
-    const key = AuthKvStoreKey.emailVerificationChallenge(challengeId);
     const ttlMinutes = SECURITY_CONFIG.registration.emailVerificationTokenTtlMinutes;
+    const key = AuthKvStoreKey.emailVerificationChallenge(challengeId);
     await this.kvStore.set(key, {
       userId: user.id,
-      emailHash,
-      emailEncrypted: encrypt(email, env.PII_ENCRYPTION_KEY),
+      emailHash: profile.emailHash,
+      emailEncrypted: profile.emailEncrypted,
       token,
     }, TimeUtil.s.minute(ttlMinutes));
 
@@ -58,7 +72,6 @@ export class RequestEmailVerificationHandler implements ICommandHandler<RequestE
       await this.removeChallenge(key);
       throw error;
     }
-    return RequestEmailVerificationResponseDto.parse({ accepted: true });
   }
 
   private async removeChallenge(key: string): Promise<void> {

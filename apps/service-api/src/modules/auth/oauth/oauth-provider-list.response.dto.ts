@@ -1,24 +1,9 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { ListResponseDto } from '@pkg/server-core/http/dto/response';
 
-export class OAuthLoginProviderDto {
-  @ApiProperty({ example: 'google' })
-  id!: string;
+import { OAuthLoginProviderItemDto } from '#/modules/auth/oauth/oauth-login-provider-item.dto';
 
-  @ApiProperty({ example: 'Google' })
-  name!: string;
-
-  @ApiPropertyOptional({ example: '/oauth-icons/google.png' })
-  iconUrl?: string;
-
-  @ApiPropertyOptional({ example: '#ffffff' })
-  brandColor?: string;
-
-  @ApiPropertyOptional({ example: '#202124' })
-  brandTextColor?: string;
-}
-
-export class OAuthProviderListResponseDto extends ListResponseDto<OAuthLoginProviderDto> {
-  @ApiProperty({ type: [OAuthLoginProviderDto] })
-  override items!: OAuthLoginProviderDto[];
+export class OAuthProviderListResponseDto extends ListResponseDto<OAuthLoginProviderItemDto> {
+  @ApiProperty({ type: [OAuthLoginProviderItemDto] })
+  override items!: OAuthLoginProviderItemDto[];
 }

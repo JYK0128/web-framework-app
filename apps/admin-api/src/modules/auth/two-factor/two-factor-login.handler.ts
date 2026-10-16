@@ -70,7 +70,7 @@ export class TwoFactorLoginHandler implements ICommandHandler<TwoFactorLoginComm
       }
       if (!verifyTotp(decrypt(twoFactor.secret, env.TWO_FACTOR_ENCRYPTION_KEY), code, SECURITY_CONFIG.twoFactor)) {
         twoFactor.recordVerificationFailure(now, SECURITY_CONFIG.lockout.maxFailureAttempts, TimeUtil.ms.minute(SECURITY_CONFIG.lockout.lockoutDurationMinutes));
-        return new ApplicationError({ code: 'ADMIN_TWO_FACTOR_INVALID', status: HttpStatus.UNAUTHORIZED });
+        return new ApplicationError({ code: 'TWO_FACTOR_INVALID', status: HttpStatus.UNAUTHORIZED });
       }
 
       if (!await this.kvStore.delIfValue(key, rawRecord)) throw invalidChallenge();
@@ -85,7 +85,7 @@ export class TwoFactorLoginHandler implements ICommandHandler<TwoFactorLoginComm
       return user;
     });
     if (result instanceof ApplicationError) {
-      if (result.code === 'ADMIN_TWO_FACTOR_INVALID') await this.recordFailedAttempt(key, rawRecord, challenge);
+      if (result.code === 'TWO_FACTOR_INVALID') await this.recordFailedAttempt(key, rawRecord, challenge);
       throw result;
     }
     const user = result;
@@ -128,7 +128,7 @@ function parseChallenge(value: string | null): TwoFactorLoginChallenge | null {
 
 function invalidChallenge(): ApplicationError {
   return new ApplicationError({
-    code: 'ADMIN_TWO_FACTOR_CHALLENGE_INVALID',
+    code: 'TWO_FACTOR_CHALLENGE_INVALID',
     status: HttpStatus.UNAUTHORIZED,
   });
 }

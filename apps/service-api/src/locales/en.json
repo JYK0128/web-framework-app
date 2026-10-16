@@ -80,6 +80,7 @@
     "OAUTH_PROVIDER_ERROR": "Communication with the OAuth provider failed.",
     "OAUTH_IDENTITY_INCOMPLETE": "The OAuth provider did not supply a verified user ID and email.",
     "TWO_FACTOR_INVALID": "The two-factor authentication code is invalid.",
+    "TWO_FACTOR_SETUP_UNAVAILABLE": "Your registered two-factor authentication setup is unavailable. Set it up again.",
     "REGISTRATION_UNAVAILABLE": "Registration is currently unavailable.",
     "IDENTITY_VERIFICATION_DATA_MISSING": "The identity verification provider did not supply the required identity information.",
     "IDENTITY_MISMATCH": "You can only use a phone number registered in your name.",

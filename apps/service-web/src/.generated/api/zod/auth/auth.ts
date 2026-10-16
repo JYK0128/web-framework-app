@@ -32,7 +32,7 @@ export const AuthControllerRegisterV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "emailVerificationRequired": zod.boolean(),
-  "verificationEmailSent": zod.boolean()
+  "verificationEmailQueued": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -463,3 +463,4 @@ export const OAuthControllerCallbackV1Response = zod.object({
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
+

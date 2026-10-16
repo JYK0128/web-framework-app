@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { type IUserAuthService, USER_AUTH_SERVICE } from '@pkg/server-core/auth/user/user-auth.interface';
+import { type AuthUser, type IUserAuthService, USER_AUTH_SERVICE } from '@pkg/server-core/auth/user/user-auth.interface';
 import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { hashWithSecret, verifyPassword } from '@pkg/shared/server';
@@ -112,7 +112,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResponse
     });
     await this.em.flush();
 
-    const tokenPair = await this.authTokenService.login(user, {
+    const tokenPair = await this.authTokenService.login(this.toAuthUser(user), {
       rememberMe: input.rememberMe,
     });
     return LoginResponseDto.parse({
@@ -126,7 +126,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResponse
     const twoFactor = await this.em.findOneOrFail(TwoFactor, { user: user.id, verified: true }, {
       filters: false,
       failHandler: () => new ApplicationError({
-        code: 'ADMIN_TWO_FACTOR_INVALID',
+        code: 'TWO_FACTOR_SETUP_UNAVAILABLE',
         status: HttpStatus.UNAUTHORIZED,
       }),
     });
@@ -140,6 +140,24 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResponse
       SECURITY_CONFIG.twoFactor.challengeTtlSeconds,
     );
     return LoginResponseDto.parse({ requiresTwoFactor: true, twoFactorChallengeToken });
+  }
+
+  private toAuthUser(user: User): AuthUser {
+    return {
+      id: user.id,
+      phoneNumberVerified: user.phoneNumberVerified,
+      twoFactorEnabled: user.twoFactorEnabled,
+      isDeleted: user.isDeleted,
+      isBanned: user.isBanned,
+      isLocked: user.isLocked,
+      role: user.role
+        ? {
+          id: user.role.id,
+          code: user.role.code,
+          permissions: user.role.permissions ?? [],
+        }
+        : null,
+    };
   }
 }
 

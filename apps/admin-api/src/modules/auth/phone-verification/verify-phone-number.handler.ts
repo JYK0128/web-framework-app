@@ -17,7 +17,7 @@ export class VerifyPhoneNumberHandler implements ICommandHandler<VerifyPhoneNumb
   constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext, private readonly phoneIdentity: PhoneIdentityService) {}
 
   async execute(command: VerifyPhoneNumberCommand): Promise<VerifyPhoneNumberResponseDto> {
-    const user = await this.em.findOne(User, { id: this.principal.ensureUser().id }, { filters: false, populate: ['profile'] });
+    const user = await this.em.findOne(User, { id: this.principal.ensureUser().id }, { populate: ['profile'] });
     if (!user) throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     const profile = user.profile;
     if (!profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });

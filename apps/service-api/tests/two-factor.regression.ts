@@ -16,7 +16,7 @@ import { EnableTwoFactorCommand } from '../src/modules/auth/two-factor/enable-tw
 import { GenerateTwoFactorHandler } from '../src/modules/auth/two-factor/generate-two-factor.handler';
 import { TwoFactorLoginHandler } from '../src/modules/auth/two-factor/two-factor-login.handler';
 import { TwoFactorLoginCommand } from '../src/modules/auth/two-factor/two-factor-login.command';
-import { TwoFactorLoginKvStoreKey } from '../src/modules/auth/two-factor/two-factor-login-kv-store';
+import { AuthKvStoreKey } from '../src/modules/auth/auth.key';
 
 const secret = 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ';
 function validCode() {
@@ -91,7 +91,7 @@ test('PostgreSQL: concurrent setup/login failures commit, lock the account, surv
     } as unknown as KvStore;
     let logins = 0;
     const auth = { login: async () => { logins++; return { accessToken: 'test-access', refreshToken: 'test-refresh' }; } } as unknown as IUserAuthService;
-    const challenge = (token: string) => records.set(TwoFactorLoginKvStoreKey.challenge(token), JSON.stringify({ userId: user.id, rememberMe: false, attempts: 0 }));
+    const challenge = (token: string) => records.set(AuthKvStoreKey.twoFactorLoginChallenge(token), JSON.stringify({ userId: user.id, rememberMe: false, attempts: 0 }));
     const login = (token: string, code: string) => new TwoFactorLoginHandler(orm.em.fork(), kv, auth).execute(new TwoFactorLoginCommand({ twoFactorChallengeToken: token, code }));
     const tokens = Array.from({ length: 8 }, (_, index) => `challenge-${index}`);
     tokens.forEach(challenge);

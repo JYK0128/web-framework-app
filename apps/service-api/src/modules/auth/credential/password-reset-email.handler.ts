@@ -6,16 +6,16 @@ import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
 import { NotificationService } from '@pkg/server-core/notification/notification.service';
 import { decrypt } from '@pkg/shared/server';
 
-import { SECURITY_CONFIG } from '#/app.config';
+import { SECURITY_CONFIG, SERVICE_ID } from '#/app.config';
 import { env } from '#/env';
 import { AuthKvStoreKey } from '#/modules/auth/auth.key';
 import { PasswordResetEmailEvent } from '#/modules/auth/credential/password-reset-email.event';
 import { SystemContext } from '#/modules/system-config/system.context';
 
-type PasswordResetRecord = { userId: string, emailHash: string, emailEncrypted: string, token: string };
+type PasswordResetRecord = { emailEncrypted: string, token: string };
 
 @EventsHandler(PasswordResetEmailEvent)
-@BrokerConsumer({ broker: EVENT_BROKER.REDIS_STREAMS, group: 'service-auth-email-notification' })
+@BrokerConsumer({ broker: EVENT_BROKER.REDIS_STREAMS, group: `${SERVICE_ID}-auth-email-notification` })
 export class PasswordResetEmailHandler implements IEventHandler<PasswordResetEmailEvent> {
   private readonly logger = new Logger(PasswordResetEmailHandler.name);
 
@@ -34,7 +34,7 @@ export class PasswordResetEmailHandler implements IEventHandler<PasswordResetEma
         channel: 'email',
         message: {
           to: decrypt(record.emailEncrypted, env.PII_ENCRYPTION_KEY),
-          subject: '서비스 비밀번호 재설정',
+          subject: '비밀번호 재설정',
           text: `아래 링크에서 비밀번호를 재설정해 주세요. 링크는 ${SECURITY_CONFIG.token.passwordResetTokenTtlMinutes}분 동안 유효합니다.\n${resetUrl.toString()}`,
         },
         config,

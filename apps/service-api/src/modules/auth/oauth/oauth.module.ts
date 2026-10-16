@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { OAuthProviderModule } from '@pkg/server-core/oauth/oauth-provider.module';
 
 import { SECURITY_CONFIG, SERVICE_ID } from '#/app.config';
+import { oauthClient } from '#/core/oauth-client';
 import { env } from '#/env';
 import { OAuthController } from '#/modules/auth/oauth/oauth.controller';
 import { OAuthService } from '#/modules/auth/oauth/oauth.service';
@@ -13,6 +14,8 @@ const oauthProviderModule = OAuthProviderModule.forRoot({
   requestTimeoutMs: SECURITY_CONFIG.integrations.oauthProviderRequestTimeoutSeconds * 1000,
   allowHttp: env.NODE_ENV === 'development',
   encryptionKey: env.OAUTH_ENCRYPTION_KEY,
+  preventJwksRedirects: true,
+  httpRequest: oauthClient.request,
 });
 
 @Module({
