@@ -25,6 +25,14 @@
       "types": "./src/ui/chart/index.ts",
       "default": "./src/ui/chart/index.ts"
     },
+    "./survey-flow": {
+      "types": "./src/ui/survey-flow/index.ts",
+      "default": "./src/ui/survey-flow/index.ts"
+    },
+    "./survey-flow.css": {
+      "types": "./src/ui/survey-flow/survey-flow.css",
+      "default": "./src/ui/survey-flow/survey-flow.css"
+    },
     "./date-time": {
       "types": "./src/ui/date-time/index.ts",
       "default": "./src/ui/date-time/index.ts"
@@ -126,6 +134,7 @@
     "@tanstack/react-start": "1.168.37",
     "@tanstack/react-table": "8.21.3",
     "@tanstack/react-virtual": "3.14.9",
+    "@xyflow/react": "12.12.0",
     "axios": "1.8.4",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",

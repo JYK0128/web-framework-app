@@ -4,7 +4,7 @@ import { defineConfig } from 'eslint/config';
 export default defineConfig([
   { ignores: ['src/.generated/**'] },
   {
-    files: ['src/**/*.{ts,tsx}', 'stories/**/*.{ts,tsx}', '.storybook/**/*.{ts,tsx}'],
+    files: ['src/**/*.{ts,tsx}', 'stories/**/*.{ts,tsx}', '.storybook/**/*.{ts,tsx}', 'e2e/**/*.{ts,tsx}', 'playwright*.config.ts'],
     extends: [reactConfig],
     languageOptions: {
       parserOptions: {

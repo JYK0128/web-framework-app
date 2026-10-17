@@ -37,7 +37,6 @@ export function FormSelect({
   return (
     <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required} disabled={disabled}>
       <Select
-        items={options}
         value={field.state.value}
         disabled={disabled}
         onValueChange={(value, eventDetails) => {

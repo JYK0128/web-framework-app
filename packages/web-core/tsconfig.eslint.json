@@ -1,5 +1,5 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["src", "stories", ".storybook/**/*.ts"],
+  "include": ["src", "stories", ".storybook/**/*.ts", "e2e", "playwright*.config.ts"],
   "exclude": ["src/.generated"]
 }
