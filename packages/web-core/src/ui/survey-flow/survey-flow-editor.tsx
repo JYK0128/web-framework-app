@@ -497,15 +497,26 @@ export function SurveyFlowEditor({ initialFlow = initialSurveyFlow, onChange, on
   const autoArrangeNodes = useCallback(() => {
     const instance = reactFlowInstance.current;
     const viewport = instance?.getViewport();
-    setNodes((current) => getAutoLayoutedNodes(current, edges));
-    if (instance && viewport) {
+    const arrangedNodes = getAutoLayoutedNodes(nodes, edges);
+    setNodes(arrangedNodes);
+    const startNode = arrangedNodes.find((node) => node.data.kind === 'start');
+    if (instance && viewport && startNode) {
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          void instance.setViewport(viewport, { duration: 0 });
+          const canvas = editorRef.current?.querySelector('.react-flow');
+          const canvasWidth = canvas?.clientWidth ?? 0;
+          const topOffset = 64;
+          const { width } = getSurveyNodeSize(startNode);
+          const centerX = startNode.position.x + width / 2;
+          void instance.setViewport({
+            x: canvasWidth / 2 - centerX * viewport.zoom,
+            y: topOffset - startNode.position.y * viewport.zoom,
+            zoom: viewport.zoom,
+          }, { duration: 0 });
         });
       });
     }
-  }, [edges, setNodes]);
+  }, [edges, nodes, setNodes]);
 
   return (
     <section

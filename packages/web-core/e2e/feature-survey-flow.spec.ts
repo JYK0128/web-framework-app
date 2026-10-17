@@ -254,7 +254,9 @@ test('content editor keeps its actions visible and scrolls long content inside t
   expect(dialogBox!.y + dialogBox!.height).toBeLessThanOrEqual(361);
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(361);
 
-  await editable.evaluate((element) => { element.scrollTop = 0; });
+  await editable.evaluate((element) => {
+    element.scrollTop = 0;
+  });
   await editable.click();
   await page.keyboard.press('PageDown');
   await expect.poll(() => editable.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
@@ -322,9 +324,19 @@ test('auto arrange separates the nodes in a branched flow', async ({ page }) => 
   await editor.locator('.react-flow__node-question [role="button"]').nth(0).click();
   await editor.getByRole('button', { name: '질문', exact: true }).click();
   const viewport = editor.locator('.react-flow__viewport');
-  const initialTransform = await viewport.evaluate((element) => getComputedStyle(element).transform);
+  const initialZoom = await viewport.evaluate((element) => new DOMMatrix(getComputedStyle(element).transform).a);
   await editor.getByRole('button', { name: '자동 정렬', exact: true }).click();
-  await expect.poll(() => viewport.evaluate((element) => getComputedStyle(element).transform)).toBe(initialTransform);
+  await expect.poll(() => viewport.evaluate((element) => new DOMMatrix(getComputedStyle(element).transform).a)).toBeCloseTo(initialZoom);
+  const canvas = editor.locator('.react-flow');
+  const startNode = editor.locator('.react-flow__node-start');
+  await expect.poll(async () => {
+    const canvasBox = await canvas.boundingBox();
+    const startBox = await startNode.boundingBox();
+    if (!canvasBox || !startBox) {
+      return null;
+    }
+    return Math.round(startBox.y - canvasBox.y);
+  }).toBe(64);
 
   const boxes = await editor.locator('.react-flow__node').evaluateAll((nodes) => nodes.map((node) => {
     const { x, y, width, height } = node.getBoundingClientRect();
