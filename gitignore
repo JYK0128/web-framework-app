@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build & Output
+dist/
+storybook-static/
+build/
+out/
+.output/
+.turbo/
+.next/
+.nuxt/
+.vite/
+*.tsbuildinfo
+
+# Environment files
+# Private keys and local plaintext config stay untracked.
+.env
+.env.e2e
+.env.local
+.env.*.local
+.env.keys
+*.pem
+*.key
+.local/
+
+# Logs & Debugging
+logs/
+*.log*
+# Source log modules are part of the codebase and should be tracked.
+!**/src/**/logs/
+!**/src/**/logs/**
+
+# System & IDE
+.DS_Store
+._*
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Caches & Testing
+.cache/
+.eslintcache
+coverage/
+tmp/
+test-results/
+playwright-report/
+.playwright-mcp/
+scratch/
