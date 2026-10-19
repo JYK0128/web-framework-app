@@ -6,6 +6,7 @@ import { SECRET_KEY_PURPOSE } from './app.secret';
 const envSchema = z.object({
   // Process identity and runtime
   NODE_ENV: z.enum(['development', 'test', 'production']),
+  DEMO_ENABLED: z.enum(['true', 'false']).default('false').transform((value) => value === 'true'),
   PORT: z.coerce.number().int().positive(),
 
   // Required runtime infrastructure and security

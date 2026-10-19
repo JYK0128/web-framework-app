@@ -6,6 +6,7 @@ import { AuthEmailVerificationModule } from '#/modules/auth/email-verification/e
 import { AuthOAuthModule } from '#/modules/auth/oauth/oauth.module';
 import { AuthPhoneVerificationModule } from '#/modules/auth/phone-verification/phone-verification.module';
 import { AuthProfileModule } from '#/modules/auth/profile/profile.module';
+import { ResetDemoDataScheduler } from '#/modules/auth/reset-demo-data.scheduler';
 import { AuthSessionModule } from '#/modules/auth/session/session.module';
 import { AuthTwoFactorModule } from '#/modules/auth/two-factor/two-factor.module';
 
@@ -20,5 +21,6 @@ import { AuthTwoFactorModule } from '#/modules/auth/two-factor/two-factor.module
     AuthTwoFactorModule,
     AuthOAuthModule,
   ],
+  providers: [ResetDemoDataScheduler],
 })
 export class AuthModule {}

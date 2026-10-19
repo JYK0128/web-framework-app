@@ -17,6 +17,7 @@ function browserProject(name: string, testDir: string, baseURL: string, testMatc
     ...(testIgnore ? { testIgnore } : {}),
     use: {
       ...devices['Desktop Chrome'],
+      locale: 'ko-KR',
       baseURL,
       extraHTTPHeaders: { Origin: new URL(baseURL).origin },
     },
