@@ -23,7 +23,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: ${ADMIN_API_PORT:?Set ADMIN_API_PORT}
-      DOTENV_PRIVATE_KEY_PRD: ${ADMIN_API_DOTENV_PRIVATE_KEY_PRD:?Set the admin-api dotenvx key}
+      DOTENV_PRIVATE_KEY_PRD: ${ADMIN_API_DOTENV_PRIVATE_KEY_PRD:?Set ADMIN_API_DOTENV_PRIVATE_KEY_PRD}
       SERVICE_API_URL: http://service-api:${SERVICE_API_PORT:?Set SERVICE_API_PORT}
       APP_BASE_URL: ${ADMIN_WEB_URL:?Set ADMIN_WEB_URL}
       LOKI_URL: http://loki:3100
@@ -67,7 +67,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: ${SERVICE_API_PORT:?Set SERVICE_API_PORT}
-      DOTENV_PRIVATE_KEY_PRD: ${SERVICE_API_DOTENV_PRIVATE_KEY_PRD:?Set the service-api dotenvx key}
+      DOTENV_PRIVATE_KEY_PRD: ${SERVICE_API_DOTENV_PRIVATE_KEY_PRD:?Set SERVICE_API_DOTENV_PRIVATE_KEY_PRD}
       ADMIN_API_URL: http://admin-api:${ADMIN_API_PORT:?Set ADMIN_API_PORT}
       APP_BASE_URL: ${SERVICE_WEB_URL:?Set SERVICE_WEB_URL}
       LOKI_URL: http://loki:3100
