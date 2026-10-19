@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { env } from '#/env';
 import { NotificationService, TemplateRendererService } from '#/infra/notification';
-import type { IssueEmailChallengeResult } from '#/modules/onboarding/commands/issue-email-challenge.command';
+import type { EmailVerificationChallenge } from '#/modules/onboarding/domain';
 
 @Injectable()
 export class EmailVerificationMailer {
@@ -11,7 +11,7 @@ export class EmailVerificationMailer {
     private readonly templateRenderer: TemplateRendererService,
   ) {}
 
-  async send(challenge: IssueEmailChallengeResult): Promise<void> {
+  async send(challenge: EmailVerificationChallenge): Promise<void> {
     const { email, challengeId, code, expiresIn } = challenge;
     const minutes = Math.floor(expiresIn / 60);
     const targetUrl = new URL('/verify-email', env.FRONTEND_URL);

@@ -1,4 +1,3 @@
-import { EntityDto } from '#/common/dto/entity-dto';
-import { NoticeRead } from '#/entities/notices/notice-read.entity';
+import { BaseDto } from '#/common/dto/base.dto';
 
-export class MarkAllNoticesReadRequestDto extends EntityDto(NoticeRead) {}
+export class MarkAllNoticesReadRequestDto extends BaseDto {}

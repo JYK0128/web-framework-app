@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 import { LOG_DEFAULT_LOOKBACK_MS, LOG_QUERY_DEFAULT_LIMIT, LOG_QUERY_MAX_LIMIT, LOG_QUERY_RANGE_LIMIT, LOG_WATCH_LOOKBACK_MS, LOG_WATCH_MAX_SEEN_IDS, LOG_WATCH_POLL_INTERVAL_MS, LOG_WATCH_TRIM_SEEN_IDS } from '#/common/configs/runtime.config';
 import { type ILogTelemetryAdapter, LOG_TELEMETRY_MODULE_OPTIONS, type LogEntry, type LogStatsResult, type LogTelemetryModuleOptions, type QueryLogOptions, type QueryLogResult } from '#/infra/log-telemetry/log-telemetry.interface';
-import { LogErrorInfoDto } from '#/modules/log-management/dto';
+import { LogErrorInfoDto } from '#/modules/logs/dto';
 
 export interface LokiStreamEntry {
   stream: Record<string, string>

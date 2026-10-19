@@ -13,7 +13,7 @@ export class GetAdminNoticeHandler implements IQueryHandler<GetAdminNoticeQuery,
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetAdminNoticeQuery): Promise<GetAdminNoticeResponseDto> {
-    const notice = await this.identifyNotice(query.input.id);
+    const notice = await this.identifyNotice(query.input.noticeId);
     this.verify(notice);
     return this.process(notice);
   }
@@ -33,6 +33,17 @@ export class GetAdminNoticeHandler implements IQueryHandler<GetAdminNoticeQuery,
   }
 
   private process(notice: Notice): GetAdminNoticeResponseDto {
-    return new GetAdminNoticeResponseDto(notice);
+    return GetAdminNoticeResponseDto.fromPlain({
+      id: notice.id,
+      title: notice.title,
+      content: notice.content,
+      priority: notice.priority,
+      publishedAt: notice.publishedAt,
+      expiresAt: notice.expiresAt,
+      status: notice.status,
+      isPublished: notice.isPublished,
+      createdAt: notice.createdAt,
+      updatedAt: notice.updatedAt,
+    });
   }
 }

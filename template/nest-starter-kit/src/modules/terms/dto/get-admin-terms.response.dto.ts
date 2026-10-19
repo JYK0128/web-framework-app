@@ -1,10 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 import { PageResponseDto } from '#/common/interfaces';
 
-import { AdminTermDto } from './admin-term.dto';
+import { AdminTermItemDto } from './admin-term-item.dto';
 
-export class GetAdminTermsResponseDto extends PageResponseDto<AdminTermDto> {
-  @ApiProperty({ type: () => [AdminTermDto] })
-  override items!: AdminTermDto[];
+export class GetAdminTermsResponseDto extends PageResponseDto<AdminTermItemDto> {
+  @ApiProperty({ type: () => [AdminTermItemDto] })
+  @Type(() => AdminTermItemDto)
+  override items!: AdminTermItemDto[];
 }

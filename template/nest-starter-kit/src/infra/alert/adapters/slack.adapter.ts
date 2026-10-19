@@ -115,7 +115,7 @@ export class SlackAlertAdapter implements IAlertAdapter {
       };
     }
     catch (err) {
-      const error = ApplicationError.from(err, 'SLACK_WEBHOOK_FAILED').message;
+      const error = ApplicationError.from(err, 'SLACK_WEBHOOK_FAILED').code;
       this.logger.error(`Slack webhook error: ${error}`);
       return {
         success: false,

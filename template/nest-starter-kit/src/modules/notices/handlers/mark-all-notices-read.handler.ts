@@ -16,7 +16,7 @@ export class MarkAllNoticesReadHandler implements ICommandHandler<MarkAllNotices
     private readonly sessionContext: SessionContext,
   ) {}
 
-  async execute(): Promise<MarkAllNoticesReadResponseDto> {
+  async execute(_command: MarkAllNoticesReadCommand): Promise<MarkAllNoticesReadResponseDto> {
     const userId = this.sessionContext.requiredUser.id;
     const notices = await this.identifyNotices();
     const reads = await this.identifyReads(userId, notices);

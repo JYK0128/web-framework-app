@@ -1,12 +1,12 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { ResetPasswordResponseDto } from '#/modules/users/dto';
+import type { ResetUserPasswordResponseDto } from '#/modules/users/dto';
 
 export interface ResetUserPasswordPayload {
-  id: string
+  userId: string
 }
 
-export class ResetUserPasswordCommand extends Command<ResetPasswordResponseDto> {
+export class ResetUserPasswordCommand extends Command<ResetUserPasswordResponseDto> {
   constructor(public readonly input: ResetUserPasswordPayload) {
     super();
   }

@@ -4,7 +4,6 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Term } from '#/entities/terms/term.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { GetTermHistoryPageResponseDto } from '#/modules/terms/dto/get-term-history-page.response.dto';
-import { TermDto } from '#/modules/terms/dto/term.dto';
 import { GetTermHistoryPageQuery } from '#/modules/terms/queries/get-term-history-page.query';
 
 @Injectable()
@@ -20,17 +19,17 @@ export class GetTermHistoryPageHandler implements IQueryHandler<GetTermHistoryPa
   }
 
   private identify(query: GetTermHistoryPageQuery) {
-    return query.input;
+    return query.input.query;
   }
 
-  private verify(input: GetTermHistoryPageQuery['input']): void {
+  private verify(input: GetTermHistoryPageQuery['input']['query']): void {
     const { page, limit } = input.toPageOptions();
     if (page < 1 || limit < 1 || limit > 100) {
       throw new Error('약관 이력 페이지 조회 범위가 올바르지 않습니다.');
     }
   }
 
-  private load(input: GetTermHistoryPageQuery['input']) {
+  private load(input: GetTermHistoryPageQuery['input']['query']) {
     return this.em.findByPage(Term, input.toFilterQuery(), {
       ...input.toPageOptions(),
       populate: ['termGroup'],
@@ -38,9 +37,6 @@ export class GetTermHistoryPageHandler implements IQueryHandler<GetTermHistoryPa
   }
 
   private process(page: Awaited<ReturnType<GetTermHistoryPageHandler['load']>>): GetTermHistoryPageResponseDto {
-    return {
-      ...page,
-      items: page.items.map((term) => new TermDto(term)),
-    };
+    return GetTermHistoryPageResponseDto.fromPlain(page);
   }
 }

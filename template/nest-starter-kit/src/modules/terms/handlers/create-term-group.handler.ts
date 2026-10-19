@@ -41,6 +41,6 @@ export class CreateTermGroupHandler implements ICommandHandler<CreateTermGroupCo
     });
     this.em.persist(group);
 
-    return new CreateTermGroupResponseDto(group);
+    return CreateTermGroupResponseDto.from(group);
   }
 }

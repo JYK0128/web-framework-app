@@ -1,9 +1,11 @@
+import { ApplicationError } from '@pkg/shared/common';
 import { type ErrorComponentProps, Link } from '@tanstack/react-router';
 import { AlertTriangle, Copy, Home, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { ScreenLayout } from '#/components/layout';
+import { getI18n } from '#/core/isomorphic/i18n';
 import { useI18n } from '#/hooks';
 
 export interface RouterErrorProps extends Partial<ErrorComponentProps<unknown>> {
@@ -11,6 +13,7 @@ export interface RouterErrorProps extends Partial<ErrorComponentProps<unknown>> 
 }
 
 function getErrorMessage(error: unknown): string {
+  if (error instanceof ApplicationError) return error.translate(getI18n());
   if (error instanceof Error) return error.message;
   if (typeof error === 'string') return error;
   if (error) return JSON.stringify(error);

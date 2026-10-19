@@ -1,15 +1,15 @@
 import { createColumnHelper, type Row } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 
-import { type NoticeFeedItemDto, NoticePriority } from '#/.generated/api/model';
+import { type NoticeItemDto, NoticePriority } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
 import { useI18n } from '#/hooks';
 
-const columnHelper = createColumnHelper<NoticeFeedItemDto>();
+const columnHelper = createColumnHelper<NoticeItemDto>();
 
 type NoticeFeedColumnsProps = {
   i18n: ReturnType<typeof useI18n>['i18n']
-  onSelectNotice: (row: Row<NoticeFeedItemDto>) => void
+  onSelectNotice: (row: Row<NoticeItemDto>) => void
 };
 
 export function createNoticeFeedColumns({ i18n, onSelectNotice }: NoticeFeedColumnsProps) {

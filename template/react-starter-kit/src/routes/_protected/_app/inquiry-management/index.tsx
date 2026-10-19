@@ -9,8 +9,8 @@ import type { InquiriesControllerGetAdminInquiriesParams, InquiriesControllerGet
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
-import { openDialog } from '#/components/dialog';
 import { PageSection, SectionCard } from '#/components/layout';
+import { openModal } from '#/components/modal';
 import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 import { hasPermission } from '#/core/auth/permissions';
 import { useHashTab, useI18n } from '#/hooks';
@@ -39,7 +39,7 @@ function InquiryManagementPageComponent() {
   const [statusTab, setStatusTab] = useHashTab<InquiryManagementStatusTab>(INQUIRY_MANAGEMENT_STATUS_TABS, 'all');
 
   const handleSelectInquiry = useCallback((inquiry: InquiryItemDto) => {
-    void openDialog(
+    void openModal(
       AdminInquiryChatDialog,
       {
         inquiry,
@@ -50,7 +50,7 @@ function InquiryManagementPageComponent() {
           }
         },
       },
-      { dialogId: `admin-inquiry-${inquiry.id}` },
+      { modalId: `admin-inquiry-${inquiry.id}` },
     );
   }, [queryClient]);
 
@@ -96,7 +96,7 @@ function InquiryManagementPageComponent() {
     query: { enabled: Boolean(inquiryId) },
   });
 
-  const queryParams = useMemo<InquiriesControllerGetAdminInquiriesParams>(() => {
+  const queryParams: InquiriesControllerGetAdminInquiriesParams = (() => {
     const tableState = table.getState();
     const sort = (tableState.sorting[0]?.id ?? 'createdAt') as InquiriesControllerGetAdminInquiriesSortItem;
     const direction = (tableState.sorting[0]?.desc ? 'desc' : 'asc');
@@ -112,7 +112,7 @@ function InquiryManagementPageComponent() {
       sort: [sort],
       direction: [direction],
     };
-  }, [statusTab, table]);
+  })();
 
   const { data } = useInquiriesControllerGetAdminInquiries(queryParams);
   const inquiries = useMemo(() => data?.items ?? [], [data?.items]);
@@ -132,7 +132,7 @@ function InquiryManagementPageComponent() {
   }, [inquiryId, routeInquiryData, handleSelectInquiry]);
 
   return (
-    <PageSection icon="clipboard-list" title={t('inquiryManagement.managementTitle')} description={t('inquiryManagement.managementDescription')}>
+    <PageSection icon="messages-square" title={t('inquiryManagement.managementTitle')} description={t('inquiryManagement.managementDescription')}>
       <PageSection.Content className="
         grid grid-rows-[auto_minmax(0,1fr)] gap-6 p-2
       "

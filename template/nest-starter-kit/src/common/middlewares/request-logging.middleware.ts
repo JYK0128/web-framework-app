@@ -4,7 +4,7 @@ import { hmac } from '@pkg/shared/server';
 import type { NextFunction, Request, Response } from 'express';
 
 import { env } from '#/env';
-import { LogErrorInfoDto } from '#/modules/log-management/dto';
+import { LogErrorInfoDto } from '#/modules/logs/dto';
 
 function isEventStreamResponse(response: Response): boolean {
   const contentType = response.getHeader('content-type');
@@ -98,7 +98,7 @@ export class RequestLoggingMiddleware implements NestMiddleware {
       aborted,
       ip: (request.headers['x-forwarded-for'] as string) || request.socket?.remoteAddress || null,
       userAgent: (request.headers['user-agent'] as string) || null,
-      emailHash: user?.email ? hmac(user.email, env.APP_SECRET) : null,
+      emailHash: user?.email ? hmac(user.email, env.APP_HASH_KEY) : null,
       request: hasReqBody ? reqBody : null,
       response: responseBody ?? null,
       errorInfo,

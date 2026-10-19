@@ -6,7 +6,7 @@ import { SessionContext } from '#/common/contexts/session.context';
 import { BYPASS_KEY, BypassPolicy, type BypassPolicy as BypassPolicyType } from '#/common/decorators/bypass.decorator';
 import { PERMISSION_KEY, type PermissionName } from '#/common/decorators/permission.decorator';
 import { IS_PUBLIC_KEY } from '#/common/decorators/public.decorator';
-import type { RolePermissions } from '#/entities/auth.extentions/role.entity';
+import type { RolePermissions } from '#/entities/auth.extensions/role.entity';
 
 @Injectable()
 export class PermissionGuard implements CanActivate {

@@ -19,7 +19,7 @@ export class ExpressSessionMiddleware implements NestMiddleware {
     this.sessionMiddleware = session({
       store,
       name: SESSION_COOKIE,
-      secret: env.APP_SECRET,
+      secret: env.SESSION_SECRET,
       genid: () => randomBase64Url(32),
       proxy: true,
       resave: false,

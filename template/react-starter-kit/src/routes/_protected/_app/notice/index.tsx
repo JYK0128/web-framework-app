@@ -6,11 +6,11 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { z } from 'zod';
 
 import { getNoticesControllerGetNoticeFeedQueryKey, noticesControllerGetNoticeFeed } from '#/.generated/api/endpoints/notices/notices';
-import type { NoticeFeedItemDto, NoticesControllerGetNoticeFeedParams, NoticesControllerGetNoticeFeedSortItem } from '#/.generated/api/model';
+import type { NoticeItemDto, NoticesControllerGetNoticeFeedParams, NoticesControllerGetNoticeFeedSortItem } from '#/.generated/api/model';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
-import { openDialog } from '#/components/dialog';
 import { PageSection, SectionCard } from '#/components/layout';
+import { openModal } from '#/components/modal';
 import { useI18n } from '#/hooks';
 
 import { NoticeDetailDialog } from './-components/notice-detail-dialog';
@@ -59,8 +59,8 @@ function AnnouncementsPageComponent() {
   const { i18n, t } = useI18n();
   const { noticeId } = Route.useSearch();
 
-  const handleRowClick = useCallback((row: Row<NoticeFeedItemDto>) => {
-    void openDialog(NoticeDetailDialog, { notice: row.original }, { dialogId: `notice-${row.original.id}` });
+  const handleRowClick = useCallback((row: Row<NoticeItemDto>) => {
+    void openModal(NoticeDetailDialog, { notice: row.original }, { modalId: `notice-${row.original.id}` });
   }, []);
 
   const columns = useMemo(
@@ -95,7 +95,7 @@ function AnnouncementsPageComponent() {
     if (!noticeId || notices.length === 0) return;
     const target = notices.find((n) => n.id === noticeId);
     if (target) {
-      void openDialog(NoticeDetailDialog, { notice: target }, { dialogId: `notice-${target.id}` });
+      void openModal(NoticeDetailDialog, { notice: target }, { modalId: `notice-${target.id}` });
     }
   }, [noticeId, notices]);
 

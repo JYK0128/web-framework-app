@@ -1,6 +1,6 @@
 import 'express-session';
 
-import type { RoleKey, RolePermissions } from '#/entities/auth.extentions/role.entity';
+import type { RoleKey, RolePermissions } from '#/entities/auth.extensions/role.entity';
 
 declare module 'express-session' {
   interface AuthPrincipal {

@@ -1,12 +1,12 @@
 import { formatDateTime } from '@pkg/shared/common';
 
-import { type NoticeFeedItemDto, NoticePriority } from '#/.generated/api/model';
+import { type NoticeItemDto, NoticePriority } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/dialog';
+import { type ModalComponentProps } from '#/components/modal';
 import { useI18n } from '#/hooks';
 
-type NoticeDetailDialogProps = DialogComponentProps<void> & {
-  notice: NoticeFeedItemDto
+type NoticeDetailDialogProps = ModalComponentProps<void> & {
+  notice: NoticeItemDto
 };
 
 export function NoticeDetailDialog({

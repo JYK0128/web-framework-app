@@ -2,9 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsEnum, IsInt, IsString, Max, Min, ValidateNested } from 'class-validator';
 
-import { EntityDto } from '#/common/dto/entity-dto';
+import { BaseDto } from '#/common/dto/base.dto';
 import { defineEnum } from '#/common/dto/enum';
-import { SystemConfig } from '#/entities/system-config/system-config.entity';
 
 export const InquiryNotificationType = defineEnum('InquiryNotificationType', {
   SLACK: 'SLACK',
@@ -35,7 +34,7 @@ export class InquiryNotificationDto {
   webhookUrl!: string;
 }
 
-export class TestWebhookRequestDto extends EntityDto(SystemConfig) {
+export class TestWebhookRequestDto extends BaseDto {
   @ApiProperty({ example: 'SLACK', enum: InquiryNotificationType, description: '알림 채널 종류' })
   @IsEnum(InquiryNotificationType)
   type!: InquiryNotificationType;
@@ -55,7 +54,7 @@ export class TestWebhookResponseDto {
   message!: string;
 }
 
-export class InquiryConfigDto {
+export class InquiryConfigDto extends BaseDto {
   @ApiProperty({ example: 10, description: '미응답 문의 감지 기준 시간 (분)' })
   @IsInt()
   @Min(1)

@@ -47,7 +47,6 @@ export class VerifyEmailChangeHandler implements ICommandHandler<VerifyEmailChan
       throw new ApplicationError({
         code: 'INVALID_EMAIL_CHALLENGE',
         status: HttpStatus.BAD_REQUEST,
-        message: '유효하지 않거나 만료된 이메일 변경 링크입니다.',
       });
     }
 
@@ -57,7 +56,6 @@ export class VerifyEmailChangeHandler implements ICommandHandler<VerifyEmailChan
       throw new ApplicationError({
         code: 'INVALID_EMAIL_CHALLENGE',
         status: HttpStatus.BAD_REQUEST,
-        message: '유효하지 않은 이메일 변경 링크입니다.',
       });
     }
     return { payload: parsed.data, verification };
@@ -68,7 +66,6 @@ export class VerifyEmailChangeHandler implements ICommandHandler<VerifyEmailChan
       throw new ApplicationError({
         code: 'EXPIRED_EMAIL_CHALLENGE',
         status: HttpStatus.BAD_REQUEST,
-        message: '이메일 변경 링크의 유효시간(15분)이 만료되었습니다.',
       });
     }
 
@@ -76,7 +73,6 @@ export class VerifyEmailChangeHandler implements ICommandHandler<VerifyEmailChan
       throw new ApplicationError({
         code: 'INVALID_EMAIL_CHALLENGE',
         status: HttpStatus.BAD_REQUEST,
-        message: '올바르지 않은 이메일 변경 토큰입니다.',
       });
     }
   }
@@ -95,7 +91,6 @@ export class VerifyEmailChangeHandler implements ICommandHandler<VerifyEmailChan
       throw new ApplicationError({
         code: 'EMAIL_ALREADY_REGISTERED',
         status: HttpStatus.CONFLICT,
-        message: '이미 다른 계정에 등록된 이메일 주소입니다.',
       });
     }
   }

@@ -1,31 +1,35 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
+import { decrypt } from '@pkg/shared/server';
 import { verifySync } from 'otplib';
 
 import { SessionContext } from '#/common/contexts/session.context';
 import { SystemContext } from '#/common/contexts/system.context';
-import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
+import { TwoFactor } from '#/entities/auth.extensions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
+import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { TurnOn2FACommand } from '#/modules/auth/commands/2fa-turn-on.command';
+import type { TurnOn2FAResponseDto } from '#/modules/auth/dto';
 
 @Injectable()
 @CommandHandler(TurnOn2FACommand)
-export class TurnOn2FAHandler implements ICommandHandler<TurnOn2FACommand, void> {
+export class TurnOn2FAHandler implements ICommandHandler<TurnOn2FACommand, TurnOn2FAResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly systemContext: SystemContext,
     private readonly sessionContext: SessionContext,
   ) {}
 
-  async execute(command: TurnOn2FACommand): Promise<void> {
+  async execute(command: TurnOn2FACommand): Promise<TurnOn2FAResponseDto> {
     const sessionUser = this.identifySessionUser();
 
     const twoFactor = await this.identifyPendingTwoFactor(sessionUser.id);
     await this.verify(twoFactor, command.input.code);
 
     await this.process(sessionUser.id, twoFactor);
+    return { ok: true };
   }
 
   private identifySessionUser() {
@@ -51,7 +55,8 @@ export class TurnOn2FAHandler implements ICommandHandler<TurnOn2FACommand, void>
   }
 
   private async verifyCode(twoFactor: TwoFactor, code: string): Promise<void> {
-    const isValid = verifySync({ token: code, secret: twoFactor.secret }).valid;
+    const plainSecret = decrypt(twoFactor.secret, env.TWO_FACTOR_ENCRYPTION_KEY);
+    const isValid = verifySync({ token: code, secret: plainSecret }).valid;
     if (!isValid) {
       const authPolicy = await this.systemContext.getAuthPolicy();
       const now = new Date();

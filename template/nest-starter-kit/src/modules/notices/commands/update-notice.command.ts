@@ -3,7 +3,7 @@ import { Command } from '@nestjs/cqrs';
 import type { UpdateNoticeRequestDto, UpdateNoticeResponseDto } from '#/modules/notices/dto';
 
 export interface UpdateNoticePayload {
-  id: string
+  noticeId: string
   input: UpdateNoticeRequestDto
 }
 

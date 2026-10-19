@@ -1,0 +1,38 @@
+import { FindIdHandler, RequestEmailVerificationHandler, RequestPasswordResetHandler, ResetPasswordHandler, VerifyEmailHandler } from './account-recovery.handler';
+import { LoginHandler } from './login.handler';
+import { LogoutHandler } from './logout.handler';
+import { MeHandler } from './me.handler';
+import { ChangePasswordHandler, DisableTwoFactorHandler, EnableTwoFactorHandler, GenerateTwoFactorHandler, UnregisterHandler } from './profile-security.handler';
+import { RefreshHandler } from './refresh.handler';
+import { RegisterHandler } from './registration.handler';
+import { TwoFactorLoginHandler } from './two-factor-login.handler';
+import { VerifyPhoneNumberHandler } from './verify-phone-number.handler';
+
+export const authHandlers = [
+  LoginHandler,
+  FindIdHandler,
+  RequestEmailVerificationHandler,
+  RequestPasswordResetHandler,
+  ResetPasswordHandler,
+  VerifyEmailHandler,
+  TwoFactorLoginHandler,
+  RefreshHandler,
+  LogoutHandler,
+  MeHandler,
+  ChangePasswordHandler,
+  GenerateTwoFactorHandler,
+  EnableTwoFactorHandler,
+  DisableTwoFactorHandler,
+  UnregisterHandler,
+  RegisterHandler,
+  VerifyPhoneNumberHandler,
+] as const;
+
+export * from './account-recovery.handler';
+export * from './login.handler';
+export * from './logout.handler';
+export * from './me.handler';
+export * from './profile-security.handler';
+export * from './refresh.handler';
+export * from './two-factor-login.handler';
+export * from './verify-phone-number.handler';

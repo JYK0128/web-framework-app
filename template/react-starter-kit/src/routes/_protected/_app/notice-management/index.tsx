@@ -8,8 +8,8 @@ import type { NoticeItemDto, NoticesControllerGetAdminNoticesParams, NoticesCont
 import { Button } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
-import { openDialog } from '#/components/dialog';
 import { PageSection, SectionCard } from '#/components/layout';
+import { openModal } from '#/components/modal';
 import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 import { hasPermission } from '#/core/auth/permissions';
 import { useI18n } from '#/hooks';
@@ -31,7 +31,7 @@ function NoticesPageComponent() {
   const queryClient = useQueryClient();
 
   const handleEditNotice = useCallback((notice: NoticeItemDto) => {
-    void openDialog(NoticeUpdateDialog, { notice }, { dialogId: `notice-edit-${notice.id}` });
+    void openModal(NoticeUpdateDialog, { notice }, { modalId: `notice-edit-${notice.id}` });
   }, []);
 
   const canUpdate = hasPermission(user.permissions, 'notice:update');
@@ -79,7 +79,7 @@ function NoticesPageComponent() {
     getRowId: (row) => row.id,
   });
 
-  const queryParams = useMemo<NoticesControllerGetAdminNoticesParams>(() => {
+  const queryParams: NoticesControllerGetAdminNoticesParams = (() => {
     const state = table.getState();
     const sorting = state.sorting.filter(({ id }) => id !== 'actions');
     return {
@@ -89,7 +89,7 @@ function NoticesPageComponent() {
       sort: (sorting.length > 0 ? sorting : [{ id: 'createdAt' as NoticesControllerGetAdminNoticesSortItem, desc: true }]).map(({ id }) => id as NoticesControllerGetAdminNoticesSortItem),
       direction: (sorting.length > 0 ? sorting : [{ id: 'createdAt', desc: true }]).map(({ desc }) => desc ? 'desc' : 'asc'),
     };
-  }, [table]);
+  })();
 
   const { data } = useNoticesControllerGetAdminNotices(queryParams);
   const notices = useMemo(() => data?.items ?? [], [data?.items]);
@@ -106,7 +106,7 @@ function NoticesPageComponent() {
   }));
 
   const handleCreateNotice = useCallback(async () => {
-    const isCreated = await openDialog(NoticeCreateDialog, undefined, { dialogId: 'notice-create' });
+    const isCreated = await openModal(NoticeCreateDialog, undefined, { modalId: 'notice-create' });
     if (isCreated) {
       void invalidate();
     }

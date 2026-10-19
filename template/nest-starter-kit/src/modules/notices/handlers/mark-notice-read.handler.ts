@@ -19,7 +19,7 @@ export class MarkNoticeReadHandler implements ICommandHandler<MarkNoticeReadComm
 
   async execute(command: MarkNoticeReadCommand): Promise<MarkNoticeReadResponseDto> {
     const userId = this.sessionContext.requiredUser.id;
-    const notice = await this.identifyNotice(command.input.id);
+    const notice = await this.identifyNotice(command.input.noticeId);
     const existingRead = await this.identifyReadRecord(userId, notice.id);
     this.verify(notice, existingRead);
     return this.process(userId, notice.id, existingRead);

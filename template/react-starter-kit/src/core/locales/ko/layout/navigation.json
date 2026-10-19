@@ -14,7 +14,9 @@
     "activityLogs": "로그 관리",
     "profile": "내 프로필",
     "inquiries": "1:1 문의",
+    "support": "고객 지원",
     "inquiryManagement": "1:1 문의 관리",
+    "supportManagement": "고객 지원 관리",
     "messageTemplates": "메시지 템플릿",
     "systemConfig": "시스템 설정"
   }

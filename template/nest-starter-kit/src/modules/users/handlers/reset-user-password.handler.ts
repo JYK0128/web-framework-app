@@ -3,25 +3,27 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError, randomBase64Url } from '@pkg/shared/common';
 import { hash } from '@pkg/shared/server';
 
+import { SessionContext } from '#/common/contexts/session.context';
 import { SystemContext } from '#/common/contexts/system.context';
 import { SessionStore } from '#/common/stores/session.store';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { ResetUserPasswordCommand } from '#/modules/users/commands/reset-user-password.command';
-import { ResetPasswordResponseDto } from '#/modules/users/dto';
+import { ResetUserPasswordResponseDto } from '#/modules/users/dto';
 
 @Injectable()
 @CommandHandler(ResetUserPasswordCommand)
-export class ResetUserPasswordHandler implements ICommandHandler<ResetUserPasswordCommand, ResetPasswordResponseDto> {
+export class ResetUserPasswordHandler implements ICommandHandler<ResetUserPasswordCommand, ResetUserPasswordResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly sessionStore: SessionStore,
     private readonly systemContext: SystemContext,
+    private readonly sessionContext: SessionContext,
   ) {}
 
-  async execute(command: ResetUserPasswordCommand): Promise<ResetPasswordResponseDto> {
-    const user = await this.identifyUser(command.input.id);
+  async execute(command: ResetUserPasswordCommand): Promise<ResetUserPasswordResponseDto> {
+    const user = await this.identifyUser(command.input.userId);
     const account = await this.identifyAccount(user.id);
     this.verify(user);
 
@@ -52,9 +54,12 @@ export class ResetUserPasswordHandler implements ICommandHandler<ResetUserPasswo
 
   private verify(user: User): void {
     this.verifyNotDeleted(user);
+    if (user.id === this.sessionContext.requiredUser.id) {
+      throw new ApplicationError({ code: 'USER_SELF_ACTION_NOT_ALLOWED', status: HttpStatus.BAD_REQUEST });
+    }
   }
 
-  private async process(user: User, account: Account | null): Promise<ResetPasswordResponseDto> {
+  private async process(user: User, account: Account | null): Promise<ResetUserPasswordResponseDto> {
     const policy = await this.systemContext.getAuthPolicy();
     const randomLength = Math.max(12, policy.minPasswordLength - 4);
     const temporaryPassword = `Aa1!${randomBase64Url(randomLength)}`;

@@ -3,6 +3,7 @@ import { Type } from 'class-transformer';
 import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 import { Secret } from '#/common/decorators/secret.decorator';
+import { BaseDto } from '#/common/dto/base.dto';
 
 export class SmtpEmailDetailsDto {
   @ApiPropertyOptional({ description: 'SMTP 호스트 서버 주소', example: 'smtp.gmail.com' })
@@ -389,7 +390,7 @@ export class PushConfigDto {
   nhn?: NhnPushDetailsDto;
 }
 
-export class NotificationConfigDto {
+export class NotificationConfigDto extends BaseDto {
   @ApiProperty({ type: EmailConfigDto, description: '이메일 발송 설정' })
   @ValidateNested()
   @Type(() => EmailConfigDto)

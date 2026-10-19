@@ -1,9 +1,9 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/dialog';
+import { type ModalComponentProps } from '#/components/modal';
 
 import { FaqEditorForm } from './faq-editor-form';
 
-type FaqCreateDialogProps = DialogComponentProps<boolean>;
+type FaqCreateDialogProps = ModalComponentProps<boolean>;
 
 export function FaqCreateDialog({
   open,

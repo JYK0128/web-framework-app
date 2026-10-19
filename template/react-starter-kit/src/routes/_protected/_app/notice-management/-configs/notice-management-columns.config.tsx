@@ -98,13 +98,27 @@ export function createNoticeManagementColumns({ i18n, canUpdate, canDelete, onEd
       cell: ({ row }) => (
         <div className="flex justify-end gap-1">
           {canUpdate && (
-            <Button variant="ghost" size="icon" onClick={() => onEdit(row.original)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={(event) => {
+                event.stopPropagation();
+                onEdit(row.original);
+              }}
+            >
               <Pencil className="size-4" />
               <span className="sr-only">{translate('noticeManagement.edit')}</span>
             </Button>
           )}
           {canDelete && (
-            <Button variant="ghost" size="icon" onClick={() => onDelete(row.original)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={(event) => {
+                event.stopPropagation();
+                onDelete(row.original);
+              }}
+            >
               <Trash2 className="size-4 text-destructive" />
               <span className="sr-only">{translate('noticeManagement.delete')}</span>
             </Button>

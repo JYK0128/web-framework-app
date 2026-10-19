@@ -43,6 +43,6 @@ export class CreateFaqHandler implements ICommandHandler<CreateFaqCommand, Creat
     });
 
     this.em.persist(faq);
-    return new CreateFaqResponseDto(faq);
+    return CreateFaqResponseDto.fromPlain(faq);
   }
 }

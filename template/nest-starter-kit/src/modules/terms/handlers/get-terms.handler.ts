@@ -42,17 +42,6 @@ export class GetTermsHandler implements IQueryHandler<GetTermsQuery, GetTermsRes
       (a, b) => (a.termGroup.sortOrder ?? 0) - (b.termGroup.sortOrder ?? 0),
     );
 
-    return {
-      items: latestTerms.map((term) => ({
-        id: term.id,
-        version: term.version,
-        content: term.content,
-        publishedAt: term.publishedAt ?? null,
-        code: term.termGroup.code,
-        title: term.termGroup.title,
-        isRequired: term.termGroup.isRequired,
-        sortOrder: term.termGroup.sortOrder,
-      })),
-    };
+    return GetTermsResponseDto.fromPlain({ items: latestTerms });
   }
 }

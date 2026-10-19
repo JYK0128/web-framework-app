@@ -6,7 +6,7 @@ import { type AuthPrincipal, type Cookie, type SessionData, Store } from 'expres
 import { getSessionCookieOptions, SESSION_TTL_SECONDS } from '#/common/configs/application.config';
 import { RequestContext as AppRequestContext } from '#/common/contexts/request.context';
 import { SystemContext } from '#/common/contexts/system.context';
-import { Role, type RolePermissions } from '#/entities/auth.extentions/role.entity';
+import { Role, type RolePermissions } from '#/entities/auth.extensions/role.entity';
 import type { Account } from '#/entities/auth/account.entity';
 import { Session } from '#/entities/auth/session.entity';
 import type { User } from '#/entities/auth/user.entity';
@@ -43,7 +43,7 @@ export class SessionStore extends Store {
       }
 
       const [role, requiredTermsAgreed, authPolicy] = await Promise.all([
-        session.user.role ? this.entityManager.findOne(Role, { key: session.user.role }) : null,
+        session.user.role ? this.entityManager.findOne(Role, { id: session.user.role.id }) : null,
         this.hasAgreedToRequiredTerms(this.entityManager, session.user.id),
         this.systemContext.getAuthPolicy(),
       ]);
@@ -181,7 +181,7 @@ export class SessionStore extends Store {
       emailVerified: Boolean(user.emailVerified),
       phoneNumber: user.phoneNumber ?? null,
       phoneNumberVerified: Boolean(user.phoneNumberVerified),
-      role: user.role ?? null,
+      role: user.role?.key ?? null,
       permissions,
       requiredTermsAgreed,
       passwordUpdatedAt: credentialAccount?.metadata?.passwordUpdatedAt ?? null,

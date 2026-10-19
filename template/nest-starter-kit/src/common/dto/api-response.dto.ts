@@ -1,6 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export class ApiBaseResponseDto<T> {
+import { BaseDto } from './base.dto';
+
+export class ApiBaseResponseDto<T> extends BaseDto {
   @ApiProperty({ type: 'boolean' })
   success!: boolean;
 
@@ -32,15 +34,9 @@ export class ApiSuccessResponseDto<T> extends ApiBaseResponseDto<T> {
 
   @ApiProperty({ type: 'object', additionalProperties: true, nullable: true })
   override data!: T;
-
-  constructor(partial?: Partial<ApiSuccessResponseDto<T>>) {
-    super();
-    Object.assign(this, partial);
-    this.success = true;
-  }
 }
 
-export class ApiValidationErrorDetailDto {
+export class ApiValidationErrorDetailDto extends BaseDto {
   @ApiProperty({ type: 'string' })
   property!: string;
 
@@ -71,11 +67,4 @@ export class ApiErrorResponseDto extends ApiBaseResponseDto<null> {
     description: 'Validation error details containing fields mapping',
   })
   details?: Record<string, unknown>;
-
-  constructor(partial?: Partial<ApiErrorResponseDto>) {
-    super();
-    Object.assign(this, partial);
-    this.success = false;
-    this.data = null;
-  }
 }

@@ -86,7 +86,7 @@ export class DiscordAlertAdapter implements IAlertAdapter {
       return { success: true };
     }
     catch (err) {
-      const error = ApplicationError.from(err, 'DISCORD_WEBHOOK_FAILED').message;
+      const error = ApplicationError.from(err, 'DISCORD_WEBHOOK_FAILED').code;
       this.logger.error(`Discord webhook error: ${error}`);
       return { success: false, error };
     }

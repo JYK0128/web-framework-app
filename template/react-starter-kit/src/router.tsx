@@ -1,3 +1,4 @@
+import { ApplicationError } from '@pkg/shared/common';
 import { keepPreviousData, MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
 import { createRouter } from '@tanstack/react-router';
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query';
@@ -20,7 +21,9 @@ export function getRouter() {
         const path = query.queryKey[0];
         if (typeof path !== 'string' || SILENT_QUERY_PATHS.has(path)) return;
 
-        const message = (error as { message?: string })?.message;
+        const message = error instanceof ApplicationError
+          ? error.translate(getI18n())
+          : (error as { message?: string })?.message;
         if (message) {
           toast.error(message);
         }
@@ -49,7 +52,9 @@ export function getRouter() {
         const errorPath = (error as { response?: { config?: { url?: string } } })?.response?.config?.url;
         if (typeof errorPath === 'string' && SILENT_MUTATION_PATHS.has(errorPath)) return;
 
-        const message = (error as { message?: string })?.message;
+        const message = error instanceof ApplicationError
+          ? error.translate(getI18n())
+          : (error as { message?: string })?.message;
         if (message) {
           toast.error(message);
         }

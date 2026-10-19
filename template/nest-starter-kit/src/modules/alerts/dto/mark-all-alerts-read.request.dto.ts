@@ -1,4 +1,3 @@
-import { EntityDto } from '#/common/dto/entity-dto';
-import { Alert } from '#/entities/alerts/alert.entity';
+import { BaseDto } from '#/common/dto/base.dto';
 
-export class MarkAllAlertsReadRequestDto extends EntityDto(Alert) {}
+export class MarkAllAlertsReadRequestDto extends BaseDto {}

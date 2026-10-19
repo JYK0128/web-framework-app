@@ -105,7 +105,7 @@ export class SolapiSmsAdapter implements ISmsAdapter {
       };
     }
     catch (err) {
-      const error = ApplicationError.from(err, 'SMS_SEND_FAILED').message;
+      const error = ApplicationError.from(err, 'SMS_SEND_FAILED').code;
       this.logger.error(`[Solapi SMS] 발송 예외 발생 to ${message.to}: ${error}`);
       return { success: false, error };
     }

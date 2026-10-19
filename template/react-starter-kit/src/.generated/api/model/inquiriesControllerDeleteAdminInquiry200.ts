@@ -5,7 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { DeleteInquiryResponse } from './deleteInquiryResponse';
+import type { DeleteAdminInquiryResponseDto } from './deleteAdminInquiryResponseDto';
 import type { InquiriesControllerDeleteAdminInquiry200Meta } from './inquiriesControllerDeleteAdminInquiry200Meta';
 
 export type InquiriesControllerDeleteAdminInquiry200 = {
@@ -14,7 +14,7 @@ export type InquiriesControllerDeleteAdminInquiry200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: DeleteInquiryResponse;
+  data: DeleteAdminInquiryResponseDto;
   message?: string;
   meta?: InquiriesControllerDeleteAdminInquiry200Meta;
 };

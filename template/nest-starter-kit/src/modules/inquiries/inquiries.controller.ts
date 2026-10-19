@@ -8,11 +8,11 @@ import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.dec
 import { InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { EventBroker } from '#/infra/event-broker';
 
-import { CreateInquiryCommand, CreateInquiryMessageCommand, DeleteInquiryCommand, UpdateInquiryCommand } from './commands';
-import { CreateAdminInquiryMessageResponseDto, CreateInquiryMessageRequestDto, CreateInquiryMessageResponseDto, CreateInquiryRequestDto, CreateInquiryResponseDto, DeleteInquiryResponseDto, GetAdminInquiriesRequestDto, GetAdminInquiriesResponseDto, GetAdminInquiryResponseDto, GetInquiriesRequestDto, GetInquiriesResponseDto, GetInquiryMessagesResponseDto, GetInquiryResponseDto, UpdateAdminInquiryResponseDto, UpdateInquiryRequestDto, UpdateInquiryResponseDto } from './dto';
+import { CreateAdminInquiryMessageCommand, CreateInquiryCommand, CreateInquiryMessageCommand, DeleteAdminInquiryCommand, DeleteInquiryCommand, UpdateAdminInquiryCommand, UpdateInquiryCommand } from './commands';
+import { CreateAdminInquiryMessageRequestDto, CreateAdminInquiryMessageResponseDto, CreateInquiryMessageRequestDto, CreateInquiryMessageResponseDto, CreateInquiryRequestDto, CreateInquiryResponseDto, DeleteAdminInquiryResponseDto, DeleteInquiryResponseDto, GetAdminInquiriesRequestDto, GetAdminInquiriesResponseDto, GetAdminInquiryMessagesResponseDto, GetAdminInquiryResponseDto, GetInquiriesRequestDto, GetInquiriesResponseDto, GetInquiryMessagesResponseDto, GetInquiryResponseDto, UpdateAdminInquiryRequestDto, UpdateAdminInquiryResponseDto, UpdateInquiryRequestDto, UpdateInquiryResponseDto } from './dto';
 import { InquiryCreatedEvent } from './events';
 import { InquiryMessagesGateway } from './inquiry-messages.gateway';
-import { GetAdminInquiriesQuery, GetAdminInquiryQuery, GetInquiriesQuery, GetInquiryMessagesQuery, GetInquiryQuery } from './queries';
+import { GetAdminInquiriesQuery, GetAdminInquiryMessagesQuery, GetAdminInquiryQuery, GetInquiriesQuery, GetInquiryMessagesQuery, GetInquiryQuery } from './queries';
 
 @ApiTags('inquiries')
 @Controller('inquiries')
@@ -29,14 +29,14 @@ export class InquiriesController {
   @Get('admin')
   @SwaggerApiResponse(GetAdminInquiriesResponseDto)
   async getAdminInquiries(@Query() query: GetAdminInquiriesRequestDto): Promise<GetAdminInquiriesResponseDto> {
-    return this.queryBus.execute(new GetAdminInquiriesQuery(query));
+    return this.queryBus.execute(new GetAdminInquiriesQuery({ query }));
   }
 
   @Permission('inquiry:manage', 'inquiry:read')
   @Get('admin/:id')
   @SwaggerApiResponse(GetAdminInquiryResponseDto)
   async getAdminInquiry(@Param('id') id: string): Promise<GetAdminInquiryResponseDto> {
-    return this.queryBus.execute(new GetAdminInquiryQuery({ id }));
+    return this.queryBus.execute(new GetAdminInquiryQuery({ inquiryId: id }));
   }
 
   @Permission('inquiry:manage', 'inquiry:update')
@@ -44,12 +44,11 @@ export class InquiriesController {
   @SwaggerApiResponse(UpdateAdminInquiryResponseDto)
   async updateAdminInquiry(
     @Param('id') id: string,
-    @Body() input: UpdateInquiryRequestDto,
+    @Body() input: UpdateAdminInquiryRequestDto,
   ): Promise<UpdateAdminInquiryResponseDto> {
-    const result = await this.commandBus.execute(new UpdateInquiryCommand({
+    const result = await this.commandBus.execute(new UpdateAdminInquiryCommand({
       inquiryId: id,
       input,
-      isAdmin: true,
     }));
     if (input.status !== undefined) {
       await this.inquiryMessagesGateway.broadcastStatusChange(id, result.status);
@@ -60,26 +59,20 @@ export class InquiriesController {
   @Permission('inquiry:manage', 'inquiry:delete')
   @Delete('admin/:id')
   @HttpCode(HttpStatus.OK)
-  @SwaggerApiResponse(DeleteInquiryResponseDto)
+  @SwaggerApiResponse(DeleteAdminInquiryResponseDto)
   async deleteAdminInquiry(
     @Param('id') id: string,
-  ): Promise<DeleteInquiryResponseDto> {
-    return this.commandBus.execute(new DeleteInquiryCommand({
-      inquiryId: id,
-      isAdmin: true,
-    }));
+  ): Promise<DeleteAdminInquiryResponseDto> {
+    return this.commandBus.execute(new DeleteAdminInquiryCommand({ inquiryId: id }));
   }
 
   @Permission('inquiry:manage', 'inquiry:read')
   @Get('admin/:id/messages')
-  @SwaggerApiResponse(GetInquiryMessagesResponseDto)
+  @SwaggerApiResponse(GetAdminInquiryMessagesResponseDto)
   async getAdminInquiryMessages(
     @Param('id') id: string,
-  ): Promise<GetInquiryMessagesResponseDto> {
-    return this.queryBus.execute(new GetInquiryMessagesQuery({
-      inquiryId: id,
-      isAdmin: true,
-    }));
+  ): Promise<GetAdminInquiryMessagesResponseDto> {
+    return this.queryBus.execute(new GetAdminInquiryMessagesQuery({ inquiryId: id }));
   }
 
   @Permission('inquiry:manage', 'inquiry:create')
@@ -88,12 +81,11 @@ export class InquiriesController {
   @SwaggerApiResponse(CreateAdminInquiryMessageResponseDto, HttpStatus.CREATED)
   async createAdminInquiryMessage(
     @Param('id') id: string,
-    @Body() input: CreateInquiryMessageRequestDto,
+    @Body() input: CreateAdminInquiryMessageRequestDto,
   ): Promise<CreateAdminInquiryMessageResponseDto> {
-    const result = await this.commandBus.execute(new CreateInquiryMessageCommand({
+    const result = await this.commandBus.execute(new CreateAdminInquiryMessageCommand({
       inquiryId: id,
       input,
-      isAdmin: true,
     }));
     await this.inquiryMessagesGateway.broadcastMessage(id, result);
     await this.inquiryMessagesGateway.broadcastStatusChange(id, InquiryStatus.ANSWERED);
@@ -106,7 +98,7 @@ export class InquiriesController {
   async getInquiries(
     @Query() query: GetInquiriesRequestDto,
   ): Promise<GetInquiriesResponseDto> {
-    return this.queryBus.execute(new GetInquiriesQuery(query));
+    return this.queryBus.execute(new GetInquiriesQuery({ query }));
   }
 
   @Permission('inquiry:create')
@@ -128,7 +120,7 @@ export class InquiriesController {
   async getInquiry(
     @Param('id') id: string,
   ): Promise<GetInquiryResponseDto> {
-    return this.queryBus.execute(new GetInquiryQuery({ id }));
+    return this.queryBus.execute(new GetInquiryQuery({ inquiryId: id }));
   }
 
   @Permission('inquiry:update')
@@ -141,7 +133,6 @@ export class InquiriesController {
     const result = await this.commandBus.execute(new UpdateInquiryCommand({
       inquiryId: id,
       input,
-      isAdmin: false,
     }));
     if (input.status !== undefined) {
       await this.inquiryMessagesGateway.broadcastStatusChange(id, result.status);
@@ -156,10 +147,7 @@ export class InquiriesController {
   async deleteInquiry(
     @Param('id') id: string,
   ): Promise<DeleteInquiryResponseDto> {
-    return this.commandBus.execute(new DeleteInquiryCommand({
-      inquiryId: id,
-      isAdmin: false,
-    }));
+    return this.commandBus.execute(new DeleteInquiryCommand({ inquiryId: id }));
   }
 
   @Permission('inquiry:read')
@@ -168,10 +156,7 @@ export class InquiriesController {
   async getInquiryMessages(
     @Param('id') id: string,
   ): Promise<GetInquiryMessagesResponseDto> {
-    return this.queryBus.execute(new GetInquiryMessagesQuery({
-      inquiryId: id,
-      isAdmin: false,
-    }));
+    return this.queryBus.execute(new GetInquiryMessagesQuery({ inquiryId: id }));
   }
 
   @Permission('inquiry:create')
@@ -185,7 +170,6 @@ export class InquiriesController {
     const result = await this.commandBus.execute(new CreateInquiryMessageCommand({
       inquiryId: id,
       input,
-      isAdmin: false,
     }));
     await this.inquiryMessagesGateway.broadcastMessage(id, result);
     return result;

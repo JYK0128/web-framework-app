@@ -48,7 +48,6 @@ export class VerifyIdentityPhoneChangeHandler implements ICommandHandler<VerifyI
         throw new ApplicationError({
           code: 'IDENTITY_MISMATCH',
           status: HttpStatus.BAD_REQUEST,
-          message: '본인 명의의 휴대폰 번호로만 변경할 수 있습니다.',
         });
       }
     }
@@ -66,7 +65,6 @@ export class VerifyIdentityPhoneChangeHandler implements ICommandHandler<VerifyI
         throw new ApplicationError({
           code: 'IDENTITY_ALREADY_REGISTERED',
           status: HttpStatus.CONFLICT,
-          message: '이미 다른 계정에 등록된 본인확인 정보입니다.',
         });
       }
     }
@@ -78,7 +76,6 @@ export class VerifyIdentityPhoneChangeHandler implements ICommandHandler<VerifyI
       throw new ApplicationError({
         code: 'PHONE_ALREADY_REGISTERED',
         status: HttpStatus.CONFLICT,
-        message: '이미 다른 계정에서 사용 중인 휴대폰 번호입니다.',
       });
     }
   }
