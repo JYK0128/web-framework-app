@@ -3,6 +3,7 @@ import { Migration } from '@mikro-orm/migrations';
 export class Migration20261014010000 extends Migration {
   override up(): void {
     this.addSql('delete from "system_config" where "code" = \'webhook\';');
+    this.addSql('delete from "system_config" where "code" = \'delivery\';');
     this.addSql('alter table "system_config" drop constraint "system_config_code_check";');
     this.addSql('alter table "system_config" add constraint "system_config_code_check" check ("code" in (\'operation\', \'maintenance\', \'inquiry\', \'notification\', \'oauth\'));');
   }

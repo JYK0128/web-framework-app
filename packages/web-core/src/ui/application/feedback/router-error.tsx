@@ -70,9 +70,19 @@ export function RouterError({ error }: Partial<ErrorComponentProps<unknown>> & {
 }
 
 function getErrorMessage(error: unknown, i18n: ReturnType<typeof useI18n>['i18n']): string {
-  if (error instanceof ApplicationError) return error.translate(i18n);
-  if (error instanceof Error) return error.message;
+  if (error instanceof ApplicationError) return error.code;
+  if (error instanceof Error) return getStableErrorCode(error) ?? error.message;
   if (typeof error === 'string') return error;
-  if (error) return JSON.stringify(error);
+  if (error && typeof error === 'object') {
+    const code = 'code' in error && typeof error.code === 'string' ? error.code : undefined;
+    if (code) return code;
+    const message = 'message' in error && typeof error.message === 'string' ? error.message : undefined;
+    if (message) return getStableErrorCode({ message }) ?? message;
+    return JSON.stringify(error);
+  }
   return i18n.t('routerError.unknown');
+}
+
+function getStableErrorCode(error: { message: string }): string | undefined {
+  return /\b[A-Z][A-Z0-9_]{2,}\b(?=$|\s)/.exec(error.message)?.[0];
 }

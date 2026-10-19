@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test('operator creates, edits, and searches an FAQ from the admin screens', async ({ page }) => {
-  await page.goto('/login');
+  await page.goto('/login?callback=%2Fcustomers');
   await expect(page.locator('html')).toHaveAttribute('data-hydrated', 'true');
   const email = page.getByLabel('이메일');
   await expect(page.locator('html')).toHaveAttribute('data-hydrated', 'true');

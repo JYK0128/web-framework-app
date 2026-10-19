@@ -70,13 +70,13 @@ test('operator creates and removes a role with browser interactions', async ({ p
 });
 
 async function signInAdmin(page: import('@playwright/test').Page): Promise<void> {
-  await page.goto('/login');
+  await page.goto('/login?callback=%2Fcustomers');
   const email = page.getByLabel('이메일');
   await expect(page.locator('html')).toHaveAttribute('data-hydrated', 'true');
   await email.fill('admin@test.com');
   await page.getByRole('textbox', { name: '비밀번호' }).fill('1q2w3e4r1@');
   await page.getByRole('button', { name: '로그인', exact: true }).click();
-  await expect(page).toHaveURL(/\/onboarding\/agree-terms|\/(?:customers|profile)$/);
+  await expect(page).toHaveURL(/\/onboarding\/agree-terms|\/customers$/);
   if (page.url().includes('/onboarding/agree-terms')) {
     const detailsButtons = page.getByRole('button', { name: /내용 보기$/ });
     await expect(detailsButtons.first()).toBeVisible();
@@ -90,7 +90,7 @@ async function signInAdmin(page: import('@playwright/test').Page): Promise<void>
     await page.getByRole('checkbox', { name: '전체 약관에 동의합니다.' }).click();
     await page.getByRole('button', { name: /동의하고 계속하기/ }).click();
   }
-  await expect(page).toHaveURL(/\/(?:customers|profile)$/);
+  await expect(page).toHaveURL(/\/customers$/);
 }
 
 async function waitForHydration(locator: import('@playwright/test').Locator): Promise<void> {
