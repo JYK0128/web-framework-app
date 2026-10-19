@@ -274,29 +274,6 @@ jobs:
             git fetch origin "$DEPLOY_REF"
             git reset --hard "$DEPLOY_SHA"
 
-            case "$(uname -m)" in
-              x86_64)
-                helper_url=https://rolesanywhere.amazonaws.com/releases/1.8.5/X86_64/Linux/Amzn2023/aws_signing_helper
-                helper_sha256=beec9ed1c492d93db809890f16713e3556353294b823c2184ad4e891f1b2b54d
-                ;;
-              aarch64|arm64)
-                helper_url=https://rolesanywhere.amazonaws.com/releases/1.8.5/Aarch64/Linux/Amzn2023/aws_signing_helper
-                helper_sha256=3d131aa888cd56da446f9c6bb460b1f0569f6c7edc74eae6193a2fe3928883ba
-                ;;
-              *) echo "Unsupported Docker host architecture: $(uname -m)" >&2; exit 1 ;;
-            esac
-            export AWS_SIGNING_HELPER_PATH="$HOME/.local/bin/aws_signing_helper"
-            if [ ! -x "$AWS_SIGNING_HELPER_PATH" ]; then
-              mkdir -p "$(dirname "$AWS_SIGNING_HELPER_PATH")"
-              helper_download=$(mktemp)
-              trap 'rm -f "$helper_download"' EXIT
-              curl --fail --location --silent --show-error "$helper_url" --output "$helper_download"
-              printf '%s  %s\n' "$helper_sha256" "$helper_download" | sha256sum --check --status
-              install -m 0755 "$helper_download" "$AWS_SIGNING_HELPER_PATH"
-              rm -f "$helper_download"
-              trap - EXIT
-            fi
-
             export APP_REVISION="$DEPLOY_SHA"
             REPOSITORY_LOWER=$(printf '%s' "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')
             export ADMIN_API_IMAGE="ghcr.io/${REPOSITORY_LOWER}/admin-api:${DEPLOY_SHA}"
