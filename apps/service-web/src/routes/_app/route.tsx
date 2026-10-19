@@ -13,6 +13,9 @@ import type { MeResponse } from '#/.generated/api/model';
 
 import { ServiceNotifications } from './-components/service-notifications';
 
+const adminWebUrl = import.meta.env.VITE_ADMIN_WEB_URL
+  ?? (import.meta.env.DEV ? 'http://localhost:13000' : 'https://admin.servicefactory.cloud');
+
 const navigation = [
   { label: 'service.navigation.home', to: '/' as const },
   { label: 'service.navigation.support', to: '/support' as const },
@@ -20,6 +23,7 @@ const navigation = [
   { label: 'service.navigation.events', to: '/events' as const },
   { label: 'service.navigation.qna', to: '/qna' as const },
   { label: 'service.navigation.faq', to: '/faq' as const },
+  { label: 'service.navigation.admin', externalHref: adminWebUrl },
 ];
 
 function ServiceAppLayout({ children, user }: { children: ReactNode, user: MeResponse | null }) {
@@ -35,9 +39,10 @@ function ServiceAppLayout({ children, user }: { children: ReactNode, user: MeRes
   const { resolvedTheme, setTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
   const navigationItems: NavigationItem[] = navigation.map((item) => ({
-    id: item.to,
+    id: item.to ?? item.externalHref,
     label: t(item.label),
     to: item.to,
+    externalHref: item.externalHref,
     active: location.pathname === item.to
       || (item.to !== '/' && location.pathname.startsWith(`${item.to}/`)),
   }));

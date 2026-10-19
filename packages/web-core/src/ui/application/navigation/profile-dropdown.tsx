@@ -27,7 +27,7 @@ export function ProfileDropdown({
   onLogout,
 }: ProfileDropdownProps) {
   const { t } = useI18n();
-  const name = user.name || t('app.profileDropdown.userFallback');
+  const name = user.name || t('core.profileDropdown.userFallback');
 
   return (
     <DropdownMenu open={open} onOpenChange={onOpenChange}>
@@ -41,7 +41,7 @@ export function ProfileDropdown({
               h-10 gap-2 rounded-full px-1
               sm:px-2
             "
-            aria-label={t('app.profileDropdown.open')}
+            aria-label={t('core.profileDropdown.open')}
           >
             <span className="
               flex size-8 items-center justify-center rounded-full bg-primary/10
@@ -57,7 +57,7 @@ export function ProfileDropdown({
             >
               <span className="block text-xs font-semibold">{name}</span>
               <span className="block text-[11px] text-muted-foreground">
-                {user.email || t('app.profileDropdown.emailFallback')}
+                {user.email || t('core.profileDropdown.emailFallback')}
               </span>
             </span>
           </Button>
@@ -68,17 +68,17 @@ export function ProfileDropdown({
           <DropdownMenuLabel>
             <span className="block text-sm font-semibold text-foreground">{name}</span>
             <span className="block">
-              {user.roleLabel || t('app.profileDropdown.roleFallback')}
+              {user.roleLabel || t('core.profileDropdown.roleFallback')}
             </span>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={onProfile}>
             <User />
-            {t('app.profileDropdown.profile')}
+            {t('core.profileDropdown.profile')}
           </DropdownMenuItem>
           <DropdownMenuItem variant="destructive" disabled={logoutPending} onClick={onLogout}>
             <LogOut />
-            {t(logoutPending ? 'app.profileDropdown.loggingOut' : 'app.profileDropdown.logout')}
+            {t(logoutPending ? 'core.profileDropdown.loggingOut' : 'core.profileDropdown.logout')}
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

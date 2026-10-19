@@ -16,7 +16,8 @@
     "fileComplete": "파일 업로드가 완료되었습니다.",
     "fileFailed": "파일 업로드에 실패했습니다.",
     "fileExceedsMaxSize": "파일 크기는 최대 {{maxSize}}MB까지 가능합니다.",
-    "fileBlockedExtension": "보안상 업로드할 수 없는 파일 형식입니다 ({{ext}})."
+    "fileBlockedExtension": "보안상 업로드할 수 없는 파일 형식입니다 ({{ext}}).",
+    "showPassword": "비밀번호 보기",
+    "hidePassword": "비밀번호 숨기기"
   }
 }
-

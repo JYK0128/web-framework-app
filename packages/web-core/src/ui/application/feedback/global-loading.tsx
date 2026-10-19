@@ -1,6 +1,8 @@
 import { LoaderCircle } from 'lucide-react';
 import { useSyncExternalStore } from 'react';
 
+import { useI18n } from '#context/i18n';
+
 type LoadingOptions = {
   message?: string
 };
@@ -71,6 +73,7 @@ export async function loading<T>(callback: () => T | Promise<T>, options: Loadin
 }
 
 export function GlobalLoading() {
+  const { t } = useI18n();
   const request = useSyncExternalStore(
     loadingState.subscribe,
     loadingState.getSnapshot,
@@ -79,7 +82,7 @@ export function GlobalLoading() {
 
   if (!request) return null;
 
-  const displayMessage = request.message ?? '처리 중...';
+  const displayMessage = request.message ?? t('core.globalLoading.processing');
 
   return (
     <div

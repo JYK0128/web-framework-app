@@ -2,9 +2,12 @@ import chart from './chart.json';
 import cookie_consent from './cookie-consent.json';
 import data_grid from './data-grid.json';
 import dialog from './dialog.json';
+import editor from './editor.json';
 import form from './form.json';
 import global_loading from './global-loading.json';
 import locale_switcher from './locale-switcher.json';
+import navigation from './navigation.json';
+import notice_banner from './notice-banner.json';
 import notification from './notification.json';
 import password_policy from './password-policy.json';
 import profile_dropdown from './profile-dropdown.json';
@@ -16,19 +19,21 @@ import theme from './theme.json';
 import validation from './validation.json';
 
 export const localeResources = {
-  app: {
+  app: {},
+  core: {
     ...chart,
     ...cookie_consent,
+    ...data_grid,
     ...dialog,
+    ...editor,
+    ...form,
     ...global_loading,
+    ...navigation,
+    ...notice_banner,
     ...profile_dropdown,
     ...router_error,
     ...router_not_found,
     ...theme,
-  },
-  core: {
-    ...data_grid,
-    ...form,
     ...validation,
   },
   ...locale_switcher,

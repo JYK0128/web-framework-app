@@ -1,5 +1,6 @@
 import { AppIcon, BrandLogo, LocaleSwitcher, ProfileDropdown } from '@pkg/web-core/application';
 import { useSSE } from '@pkg/web-core/hooks';
+import { useI18n } from '@pkg/web-core/i18n';
 import { AppLayout as AppLayoutParts, LinkCard } from '@pkg/web-core/template';
 import { ThemeToggle } from '@pkg/web-core/ui';
 import { cn } from '@pkg/web-core/utils';
@@ -44,43 +45,49 @@ type AppLayoutProps = { user: MeResponse, children: ReactNode };
 
 const navigationGroups: NavigationGroup[] = [
   {
-    title: '서비스 관리',
+    title: 'admin.navigation.overview',
     items: [
-      { title: '고객 관리', href: '/customers', icon: 'user-check', iconColor: 'text-indigo-600 dark:text-indigo-400', permission: 'customer:read' },
-      { title: '멤버십 관리', href: '/memberships', icon: 'crown', iconColor: 'text-purple-600 dark:text-purple-400', permission: 'customer:read' },
-      { title: 'FAQ 관리', href: '/faqs', icon: 'circle-help', iconColor: 'text-teal-600 dark:text-teal-400', permission: 'faq:read' },
-      { title: 'Q&A 관리', href: '/qna', icon: 'message-circle-question', iconColor: 'text-cyan-600 dark:text-cyan-400', permission: 'qna:read' },
-      { title: '고객 지원', href: '/support', icon: 'messages-square', iconColor: 'text-sky-600 dark:text-sky-400', permission: 'support:read' },
-      { title: '서비스 약관 관리', href: '/service-terms', icon: 'file-signature', iconColor: 'text-violet-600 dark:text-violet-400', permission: 'service_term:read' },
+      { title: 'admin.navigation.dashboard', href: '/', icon: 'layout-dashboard', iconColor: 'text-blue-600 dark:text-blue-400' },
     ],
   },
   {
-    title: '컨텐츠 관리',
+    title: 'admin.navigation.serviceManagement',
     items: [
-      { title: '공지사항 관리', href: '/notices', icon: 'megaphone', iconColor: 'text-rose-600 dark:text-rose-400', permission: 'notice:read' },
-      { title: '이벤트 관리', href: '/events', icon: 'calendar-days', iconColor: 'text-fuchsia-600 dark:text-fuchsia-400', permission: 'event:read' },
+      { title: 'admin.navigation.customers', href: '/customers', icon: 'user-check', iconColor: 'text-indigo-600 dark:text-indigo-400', permission: 'customer:read' },
+      { title: 'admin.navigation.memberships', href: '/memberships', icon: 'crown', iconColor: 'text-purple-600 dark:text-purple-400', permission: 'customer:read' },
+      { title: 'admin.navigation.faqs', href: '/faqs', icon: 'circle-help', iconColor: 'text-teal-600 dark:text-teal-400', permission: 'faq:read' },
+      { title: 'admin.navigation.qna', href: '/qna', icon: 'message-circle-question', iconColor: 'text-cyan-600 dark:text-cyan-400', permission: 'qna:read' },
+      { title: 'admin.navigation.support', href: '/support', icon: 'messages-square', iconColor: 'text-sky-600 dark:text-sky-400', permission: 'support:read' },
+      { title: 'admin.navigation.serviceTerms', href: '/service-terms', icon: 'file-signature', iconColor: 'text-violet-600 dark:text-violet-400', permission: 'service_term:read' },
     ],
   },
   {
-    title: '운영자 관리',
+    title: 'admin.navigation.contentManagement',
     items: [
-      { title: '역할 관리', href: '/roles', icon: 'shield-check', iconColor: 'text-amber-600 dark:text-amber-400', permission: 'role:read' },
-      { title: '운영자 관리', href: '/operators', icon: 'users', iconColor: 'text-blue-600 dark:text-blue-400', permission: 'operator:read' },
-      { title: '약관 관리', href: '/terms', icon: 'file-text', iconColor: 'text-violet-600 dark:text-violet-400', permission: 'terms:read' },
+      { title: 'admin.navigation.notices', href: '/notices', icon: 'megaphone', iconColor: 'text-rose-600 dark:text-rose-400', permission: 'notice:read' },
+      { title: 'admin.navigation.events', href: '/events', icon: 'calendar-days', iconColor: 'text-fuchsia-600 dark:text-fuchsia-400', permission: 'event:read' },
     ],
   },
   {
-    title: '시스템 관리',
+    title: 'admin.navigation.operatorManagement',
     items: [
-      { title: '로그 관리', href: '/logs', icon: 'activity', iconColor: 'text-orange-600 dark:text-orange-400', permission: 'log:read' },
-      { title: '서비스 설정', href: '/service-settings', icon: 'settings-2', iconColor: 'text-cyan-600 dark:text-cyan-400', permission: 'system:read' },
-      { title: '시스템 설정', href: '/system-settings', icon: 'server-cog', iconColor: 'text-violet-600 dark:text-violet-400', permission: 'system:read' },
+      { title: 'admin.navigation.roles', href: '/roles', icon: 'shield-check', iconColor: 'text-amber-600 dark:text-amber-400', permission: 'role:read' },
+      { title: 'admin.navigation.operators', href: '/operators', icon: 'users', iconColor: 'text-blue-600 dark:text-blue-400', permission: 'operator:read' },
+      { title: 'admin.navigation.terms', href: '/terms', icon: 'file-text', iconColor: 'text-violet-600 dark:text-violet-400', permission: 'terms:read' },
     ],
   },
   {
-    title: '개인',
+    title: 'admin.navigation.systemManagement',
     items: [
-      { title: '프로필', href: '/profile', icon: 'user-round', iconColor: 'text-emerald-600 dark:text-emerald-400' },
+      { title: 'admin.navigation.logs', href: '/logs', icon: 'activity', iconColor: 'text-orange-600 dark:text-orange-400', permission: 'log:read' },
+      { title: 'admin.navigation.serviceSettings', href: '/service-settings', icon: 'settings-2', iconColor: 'text-cyan-600 dark:text-cyan-400', permission: 'system:read' },
+      { title: 'admin.navigation.systemSettings', href: '/system-settings', icon: 'server-cog', iconColor: 'text-violet-600 dark:text-violet-400', permission: 'system:read' },
+    ],
+  },
+  {
+    title: 'admin.navigation.personal',
+    items: [
+      { title: 'admin.navigation.profile', href: '/profile', icon: 'user-round', iconColor: 'text-emerald-600 dark:text-emerald-400' },
     ],
   },
 ];
@@ -90,14 +97,16 @@ function NavigationMenu({
   activeHref,
   collapsed = false,
   onItemClick,
+  label,
 }: Readonly<{
   groups: NavigationGroup[]
   activeHref?: NavigationItem['href']
   collapsed?: boolean
   onItemClick?: () => void
+  label: string
 }>) {
   return (
-    <nav className="scroll-y grid content-start gap-4 p-3">
+    <nav aria-label={label} className="scroll-y grid content-start gap-4 p-3">
       {groups.map((group) => (
         <section key={group.title} className="grid gap-1">
           <h2 className={cn(`
@@ -116,6 +125,7 @@ function NavigationMenu({
 }
 
 function AdminAppLayout({ user, children }: AppLayoutProps) {
+  const { t } = useI18n();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState<'alerts' | 'profile' | null>(null);
@@ -127,7 +137,10 @@ function AdminAppLayout({ user, children }: AppLayoutProps) {
   const visibleNavigationGroups = navigationGroups
     .map((group) => ({
       ...group,
-      items: group.items.filter((item) => !item.permission || user.permissions.includes(item.permission)),
+      title: t(group.title),
+      items: group.items
+        .filter((item) => !item.permission || user.permissions.includes(item.permission))
+        .map((item) => ({ ...item, title: t(item.title) })),
     }))
     .filter((group) => group.items.length > 0);
   const visibleNavigation = visibleNavigationGroups.flatMap((group) => group.items);
@@ -188,7 +201,7 @@ function AdminAppLayout({ user, children }: AppLayoutProps) {
         : `w-64`)}
       >
         <div className="flex h-16 items-center border-b px-5"><BrandLogo /></div>
-        <NavigationMenu groups={visibleNavigationGroups} activeHref={activeItem?.href} collapsed={isCollapsed} />
+        <NavigationMenu groups={visibleNavigationGroups} activeHref={activeItem?.href} collapsed={isCollapsed} label={t('admin.navigation.menu')} />
       </AppLayoutParts.Sidebar>
       <AppLayoutParts.Sidebar
         className={cn(
@@ -206,7 +219,7 @@ function AdminAppLayout({ user, children }: AppLayoutProps) {
             <X className="size-5" />
           </Button>
         </div>
-        <NavigationMenu groups={visibleNavigationGroups} activeHref={activeItem?.href} onItemClick={() => setIsMobileOpen(false)} />
+        <NavigationMenu groups={visibleNavigationGroups} activeHref={activeItem?.href} onItemClick={() => setIsMobileOpen(false)} label={t('admin.navigation.menu')} />
       </AppLayoutParts.Sidebar>
 
       <AppLayoutParts.Main>
@@ -239,7 +252,7 @@ function AdminAppLayout({ user, children }: AppLayoutProps) {
             >
               {isCollapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
             </Button>
-            <h2 className="truncate text-base font-bold tracking-tight">{activeItem?.title ?? '운영자'}</h2>
+            <h2 className="truncate text-base font-bold tracking-tight">{activeItem?.title ?? 'Service-Factory Admin'}</h2>
           </div>
           <div className="flex items-center gap-2">
             <LocaleSwitcher />

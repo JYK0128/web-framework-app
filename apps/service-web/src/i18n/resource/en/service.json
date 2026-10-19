@@ -11,7 +11,8 @@
     "profile": "Profile",
     "logout": "Log out",
     "loggingOut": "Logging out...",
-    "login": "Log in"
+    "login": "Log in",
+    "admin": "Admin"
   },
   "home": {
     "description": "Explore the main features of our service.",

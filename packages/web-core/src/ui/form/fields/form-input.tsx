@@ -3,6 +3,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 
 import { cn } from '#.generated/shadcn/lib/utils';
+import { useI18n } from '#context/i18n';
 import { Input, InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '#ui';
 import { FormField } from '#ui/form/components';
 import { useFieldContext } from '#ui/form/core/context';
@@ -27,6 +28,7 @@ export function FormInput({
   style,
   ...props
 }: FormInputProps) {
+  const { t } = useI18n();
   const field = useFieldContext<string | number | readonly string[]>();
   const hasError = field.state.meta.errors.length > 0;
   const [showPassword, setShowPassword] = useState(false);
@@ -71,7 +73,7 @@ export function FormInput({
               type="button"
               tabIndex={-1}
               onClick={() => setShowPassword((prev) => !prev)}
-              aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
+              aria-label={t(showPassword ? 'core.form.hidePassword' : 'core.form.showPassword')}
             >
               {showPassword
                 ? <EyeOff className="size-4" />

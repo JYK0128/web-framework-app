@@ -1,6 +1,6 @@
 {
   "globalLoading": {
-    "processing": "Processing..."
+    "processing": "Processing...",
+    "loading": "Loading..."
   }
 }
-

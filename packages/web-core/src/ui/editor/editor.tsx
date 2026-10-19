@@ -32,7 +32,7 @@ export function Editor({
   disabled = false,
   value,
   height = '320px',
-  placeholder = '내용을 입력해 주세요.',
+  placeholder: placeholderProp,
   options,
   onChange,
   onBlur,
@@ -41,10 +41,11 @@ export function Editor({
 }: EditorProps) {
   const id = useId();
   const { resolvedTheme } = useTheme();
-  const { language } = useI18n();
+  const { language, t } = useI18n();
+  const placeholder = placeholderProp ?? t('core.form.markdownPlaceholder');
   const fallback = (
     <div className="animate-pulse rounded-md border bg-muted" role="status">
-      에디터를 불러오는 중입니다.
+      {t('core.editor.loading')}
     </div>
   );
 

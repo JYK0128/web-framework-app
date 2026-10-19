@@ -31,7 +31,7 @@ function RegisterPage() {
             context.addIssue({ code: 'custom', path: ['password'], message });
           }
           if (value.password !== value.confirmPassword) {
-            context.addIssue({ code: 'custom', path: ['confirmPassword'], message: '비밀번호가 일치하지 않습니다.' });
+            context.addIssue({ code: 'custom', path: ['confirmPassword'], message: t('app.auth.register.passwordMismatch') });
           }
         }),
     },
@@ -60,21 +60,26 @@ function RegisterPage() {
 
   const renderRegistrationContent = () => {
     if (registered) {
+      let statusMessage = t('app.auth.register.continue');
+      if (registered.verificationRequired) {
+        statusMessage = registered.emailQueued
+          ? t('app.auth.register.verificationQueued', { email: registered.email })
+          : t('app.auth.register.verificationRequired');
+      }
+
       return (
         <div className="grid gap-4">
-          <p role="status" className="text-sm">
-            {getRegistrationCompleteMessage(registered)}
-          </p>
+          <p role="status" className="text-sm">{statusMessage}</p>
           {registered.verificationRequired && (
             <Button
               variant="outline"
               onClick={resendVerification}
               disabled={requestVerificationMutation.isPending}
             >
-              {requestVerificationMutation.isPending ? '보내는 중...' : '인증 메일 다시 보내기'}
+              {requestVerificationMutation.isPending ? t('app.auth.register.resendPending') : t('app.auth.register.resend')}
             </Button>
           )}
-          <Link to="/login" className="text-sm underline underline-offset-4">로그인으로 이동</Link>
+          <Link to="/login" className="text-sm underline underline-offset-4">{t('app.auth.register.login')}</Link>
         </div>
       );
     }
@@ -82,8 +87,8 @@ function RegisterPage() {
     if (!policy.registrationAvailable || !policy.credentialAvailable) {
       return (
         <div className="grid gap-4">
-          <p role="status" className="text-sm">현재 회원가입을 사용할 수 없습니다.</p>
-          <Link to="/login" className="text-sm underline underline-offset-4">로그인으로 이동</Link>
+          <p role="status" className="text-sm">{t('app.auth.register.unavailable')}</p>
+          <Link to="/login" className="text-sm underline underline-offset-4">{t('app.auth.register.login')}</Link>
         </div>
       );
     }
@@ -114,16 +119,16 @@ function RegisterPage() {
             )}
           </p>
           <form.AppField name="name">
-            {(field) => <field.Input label="이름" autoComplete="name" required />}
+            {(field) => <field.Input label={t('app.auth.register.name')} autoComplete="name" required />}
           </form.AppField>
           <form.AppField name="email">
-            {(field) => <field.Input type="email" label="이메일" autoComplete="email" required />}
+            {(field) => <field.Input type="email" label={t('app.auth.register.email')} autoComplete="email" required />}
           </form.AppField>
           <form.AppField name="password">
             {(field) => (
               <field.Input
                 type="password"
-                label="비밀번호"
+                label={t('app.auth.register.password')}
                 minLength={policy.passwordMinLength}
                 maxLength={policy.passwordMaxLength}
                 autoComplete="new-password"
@@ -132,10 +137,10 @@ function RegisterPage() {
             )}
           </form.AppField>
           <form.AppField name="confirmPassword">
-            {(field) => <field.Input type="password" label="비밀번호 확인" autoComplete="new-password" required />}
+            {(field) => <field.Input type="password" label={t('app.auth.register.confirmPassword')} autoComplete="new-password" required />}
           </form.AppField>
           <FormSubmit className="w-full" disabled={registerMutation.isPending}>
-            {registerMutation.isPending ? '가입 중...' : '회원가입'}
+            {registerMutation.isPending ? t('app.auth.register.pending') : t('app.auth.register.submit')}
           </FormSubmit>
         </FormLayout>
       </form.AppForm>
@@ -150,8 +155,8 @@ function RegisterPage() {
         "
         >
           <CardHeader>
-            <CardTitle className="text-2xl font-bold tracking-tight">회원가입</CardTitle>
-            <CardDescription>계정을 만들어 주세요.</CardDescription>
+            <CardTitle className="text-2xl font-bold tracking-tight">{t('app.auth.register.title')}</CardTitle>
+            <CardDescription>{t('app.auth.register.description')}</CardDescription>
           </CardHeader>
           <CardContent className="scroll-y">
             {renderRegistrationContent()}
@@ -160,10 +165,4 @@ function RegisterPage() {
       </ScreenLayout.Content>
     </ScreenLayout.Root>
   );
-}
-
-function getRegistrationCompleteMessage(registered: { email: string, verificationRequired: boolean, emailQueued: boolean }): string {
-  if (!registered.verificationRequired) return '로그인하여 계속 진행해 주세요.';
-  if (registered.emailQueued) return `${registered.email} 주소로 인증 메일 발송을 요청했습니다. 잠시 후 메일함을 확인해 주세요.`;
-  return '이메일 인증을 마치면 로그인할 수 있습니다. 인증 메일을 다시 받아 주세요.';
 }

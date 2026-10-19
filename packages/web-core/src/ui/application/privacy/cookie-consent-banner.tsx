@@ -42,7 +42,7 @@ export function CookieConsentBanner({
           >
             <div className="scroll-y flex-1">
               <h2 id="cookie-consent-title" className="text-base font-bold">
-                {t('app.cookieConsent.title')}
+                {t('core.cookieConsent.title')}
               </h2>
               <div
                 id="cookie-consent-description"
@@ -50,28 +50,28 @@ export function CookieConsentBanner({
               >
                 <p>
                   <strong className="font-semibold text-card-foreground">
-                    {t('app.cookieConsent.essentialLabel')}
+                    {t('core.cookieConsent.essentialLabel')}
                   </strong>
                   {' '}
-                  {t('app.cookieConsent.essentialDescription')}
+                  {t('core.cookieConsent.essentialDescription')}
                 </p>
                 <p>
                   <strong className="font-semibold text-card-foreground">
-                    {t('app.cookieConsent.functionalLabel')}
+                    {t('core.cookieConsent.functionalLabel')}
                   </strong>
                   {' '}
-                  {t('app.cookieConsent.functionalDescription')}
+                  {t('core.cookieConsent.functionalDescription')}
                 </p>
                 <p>
                   <strong className="font-semibold text-card-foreground">
-                    {t('app.cookieConsent.analyticsLabel')}
+                    {t('core.cookieConsent.analyticsLabel')}
                   </strong>
                   {' '}
-                  {t('app.cookieConsent.analyticsDescription')}
+                  {t('core.cookieConsent.analyticsDescription')}
                 </p>
                 {authenticated && (
                   <p className="text-xs font-medium text-primary/90">
-                    {t('app.cookieConsent.multiDeviceNotice')}
+                    {t('core.cookieConsent.multiDeviceNotice')}
                   </p>
                 )}
                 <div className="pt-1 text-xs">
@@ -83,7 +83,7 @@ export function CookieConsentBanner({
                     "
                     onClick={() => setDetailsOpen(true)}
                   >
-                    {t('app.cookieConsent.details')}
+                    {t('core.cookieConsent.details')}
                   </button>
                 </div>
               </div>
@@ -95,14 +95,14 @@ export function CookieConsentBanner({
                 disabled={pending}
                 onClick={() => onConsentChange(false)}
               >
-                {t('app.cookieConsent.essentialOnly')}
+                {t('core.cookieConsent.essentialOnly')}
               </Button>
               <Button
                 type="button"
                 disabled={pending}
                 onClick={() => onConsentChange(true)}
               >
-                {t('app.cookieConsent.allowAnalytics')}
+                {t('core.cookieConsent.allowAnalytics')}
               </Button>
             </div>
           </div>

@@ -1,6 +1,7 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
+import { useI18n } from '@pkg/web-core/i18n';
 import { ScreenLayout } from '@pkg/web-core/template';
 import { Card, CardContent, CardHeader, CardTitle, Separator } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
@@ -18,6 +19,7 @@ export const Route = createFileRoute('/_public/_global/login/')({
 });
 
 function LoginPage() {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { callback } = Route.useSearch();
@@ -77,7 +79,7 @@ function LoginPage() {
         "
         >
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold tracking-tight">로그인</CardTitle>
+            <CardTitle className="text-2xl font-bold tracking-tight">{t('app.auth.login.title')}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col overflow-hidden p-6">
             <form.AppForm>
@@ -92,7 +94,7 @@ function LoginPage() {
                       {(field) => (
                         <field.Input
                           type="email"
-                          label="이메일"
+                          label={t('app.auth.login.email')}
                           placeholder="user@example.com"
                           autoComplete="email"
                           required
@@ -103,7 +105,7 @@ function LoginPage() {
                       {(field) => (
                         <field.Input
                           type="password"
-                          label="비밀번호"
+                          label={t('app.auth.login.password')}
                           placeholder="••••••••"
                           autoComplete="current-password"
                           required
@@ -112,7 +114,7 @@ function LoginPage() {
                     </form.AppField>
                     <div className="flex items-center justify-between gap-2">
                       <form.AppField name="rememberMe">
-                        {(field) => <field.Checkbox label="로그인 상태 유지" showError={false} />}
+                        {(field) => <field.Checkbox label={t('app.auth.login.remember')} showError={false} />}
                       </form.AppField>
                       <Link
                         to="/find-account"
@@ -121,7 +123,7 @@ function LoginPage() {
                           hover:text-foreground hover:underline
                         "
                       >
-                        아이디·비밀번호 찾기
+                        {t('app.auth.login.findAccount')}
                       </Link>
                     </div>
                   </div>
@@ -130,7 +132,7 @@ function LoginPage() {
                   <div className="grid gap-6">
                     {hasCredentialLogin && (
                       <FormSubmit variant="default" className="w-full" disabled={loginMutation.isPending}>
-                        <span>{loginMutation.isPending ? '인증 확인 중...' : '로그인'}</span>
+                        <span>{loginMutation.isPending ? t('app.auth.login.pending') : t('app.auth.login.submit')}</span>
                       </FormSubmit>
                     )}
                     {hasOAuthLogin && (
@@ -138,7 +140,7 @@ function LoginPage() {
                         {hasCredentialLogin && (
                           <div className="flex items-center gap-3">
                             <Separator className="h-px flex-1 bg-border" />
-                            <span className="text-xs text-muted-foreground">또는</span>
+                            <span className="text-xs text-muted-foreground">{t('app.auth.login.or')}</span>
                             <Separator className="h-px flex-1 bg-border" />
                           </div>
                         )}
@@ -161,15 +163,14 @@ function LoginPage() {
                                 className="size-5 object-contain"
                               />
                             )}
-                            {provider.name}
-                            로 로그인
+                            {t('app.auth.login.providerLogin', { provider: provider.name })}
                           </a>
                         ))}
                       </div>
                     )}
                     {policy.registrationAvailable && hasCredentialLogin && (
                       <div className="text-center text-sm">
-                        <span className="text-muted-foreground">계정이 없으신가요?</span>
+                        <span className="text-muted-foreground">{t('app.auth.login.noAccount')}</span>
                         <Link
                           to="/register"
                           className="
@@ -177,7 +178,7 @@ function LoginPage() {
                             underline-offset-4
                           "
                         >
-                          회원가입
+                          {t('app.auth.login.register')}
                         </Link>
                       </div>
                     )}
@@ -188,7 +189,7 @@ function LoginPage() {
                     role="status"
                     className="text-center text-sm text-muted-foreground"
                   >
-                    사용 가능한 로그인 방법이 없습니다.
+                    {t('app.auth.login.noMethods')}
                   </p>
                 )}
               </FormLayout>
@@ -204,7 +205,9 @@ function LoginPage() {
             hover:text-foreground
           "
         >
-          ← 홈으로 돌아가기
+          ←
+          {' '}
+          {t('app.auth.login.home')}
         </Link>
       </ScreenLayout.Addon>
     </ScreenLayout.Root>

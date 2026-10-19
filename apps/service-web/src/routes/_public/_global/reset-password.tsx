@@ -33,7 +33,7 @@ function ResetPasswordPage() {
             context.addIssue({ code: 'custom', path: ['newPassword'], message });
           }
           if (value.newPassword !== value.confirmPassword) {
-            context.addIssue({ code: 'custom', path: ['confirmPassword'], message: '비밀번호가 일치하지 않습니다.' });
+            context.addIssue({ code: 'custom', path: ['confirmPassword'], message: t('app.auth.resetPassword.passwordMismatch') });
           }
         }),
     },
@@ -61,19 +61,19 @@ function ResetPasswordPage() {
         "
         >
           <CardHeader>
-            <CardTitle className="text-2xl font-bold tracking-tight">새 비밀번호 설정</CardTitle>
-            <CardDescription>새 비밀번호를 입력해 주세요.</CardDescription>
+            <CardTitle className="text-2xl font-bold tracking-tight">{t('app.auth.resetPassword.title')}</CardTitle>
+            <CardDescription>{t('app.auth.resetPassword.description')}</CardDescription>
           </CardHeader>
           <CardContent className="scroll-y">
             {mutation.isSuccess
               ? (
                 <div className="grid gap-4">
-                  <p className="text-sm">새 비밀번호로 로그인해 주세요.</p>
+                  <p className="text-sm">{t('app.auth.resetPassword.success')}</p>
                   <Link
                     to="/login"
                     className="text-sm underline underline-offset-4"
                   >
-                    로그인으로 이동
+                    {t('app.auth.resetPassword.login')}
                   </Link>
                 </div>
               )
@@ -107,12 +107,12 @@ function ResetPasswordPage() {
                         role="alert"
                         className="text-sm text-destructive"
                       >
-                        재설정 링크에 필요한 정보가 없습니다.
+                        {t('app.auth.resetPassword.missingInfo')}
                       </p>
                     )}
-                    <form.AppField name="newPassword">{(field) => <field.Input type="password" label="새 비밀번호" minLength={policy.passwordMinLength} maxLength={policy.passwordMaxLength} autoComplete="new-password" required />}</form.AppField>
-                    <form.AppField name="confirmPassword">{(field) => <field.Input type="password" label="새 비밀번호 확인" autoComplete="new-password" required />}</form.AppField>
-                    <FormSubmit className="w-full" disabled={mutation.isPending || !challengeId || !token}>{mutation.isPending ? '변경 중...' : '비밀번호 변경'}</FormSubmit>
+                    <form.AppField name="newPassword">{(field) => <field.Input type="password" label={t('app.auth.resetPassword.newPassword')} minLength={policy.passwordMinLength} maxLength={policy.passwordMaxLength} autoComplete="new-password" required />}</form.AppField>
+                    <form.AppField name="confirmPassword">{(field) => <field.Input type="password" label={t('app.auth.resetPassword.confirmPassword')} autoComplete="new-password" required />}</form.AppField>
+                    <FormSubmit className="w-full" disabled={mutation.isPending || !challengeId || !token}>{mutation.isPending ? t('app.auth.resetPassword.pending') : t('app.auth.resetPassword.submit')}</FormSubmit>
                   </FormLayout>
                 </form.AppForm>
               )}

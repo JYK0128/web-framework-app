@@ -15,6 +15,7 @@ import { Route as ProtectedAppRouteRouteImport } from './routes/_protected/_app/
 import { Route as ProtectedGlobalRouteRouteImport } from './routes/_protected/_global/route'
 import { Route as PublicGlobalRouteRouteImport } from './routes/_public/_global/route'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
+import { Route as ProtectedAppIndexRouteImport } from './routes/_protected/_app/index'
 import { Route as ProtectedAppProfileRouteImport } from './routes/_protected/_app/profile'
 import { Route as ProtectedGlobalOnboardingRouteRouteImport } from './routes/_protected/_global/onboarding/route'
 import { Route as PublicGlobalFindAccountRouteImport } from './routes/_public/_global/find-account'
@@ -69,6 +70,11 @@ const ApiSplatRoute = ApiSplatRouteImport.update({
   id: '/api/$',
   path: '/api/$',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ProtectedAppIndexRoute = ProtectedAppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProtectedAppRouteRoute,
 } as any)
 const ProtectedAppProfileRoute = ProtectedAppProfileRouteImport.update({
   id: '/profile',
@@ -233,7 +239,7 @@ const PublicGlobalChar123LocaleChar125IndexRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof PublicGlobalRouteRouteWithChildren
+  '/': typeof ProtectedAppIndexRoute
   '/api/$': typeof ApiSplatRoute
   '/onboarding': typeof ProtectedGlobalOnboardingRouteRouteWithChildren
   '/{-$locale}': typeof PublicGlobalChar123LocaleChar125RouteRouteWithChildren
@@ -266,7 +272,7 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/': typeof PublicGlobalChar123LocaleChar125IndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof PublicGlobalRouteRouteWithChildren
+  '/': typeof ProtectedAppIndexRoute
   '/api/$': typeof ApiSplatRoute
   '/onboarding': typeof ProtectedGlobalOnboardingRouteRouteWithChildren
   '/profile': typeof ProtectedAppProfileRoute
@@ -312,6 +318,7 @@ export interface FileRoutesById {
   '/_public/_global/register': typeof PublicGlobalRegisterRoute
   '/_public/_global/reset-password': typeof PublicGlobalResetPasswordRoute
   '/_public/_global/verify-email': typeof PublicGlobalVerifyEmailRoute
+  '/_protected/_app/': typeof ProtectedAppIndexRoute
   '/_protected/_global/onboarding/agree-terms': typeof ProtectedGlobalOnboardingAgreeTermsRoute
   '/_protected/_global/onboarding/change-password': typeof ProtectedGlobalOnboardingChangePasswordRoute
   '/_protected/_global/onboarding/setup-2fa': typeof ProtectedGlobalOnboardingSetup2faRoute
@@ -415,6 +422,7 @@ export interface FileRouteTypes {
     | '/_public/_global/register'
     | '/_public/_global/reset-password'
     | '/_public/_global/verify-email'
+    | '/_protected/_app/'
     | '/_protected/_global/onboarding/agree-terms'
     | '/_protected/_global/onboarding/change-password'
     | '/_protected/_global/onboarding/setup-2fa'
@@ -487,6 +495,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/$'
       preLoaderRoute: typeof ApiSplatRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_protected/_app/': {
+      id: '/_protected/_app/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof ProtectedAppIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
     }
     '/_protected/_app/profile': {
       id: '/_protected/_app/profile'
@@ -696,6 +711,7 @@ declare module '@tanstack/react-router' {
 
 interface ProtectedAppRouteRouteChildren {
   ProtectedAppProfileRoute: typeof ProtectedAppProfileRoute
+  ProtectedAppIndexRoute: typeof ProtectedAppIndexRoute
   ProtectedAppCustomersIndexRoute: typeof ProtectedAppCustomersIndexRoute
   ProtectedAppEventsIndexRoute: typeof ProtectedAppEventsIndexRoute
   ProtectedAppFaqsIndexRoute: typeof ProtectedAppFaqsIndexRoute
@@ -714,6 +730,7 @@ interface ProtectedAppRouteRouteChildren {
 
 const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
   ProtectedAppProfileRoute: ProtectedAppProfileRoute,
+  ProtectedAppIndexRoute: ProtectedAppIndexRoute,
   ProtectedAppCustomersIndexRoute: ProtectedAppCustomersIndexRoute,
   ProtectedAppEventsIndexRoute: ProtectedAppEventsIndexRoute,
   ProtectedAppFaqsIndexRoute: ProtectedAppFaqsIndexRoute,

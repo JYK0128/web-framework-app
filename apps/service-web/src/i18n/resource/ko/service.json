@@ -11,7 +11,8 @@
     "profile": "프로필",
     "logout": "로그아웃",
     "loggingOut": "로그아웃 중...",
-    "login": "로그인"
+    "login": "로그인",
+    "admin": "관리도구"
   },
   "home": {
     "description": "서비스의 주요 콘텐츠를 먼저 확인해 보세요.",

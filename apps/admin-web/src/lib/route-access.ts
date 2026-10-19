@@ -32,7 +32,7 @@ function needsOnboarding(context: RouteAccessContext): boolean {
 export function beforeLoadProtectedRoute({ context, location }: RouteAccessOptions) {
   const isOnboarding = location.pathname === '/onboarding' || location.pathname.startsWith('/onboarding/');
   const callback = isOnboarding
-    ? new URLSearchParams(location.searchStr).get('callback') ?? '/profile'
+    ? new URLSearchParams(location.searchStr).get('callback') ?? '/'
     : `${location.pathname}${location.searchStr}${location.hash}`;
   const { user } = context;
 
@@ -55,7 +55,7 @@ export function beforeLoadPublicRoute({ context, location }: RouteAccessOptions)
 
   const isLogin = location.pathname === '/login' || location.pathname.startsWith('/login/');
   const callback = isLogin
-    ? new URLSearchParams(location.searchStr).get('callback') ?? '/profile'
+    ? new URLSearchParams(location.searchStr).get('callback') ?? '/'
     : `${location.pathname}${location.searchStr}${location.hash}`;
   // TanStack Router uses thrown redirect objects to interrupt route loading.
   // eslint-disable-next-line @typescript-eslint/only-throw-error

@@ -1,6 +1,7 @@
 import { CheckCircle2, CircleAlert, Info, type LucideIcon, TriangleAlert } from 'lucide-react';
 import { type ReactNode, useSyncExternalStore } from 'react';
 
+import { useI18n } from '#context/i18n';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogMedia, AlertDialogTitle } from '#ui';
 
 type DialogTone = 'default' | 'info' | 'success' | 'warning' | 'danger';
@@ -107,6 +108,7 @@ export function confirm(options: string | ConfirmOptions): Promise<boolean> {
 }
 
 export function SystemDialog() {
+  const { t } = useI18n();
   const dialog = useSyncExternalStore(dialogState.subscribe, dialogState.getSnapshot, dialogState.getSnapshot);
   if (!dialog) return null;
 
@@ -145,18 +147,18 @@ export function SystemDialog() {
           <AlertDialogMedia className={iconClass}>
             <ToneIcon className="size-5" aria-hidden="true" />
           </AlertDialogMedia>
-          <AlertDialogTitle>{dialog.title ?? (dialog.type === 'confirm' ? '확인' : '알림')}</AlertDialogTitle>
+          <AlertDialogTitle>{dialog.title ?? t(dialog.type === 'confirm' ? 'core.dialog.confirmTitle' : 'core.dialog.title')}</AlertDialogTitle>
           {dialog.description && <AlertDialogDescription>{dialog.description}</AlertDialogDescription>}
         </AlertDialogHeader>
         {dialog.content && <div className="px-0.5">{dialog.content}</div>}
         <AlertDialogFooter>
           {dialog.type === 'confirm' && (
             <AlertDialogCancel onClick={() => void close(false)}>
-              {dialog.cancelLabel ?? '취소'}
+              {dialog.cancelLabel ?? t('core.dialog.cancel')}
             </AlertDialogCancel>
           )}
           <AlertDialogAction variant={buttonVariant} onClick={() => void close(true)}>
-            {dialog.confirmLabel ?? '확인'}
+            {dialog.confirmLabel ?? t(dialog.type === 'confirm' ? 'core.dialog.confirm' : 'core.dialog.close')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

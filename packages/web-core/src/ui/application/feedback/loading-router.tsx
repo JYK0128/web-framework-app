@@ -1,6 +1,8 @@
+import { useI18n } from '#context/i18n';
 import { Card, CardContent, Spinner } from '#ui';
 
 export function LoadingRouter() {
+  const { t } = useI18n();
   return (
     <div
       className="
@@ -14,7 +16,7 @@ export function LoadingRouter() {
       <Card className="w-fit">
         <CardContent className="flex items-center gap-3 px-5 py-4">
           <Spinner className="size-5" />
-          <p>불러오는 중...</p>
+          <p>{t('core.globalLoading.loading')}</p>
         </CardContent>
       </Card>
     </div>

@@ -45,8 +45,8 @@ export const Route = createRootRouteWithContext<AppRouterContext>()({
   head: () => ({
     links: [{ rel: 'stylesheet', href: appStylesHref }],
     meta: [
-      { title: '운영자 웹' },
-      { name: 'description', content: '운영자 웹 application' },
+      { title: 'Service-Factory Admin' },
+      { name: 'description', content: 'Service-Factory administration' },
     ],
   }),
   shellComponent: ShellDocument,

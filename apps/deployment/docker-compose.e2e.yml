@@ -121,6 +121,7 @@ services:
       APP_NAME: service
       API_BASE_URL: http://e2e-service-api:4000
       APP_BASE_URL: http://localhost:3300
+      VITE_ADMIN_WEB_URL: http://localhost:13100
       API_SPEC_URL: http://e2e-service-api:4000/api/docs-json
     depends_on:
       e2e-service-api:

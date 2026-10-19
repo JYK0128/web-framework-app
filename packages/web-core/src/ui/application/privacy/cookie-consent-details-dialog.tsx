@@ -17,10 +17,10 @@ export function CookieConsentDetailsDialog({ open, onOpenChange }: CookieConsent
         <DialogHeader className="shrink-0 pb-4">
           <DialogTitle className="flex items-center gap-2 text-lg">
             <Cookie className="size-5 text-primary" />
-            <span>{t('app.cookieConsent.title')}</span>
+            <span>{t('core.cookieConsent.title')}</span>
           </DialogTitle>
           <DialogDescription className="mt-1">
-            {t('app.cookieConsent.dialogDescription')}
+            {t('core.cookieConsent.dialogDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -36,15 +36,15 @@ export function CookieConsentDetailsDialog({ open, onOpenChange }: CookieConsent
               <div className="flex items-center gap-2">
                 <Shield className="size-4 text-primary" />
                 <h4 className="font-semibold text-foreground">
-                  {t('app.cookieConsent.essentialLabel')}
+                  {t('core.cookieConsent.essentialLabel')}
                 </h4>
               </div>
               <span className="rounded-md bg-secondary px-2 py-0.5 text-xs">
-                {t('app.cookieConsent.alwaysActive')}
+                {t('core.cookieConsent.alwaysActive')}
               </span>
             </div>
             <p className="mt-2 text-xs/relaxed">
-              {t('app.cookieConsent.essentialDescription')}
+              {t('core.cookieConsent.essentialDescription')}
             </p>
             <div className="mt-2.5 rounded-lg bg-background/60 p-2.5 text-xs">
               <ul className="list-inside list-disc space-y-1">
@@ -52,13 +52,13 @@ export function CookieConsentDetailsDialog({ open, onOpenChange }: CookieConsent
                   <strong className="text-foreground">session</strong>
                   :
                   {' '}
-                  {t('app.cookieConsent.sessionDetail')}
+                  {t('core.cookieConsent.sessionDetail')}
                 </li>
                 <li>
                   <strong className="text-foreground">analytics_consent</strong>
                   :
                   {' '}
-                  {t('app.cookieConsent.consentCookieDetail')}
+                  {t('core.cookieConsent.consentCookieDetail')}
                 </li>
               </ul>
             </div>
@@ -72,15 +72,15 @@ export function CookieConsentDetailsDialog({ open, onOpenChange }: CookieConsent
               <div className="flex items-center gap-2">
                 <Settings2 className="size-4 text-primary" />
                 <h4 className="font-semibold text-foreground">
-                  {t('app.cookieConsent.functionalLabel')}
+                  {t('core.cookieConsent.functionalLabel')}
                 </h4>
               </div>
               <span className="rounded-md bg-secondary px-2 py-0.5 text-xs">
-                {t('app.cookieConsent.alwaysActive')}
+                {t('core.cookieConsent.alwaysActive')}
               </span>
             </div>
             <p className="mt-2 text-xs/relaxed">
-              {t('app.cookieConsent.functionalDescription')}
+              {t('core.cookieConsent.functionalDescription')}
             </p>
             <div className="mt-2.5 rounded-lg bg-background/60 p-2.5 text-xs">
               <ul className="list-inside list-disc space-y-1">
@@ -88,7 +88,7 @@ export function CookieConsentDetailsDialog({ open, onOpenChange }: CookieConsent
                   <strong className="text-foreground">i18next</strong>
                   :
                   {' '}
-                  {t('app.cookieConsent.languageCookieDetail')}
+                  {t('core.cookieConsent.languageCookieDetail')}
                 </li>
               </ul>
             </div>
@@ -102,15 +102,15 @@ export function CookieConsentDetailsDialog({ open, onOpenChange }: CookieConsent
               <div className="flex items-center gap-2">
                 <Cookie className="size-4 text-primary" />
                 <h4 className="font-semibold text-foreground">
-                  {t('app.cookieConsent.analyticsLabel')}
+                  {t('core.cookieConsent.analyticsLabel')}
                 </h4>
               </div>
               <span className="rounded-md border px-2 py-0.5 text-xs">
-                {t('app.cookieConsent.optional')}
+                {t('core.cookieConsent.optional')}
               </span>
             </div>
             <p className="mt-2 text-xs/relaxed">
-              {t('app.cookieConsent.analyticsDescription')}
+              {t('core.cookieConsent.analyticsDescription')}
             </p>
             <div className="mt-2.5 rounded-lg bg-background/60 p-2.5 text-xs">
               <ul className="list-inside list-disc space-y-1">
@@ -118,10 +118,10 @@ export function CookieConsentDetailsDialog({ open, onOpenChange }: CookieConsent
                   <strong className="text-foreground">_ga / _ga_* (Google Analytics 4)</strong>
                   :
                   {' '}
-                  {t('app.cookieConsent.analyticsCookieDetail')}
+                  {t('core.cookieConsent.analyticsCookieDetail')}
                 </li>
                 <li>
-                  <strong className="text-foreground">{t('app.cookieConsent.dataRecipientLabel')}</strong>
+                  <strong className="text-foreground">{t('core.cookieConsent.dataRecipientLabel')}</strong>
                   : Google LLC
                 </li>
               </ul>
@@ -135,18 +135,18 @@ export function CookieConsentDetailsDialog({ open, onOpenChange }: CookieConsent
             <div className="flex items-center gap-2">
               <Smartphone className="size-4 text-primary" />
               <h4 className="font-semibold text-foreground">
-                {t('app.cookieConsent.multiDeviceDetailTitle')}
+                {t('core.cookieConsent.multiDeviceDetailTitle')}
               </h4>
             </div>
             <p className="mt-2 text-xs/relaxed text-foreground/85">
-              {t('app.cookieConsent.multiDeviceDetailDescription')}
+              {t('core.cookieConsent.multiDeviceDetailDescription')}
             </p>
           </section>
         </div>
 
         <DialogFooter className="mt-2 shrink-0 border-t pt-4">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            {t('app.dialog.close')}
+            {t('core.dialog.close')}
           </Button>
         </DialogFooter>
       </DialogContent>

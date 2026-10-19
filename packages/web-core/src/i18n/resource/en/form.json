@@ -16,7 +16,8 @@
     "fileComplete": "File upload complete.",
     "fileFailed": "File upload failed.",
     "fileExceedsMaxSize": "File size exceeds the maximum limit of {{maxSize}}MB.",
-    "fileBlockedExtension": "File type is not permitted for security reasons ({{ext}})."
+    "fileBlockedExtension": "File type is not permitted for security reasons ({{ext}}).",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   }
 }
-

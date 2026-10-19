@@ -8,18 +8,24 @@ export type BrandLogoProps = {
 };
 
 export function BrandLogo({ logoSrc, iconSrc, alt = '', to }: BrandLogoProps) {
-  if (!logoSrc && !iconSrc) return null;
-
-  const content = (
-    <picture>
-      {iconSrc && <source media="(max-width: 639px)" srcSet={iconSrc} />}
-      <img
-        src={logoSrc ?? iconSrc}
-        alt={alt}
-        className="h-8 max-w-40 object-contain object-left"
-      />
-    </picture>
-  );
+  const content = logoSrc || iconSrc
+    ? (
+      <picture>
+        {iconSrc && <source media="(max-width: 639px)" srcSet={iconSrc} />}
+        <img
+          src={logoSrc ?? iconSrc}
+          alt={alt}
+          className="h-8 max-w-40 object-contain object-left"
+        />
+      </picture>
+    )
+    : (
+      <span className="text-lg font-extrabold tracking-tight text-foreground">
+        Service
+        <span className="text-primary">-</span>
+        Factory
+      </span>
+    );
 
   const className = 'flex items-center';
   if (to) {

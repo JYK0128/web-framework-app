@@ -1,6 +1,7 @@
 import { X } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 
+import { useI18n } from '#context/i18n';
 import { Button } from '#ui';
 
 const toneClasses = {
@@ -21,7 +22,8 @@ type NoticeBannerProps = {
 };
 
 /** Inline notice for page-level service information. Dismissal lasts until this instance unmounts. */
-export function NoticeBanner({ tone = 'info', title, children, dismissible = false, closeLabel = '안내 닫기' }: NoticeBannerProps) {
+export function NoticeBanner({ tone = 'info', title, children, dismissible = false, closeLabel }: NoticeBannerProps) {
+  const { t } = useI18n();
   const [dismissed, setDismissed] = useState(false);
 
   if (dismissed) return null;
@@ -45,7 +47,7 @@ export function NoticeBanner({ tone = 'info', title, children, dismissible = fal
           variant="ghost"
           size="icon-xs"
           className="text-muted-foreground"
-          aria-label={closeLabel}
+          aria-label={closeLabel ?? t('core.noticeBanner.close')}
           onClick={() => setDismissed(true)}
         >
           <X />

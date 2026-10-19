@@ -2,6 +2,7 @@ import { Link, type ToOptions } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
 
 import { cn } from '#.generated/shadcn/lib/utils';
+import { useI18n } from '#context/i18n';
 import { buttonVariants } from '#ui';
 
 export type NavigationVariant = 'side' | 'bar';
@@ -13,7 +14,8 @@ export type NavigationResponsiveVariant = {
 export type NavigationItem = {
   id: string
   label: string
-  to: ToOptions['to']
+  to?: ToOptions['to']
+  externalHref?: string
   icon?: ReactNode
   active?: boolean
 };
@@ -59,27 +61,31 @@ function getVisibilityClass(entries: Array<[NavigationBreakpoint | 'base', Navig
     })].filter(Boolean).join(' ');
 }
 
+function getNavigationLinkClassName(item: NavigationItem, variant: NavigationVariant, collapsed: boolean) {
+  const isCollapsedSide = collapsed && variant === 'side';
+  return cn(
+    buttonVariants({ variant: item.active ? 'secondary' : 'ghost' }),
+    variant === 'side' && 'w-full justify-start',
+    isCollapsedSide && 'justify-center px-2',
+  );
+}
+
+function getNavigationLinkAccessibility(item: NavigationItem, variant: NavigationVariant, collapsed: boolean) {
+  const label = collapsed && variant === 'side' ? item.label : undefined;
+  return { 'aria-label': label, 'title': label };
+}
+
 function NavigationLink({ item, variant, collapsed, onNavigate }: {
   item: NavigationItem
   variant: NavigationVariant
   collapsed: boolean
   onNavigate?: () => void
 }) {
-  const className = cn(
-    buttonVariants({ variant: item.active ? 'secondary' : 'ghost' }),
-    variant === 'side' && 'w-full justify-start',
-    collapsed && variant === 'side' && 'justify-center px-2',
-  );
+  const className = getNavigationLinkClassName(item, variant, collapsed);
+  const accessibilityProps = getNavigationLinkAccessibility(item, variant, collapsed);
 
-  return (
-    <Link
-      to={item.to as string}
-      aria-current={item.active ? 'page' : undefined}
-      aria-label={collapsed && variant === 'side' ? item.label : undefined}
-      title={collapsed && variant === 'side' ? item.label : undefined}
-      onClick={onNavigate}
-      className={className}
-    >
+  const content = (
+    <>
       {item.icon && (
         <span
           aria-hidden="true"
@@ -89,6 +95,33 @@ function NavigationLink({ item, variant, collapsed, onNavigate }: {
         </span>
       )}
       {!(collapsed && variant === 'side') && <span className="truncate">{item.label}</span>}
+    </>
+  );
+
+  if (item.externalHref) {
+    return (
+      <a
+        href={item.externalHref}
+        target="_blank"
+        rel="noreferrer"
+        {...accessibilityProps}
+        onClick={onNavigate}
+        className={className}
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <Link
+      to={item.to as string}
+      aria-current={item.active ? 'page' : undefined}
+      {...accessibilityProps}
+      onClick={onNavigate}
+      className={className}
+    >
+      {content}
     </Link>
   );
 }
@@ -99,12 +132,14 @@ export function Navigation({
   variant = 'side',
   collapsed = false,
   sideOpen = true,
-  label = '주요 메뉴',
+  label: labelProp,
   sideId,
   onNavigate,
   sideClassName,
   barClassName,
 }: NavigationProps) {
+  const { t } = useI18n();
+  const label = labelProp ?? t('core.navigation.mainMenu');
   const entries = getVariantEntries(variant);
   const responsive = typeof variant === 'object';
   const sideVisibility = getVisibilityClass(entries, 'side');

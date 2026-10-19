@@ -1,6 +1,7 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
+import { useI18n } from '@pkg/web-core/i18n';
 import { ScreenLayout } from '@pkg/web-core/template';
 import { Card, CardContent, Separator } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
@@ -19,6 +20,7 @@ export const Route = createFileRoute('/_public/_global/login/2fa')({
 });
 
 function TwoFactorLoginPage() {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const location = useLocation();
@@ -31,7 +33,7 @@ function TwoFactorLoginPage() {
     defaultValues: { code: '' },
     validators: {
       onSubmit: z.object({
-        code: z.string().length(digits, `인증 코드는 ${digits}자리여야 합니다.`),
+        code: z.string().length(digits, t('app.auth.twoFactor.codeLength', { digits })),
       }),
     },
     onSubmit: async ({ value }) => {
@@ -70,7 +72,7 @@ function TwoFactorLoginPage() {
                 >
                   <ShieldCheck className="size-6 shrink-0" />
                 </div>
-                <h1 className="text-xl font-bold tracking-tight">2단계 인증</h1>
+                <h1 className="text-xl font-bold tracking-tight">{t('app.auth.twoFactor.title')}</h1>
               </div>
               <form.AppForm>
                 <FormLayout
@@ -80,15 +82,12 @@ function TwoFactorLoginPage() {
                 >
                   <div className="scroll-y grid gap-10 justify-center">
                     <p className="text-sm text-muted-foreground">
-                      인증 앱에서 현재 표시된
-                      {' '}
-                      {digits}
-                      자리 코드를 입력해 주세요.
+                      {t('app.auth.twoFactor.codeHint', { digits })}
                     </p>
                     <form.AppField name="code">
                       {(field) => (
                         <field.OtpInput
-                          aria-label="인증 코드"
+                          aria-label={t('app.auth.twoFactor.codeLabel')}
                           containerClassName="justify-center"
                           maxLength={Math.min(digits, authControllerCompleteTwoFactorLoginV1BodyCodeMax)}
                           required
@@ -102,7 +101,7 @@ function TwoFactorLoginPage() {
                       className="h-px w-full bg-border"
                     />
                     <FormSubmit variant="default" className="w-full" disabled={twoFactorMutation.isPending}>
-                      <span>{twoFactorMutation.isPending ? '인증 확인 중...' : '인증 코드 확인'}</span>
+                      <span>{twoFactorMutation.isPending ? t('app.auth.twoFactor.pending') : t('app.auth.twoFactor.submit')}</span>
                       <ArrowRight className="size-4" />
                     </FormSubmit>
                   </div>
@@ -120,7 +119,9 @@ function TwoFactorLoginPage() {
             hover:text-foreground
           "
         >
-          ← 로그인으로 돌아가기
+          ←
+          {' '}
+          {t('app.auth.twoFactor.back')}
         </Link>
       </ScreenLayout.Addon>
     </ScreenLayout.Root>

@@ -36,12 +36,12 @@ export const Route = createFileRoute('/_protected/_global/onboarding')({
 function getReturnPath(callback?: string): string {
   try {
     const origin = 'https://admin.invalid';
-    const url = new URL(callback ?? '/profile', origin);
-    if (url.origin !== origin || url.pathname.startsWith('/onboarding/') || url.pathname === '/login' || url.pathname.startsWith('/login/')) return '/profile';
+    const url = new URL(callback ?? '/', origin);
+    if (url.origin !== origin || url.pathname.startsWith('/onboarding/') || url.pathname === '/login' || url.pathname.startsWith('/login/')) return '/';
     return `${url.pathname}${url.search}${url.hash}`;
   }
   catch {
-    return '/profile';
+    return '/';
   }
 }
 

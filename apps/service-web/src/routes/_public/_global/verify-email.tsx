@@ -1,4 +1,5 @@
 import { z } from '@pkg/shared/common';
+import { useI18n } from '@pkg/web-core/i18n';
 import { ScreenLayout } from '@pkg/web-core/template';
 import { Button, Card, CardContent } from '@pkg/web-core/ui';
 import { createFileRoute, Link, notFound } from '@tanstack/react-router';
@@ -18,6 +19,7 @@ export const Route = createFileRoute('/_public/_global/verify-email')({
 });
 
 function EmailVerificationPage() {
+  const { t } = useI18n();
   const { challengeId = '', token = '' } = Route.useSearch();
   const verifyMutation = useAuthControllerVerifyEmailV1();
 
@@ -41,18 +43,18 @@ function EmailVerificationPage() {
               >
                 <ShieldCheck className="size-6" />
               </div>
-              <h1 className="text-xl font-bold tracking-tight">이메일 인증</h1>
+              <h1 className="text-xl font-bold tracking-tight">{t('app.auth.verifyEmail.title')}</h1>
               <p className="text-sm text-muted-foreground">
-                계정 이메일 주소를 확인해 주세요.
+                {t('app.auth.verifyEmail.description')}
               </p>
             </div>
 
             <div className="scroll-y">
               {verifyMutation.isSuccess
-                ? <p role="status" className="text-center text-sm text-primary">로그인하여 계속 진행해 주세요.</p>
+                ? <p role="status" className="text-center text-sm text-primary">{t('app.auth.verifyEmail.continue')}</p>
                 : (
                   <Button onClick={verify} disabled={verifyMutation.isPending}>
-                    {verifyMutation.isPending ? '인증 중...' : '이메일 인증 완료'}
+                    {verifyMutation.isPending ? t('app.auth.verifyEmail.pending') : t('app.auth.verifyEmail.complete')}
                   </Button>
                 )}
             </div>
@@ -64,7 +66,7 @@ function EmailVerificationPage() {
                 underline-offset-4
               "
             >
-              로그인으로 돌아가기
+              {t('app.auth.verifyEmail.back')}
             </Link>
           </CardContent>
         </Card>
