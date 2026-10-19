@@ -43,7 +43,7 @@ services:
     volumes:
       - admin-api-uploads:/app/data/uploads
       - type: bind
-        source: /usr/local/bin/aws_signing_helper
+        source: ${AWS_SIGNING_HELPER_PATH:?Set AWS_SIGNING_HELPER_PATH to the installed AWS signing helper}
         target: /usr/local/bin/aws_signing_helper
         read_only: true
         bind:
@@ -102,7 +102,7 @@ services:
     volumes:
       - service-api-uploads:/app/data/uploads
       - type: bind
-        source: /usr/local/bin/aws_signing_helper
+        source: ${AWS_SIGNING_HELPER_PATH:?Set AWS_SIGNING_HELPER_PATH to the installed AWS signing helper}
         target: /usr/local/bin/aws_signing_helper
         read_only: true
         bind:
