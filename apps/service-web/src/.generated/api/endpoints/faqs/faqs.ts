@@ -227,9 +227,3 @@ export function useFaqsControllerGetFaqV1<TData = Awaited<ReturnType<typeof faqs
 
   return withQueryKey(query, queryOptions.queryKey);
 }
-
-
-
-
-
-

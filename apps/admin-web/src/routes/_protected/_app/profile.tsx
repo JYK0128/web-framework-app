@@ -1,20 +1,19 @@
-import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
 import { DateUtil, z } from '@pkg/shared/common';
+import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
+import { confirm } from '@pkg/web-core/application';
+import { useHashTab } from '@pkg/web-core/hooks';
+import { openModal } from '@pkg/web-core/modal';
+import { ActionCard, PageSection, SectionCard } from '@pkg/web-core/template';
 import * as PortOne from '@portone/browser-sdk/v2';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router';
-import { FileText, User } from 'lucide-react';
+import { FileText, KeyRound, Mail, Phone, ShieldCheck, TriangleAlert, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import { getAuthControllerMeV1QueryKey, useAuthControllerDisableTwoFactorV1, useAuthControllerUnregisterV1, useAuthControllerVerifyPhoneNumberV1 } from '#/.generated/api/endpoints/auth/auth';
-import { useOperatorTermsControllerGetAgreementsV1 } from '#/.generated/api/endpoints/operator-terms/operator-terms';
+import { useTermsControllerGetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
 import type { MeResponse } from '#/.generated/api/model';
 import { Button, Separator, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
-import { confirm } from '#/components/app/system-dialog';
-import { ActionCard, PageSection, SectionCard } from '#/components/layout';
-import { openModal } from '#/components/modal';
-import { useHashTab } from '#/lib/use-hash-tab';
-import { tokenStorage } from '#/store/token';
 
 import { ProfileChangePasswordModal } from './profile/-components/change-password-modal';
 import { ProfileTermsTab } from './profile/-components/terms-tab';
@@ -55,9 +54,9 @@ function getPasswordStatus(hasCredential: boolean, updatedAtValue: string | null
   const updatedAt = updatedAtValue ? new Date(updatedAtValue) : null;
 
   let description = '비밀번호가 설정되지 않았습니다.';
-  if (hasCredential && passwordExpired) description = '비밀번호가 보안 정책상 만료됐습니다. 비밀번호를 변경하세요.';
-  else if (hasCredential && updatedAt) description = `마지막 변경: ${DateUtil.dateTime.formatLocale(updatedAt)} · 변경 주기는 시스템 보안 정책을 따릅니다.`;
-  else if (hasCredential) description = '비밀번호 변경 주기는 시스템 보안 정책을 따릅니다.';
+  if (hasCredential && passwordExpired) description = '계정 보호를 위해 새 비밀번호로 변경해 주세요.';
+  else if (hasCredential && updatedAt) description = `마지막 변경: ${DateUtil.dateTime.formatLocale(updatedAt)}`;
+  else if (hasCredential) description = '비밀번호가 설정되어 있습니다.';
 
   return { changeRecommended: passwordExpired, description, isSecure: hasCredential && !passwordExpired };
 }
@@ -131,7 +130,7 @@ function ProfilePage() {
   const disableTwoFactor = useAuthControllerDisableTwoFactorV1();
   const unregister = useAuthControllerUnregisterV1();
   const policy = ADMIN_AUTH_POLICY_CONFIG;
-  const agreementsQuery = useOperatorTermsControllerGetAgreementsV1(undefined, {
+  const agreementsQuery = useTermsControllerGetAgreementsV1(undefined, {
     query: {
       enabled: canLoadAgreements(policy, user ?? null),
     },
@@ -168,7 +167,7 @@ function ProfilePage() {
     const storeId = String(import.meta.env.VITE_PORTONE_STORE_ID ?? '');
     const channelKey = String(import.meta.env.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY ?? '');
     if (!storeId || !channelKey) {
-      setPhoneNumberVerificationError('PortOne 스토어 ID와 본인인증 채널 키를 설정해 주세요.');
+      setPhoneNumberVerificationError('지금은 본인인증을 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.');
       return;
     }
     setPhoneNumberVerificationError('');
@@ -205,16 +204,15 @@ function ProfilePage() {
     await updateUser((current) => ({ ...current, twoFactorEnabled: false }));
   };
   const unregisterAccount = async () => {
-    const confirmed = await confirm({ title: '계정 탈퇴', description: '현재 운영자 계정을 탈퇴할까요? 탈퇴 후에는 로그인할 수 없습니다.', confirmLabel: '탈퇴', tone: 'danger' });
+    const confirmed = await confirm({ title: '계정 탈퇴', description: '현재 계정을 탈퇴할까요? 탈퇴 후에는 로그인할 수 없습니다.', confirmLabel: '탈퇴', tone: 'danger' });
     if (!confirmed) return;
     await unregister.mutateAsync();
-    tokenStorage.clear();
     queryClient.removeQueries({ queryKey: getAuthControllerMeV1QueryKey() });
     await navigate({ to: '/login', replace: true });
   };
 
   return (
-    <PageSection icon="user" title="내 프로필" description="현재 로그인한 운영자 계정과 권한 정보입니다.">
+    <PageSection icon="user" title="내 프로필" description="현재 로그인한 계정과 권한 정보입니다.">
       <PageSection.Content className="
         grid grid-rows-[auto_minmax(0,1fr)] gap-2 p-2
       "
@@ -251,8 +249,7 @@ function ProfilePage() {
                     <div className="grid content-start gap-2 text-xs">
                       {(policy.phoneNumberVerificationRequired || user.phoneNumberVerified) && (
                         <ActionCard
-                          icon="phone"
-                          iconColor={getSecurityIconColor(Boolean(user.phoneNumberVerified))}
+                          icon={<Phone className={getSecurityIconColor(Boolean(user.phoneNumberVerified))} />}
                           title="전화번호"
                           description={`${user.phoneNumber || '미등록'} · ${user.phoneNumberVerified ? '인증 완료' : '본인인증 필요'}`}
                           descriptionTone={getSecurityTone(Boolean(user.phoneNumberVerified))}
@@ -272,8 +269,7 @@ function ProfilePage() {
                       )}
                       {(policy.emailVerificationRequired || user.emailVerified) && (
                         <ActionCard
-                          icon="mail"
-                          iconColor={getSecurityIconColor(Boolean(user.emailVerified))}
+                          icon={<Mail className={getSecurityIconColor(Boolean(user.emailVerified))} />}
                           title="이메일 계정"
                           description={`${user.email} · ${user.emailVerified ? '인증 완료' : '인증 필요'}`}
                           descriptionTone={getSecurityTone(Boolean(user.emailVerified))}
@@ -282,8 +278,7 @@ function ProfilePage() {
                       )}
                       {policy.credentialAvailable && (
                         <ActionCard
-                          icon="key-round"
-                          iconColor={getSecurityIconColor(passwordStatus.isSecure)}
+                          icon={<KeyRound className={getSecurityIconColor(passwordStatus.isSecure)} />}
                           title="비밀번호 보안"
                           description={passwordStatus.description}
                           descriptionTone={passwordStatus.isSecure ? 'default' : 'error'}
@@ -298,8 +293,9 @@ function ProfilePage() {
                       )}
                       {(policy.twoFactorEnabled || policy.twoFactorRequired) && (
                         <ActionCard
-                          icon={user.twoFactorEnabled ? 'shield-check' : 'triangle-alert'}
-                          iconColor={getSecurityIconColor(Boolean(user.twoFactorEnabled))}
+                          icon={user.twoFactorEnabled
+                            ? <ShieldCheck className={getSecurityIconColor(Boolean(user.twoFactorEnabled))} />
+                            : <TriangleAlert className={getSecurityIconColor(Boolean(user.twoFactorEnabled))} />}
                           title="2단계 인증"
                           description={getTwoFactorDescription(user.twoFactorEnabled)}
                           descriptionTone={getSecurityTone(Boolean(user.twoFactorEnabled))}
@@ -314,8 +310,7 @@ function ProfilePage() {
                       )}
                       <Separator className="my-1.5" />
                       <ActionCard
-                        icon="triangle-alert"
-                        iconColor="text-destructive"
+                        icon={<TriangleAlert className="text-destructive" />}
                         title="위험 영역"
                         description="계정을 탈퇴하면 다시 로그인할 수 없습니다."
                         variant="destructive"

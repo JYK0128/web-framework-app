@@ -13,8 +13,8 @@ export const LogsControllerGetLogsV1SortItem = {
   createdAt: 'createdAt',
   level: 'level',
   method: 'method',
-  path: 'path',
+  url: 'url',
   statusCode: 'statusCode',
-  durationMs: 'durationMs',
+  duration: 'duration',
   requestId: 'requestId',
 } as const;

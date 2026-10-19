@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { QnaControllerUpdateV1200Meta } from './qnaControllerUpdateV1200Meta';
-import type { QnaItem } from './qnaItem';
+import type { UpdateOwnQnaResponseDto } from './updateOwnQnaResponseDto';
 
 export type QnaControllerUpdateV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type QnaControllerUpdateV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: QnaItem;
+  data: UpdateOwnQnaResponseDto;
   message?: string;
   meta?: QnaControllerUpdateV1200Meta;
 };

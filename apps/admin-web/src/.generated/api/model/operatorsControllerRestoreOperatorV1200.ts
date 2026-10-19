@@ -5,8 +5,8 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { OperatorActionResponse } from './operatorActionResponse';
 import type { OperatorsControllerRestoreOperatorV1200Meta } from './operatorsControllerRestoreOperatorV1200Meta';
+import type { RestoreOperatorResponseDto } from './restoreOperatorResponseDto';
 
 export type OperatorsControllerRestoreOperatorV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type OperatorsControllerRestoreOperatorV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: OperatorActionResponse;
+  data: RestoreOperatorResponseDto;
   message?: string;
   meta?: OperatorsControllerRestoreOperatorV1200Meta;
 };

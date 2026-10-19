@@ -1,13 +1,15 @@
-import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
+import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
+import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
+import { useI18n } from '@pkg/web-core/i18n';
+import { ScreenLayout } from '@pkg/web-core/template';
+import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, redirect, useLocation, useNavigate } from '@tanstack/react-router';
 import { ArrowRight, ShieldCheck } from 'lucide-react';
 
 import { getAuthControllerMeV1QueryKey, useAuthControllerCompleteTwoFactorLoginV1 } from '#/.generated/api/endpoints/auth/auth';
 import { authControllerCompleteTwoFactorLoginV1BodyCodeMax, authControllerCompleteTwoFactorLoginV1BodyCodeMin } from '#/.generated/api/zod/auth/auth';
 import { Card, CardContent, Separator } from '#/.generated/shadcn/components/ui';
-import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
-import { ScreenLayout } from '#/components/layout';
 
 export const Route = createFileRoute('/_public/_global/login/2fa')({
   validateSearch: z.object({ callback: z.string().optional() }),
@@ -18,8 +20,9 @@ export const Route = createFileRoute('/_public/_global/login/2fa')({
 });
 
 function TwoFactorLoginPage() {
+  const { t } = useI18n();
   const navigate = useNavigate();
-  const queryClient = Route.useRouteContext().queryClient;
+  const queryClient = useQueryClient();
   const location = useLocation();
   const twoFactorMutation = useAuthControllerCompleteTwoFactorLoginV1();
   const digits = Math.max(authControllerCompleteTwoFactorLoginV1BodyCodeMin, Math.min(ADMIN_AUTH_POLICY_CONFIG.twoFactorDigits, authControllerCompleteTwoFactorLoginV1BodyCodeMax));
@@ -30,7 +33,7 @@ function TwoFactorLoginPage() {
     defaultValues: { code: '' },
     validators: {
       onSubmit: z.object({
-        code: z.string().length(digits, `인증 코드는 ${digits}자리여야 합니다.`),
+        code: z.string().length(digits, t('app.auth.twoFactor.codeLength', { digits })),
       }),
     },
     onSubmit: async ({ value }) => {
@@ -56,7 +59,7 @@ function TwoFactorLoginPage() {
   });
 
   return (
-    <ScreenLayout>
+    <ScreenLayout.Root>
       <ScreenLayout.Content size="md">
         <Card className="flex size-full flex-col shadow-xl">
           <CardContent className="flex-1 p-6">
@@ -69,7 +72,7 @@ function TwoFactorLoginPage() {
                 >
                   <ShieldCheck className="size-6 shrink-0" />
                 </div>
-                <h1 className="text-xl font-bold tracking-tight">2단계 인증</h1>
+                <h1 className="text-xl font-bold tracking-tight">{t('app.auth.twoFactor.title')}</h1>
               </div>
               <form.AppForm>
                 <FormLayout
@@ -79,15 +82,12 @@ function TwoFactorLoginPage() {
                 >
                   <div className="scroll-y grid gap-10 justify-center">
                     <p className="text-sm text-muted-foreground">
-                      인증 앱에서 현재 표시된
-                      {' '}
-                      {digits}
-                      자리 코드를 입력해 주세요.
+                      {t('app.auth.twoFactor.codeHint', { digits })}
                     </p>
                     <form.AppField name="code">
                       {(field) => (
                         <field.OtpInput
-                          aria-label="인증 코드"
+                          aria-label={t('app.auth.twoFactor.codeLabel')}
                           containerClassName="justify-center"
                           maxLength={Math.min(digits, authControllerCompleteTwoFactorLoginV1BodyCodeMax)}
                           required
@@ -101,7 +101,7 @@ function TwoFactorLoginPage() {
                       className="h-px w-full bg-border"
                     />
                     <FormSubmit variant="default" className="w-full" disabled={twoFactorMutation.isPending}>
-                      <span>{twoFactorMutation.isPending ? '인증 확인 중...' : '인증 코드 확인'}</span>
+                      <span>{twoFactorMutation.isPending ? t('app.auth.twoFactor.pending') : t('app.auth.twoFactor.submit')}</span>
                       <ArrowRight className="size-4" />
                     </FormSubmit>
                   </div>
@@ -119,22 +119,24 @@ function TwoFactorLoginPage() {
             hover:text-foreground
           "
         >
-          ← 로그인으로 돌아가기
+          ←
+          {' '}
+          {t('app.auth.twoFactor.back')}
         </Link>
       </ScreenLayout.Addon>
-    </ScreenLayout>
+    </ScreenLayout.Root>
   );
 }
 
 function resolveDestination(callback?: string): string {
-  if (!callback) return '/profile';
+  if (!callback) return '/';
   try {
     const origin = 'https://admin.invalid';
     const url = new URL(callback, origin);
-    if (url.origin !== origin) return '/profile';
+    if (url.origin !== origin) return '/';
     return `${url.pathname}${url.search}${url.hash}`;
   }
   catch {
-    return '/profile';
+    return '/';
   }
 }

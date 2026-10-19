@@ -2,6 +2,7 @@ import type { i18n } from 'i18next';
 
 export interface ApplicationErrorOptions {
   code: string
+  message?: string
   status?: number
   details?: unknown
   params?: Record<string, unknown>
@@ -14,7 +15,7 @@ export class ApplicationError extends Error {
   public readonly params?: Record<string, unknown>;
 
   constructor(options: ApplicationErrorOptions) {
-    super(options.code);
+    super(options.message ?? options.code);
     this.name = 'ApplicationError';
     this.code = options.code;
     this.status = options.status;
@@ -42,6 +43,7 @@ export class ApplicationError extends Error {
   }
 
   public translate(i18n: Pick<i18n, 't'>): string {
+    if (this.message !== this.code) return this.message;
     return i18n.t(`error.${this.code}`, { ...this.params, defaultValue: this.code });
   }
 

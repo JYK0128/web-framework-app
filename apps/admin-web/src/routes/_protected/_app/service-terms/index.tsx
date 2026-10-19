@@ -1,3 +1,7 @@
+import { confirm } from '@pkg/web-core/application';
+import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '@pkg/web-core/data-grid';
+import { openModal } from '@pkg/web-core/modal';
+import { Action, PageSection, SectionCard, SideMainLayout } from '@pkg/web-core/template';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper, type SortingState } from '@tanstack/react-table';
@@ -7,11 +11,6 @@ import { type MouseEvent, type MouseEventHandler, useCallback, useMemo, useState
 import { getServiceTermsControllerGroupsV1QueryKey, getServiceTermsControllerListV1QueryKey, useServiceTermsControllerDeleteGroupV1, useServiceTermsControllerDeleteV1, useServiceTermsControllerGroupsV1, useServiceTermsControllerListV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
 import type { ServiceTermGroupItemDto, ServiceTermItemDto } from '#/.generated/api/model';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
-import { Action } from '#/components/app/action';
-import { confirm } from '#/components/app/system-dialog';
-import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
-import { PageSection, SectionCard, SideMainSection } from '#/components/layout';
-import { openModal } from '#/components/modal';
 
 import { ServiceTermEditorModal } from './-components/service-term-editor-modal';
 import { ServiceTermGroupEditorModal } from './-components/service-term-group-editor-modal';
@@ -237,8 +236,8 @@ function ServiceTermsManagementPage() {
   return (
     <PageSection icon="file-signature" title="서비스 약관 관리" description="고객에게 공개되는 서비스 약관 그룹과 버전을 관리합니다.">
       <PageSection.Content>
-        <SideMainSection>
-          <SideMainSection.Side>
+        <SideMainLayout>
+          <SideMainLayout.Side>
             <SectionCard textSize="sm" title="약관 그룹" description="약관의 종류와 필수 동의 여부를 관리합니다.">
               <SectionCard.Actions>
                 {canCreate && (
@@ -261,8 +260,8 @@ function ServiceTermsManagementPage() {
                 />
               </SectionCard.Content>
             </SectionCard>
-          </SideMainSection.Side>
-          <SideMainSection.Main>
+          </SideMainLayout.Side>
+          <SideMainLayout.Main>
             <SectionCard textSize="sm" title="약관 버전" description={selectedGroup ? `${selectedGroup.title} 그룹의 약관 버전 목록입니다.` : '약관 그룹을 선택해 주세요.'}>
               {selectedGroup && canCreate && (
                 <SectionCard.Actions>
@@ -298,8 +297,8 @@ function ServiceTermsManagementPage() {
                 <DataTablePagination table={table} rowCount={response?.totalCount ?? 0} />
               </SectionCard.Content>
             </SectionCard>
-          </SideMainSection.Main>
-        </SideMainSection>
+          </SideMainLayout.Main>
+        </SideMainLayout>
       </PageSection.Content>
     </PageSection>
   );
@@ -321,7 +320,7 @@ const publicationStatusTones: Record<PublicationStatus, 'neutral' | 'info' | 'su
 
 function getPublicationStatus(term: ServiceTermItemDto): PublicationStatus {
   if (term.isPublished) return 'published';
-  if (term.publishedAt) return 'scheduled';
+  if (term.isScheduled) return 'scheduled';
   return 'draft';
 }
 

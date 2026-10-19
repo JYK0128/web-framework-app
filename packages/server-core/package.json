@@ -1,0 +1,402 @@
+{
+  "name": "@pkg/server-core",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#*": [
+      "./src/*.ts",
+      "./src/*/index.ts",
+      "./src/*"
+    ]
+  },
+  "exports": {
+    "./http/dto": {
+      "types": "./src/http/dto/index.ts",
+      "default": "./src/http/dto/index.ts"
+    },
+    "./http/dto/request": {
+      "types": "./src/http/dto/request/index.ts",
+      "default": "./src/http/dto/request/index.ts"
+    },
+    "./http/dto/response": {
+      "types": "./src/http/dto/response/index.ts",
+      "default": "./src/http/dto/response/index.ts"
+    },
+    "./auth/authentication.guard": {
+      "types": "./src/auth/authentication.guard.ts",
+      "default": "./src/auth/authentication.guard.ts"
+    },
+    "./auth/machine/machine-auth.interface": {
+      "types": "./src/auth/machine/machine-auth.interface.ts",
+      "default": "./src/auth/machine/machine-auth.interface.ts"
+    },
+    "./auth/machine/machine-auth.module": {
+      "types": "./src/auth/machine/machine-auth.module.ts",
+      "default": "./src/auth/machine/machine-auth.module.ts"
+    },
+    "./auth/user/credential-password": {
+      "types": "./src/auth/user/credential-password.ts",
+      "default": "./src/auth/user/credential-password.ts"
+    },
+    "./auth/user/session/session.store": {
+      "types": "./src/auth/user/session/session.store.ts",
+      "default": "./src/auth/user/session/session.store.ts"
+    },
+    "./auth/user/token/stores/token.store": {
+      "types": "./src/auth/user/token/stores/token.store.ts",
+      "default": "./src/auth/user/token/stores/token.store.ts"
+    },
+    "./auth/user/totp": {
+      "types": "./src/auth/user/totp.ts",
+      "default": "./src/auth/user/totp.ts"
+    },
+    "./auth/user/user-auth.interface": {
+      "types": "./src/auth/user/user-auth.interface.ts",
+      "default": "./src/auth/user/user-auth.interface.ts"
+    },
+    "./auth/user/user-auth.module": {
+      "types": "./src/auth/user/user-auth.module.ts",
+      "default": "./src/auth/user/user-auth.module.ts"
+    },
+    "./event-broker/broker-consumer.decorator": {
+      "types": "./src/event-broker/broker-consumer.decorator.ts",
+      "default": "./src/event-broker/broker-consumer.decorator.ts"
+    },
+    "./event-broker/event-broker.interface": {
+      "types": "./src/event-broker/event-broker.interface.ts",
+      "default": "./src/event-broker/event-broker.interface.ts"
+    },
+    "./event-broker/event-broker.module": {
+      "types": "./src/event-broker/event-broker.module.ts",
+      "default": "./src/event-broker/event-broker.module.ts"
+    },
+    "./event-broker/event-broker.service": {
+      "types": "./src/event-broker/event-broker.service.ts",
+      "default": "./src/event-broker/event-broker.service.ts"
+    },
+    "./file-storage/file-storage.interface": {
+      "types": "./src/file-storage/file-storage.interface.ts",
+      "default": "./src/file-storage/file-storage.interface.ts"
+    },
+    "./file-storage/file-storage.module": {
+      "types": "./src/file-storage/file-storage.module.ts",
+      "default": "./src/file-storage/file-storage.module.ts"
+    },
+    "./file-storage/file-storage.service": {
+      "types": "./src/file-storage/file-storage.service.ts",
+      "default": "./src/file-storage/file-storage.service.ts"
+    },
+    "./file-storage/storage.http": {
+      "types": "./src/file-storage/storage.http.ts",
+      "default": "./src/file-storage/storage.http.ts"
+    },
+    "./file-storage/storage.module": {
+      "types": "./src/file-storage/storage.module.ts",
+      "default": "./src/file-storage/storage.module.ts"
+    },
+    "./file-storage/storage.service": {
+      "types": "./src/file-storage/storage.service.ts",
+      "default": "./src/file-storage/storage.service.ts"
+    },
+    "./http/contexts/principal.context": {
+      "types": "./src/http/contexts/principal.context.ts",
+      "default": "./src/http/contexts/principal.context.ts"
+    },
+    "./http/contexts/request.context": {
+      "types": "./src/http/contexts/request.context.ts",
+      "default": "./src/http/contexts/request.context.ts"
+    },
+    "./http/decorators/api-enum.decorator": {
+      "types": "./src/http/decorators/api-enum.decorator.ts",
+      "default": "./src/http/decorators/api-enum.decorator.ts"
+    },
+    "./http/decorators/auth-mode.decorator": {
+      "types": "./src/http/decorators/auth-mode.decorator.ts",
+      "default": "./src/http/decorators/auth-mode.decorator.ts"
+    },
+    "./http/decorators/mask-email.decorator": {
+      "types": "./src/http/decorators/mask-email.decorator.ts",
+      "default": "./src/http/decorators/mask-email.decorator.ts"
+    },
+    "./http/decorators/mask-name.decorator": {
+      "types": "./src/http/decorators/mask-name.decorator.ts",
+      "default": "./src/http/decorators/mask-name.decorator.ts"
+    },
+    "./http/decorators/no-store.decorator": {
+      "types": "./src/http/decorators/no-store.decorator.ts",
+      "default": "./src/http/decorators/no-store.decorator.ts"
+    },
+    "./http/decorators/permission.decorator": {
+      "types": "./src/http/decorators/permission.decorator.ts",
+      "default": "./src/http/decorators/permission.decorator.ts"
+    },
+    "./http/decorators/swagger-api-response.decorator": {
+      "types": "./src/http/decorators/swagger-api-response.decorator.ts",
+      "default": "./src/http/decorators/swagger-api-response.decorator.ts"
+    },
+    "./http/decorators/to-boolean.decorator": {
+      "types": "./src/http/decorators/to-boolean.decorator.ts",
+      "default": "./src/http/decorators/to-boolean.decorator.ts"
+    },
+    "./http/decorators/to-lower-case.decorator": {
+      "types": "./src/http/decorators/to-lower-case.decorator.ts",
+      "default": "./src/http/decorators/to-lower-case.decorator.ts"
+    },
+    "./http/decorators/to-number.decorator": {
+      "types": "./src/http/decorators/to-number.decorator.ts",
+      "default": "./src/http/decorators/to-number.decorator.ts"
+    },
+    "./http/dto/base/base.dto": {
+      "types": "./src/http/dto/base/base.dto.ts",
+      "default": "./src/http/dto/base/base.dto.ts"
+    },
+    "./http/dto/base/entity.dto": {
+      "types": "./src/http/dto/base/entity.dto.ts",
+      "default": "./src/http/dto/base/entity.dto.ts"
+    },
+    "./http/dto/request/cursor.request.dto": {
+      "types": "./src/http/dto/request/cursor.request.dto.ts",
+      "default": "./src/http/dto/request/cursor.request.dto.ts"
+    },
+    "./http/dto/request/list.request.dto": {
+      "types": "./src/http/dto/request/list.request.dto.ts",
+      "default": "./src/http/dto/request/list.request.dto.ts"
+    },
+    "./http/dto/request/page.request.dto": {
+      "types": "./src/http/dto/request/page.request.dto.ts",
+      "default": "./src/http/dto/request/page.request.dto.ts"
+    },
+    "./http/dto/request/sortable.request.dto": {
+      "types": "./src/http/dto/request/sortable.request.dto.ts",
+      "default": "./src/http/dto/request/sortable.request.dto.ts"
+    },
+    "./http/dto/response/api.response.dto": {
+      "types": "./src/http/dto/response/api.response.dto.ts",
+      "default": "./src/http/dto/response/api.response.dto.ts"
+    },
+    "./http/dto/response/cursor.response.dto": {
+      "types": "./src/http/dto/response/cursor.response.dto.ts",
+      "default": "./src/http/dto/response/cursor.response.dto.ts"
+    },
+    "./http/dto/response/entity.response.dto": {
+      "types": "./src/http/dto/response/entity.response.dto.ts",
+      "default": "./src/http/dto/response/entity.response.dto.ts"
+    },
+    "./http/dto/response/list.response.dto": {
+      "types": "./src/http/dto/response/list.response.dto.ts",
+      "default": "./src/http/dto/response/list.response.dto.ts"
+    },
+    "./http/dto/response/ok.response.dto": {
+      "types": "./src/http/dto/response/ok.response.dto.ts",
+      "default": "./src/http/dto/response/ok.response.dto.ts"
+    },
+    "./http/dto/response/page.response.dto": {
+      "types": "./src/http/dto/response/page.response.dto.ts",
+      "default": "./src/http/dto/response/page.response.dto.ts"
+    },
+    "./http/filters/application-error.filter": {
+      "types": "./src/http/filters/application-error.filter.ts",
+      "default": "./src/http/filters/application-error.filter.ts"
+    },
+    "./http/filters/http-exception.filter": {
+      "types": "./src/http/filters/http-exception.filter.ts",
+      "default": "./src/http/filters/http-exception.filter.ts"
+    },
+    "./http/filters/unexpected-exception.filter": {
+      "types": "./src/http/filters/unexpected-exception.filter.ts",
+      "default": "./src/http/filters/unexpected-exception.filter.ts"
+    },
+    "./http/guards/permission.guard": {
+      "types": "./src/http/guards/permission.guard.ts",
+      "default": "./src/http/guards/permission.guard.ts"
+    },
+    "./http/interceptors/response-transform.interceptor": {
+      "types": "./src/http/interceptors/response-transform.interceptor.ts",
+      "default": "./src/http/interceptors/response-transform.interceptor.ts"
+    },
+    "./http/middlewares/i18n.middleware": {
+      "types": "./src/http/middlewares/i18n.middleware.ts",
+      "default": "./src/http/middlewares/i18n.middleware.ts"
+    },
+    "./http/middlewares/request-context.middleware": {
+      "types": "./src/http/middlewares/request-context.middleware.ts",
+      "default": "./src/http/middlewares/request-context.middleware.ts"
+    },
+    "./http/middlewares/request-logging.middleware": {
+      "types": "./src/http/middlewares/request-logging.middleware.ts",
+      "default": "./src/http/middlewares/request-logging.middleware.ts"
+    },
+    "./http/pipes/index": {
+      "types": "./src/http/pipes/index.ts",
+      "default": "./src/http/pipes/index.ts"
+    },
+    "./http/pipes/sanitize-html.pipe": {
+      "types": "./src/http/pipes/sanitize-html.pipe.ts",
+      "default": "./src/http/pipes/sanitize-html.pipe.ts"
+    },
+    "./http/pipes/trim-string.pipe": {
+      "types": "./src/http/pipes/trim-string.pipe.ts",
+      "default": "./src/http/pipes/trim-string.pipe.ts"
+    },
+    "./kv-store/adapters/in-memory.adapter": {
+      "types": "./src/kv-store/adapters/in-memory.adapter.ts",
+      "default": "./src/kv-store/adapters/in-memory.adapter.ts"
+    },
+    "./kv-store/kv-store.module": {
+      "types": "./src/kv-store/kv-store.module.ts",
+      "default": "./src/kv-store/kv-store.module.ts"
+    },
+    "./kv-store/kv-store.service": {
+      "types": "./src/kv-store/kv-store.service.ts",
+      "default": "./src/kv-store/kv-store.service.ts"
+    },
+    "./log-telemetry/index": {
+      "types": "./src/log-telemetry/index.ts",
+      "default": "./src/log-telemetry/index.ts"
+    },
+    "./log-telemetry/log-normalizer": {
+      "types": "./src/log-telemetry/log-normalizer.ts",
+      "default": "./src/log-telemetry/log-normalizer.ts"
+    },
+    "./log-telemetry/log-telemetry.interface": {
+      "types": "./src/log-telemetry/log-telemetry.interface.ts",
+      "default": "./src/log-telemetry/log-telemetry.interface.ts"
+    },
+    "./log-telemetry/log-telemetry.module": {
+      "types": "./src/log-telemetry/log-telemetry.module.ts",
+      "default": "./src/log-telemetry/log-telemetry.module.ts"
+    },
+    "./log-telemetry/log-telemetry.service": {
+      "types": "./src/log-telemetry/log-telemetry.service.ts",
+      "default": "./src/log-telemetry/log-telemetry.service.ts"
+    },
+    "./logger/index": {
+      "types": "./src/logger/index.ts",
+      "default": "./src/logger/index.ts"
+    },
+    "./logger/logger.module": {
+      "types": "./src/logger/logger.module.ts",
+      "default": "./src/logger/logger.module.ts"
+    },
+    "./logger/logger.service": {
+      "types": "./src/logger/logger.service.ts",
+      "default": "./src/logger/logger.service.ts"
+    },
+    "./notification/notification.module": {
+      "types": "./src/notification/notification.module.ts",
+      "default": "./src/notification/notification.module.ts"
+    },
+    "./notification/notification.service": {
+      "types": "./src/notification/notification.service.ts",
+      "default": "./src/notification/notification.service.ts"
+    },
+    "./oauth/oauth-provider-validation": {
+      "types": "./src/oauth/oauth-provider-validation.ts",
+      "default": "./src/oauth/oauth-provider-validation.ts"
+    },
+    "./oauth/oauth-provider.config": {
+      "types": "./src/oauth/oauth-provider.config.ts",
+      "default": "./src/oauth/oauth-provider.config.ts"
+    },
+    "./oauth/oauth-provider.interface": {
+      "types": "./src/oauth/oauth-provider.interface.ts",
+      "default": "./src/oauth/oauth-provider.interface.ts"
+    },
+    "./oauth/oauth-provider.module": {
+      "types": "./src/oauth/oauth-provider.module.ts",
+      "default": "./src/oauth/oauth-provider.module.ts"
+    },
+    "./oauth/oauth-provider.service": {
+      "types": "./src/oauth/oauth-provider.service.ts",
+      "default": "./src/oauth/oauth-provider.service.ts"
+    },
+    "./phone-identity/phone-identity.module": {
+      "types": "./src/phone-identity/phone-identity.module.ts",
+      "default": "./src/phone-identity/phone-identity.module.ts"
+    },
+    "./phone-identity/phone-identity.service": {
+      "types": "./src/phone-identity/phone-identity.service.ts",
+      "default": "./src/phone-identity/phone-identity.service.ts"
+    },
+    "./realtime/adapters/socket-io.adapter": {
+      "types": "./src/realtime/adapters/socket-io.adapter.ts",
+      "default": "./src/realtime/adapters/socket-io.adapter.ts"
+    },
+    "./realtime/realtime.interface": {
+      "types": "./src/realtime/realtime.interface.ts",
+      "default": "./src/realtime/realtime.interface.ts"
+    },
+    "./realtime/realtime.module": {
+      "types": "./src/realtime/realtime.module.ts",
+      "default": "./src/realtime/realtime.module.ts"
+    },
+    "./realtime/realtime.service": {
+      "types": "./src/realtime/realtime.service.ts",
+      "default": "./src/realtime/realtime.service.ts"
+    },
+    "./webhook/webhook.module": {
+      "types": "./src/webhook/webhook.module.ts",
+      "default": "./src/webhook/webhook.module.ts"
+    },
+    "./webhook/webhook.service": {
+      "types": "./src/webhook/webhook.service.ts",
+      "default": "./src/webhook/webhook.service.ts"
+    },
+    "./notification/dto": {
+      "types": "./src/notification/dto/index.ts",
+      "default": "./src/notification/dto/index.ts"
+    },
+    "./event-broker/events": {
+      "types": "./src/event-broker/events/index.ts",
+      "default": "./src/event-broker/events/index.ts"
+    }
+  },
+  "scripts": {
+    "lint": "eslint \"src/**/*.{ts,tsx}\" --fix",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@nestjs/common": "11.1.28",
+    "@nestjs/core": "11.1.28",
+    "@mikro-orm/decorators": "7.1.10",
+    "@mikro-orm/postgresql": "7.1.10",
+    "@nestjs/platform-express": "11.1.28",
+    "@nestjs/platform-socket.io": "11.1.28",
+    "@nestjs/cqrs": "11.0.3",
+    "@mikro-orm/core": "7.1.10",
+    "@nestjs/swagger": "11.4.6",
+    "@socket.io/redis-adapter": "8.3.0",
+    "@pkg/shared": "workspace:*",
+    "class-transformer": "0.5.1",
+    "class-validator": "0.15.1",
+    "express": "^5.2.1",
+    "express-session": "1.19.0",
+    "i18next": "26.3.6",
+    "i18next-http-middleware": "3.9.8",
+    "lodash-es": "4.18.1",
+    "nestjs-cls": "6.2.1",
+    "sanitize-html": "2.17.7",
+    "axios": "1.20.0",
+    "amqplib": "2.2.0",
+    "kafkajs": "2.2.4",
+    "jose": "6.2.12",
+    "nodemailer": "9.0.5",
+    "redis": "5.9.0",
+    "zod": "4.4.3",
+    "rxjs": "7.8.2",
+    "socket.io": "4.8.3"
+  },
+  "devDependencies": {
+    "@pkg/config": "workspace:*",
+    "@types/express": "5.0.6",
+    "@types/express-session": "1.19.0",
+    "@types/lodash-es": "4.17.12",
+    "@types/sanitize-html": "2.16.1",
+    "@types/amqplib": "0.10.8",
+    "@types/nodemailer": "8.0.1",
+    "@types/node": "26.1.2",
+    "eslint": "9.39.5",
+    "typescript": "5.9.3"
+  }
+}

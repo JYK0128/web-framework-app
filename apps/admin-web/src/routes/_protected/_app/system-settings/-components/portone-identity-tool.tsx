@@ -1,8 +1,8 @@
+import { SectionCard } from '@pkg/web-core/template';
 import { useNavigate } from '@tanstack/react-router';
 import { CircleAlert, CircleCheck, ExternalLink } from 'lucide-react';
 
 import { Button } from '#/.generated/shadcn/components/ui';
-import { SectionCard } from '#/components/layout';
 
 const portoneSettings = [
   { label: '스토어 ID', configured: Boolean(import.meta.env.VITE_PORTONE_STORE_ID) },

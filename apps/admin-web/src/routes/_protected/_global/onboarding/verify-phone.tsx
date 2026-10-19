@@ -1,6 +1,6 @@
 import { z } from '@pkg/shared/common';
 import * as PortOne from '@portone/browser-sdk/v2';
-import { useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 
@@ -16,14 +16,18 @@ export const Route = createFileRoute('/_protected/_global/onboarding/verify-phon
     code: z.string().optional(),
     message: z.string().optional(),
   }),
-  component: IdentityVerificationOnboardingPage,
+  component: IdentityVerificationPage,
 });
 
-function IdentityVerificationOnboardingPage() {
+function IdentityVerificationPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { identityVerificationId, code, message } = Route.useSearch();
-  const verifyPhoneNumber = useAuthControllerVerifyPhoneNumberV1({
+  const [errorMessage, setErrorMessage] = useState<string>(() => (
+    code && !code.toUpperCase().includes('CANCEL') ? message || code : ''
+  ));
+  const redirectedProcessedRef = useRef(false);
+  const verifyMutation = useAuthControllerVerifyPhoneNumberV1({
     mutation: {
       onSuccess: async () => {
         queryClient.setQueryData(getAuthControllerMeV1QueryKey(), (current) => current ? { ...current, phoneNumberVerified: true } : current);
@@ -32,84 +36,76 @@ function IdentityVerificationOnboardingPage() {
       },
     },
   });
-  const processedRef = useRef(false);
-  const [error, setError] = useState(() => code && !code.toUpperCase().includes('CANCEL') ? message || code : '');
+  const configured = Boolean(import.meta.env.VITE_PORTONE_STORE_ID && import.meta.env.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY);
+  const storeId = String(import.meta.env.VITE_PORTONE_STORE_ID ?? '');
+  const channelKey = String(import.meta.env.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY ?? '');
 
   useEffect(() => {
-    if ((!identityVerificationId && !code) || processedRef.current) return;
-    processedRef.current = true;
+    if ((!identityVerificationId && !code) || redirectedProcessedRef.current) return;
+    redirectedProcessedRef.current = true;
     async function processReturn() {
       try {
         if (code) {
-          if (!code.toUpperCase().includes('CANCEL')) setError(message || code);
+          if (!code.toUpperCase().includes('CANCEL')) setErrorMessage(message || code);
           return;
         }
         if (!identityVerificationId) return;
-        await verifyPhoneNumber.mutateAsync({ data: { identityVerificationId } });
+        await verifyMutation.mutateAsync({ data: { identityVerificationId } });
       }
       catch {
         // API 오류는 전역 QueryCache/MutationCache에서 표시합니다.
       }
     }
     void processReturn();
-  }, [identityVerificationId, code, message, queryClient, router, verifyPhoneNumber]);
+  }, [identityVerificationId, code, message, queryClient, router, verifyMutation]);
 
-  const startVerification = async () => {
-    const storeId = String(import.meta.env.VITE_PORTONE_STORE_ID ?? '');
-    const channelKey = String(import.meta.env.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY ?? '');
-    if (!storeId || !channelKey) {
-      setError('PortOne 스토어 ID와 본인인증 채널 키를 설정해 주세요.');
-      return;
-    }
-    setError('');
-    try {
-      const currentUrl = new URL(window.location.href);
-      currentUrl.searchParams.delete('identityVerificationId');
-      currentUrl.searchParams.delete('code');
-      currentUrl.searchParams.delete('message');
+  const startVerification = useMutation({
+    onMutate: () => setErrorMessage(''),
+    mutationFn: async () => {
+      if (!configured) throw new Error('지금은 본인인증을 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.');
+
+      const redirectUrl = new URL(window.location.href);
+      for (const key of ['identityVerificationId', 'code', 'message']) redirectUrl.searchParams.delete(key);
       const result = await PortOne.requestIdentityVerification({
         storeId,
         identityVerificationId: `idv_${crypto.randomUUID()}`,
         channelKey,
         windowType: { pc: 'REDIRECTION', mobile: 'REDIRECTION' },
-        redirectUrl: currentUrl.toString(),
+        redirectUrl: redirectUrl.toString(),
       });
-      if (!result || result.code) {
-        if (result?.code && !result.code.toUpperCase().includes('CANCEL')) setError(result.message || '본인인증에 실패했습니다.');
-        return;
+
+      if (!result) return;
+      if (result.code) {
+        if (result.code.toUpperCase().includes('CANCEL')) return;
+        throw new Error(result.message || result.code);
       }
-      verifyPhoneNumber.mutate({ data: { identityVerificationId: result.identityVerificationId } });
-    }
-    catch (verifyError) {
-      setError(verifyError instanceof Error ? verifyError.message : '본인인증을 완료하지 못했습니다.');
-    }
-  };
+
+      return result;
+    },
+    onError: (error) => setErrorMessage(error.message),
+    onSuccess: (result) => {
+      if (!result) return;
+      verifyMutation.mutate({ data: { identityVerificationId: result.identityVerificationId } });
+    },
+  });
 
   return (
     <OnboardingLayout
       icon="user-round-check"
       title="본인인증"
-      description="관리자 계정 사용을 위해 본인인증을 완료해 주세요."
+      description="안전한 이용을 위해 본인인증을 진행해 주세요."
       footer={(
-        <Button
-          className="w-full"
-          onClick={() => void startVerification()}
-          disabled={verifyPhoneNumber.isPending}
-        >
-          {verifyPhoneNumber.isPending ? '확인 중...' : '본인인증 시작'}
+        <Button className="w-full" onClick={() => startVerification.mutate()} disabled={!configured || startVerification.isPending || verifyMutation.isPending}>
+          {startVerification.isPending || verifyMutation.isPending ? '본인인증 중...' : '본인인증 시작'}
         </Button>
       )}
     >
-      <p className="text-sm text-muted-foreground">인증을 완료하면 필수 보안 절차의 다음 단계로 이동합니다.</p>
-      {verifyPhoneNumber.isPending && !error && (
-        <p
-          role="status"
-          className="text-sm text-muted-foreground"
-        >
-          본인인증 결과를 확인하고 있습니다.
-        </p>
+      <p className="text-sm text-muted-foreground">본인인증을 마치면 다음 단계로 안내해 드릴게요.</p>
+      {!configured && <p role="alert" className="text-sm text-destructive">지금은 본인인증을 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.</p>}
+      {(startVerification.isPending || verifyMutation.isPending) && !errorMessage && (
+        <p role="status" className="text-sm text-muted-foreground">본인인증 결과를 확인하고 있습니다.</p>
       )}
-      {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+      {errorMessage && <p role="alert" className="text-sm text-destructive">{errorMessage}</p>}
     </OnboardingLayout>
   );
 }

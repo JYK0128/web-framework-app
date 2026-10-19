@@ -5,8 +5,8 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { GetSystemConfigResponseDto } from './getSystemConfigResponseDto';
 import type { SystemConfigControllerGetConfigsV1200Meta } from './systemConfigControllerGetConfigsV1200Meta';
-import type { SystemSettingsResponseDto } from './systemSettingsResponseDto';
 
 export type SystemConfigControllerGetConfigsV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type SystemConfigControllerGetConfigsV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: SystemSettingsResponseDto;
+  data: GetSystemConfigResponseDto;
   message?: string;
   meta?: SystemConfigControllerGetConfigsV1200Meta;
 };

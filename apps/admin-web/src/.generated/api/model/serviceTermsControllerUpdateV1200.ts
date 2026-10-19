@@ -5,8 +5,8 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { ServiceTermItemDto } from './serviceTermItemDto';
 import type { ServiceTermsControllerUpdateV1200Meta } from './serviceTermsControllerUpdateV1200Meta';
+import type { UpdateServiceTermResponseDto } from './updateServiceTermResponseDto';
 
 export type ServiceTermsControllerUpdateV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type ServiceTermsControllerUpdateV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: ServiceTermItemDto;
+  data: UpdateServiceTermResponseDto;
   message?: string;
   meta?: ServiceTermsControllerUpdateV1200Meta;
 };

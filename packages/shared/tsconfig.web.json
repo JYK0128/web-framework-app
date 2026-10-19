@@ -6,5 +6,5 @@
       "#*": ["./src/*"]
     }
   },
-  "include": ["src/auth/**/*", "src/constants/**/*", "src/common/**/*", "src/web/**/*"]
+  "include": ["src/policy/auth/**/*", "src/constants/**/*", "src/common/**/*", "src/web/**/*"]
 }

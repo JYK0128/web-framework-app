@@ -5,7 +5,7 @@
  * Data Plane Service API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { ServiceAgreementHistoryCursorResponseDto } from './serviceAgreementHistoryCursorResponseDto';
+import type { GetServiceAgreementHistoryResponseDto } from './getServiceAgreementHistoryResponseDto';
 import type { ServiceTermsControllerGetAgreementHistoryV1200Meta } from './serviceTermsControllerGetAgreementHistoryV1200Meta';
 
 export type ServiceTermsControllerGetAgreementHistoryV1200 = {
@@ -14,7 +14,7 @@ export type ServiceTermsControllerGetAgreementHistoryV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: ServiceAgreementHistoryCursorResponseDto;
+  data: GetServiceAgreementHistoryResponseDto;
   message?: string;
   meta?: ServiceTermsControllerGetAgreementHistoryV1200Meta;
 };

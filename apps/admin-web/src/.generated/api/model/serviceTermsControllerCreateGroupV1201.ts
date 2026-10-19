@@ -5,7 +5,7 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { ServiceTermGroupItemDto } from './serviceTermGroupItemDto';
+import type { CreateServiceTermGroupResponseDto } from './createServiceTermGroupResponseDto';
 import type { ServiceTermsControllerCreateGroupV1201Meta } from './serviceTermsControllerCreateGroupV1201Meta';
 
 export type ServiceTermsControllerCreateGroupV1201 = {
@@ -14,7 +14,7 @@ export type ServiceTermsControllerCreateGroupV1201 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: ServiceTermGroupItemDto;
+  data: CreateServiceTermGroupResponseDto;
   message?: string;
   meta?: ServiceTermsControllerCreateGroupV1201Meta;
 };

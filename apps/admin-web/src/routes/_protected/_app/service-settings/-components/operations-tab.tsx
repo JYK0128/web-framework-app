@@ -1,4 +1,9 @@
 import { DEFAULT_TIMEZONE } from '@pkg/shared/common';
+import { DataGrid, DataGridToolbar, useDataGrid } from '@pkg/web-core/data-grid';
+import { FormLayout, useAppForm } from '@pkg/web-core/form';
+import { openModal } from '@pkg/web-core/modal';
+import { SectionCard } from '@pkg/web-core/template';
+import { cn } from '@pkg/web-core/utils';
 import { format } from 'date-fns';
 import { CalendarDays, CalendarIcon, Plus } from 'lucide-react';
 import { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
@@ -6,11 +11,6 @@ import { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
 import { serviceConfigControllerGetHolidaysV1 } from '#/.generated/api/endpoints/service-config/service-config';
 import type { OperatingHolidayItemDto, OperationConfigDto } from '#/.generated/api/model';
 import { Button, Calendar, Input, Label, Popover, PopoverContent, PopoverTrigger, Switch } from '#/.generated/shadcn/components/ui';
-import { cn } from '#/.generated/shadcn/lib/utils';
-import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
-import { FormLayout, useAppForm } from '#/components/form';
-import { SectionCard } from '#/components/layout';
-import { openModal } from '#/components/modal';
 import { createOperationsColumns } from '#/routes/_protected/_app/service-settings/-configs/operations-columns.config';
 import { DAY_NAMES, DAYS_OF_WEEK } from '#/routes/_protected/_app/service-settings/-constants/operations';
 

@@ -1,4 +1,6 @@
 import { z } from '@pkg/shared/common';
+import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
+import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 import { Copy } from 'lucide-react';
 import { toString as qrToString } from 'qrcode';
 import { useEffect, useState } from 'react';
@@ -6,8 +8,6 @@ import { toast } from 'sonner';
 
 import { useAuthControllerEnableTwoFactorV1, useAuthControllerGenerateTwoFactorV1 } from '#/.generated/api/endpoints/auth/auth';
 import { Button, InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '#/.generated/shadcn/components/ui';
-import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
-import { Modal, type ModalComponentProps } from '#/components/modal';
 
 export function ProfileTwoFactorSetupModal({ open, onOpenChange, close, email }: ModalComponentProps<boolean> & { email?: string }) {
   const generate = useAuthControllerGenerateTwoFactorV1();
@@ -22,6 +22,13 @@ export function ProfileTwoFactorSetupModal({ open, onOpenChange, close, email }:
       close?.(true);
     },
   });
+  const { mutate: generateSecret } = generate;
+  useEffect(() => {
+    // StrictMode의 effect 재실행이 끝난 뒤 초기 키를 한 번 발급한다.
+    const timeoutId = setTimeout(() => generateSecret(), 0);
+    return () => clearTimeout(timeoutId);
+  }, [generateSecret]);
+
   const secret = generate.data?.secret;
   const [qrSvg, setQrSvg] = useState<string>();
 
@@ -45,8 +52,11 @@ export function ProfileTwoFactorSetupModal({ open, onOpenChange, close, email }:
   }, [digits, email, periodSeconds, secret]);
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange} onOpen={generate.mutate}>
-      <Modal.Content size="md">
+    <Modal open={open} onOpenChange={onOpenChange}>
+      <Modal.Content
+        size="md"
+        className="max-h-[calc(100dvh-2rem)] grid-rows-[auto_minmax(0,1fr)]"
+      >
         <Modal.Header>
           <Modal.Title>2단계 인증 설정</Modal.Title>
           <Modal.Description>
@@ -58,51 +68,57 @@ export function ProfileTwoFactorSetupModal({ open, onOpenChange, close, email }:
         <form.AppForm>
           <FormLayout
             onSubmit={() => void form.handleSubmit()}
-            className="grid gap-4"
+            className="
+              grid grid-rows-[minmax(0,1fr)_auto] overflow-hidden gap-4
+            "
           >
-            {!secret && generate.isError && (
-              <div className="grid gap-2">
-                <p role="alert" className="text-sm text-destructive">설정용 비밀키를 생성하지 못했습니다.</p>
-                <Button type="button" variant="outline" disabled={generate.isPending} onClick={() => generate.mutate()}>다시 시도</Button>
-              </div>
-            )}
-            {!secret && !generate.isError && (
-              <p role="status" className="text-sm text-muted-foreground">
-                설정용 비밀키를 생성하고 있습니다.
-              </p>
-            )}
-            {secret && (
-              <>
-                {qrSvg && (
+            <Modal.Body className="scroll-y grid content-start gap-4 py-2 pr-1">
+              {!secret && generate.isError && (
+                <div className="grid gap-2">
+                  <p role="alert" className="text-sm text-destructive">인증 앱 연결을 준비하지 못했습니다. 다시 시도해 주세요.</p>
+                  <Button type="button" variant="outline" disabled={generate.isPending} onClick={() => generate.mutate()}>다시 시도</Button>
+                </div>
+              )}
+              {!secret && !generate.isError && (
+                <p role="status" className="text-sm text-muted-foreground">
+                  인증 앱 연결을 준비하고 있습니다.
+                </p>
+              )}
+              {secret && (
+                <>
+                  {qrSvg && (
+                    <section className="grid gap-2">
+                      <h3 className="text-sm font-medium">인증 앱으로 QR 코드 스캔</h3>
+                      <div
+                        className="
+                          mx-auto rounded-lg border bg-white p-2
+                          [&>svg]:size-44
+                        "
+                        dangerouslySetInnerHTML={{ __html: qrSvg }}
+                      />
+                    </section>
+                  )}
                   <section className="grid gap-2">
-                    <h3 className="text-sm font-medium">인증 앱으로 QR 코드 스캔</h3>
-                    <div
-                      className="
-                        mx-auto rounded-lg border bg-white p-2
-                        [&>svg]:size-44
-                      "
-                      dangerouslySetInnerHTML={{ __html: qrSvg }}
-                    />
+                    <h3 className="text-sm font-medium">비밀키</h3>
+                    <InputGroup>
+                      <InputGroupInput aria-label="2단계 인증 비밀키" value={secret} readOnly />
+                      <InputGroupAddon align="inline-end">
+                        <InputGroupButton size="icon-sm" aria-label="비밀키 복사" title="비밀키 복사" onClick={() => void copySecret()}>
+                          <Copy className="size-4" />
+                        </InputGroupButton>
+                      </InputGroupAddon>
+                    </InputGroup>
+                    <p className="text-xs text-muted-foreground">QR 코드를 스캔할 수 없는 경우 이 비밀키를 인증 앱에 직접 입력하세요.</p>
                   </section>
-                )}
-                <section className="grid gap-2">
-                  <h3 className="text-sm font-medium">비밀키</h3>
-                  <InputGroup>
-                    <InputGroupInput aria-label="2단계 인증 비밀키" value={secret} readOnly />
-                    <InputGroupAddon align="inline-end">
-                      <InputGroupButton size="icon-sm" aria-label="비밀키 복사" title="비밀키 복사" onClick={() => void copySecret()}>
-                        <Copy className="size-4" />
-                      </InputGroupButton>
-                    </InputGroupAddon>
-                  </InputGroup>
-                  <p className="text-xs text-muted-foreground">QR 코드를 스캔할 수 없는 경우 이 비밀키를 인증 앱에 직접 입력하세요.</p>
-                </section>
-                <form.AppField name="code">{(field) => <field.OtpInput label="인증 코드" maxLength={digits} required />}</form.AppField>
-                <Modal.Footer>
-                  <Button type="button" variant="outline" disabled={enable.isPending} onClick={() => close?.(false)}>취소</Button>
-                  <FormSubmit disabled={enable.isPending}>2FA 활성화</FormSubmit>
-                </Modal.Footer>
-              </>
+                  <form.AppField name="code">{(field) => <field.OtpInput label="인증 코드" maxLength={digits} required />}</form.AppField>
+                </>
+              )}
+            </Modal.Body>
+            {secret && (
+              <Modal.Footer>
+                <Button type="button" variant="outline" disabled={enable.isPending} onClick={() => close?.(false)}>취소</Button>
+                <FormSubmit disabled={enable.isPending}>2FA 활성화</FormSubmit>
+              </Modal.Footer>
             )}
           </FormLayout>
         </form.AppForm>

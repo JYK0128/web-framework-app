@@ -5,8 +5,8 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { GetSupportRoomResponseDto } from './getSupportRoomResponseDto';
 import type { SupportControllerGetRoomV1200Meta } from './supportControllerGetRoomV1200Meta';
-import type { SupportRoomItem } from './supportRoomItem';
 
 export type SupportControllerGetRoomV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type SupportControllerGetRoomV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: SupportRoomItem;
+  data: GetSupportRoomResponseDto;
   message?: string;
   meta?: SupportControllerGetRoomV1200Meta;
 };

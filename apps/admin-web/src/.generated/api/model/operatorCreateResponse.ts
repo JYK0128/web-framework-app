@@ -9,5 +9,5 @@
 export interface OperatorCreateResponse {
   id: string;
   emailVerificationRequired: boolean;
-  emailVerificationSent: boolean;
+  emailVerificationQueued: boolean;
 }

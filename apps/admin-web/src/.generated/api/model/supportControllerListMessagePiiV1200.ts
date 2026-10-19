@@ -5,8 +5,8 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { GetSupportMessagePiiListResponseDto } from './getSupportMessagePiiListResponseDto';
 import type { SupportControllerListMessagePiiV1200Meta } from './supportControllerListMessagePiiV1200Meta';
-import type { SupportMessageListResponseDto } from './supportMessageListResponseDto';
 
 export type SupportControllerListMessagePiiV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type SupportControllerListMessagePiiV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: SupportMessageListResponseDto;
+  data: GetSupportMessagePiiListResponseDto;
   message?: string;
   meta?: SupportControllerListMessagePiiV1200Meta;
 };

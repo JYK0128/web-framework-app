@@ -1,0 +1,8 @@
+@import "tailwindcss";
+@import "../src/ui/survey-flow/survey-flow.css";
+@import "tw-animate-css";
+@import "../src/styles/fonts.css";
+@import "../src/.generated/shadcn/styles.css";
+@import "../src/styles/utilities.css";
+@source "../src";
+@source "../stories";

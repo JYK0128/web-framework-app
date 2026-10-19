@@ -1,0 +1,51 @@
+import auth from './auth.json';
+import errors from './errors.json';
+
+export default {
+  ...errors,
+  app: { ...auth },
+  admin: {
+    meta: {
+      title: 'Service Factory | Admin Console',
+    },
+    navigation: {
+      overview: 'Overview',
+      dashboard: 'Dashboard',
+      serviceManagement: 'Service management',
+      contentManagement: 'Content management',
+      operatorManagement: 'Operator management',
+      systemManagement: 'System management',
+      personal: 'Personal',
+      customers: 'Customers',
+      memberships: 'Memberships',
+      faqs: 'FAQs',
+      qna: 'Q&A',
+      support: 'Customer support',
+      serviceTerms: 'Service terms',
+      notices: 'Notices',
+      events: 'Events',
+      roles: 'Roles',
+      operators: 'Operators',
+      terms: 'Terms',
+      logs: 'Logs',
+      serviceSettings: 'Service settings',
+      systemSettings: 'System settings',
+      profile: 'Profile',
+      menu: 'Admin menu',
+    },
+    dashboard: {
+      title: 'Dashboard',
+      description: 'Open a Service-Factory administration area.',
+      welcome: 'Welcome to Service-Factory Admin.',
+      quickAccess: 'Quick access',
+      quickAccessDescription: 'Choose an administration area available to your account.',
+      customersDescription: 'Browse customer accounts and membership status.',
+      qnaDescription: 'Review and respond to customer questions.',
+      supportDescription: 'Open active customer support conversations.',
+      noticesDescription: 'Publish and manage service announcements.',
+      faqsDescription: 'Maintain frequently asked questions.',
+      settingsDescription: 'Configure service operations and availability.',
+      profileDescription: 'Review your account and security settings.',
+    },
+  },
+};

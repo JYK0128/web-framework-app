@@ -5,8 +5,8 @@
  * Data Plane Service API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { CreateQnaResponseDto } from './createQnaResponseDto';
 import type { QnaControllerCreateV1200Meta } from './qnaControllerCreateV1200Meta';
-import type { QnaItem } from './qnaItem';
 
 export type QnaControllerCreateV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type QnaControllerCreateV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: QnaItem;
+  data: CreateQnaResponseDto;
   message?: string;
   meta?: QnaControllerCreateV1200Meta;
 };

@@ -1,14 +1,15 @@
 import { z } from '@pkg/shared/common';
+import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
+import { useHashTab } from '@pkg/web-core/hooks';
+import { useI18n } from '@pkg/web-core/i18n';
+import { ScreenLayout } from '@pkg/web-core/template';
+import { Button, Card, CardContent, Tabs, TabsList, TabsTrigger } from '@pkg/web-core/ui';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ArrowRight, Check, CheckCircle2, Copy, Mail, Phone, RefreshCw, Search, Sparkles, User } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { useAuthControllerFindIdV1, useAuthControllerRequestPasswordResetV1 } from '#/.generated/api/endpoints/auth/auth';
-import { Button, Card, CardContent, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
-import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
-import { ScreenLayout } from '#/components/layout';
-import { useHashTab } from '#/lib/use-hash-tab';
 
 type FindAccountTab = 'id' | 'password';
 type FoundAccount = { maskedEmail: string, provider: string };
@@ -17,6 +18,7 @@ const FIND_ACCOUNT_TABS: readonly FindAccountTab[] = ['id', 'password'];
 export const Route = createFileRoute('/_public/_global/find-account')({ component: FindAccountPage });
 
 function FindAccountPage() {
+  const { t } = useI18n();
   const [activeTab, setActiveTab] = useHashTab(FIND_ACCOUNT_TABS, 'id');
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
 
@@ -29,8 +31,8 @@ function FindAccountPage() {
     defaultValues: { name: '', phoneNumber: '' },
     validators: {
       onSubmit: z.object({
-        name: z.string().min(1, '이름을 입력해주세요.'),
-        phoneNumber: z.string().min(1, '전화번호를 입력해주세요.'),
+        name: z.string().min(1, t('app.auth.findAccount.nameRequired')),
+        phoneNumber: z.string().min(1, t('app.auth.findAccount.phoneRequired')),
       }),
     },
     onSubmit: async ({ value }) => {
@@ -47,8 +49,8 @@ function FindAccountPage() {
     defaultValues: { email: '', phoneNumber: '' },
     validators: {
       onSubmit: z.object({
-        email: z.email('올바른 이메일을 입력해주세요.'),
-        phoneNumber: z.string().min(1, '전화번호를 입력해주세요.'),
+        email: z.email(t('app.auth.findAccount.emailInvalid')),
+        phoneNumber: z.string().min(1, t('app.auth.findAccount.phoneRequired')),
       }),
     },
     onSubmit: async ({ value }) => {
@@ -65,16 +67,16 @@ function FindAccountPage() {
     try {
       await navigator.clipboard.writeText(email);
       setCopiedEmail(email);
-      toast.success('아이디가 복사되었습니다.');
+      toast.success(t('app.auth.findAccount.copied'));
       setTimeout(() => setCopiedEmail(null), 2000);
     }
     catch {
-      toast.error('아이디를 복사하지 못했습니다.');
+      toast.error(t('app.auth.findAccount.copyFailed'));
     }
   };
 
   return (
-    <ScreenLayout>
+    <ScreenLayout.Root>
       <ScreenLayout.Content size="md">
         <Card className="size-full shadow-xl">
           <CardContent className="grid size-full grid-rows-[1fr] p-6">
@@ -87,7 +89,7 @@ function FindAccountPage() {
                 >
                   <Search className="size-6" />
                 </div>
-                <h1 className="text-xl font-bold tracking-tight">아이디·비밀번호 찾기</h1>
+                <h1 className="text-xl font-bold tracking-tight">{t('app.auth.findAccount.title')}</h1>
               </div>
               <Tabs
                 value={activeTab}
@@ -99,10 +101,10 @@ function FindAccountPage() {
                 "
                 >
                   <TabsTrigger value="id">
-                    아이디 찾기
+                    {t('app.auth.findAccount.idTab')}
                   </TabsTrigger>
                   <TabsTrigger value="password">
-                    비밀번호 재설정
+                    {t('app.auth.findAccount.passwordTab')}
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
@@ -119,7 +121,7 @@ function FindAccountPage() {
                           "
                           >
                             <Sparkles className="size-4 shrink-0" />
-                            <span>등록된 계정을 찾았습니다.</span>
+                            <span>{t('app.auth.findAccount.found')}</span>
                           </div>
                           <div className="grid gap-2 border-t pt-4">
                             {foundAccounts.map((account) => (
@@ -141,10 +143,10 @@ function FindAccountPage() {
                                     text-[11px] text-muted-foreground
                                   "
                                   >
-                                    {account.provider === 'credential' ? '이메일 계정' : account.provider}
+                                    {account.provider === 'credential' ? t('app.auth.findAccount.emailAccount') : account.provider}
                                   </span>
                                 </div>
-                                <Button type="button" variant="ghost" size="icon" onClick={() => void handleCopy(account.maskedEmail)} title="아이디 복사">
+                                <Button type="button" variant="ghost" size="icon" onClick={() => void handleCopy(account.maskedEmail)} title={t('app.auth.findAccount.copy')}>
                                   {copiedEmail === account.maskedEmail
                                     ? (
                                       <Check className="size-4 text-emerald-500" />
@@ -169,8 +171,8 @@ function FindAccountPage() {
                               <idForm.AppField name="name">
                                 {(field) => (
                                   <field.Input
-                                    label="이름"
-                                    placeholder="이름을 입력해주세요."
+                                    label={t('app.auth.findAccount.name')}
+                                    placeholder={t('app.auth.findAccount.namePlaceholder')}
                                     autoComplete="name"
                                     leftSide={(
                                       <User className="
@@ -186,8 +188,8 @@ function FindAccountPage() {
                                 {(field) => (
                                   <field.Input
                                     type="tel"
-                                    label="전화번호"
-                                    placeholder="전화번호를 입력해주세요."
+                                    label={t('app.auth.findAccount.phone')}
+                                    placeholder={t('app.auth.findAccount.phonePlaceholder')}
                                     autoComplete="tel"
                                     leftSide={(
                                       <Phone className="
@@ -221,7 +223,7 @@ function FindAccountPage() {
                               <CheckCircle2 className="size-6" />
                             </div>
                             <div className="grid gap-1">
-                              <h3 className="text-sm font-semibold">이메일의 비밀번호 재설정 링크를 확인해 주세요.</h3>
+                              <h3 className="text-sm font-semibold">{t('app.auth.findAccount.resetSent')}</h3>
                             </div>
                           </div>
                         </div>
@@ -238,8 +240,8 @@ function FindAccountPage() {
                                 {(field) => (
                                   <field.Input
                                     type="email"
-                                    label="이메일"
-                                    placeholder="이메일을 입력해주세요."
+                                    label={t('app.auth.findAccount.email')}
+                                    placeholder={t('app.auth.findAccount.emailPlaceholder')}
                                     autoComplete="email"
                                     leftSide={(
                                       <Mail className="
@@ -255,8 +257,8 @@ function FindAccountPage() {
                                 {(field) => (
                                   <field.Input
                                     type="tel"
-                                    label="전화번호"
-                                    placeholder="전화번호를 입력해주세요."
+                                    label={t('app.auth.findAccount.phone')}
+                                    placeholder={t('app.auth.findAccount.phonePlaceholder')}
                                     autoComplete="tel"
                                     leftSide={(
                                       <Phone className="
@@ -285,7 +287,7 @@ function FindAccountPage() {
                             render={<Link to="/login" />}
                             className="w-full"
                           >
-                            로그인으로 이동
+                            {t('app.auth.findAccount.goLogin')}
                             <ArrowRight className="ml-1.5 size-4" />
                           </Button>
                           <Button
@@ -299,7 +301,7 @@ function FindAccountPage() {
                             className="w-full text-xs text-muted-foreground"
                           >
                             <RefreshCw className="mr-1 size-3.5" />
-                            다시 찾기
+                            {t('app.auth.findAccount.findAgain')}
                           </Button>
                         </>
                       )
@@ -313,7 +315,7 @@ function FindAccountPage() {
                                 disabled={isSubmitting || findIdMutation.isPending}
                                 className="w-full"
                               >
-                                {isSubmitting ? '찾는 중...' : '아이디 찾기'}
+                                {isSubmitting ? t('app.auth.findAccount.searching') : t('app.auth.findAccount.findId')}
                                 <ArrowRight className="ml-1.5 size-4" />
                               </FormSubmit>
                             )}
@@ -331,7 +333,7 @@ function FindAccountPage() {
                             render={<Link to="/login" />}
                             className="w-full"
                           >
-                            로그인으로 이동
+                            {t('app.auth.findAccount.goLogin')}
                             <ArrowRight className="ml-1.5 size-4" />
                           </Button>
                           <Button
@@ -345,7 +347,7 @@ function FindAccountPage() {
                             className="w-full text-xs text-muted-foreground"
                           >
                             <RefreshCw className="mr-1 size-3.5" />
-                            다시 요청
+                            {t('app.auth.findAccount.requestAgain')}
                           </Button>
                         </>
                       )
@@ -359,7 +361,7 @@ function FindAccountPage() {
                                 disabled={isSubmitting || resetMutation.isPending}
                                 className="w-full"
                               >
-                                {isSubmitting ? '보내는 중...' : '비밀번호 재설정 링크 받기'}
+                                {isSubmitting ? t('app.auth.findAccount.sending') : t('app.auth.findAccount.requestReset')}
                                 <ArrowRight className="ml-1.5 size-4" />
                               </FormSubmit>
                             )}
@@ -381,10 +383,12 @@ function FindAccountPage() {
             hover:text-foreground
           "
         >
-          ← 로그인으로 돌아가기
+          ←
+          {' '}
+          {t('app.auth.findAccount.back')}
         </Link>
       </ScreenLayout.Addon>
-    </ScreenLayout>
+    </ScreenLayout.Root>
   );
 }
 

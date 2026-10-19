@@ -5,7 +5,7 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { ServiceTermActionResponseDto } from './serviceTermActionResponseDto';
+import type { DeleteServiceTermGroupResponseDto } from './deleteServiceTermGroupResponseDto';
 import type { ServiceTermsControllerDeleteGroupV1200Meta } from './serviceTermsControllerDeleteGroupV1200Meta';
 
 export type ServiceTermsControllerDeleteGroupV1200 = {
@@ -14,7 +14,7 @@ export type ServiceTermsControllerDeleteGroupV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: ServiceTermActionResponseDto;
+  data: DeleteServiceTermGroupResponseDto;
   message?: string;
   meta?: ServiceTermsControllerDeleteGroupV1200Meta;
 };

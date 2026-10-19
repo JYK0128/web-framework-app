@@ -1,17 +1,25 @@
 import { z } from '@pkg/shared/common';
 import { deriveSecretKey } from '@pkg/shared/server';
 
-import { SECRET_KEY_PURPOSE } from './key-purpose';
+import { SECRET_KEY_PURPOSE } from './app.secret';
 
 const envSchema = z.object({
   // Process identity and runtime
   NODE_ENV: z.enum(['development', 'test', 'production']),
+  DEMO_ENABLED: z.enum(['true', 'false']).default('false').transform((value) => value === 'true'),
   PORT: z.coerce.number().int().positive(),
 
   // Required runtime infrastructure and security
   APP_SECRET: z.string().regex(/^[A-Za-z0-9_-]{43}$/, 'must be a base64url-encoded 32-byte random key'),
   DATABASE_URL: z.string().min(1),
   REDIS_URL: z.string().min(1),
+  LOKI_URL: z.url(),
+  STORAGE_S3_BUCKET: z.string().min(1).optional(),
+  STORAGE_S3_REGION: z.string().min(1).optional(),
+  STORAGE_S3_ENDPOINT: z.url().optional(),
+  STORAGE_S3_ACCESS_KEY_ID: z.string().min(1).optional(),
+  STORAGE_S3_SECRET_ACCESS_KEY: z.string().min(1).optional(),
+  STORAGE_S3_PUBLIC_URL_PREFIX: z.url().optional(),
 
   // Required machine integration
   ADMIN_API_URL: z.url(),
@@ -35,10 +43,10 @@ export const env = {
   SESSION_SECRET: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.sessionSigning),
   TWO_FACTOR_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.twoFactorEncryption),
   OAUTH_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.oauthClientSecretEncryption),
-  DELIVERY_EMAIL_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.deliveryEmailEncryption),
-  DELIVERY_MESSENGER_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.deliveryMessengerEncryption),
-  DELIVERY_SMS_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.deliverySmsEncryption),
-  DELIVERY_PUSH_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.deliveryPushEncryption),
+  NOTIFICATION_EMAIL_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.notificationEmailEncryption),
+  NOTIFICATION_MESSENGER_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.notificationMessengerEncryption),
+  NOTIFICATION_SMS_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.notificationSmsEncryption),
+  NOTIFICATION_PUSH_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.notificationPushEncryption),
   PII_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.piiEncryption),
   PII_HASH_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.piiSearchHmac),
   MACHINE_JWT_SECRET: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.machineJwtSigning),

@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { SupportControllerUpdateRoomV1200Meta } from './supportControllerUpdateRoomV1200Meta';
-import type { SupportRoomItem } from './supportRoomItem';
+import type { UpdateSupportRoomResponseDto } from './updateSupportRoomResponseDto';
 
 export type SupportControllerUpdateRoomV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type SupportControllerUpdateRoomV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: SupportRoomItem;
+  data: UpdateSupportRoomResponseDto;
   message?: string;
   meta?: SupportControllerUpdateRoomV1200Meta;
 };

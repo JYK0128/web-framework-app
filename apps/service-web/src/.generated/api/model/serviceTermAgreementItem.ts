@@ -12,6 +12,7 @@ export interface ServiceTermAgreementItem {
   groupId: string;
   title: string;
   version: string;
+  content: string;
   isRequired: boolean;
   isAgreed: boolean;
   /** @nullable */

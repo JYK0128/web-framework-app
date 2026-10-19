@@ -5,8 +5,8 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { CreateSupportMessageResponseDto } from './createSupportMessageResponseDto';
 import type { SupportControllerCreateMessageV1200Meta } from './supportControllerCreateMessageV1200Meta';
-import type { SupportMessageItem } from './supportMessageItem';
 
 export type SupportControllerCreateMessageV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type SupportControllerCreateMessageV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: SupportMessageItem;
+  data: CreateSupportMessageResponseDto;
   message?: string;
   meta?: SupportControllerCreateMessageV1200Meta;
 };

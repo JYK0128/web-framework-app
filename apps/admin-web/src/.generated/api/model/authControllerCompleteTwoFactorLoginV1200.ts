@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { AuthControllerCompleteTwoFactorLoginV1200Meta } from './authControllerCompleteTwoFactorLoginV1200Meta';
-import type { LoginResponse } from './loginResponse';
+import type { TwoFactorLoginResponse } from './twoFactorLoginResponse';
 
 export type AuthControllerCompleteTwoFactorLoginV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type AuthControllerCompleteTwoFactorLoginV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: LoginResponse;
+  data: TwoFactorLoginResponse;
   message?: string;
   meta?: AuthControllerCompleteTwoFactorLoginV1200Meta;
 };

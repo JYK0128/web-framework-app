@@ -1,0 +1,98 @@
+@import '@xyflow/react/dist/style.css';
+
+.survey-flow-editor .react-flow__attribution {
+  @apply rounded-tl-md bg-background/70 text-[9px] text-muted-foreground;
+}
+
+.survey-flow-editor .react-flow__controls {
+  @apply overflow-hidden rounded-lg border border-border shadow-sm;
+}
+
+.survey-flow-editor .react-flow__controls-button {
+  @apply grid size-8 place-items-center border-border bg-background fill-foreground;
+}
+
+.survey-flow-editor .survey-flow-controls.is-collapsed > .react-flow__controls-button:not(:last-child) {
+  display: none;
+}
+
+.survey-flow-editor .react-flow__minimap {
+  @apply overflow-hidden rounded-lg border border-border bg-background/90 shadow-sm;
+}
+
+.survey-flow-editor .react-flow__minimap.bottom.right {
+  bottom: 10px;
+}
+
+.content-page-editor-body {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.content-page-editor-form {
+  height: 100%;
+  grid-template-rows: minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.content-page-editor-form [data-slot='field'] {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0.5rem;
+  overflow: hidden;
+}
+
+.content-page-editor-form [data-slot='field-content'] {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.content-page-editor-suneditor,
+.content-page-editor-suneditor > .sun-editor {
+  height: 100%;
+  min-height: 0;
+}
+
+.content-page-editor-suneditor > .sun-editor {
+  display: flex !important;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.content-page-editor-suneditor > .sun-editor > .se-container {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 0;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.content-page-editor-suneditor > .sun-editor .se-wrapper {
+  height: auto;
+  min-height: 0;
+  flex: 1 1 0;
+}
+
+.content-page-editor-suneditor > .sun-editor .se-wrapper .se-wrapper-inner {
+  min-height: 0;
+}
+
+.survey-preview-body {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+}
+
+.survey-preview-content-page {
+  display: flex;
+  min-height: 0;
+  flex: 1 0 auto;
+  flex-direction: column;
+}
+
+.survey-preview-content-card {
+  flex: 1 0 auto;
+}

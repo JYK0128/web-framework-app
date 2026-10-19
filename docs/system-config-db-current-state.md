@@ -13,7 +13,7 @@
 | 보안 정책 | Service/Admin API `app.config.ts` | DB 저장 중단 예정 | 보안 관련 고정 정책은 각 API 설정 객체에서 관리한다. 기존 Service DB `security` 행은 제거 마이그레이션 대기 상태다. |
 | 문의 정책 | Service DB / `system_config` | `inquiry` | 첫 안내 문구, 미응답 기준 10분, 자동 종료 72시간 저장. 현재 DB 행에는 `offlineReplyMessage`가 없다. |
 | 웹훅 | Service DB / `system_config` | `webhook` | `enabled=false`, `type=SLACK`, `cooldownMinutes=10`, URL 비어 있음. Admin DB로 이전되지 않은 기존 설정 행. |
-| 이메일·메신저·SMS·푸시 발송 | Service DB / `system_config` | `delivery` | 각 발송 채널 비활성. SMTP, FCM 등 접속값은 현재 비어 있음. SMTP 비밀번호, 공급자 키·토큰, FCM 개인키 등 자격증명은 파생된 앱 데이터 암호화 키로 저장하고 Service 설정 응답에서는 빈 값으로 마스킹한다. |
+| 이메일·메신저·SMS·푸시 알림 | Service DB / `system_config` | `notification` | 각 발송 채널 비활성. SMTP, FCM 등 접속값은 현재 비어 있음. SMTP 비밀번호, 공급자 키·토큰, FCM 개인키 등 자격증명은 파생된 앱 데이터 암호화 키로 저장하고 Service 설정 응답에서는 빈 값으로 마스킹한다. |
 | OAuth | Service DB / `system_config` | `oauth` | Google, Kakao, Naver 로그인 모두 비활성. client ID/secret은 비어 있음. OAuth client secret은 파생된 앱 데이터 암호화 키로 저장하고 응답에서는 빈 값으로 마스킹한다. |
 
 ## 보안 설정 및 인증 드라이버
@@ -63,7 +63,7 @@ JWT가 현재 Admin/Service API의 기본 인증 드라이버다. `UserAuthModul
 - 두 API는 각각 별도 PostgreSQL DB를 사용하며, 테이블 이름은 둘 다 `system_config`다.
 - 각 행은 설정 코드(`code`)와 전체 설정 객체(`value` JSONB), 설명(`description`), 수정 시각(`updatedAt`)을 갖는다.
 - Service API는 시작 시 운영시간·점검·문의·웹훅 일부를 Redis로 동기화한다. DB가 원본 저장소이고 Redis는 런타임 반영용 캐시다.
-- Admin 이메일 SMTP 비밀번호는 Admin API 코드에서 암호화한다. Service OAuth client secret과 delivery의 SMTP 비밀번호, 공급자 키·토큰, FCM 개인키는 `APP_SECRET`에서 파생한 앱 데이터 암호화 키로 JSONB에 저장하며 공개 설정 응답에서는 값을 비운다. 저장돼 있던 기존 평문 자격증명은 해당 설정을 다음에 저장할 때 암호문으로 전환된다. 빈 값으로 수정 요청을 보내면 기존 자격증명을 보존한다.
+- Admin 이메일 SMTP 비밀번호는 Admin API 코드에서 암호화한다. Service OAuth client secret과 notification의 SMTP 비밀번호, 공급자 키·토큰, FCM 개인키는 `APP_SECRET`에서 파생한 앱 데이터 암호화 키로 JSONB에 저장하며 공개 설정 응답에서는 값을 비운다. 저장돼 있던 기존 평문 자격증명은 해당 설정을 다음에 저장할 때 암호문으로 전환된다. 빈 값으로 수정 요청을 보내면 기존 자격증명을 보존한다.
 - Service DB의 `inquiry`에는 현재 `offlineReplyMessage`가 없다. 저장 행 설명도 부재중 응답 문구를 포함하지 않는 이전 문구다.
 
 ## 실제 조회 데이터 요약
@@ -71,4 +71,4 @@ JWT가 현재 Admin/Service API의 기본 인증 드라이버다. `UserAuthModul
 | DB | 행 수 | 설정 코드 |
 | --- | ---: | --- |
 | Admin DB | 1 | `email` |
-| Service DB | 기존 스냅샷 7행 | `delivery`, `inquiry`, `maintenance`, `oauth`, `operation`, `security`, `webhook` |
+| Service DB | 기존 스냅샷 7행 | `notification`, `inquiry`, `maintenance`, `oauth`, `operation`, `security`, `webhook` |

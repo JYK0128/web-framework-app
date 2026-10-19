@@ -26,7 +26,7 @@
 | API 인증 정책 | Admin API도 Admin shared 설정 사용 | Service API도 Service shared 설정 사용 |
 | 프로필 약관 동의 목록 | 필수 인증 조건 충족 후 조회 | 필수 인증 조건 충족 후 조회 |
 | 이메일 인증 필수 여부 | `false` | `true` |
-| 필수 약관 API | `/operator-terms/agreements` | `/service-terms/agreements` |
+| 필수 약관 API | `/terms/agreements` | `/service-terms/agreements` |
 | callback 기본 목적지 | `/profile` | `/` |
 
 표에서 값이 같은 행은 두 앱에 동일하게 구현되어 있다. 인증 정책 값은 앱별로 다르며, 프론트와 대응 API가 같은 shared 설정 파일을 직접 참조한다.

@@ -1,11 +1,11 @@
 import { z } from '@pkg/shared/common';
+import { FormLayout, useAppForm } from '@pkg/web-core/form';
+import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { getServiceTermsControllerListV1QueryKey, useServiceTermsControllerCreateV1, useServiceTermsControllerUpdateV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
 import type { ServiceTermGroupItemDto, ServiceTermItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { FormLayout, useAppForm } from '#/components/form';
-import { Modal, type ModalComponentProps } from '#/components/modal';
 
 import { publishScheduleSchema, toPublishedAt } from './publish-schedule';
 
@@ -70,7 +70,7 @@ export function ServiceTermEditorModal({ term, group, open, onOpenChange, close 
                   {(field) => <field.Input label="버전" placeholder="예: 1.1" required />}
                 </form.AppField>
                 <form.AppField name="publishedAt">
-                  {(field) => <field.DatetimePicker label="게시 예정일" placeholder="게시 예정일을 선택해 주세요" emptyValue="" />}
+                  {(field) => <field.DatetimePicker label="게시 예정일" placeholder="게시 예정일을 선택해 주세요" />}
                 </form.AppField>
               </div>
               <section className="grid gap-3 border-t pt-4">

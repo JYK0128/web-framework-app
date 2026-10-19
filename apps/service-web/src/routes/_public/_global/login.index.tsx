@@ -1,13 +1,14 @@
-import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
+import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
+import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
+import { useI18n } from '@pkg/web-core/i18n';
+import { ScreenLayout } from '@pkg/web-core/template';
+import { Card, CardContent, CardHeader, CardTitle, Separator } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router';
 
 import { getAuthControllerMeV1QueryKey, useAuthControllerLoginV1, useOAuthControllerProvidersV1 } from '#/.generated/api/endpoints/auth/auth';
 import { AuthControllerLoginV1Body } from '#/.generated/api/zod/auth/auth';
-import { Card, CardContent, CardHeader, CardTitle, Separator } from '#/.generated/shadcn/components/ui';
-import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
-import { ScreenLayout } from '#/components/layout';
 
 export const Route = createFileRoute('/_public/_global/login/')({
   validateSearch: z.object({ callback: z.string().optional(), error: z.string().optional() }),
@@ -18,23 +19,23 @@ export const Route = createFileRoute('/_public/_global/login/')({
 });
 
 function LoginPage() {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { callback, error } = Route.useSearch();
+  const { callback } = Route.useSearch();
+  const destination = resolveDestination(callback);
   const policy = SERVICE_AUTH_POLICY_CONFIG;
   const oauthProvidersQuery = useOAuthControllerProvidersV1({ query: { enabled: policy.oauthAvailable } });
-  const oauthProviders = oauthProvidersQuery.data;
-  const hasOAuthProviders = policy.oauthAvailable && Boolean(oauthProviders?.items.length);
-  const destination = resolveDestination(callback);
-
   const loginMutation = useAuthControllerLoginV1();
+  const oauthProviders = oauthProvidersQuery.data?.items ?? [];
+  const hasCredentialLogin = policy.credentialAvailable;
+  const hasOAuthLogin = policy.oauthAvailable && oauthProviders.length > 0;
+  const hasLoginMethod = hasCredentialLogin || hasOAuthLogin;
+  const showNoLoginMethods = !hasCredentialLogin
+    && (!policy.oauthAvailable || (oauthProvidersQuery.isFetched && !hasOAuthLogin));
 
   const form = useAppForm({
-    defaultValues: {
-      email: '',
-      password: '',
-      rememberMe: false,
-    },
+    defaultValues: { email: '', password: '', rememberMe: false },
     validators: { onSubmit: AuthControllerLoginV1Body.extend({ rememberMe: z.boolean() }) },
     onSubmit: async ({ value }) => {
       try {
@@ -71,153 +72,124 @@ function LoginPage() {
   });
 
   return (
-    <ScreenLayout>
-      <ScreenLayout.Content>
-        <Card className="w-full max-w-md shadow-xl border border-border/40">
+    <ScreenLayout.Root>
+      <ScreenLayout.Content size="md" className="h-auto">
+        <Card className="
+          grid max-h-full w-full grid-rows-[auto_minmax(0,1fr)] shadow-xl
+        "
+        >
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold tracking-tight">로그인</CardTitle>
-            {error && (
-              <p
-                role="alert"
-                className="text-sm text-destructive"
-              >
-                {getOAuthErrorMessage(error)}
-              </p>
-            )}
+            <CardTitle className="text-2xl font-bold tracking-tight">{t('app.auth.login.title')}</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex flex-col overflow-hidden p-6">
             <form.AppForm>
               <FormLayout
                 id="service-login-form"
                 onSubmit={() => void form.handleSubmit()}
-                className="gap-6"
+                className="grid-cols-1 gap-4 flex-1 scroll-y"
               >
-                <div className="grid gap-4">
-                  {policy.credentialAvailable && (
+                {hasCredentialLogin && (
+                  <div className="scroll-y grid content-start gap-4">
                     <form.AppField name="email">
                       {(field) => (
                         <field.Input
                           type="email"
-                          label="이메일"
+                          label={t('app.auth.login.email')}
                           placeholder="user@example.com"
                           autoComplete="email"
                           required
                         />
                       )}
                     </form.AppField>
-                  )}
-                  {policy.credentialAvailable && (
                     <form.AppField name="password">
                       {(field) => (
                         <field.Input
                           type="password"
-                          label="비밀번호"
+                          label={t('app.auth.login.password')}
                           placeholder="••••••••"
                           autoComplete="current-password"
                           required
                         />
                       )}
                     </form.AppField>
-                  )}
-                  {policy.credentialAvailable && (
                     <div className="flex items-center justify-between gap-2">
                       <form.AppField name="rememberMe">
-                        {(field) => <field.Checkbox label="로그인 상태 유지" showError={false} />}
+                        {(field) => <field.Checkbox label={t('app.auth.login.remember')} showError={false} />}
                       </form.AppField>
                       <Link
                         to="/find-account"
                         className="
-                          shrink-0 text-sm underline underline-offset-4
+                          shrink-0 text-xs text-muted-foreground
+                          hover:text-foreground hover:underline
                         "
                       >
-                        비밀번호를 잊으셨나요?
+                        {t('app.auth.login.findAccount')}
                       </Link>
                     </div>
-                  )}
-                  {policy.credentialAvailable && (
-                    <FormSubmit
-                      variant="default"
-                      className="w-full"
-                      disabled={loginMutation.isPending}
-                    >
-                      {loginMutation.isPending ? '인증 확인 중...' : '로그인'}
-                    </FormSubmit>
-                  )}
-                  {policy.credentialAvailable && policy.emailVerificationRequired && (
-                    <Link
-                      to="/verify-email"
-                      search={{}}
-                      className="
-                        text-center text-xs text-muted-foreground
-                        hover:text-foreground hover:underline
-                      "
-                    >
-                      이메일 인증 메일 다시 받기
-                    </Link>
-                  )}
-                </div>
-                {hasOAuthProviders && (
-                  <div className="grid gap-3">
-                    {policy.credentialAvailable && (
-                      <div className="flex items-center gap-3">
-                        <Separator
-                          orientation="horizontal"
-                          className="h-px flex-1 bg-border"
-                        />
-                        <span className="text-xs text-muted-foreground">또는</span>
-                        <Separator
-                          orientation="horizontal"
-                          className="h-px flex-1 bg-border"
-                        />
+                  </div>
+                )}
+                {hasLoginMethod && (
+                  <div className="grid gap-6">
+                    {hasCredentialLogin && (
+                      <FormSubmit variant="default" className="w-full" disabled={loginMutation.isPending}>
+                        <span>{loginMutation.isPending ? t('app.auth.login.pending') : t('app.auth.login.submit')}</span>
+                      </FormSubmit>
+                    )}
+                    {hasOAuthLogin && (
+                      <div className="grid gap-3">
+                        {hasCredentialLogin && (
+                          <div className="flex items-center gap-3">
+                            <Separator className="h-px flex-1 bg-border" />
+                            <span className="text-xs text-muted-foreground">{t('app.auth.login.or')}</span>
+                            <Separator className="h-px flex-1 bg-border" />
+                          </div>
+                        )}
+                        {oauthProviders.map((provider) => (
+                          <a
+                            key={provider.id}
+                            href={`/api/v1/auth/oauth/${encodeURIComponent(provider.id)}?callback=${encodeURIComponent(destination)}`}
+                            className="
+                              flex h-10 items-center justify-center gap-2
+                              rounded-md border px-4 py-2 text-sm font-medium
+                              transition-colors
+                              hover:bg-accent hover:text-accent-foreground
+                            "
+                            style={{ backgroundColor: provider.brandColor, color: provider.brandTextColor }}
+                          >
+                            {provider.iconUrl && (
+                              <img
+                                src={provider.iconUrl}
+                                alt=""
+                                className="size-5 object-contain"
+                              />
+                            )}
+                            {t('app.auth.login.providerLogin', { provider: provider.name })}
+                          </a>
+                        ))}
                       </div>
                     )}
-                    <div className="grid gap-2">
-                      {oauthProviders?.items.map((provider) => (
-                        <a
-                          key={provider.id}
-                          href={`/api/v1/auth/oauth/${encodeURIComponent(provider.id)}?callback=${encodeURIComponent(destination)}`}
+                    {policy.registrationAvailable && hasCredentialLogin && (
+                      <div className="text-center text-sm">
+                        <span className="text-muted-foreground">{t('app.auth.login.noAccount')}</span>
+                        <Link
+                          to="/register"
                           className="
-                            inline-flex min-h-10 items-center justify-center
-                            gap-2 rounded-md border px-4 py-2 text-sm
-                            font-medium transition-colors
-                            hover:bg-accent hover:text-accent-foreground
+                            ml-2 font-medium text-foreground underline
+                            underline-offset-4
                           "
-                          style={{ backgroundColor: provider.brandColor, color: provider.brandTextColor }}
                         >
-                          {provider.iconUrl && (
-                            <img
-                              src={provider.iconUrl}
-                              alt=""
-                              className="size-5 object-contain"
-                            />
-                          )}
-                          {provider.name}
-                          로 로그인
-                        </a>
-                      ))}
-                    </div>
+                          {t('app.auth.login.register')}
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 )}
-                {policy.registrationAvailable && policy.credentialAvailable && (
-                  <div className="border-t pt-4 text-center text-sm">
-                    <span className="text-muted-foreground">계정이 없으신가요?</span>
-                    <Link
-                      to="/register"
-                      className="
-                        ml-2 font-medium text-foreground underline
-                        underline-offset-4
-                      "
-                    >
-                      회원가입
-                    </Link>
-                  </div>
-                )}
-                {!policy.credentialAvailable && !hasOAuthProviders && (
+                {showNoLoginMethods && (
                   <p
                     role="status"
                     className="text-center text-sm text-muted-foreground"
                   >
-                    사용 가능한 로그인 방법이 없습니다.
+                    {t('app.auth.login.noMethods')}
                   </p>
                 )}
               </FormLayout>
@@ -225,7 +197,20 @@ function LoginPage() {
           </CardContent>
         </Card>
       </ScreenLayout.Content>
-    </ScreenLayout>
+      <ScreenLayout.Addon>
+        <Link
+          to="/"
+          className="
+            text-xs text-muted-foreground transition-colors
+            hover:text-foreground
+          "
+        >
+          ←
+          {' '}
+          {t('app.auth.login.home')}
+        </Link>
+      </ScreenLayout.Addon>
+    </ScreenLayout.Root>
   );
 }
 
@@ -239,17 +224,5 @@ function resolveDestination(callback?: string): string {
   }
   catch {
     return '/';
-  }
-}
-
-function getOAuthErrorMessage(code: string): string {
-  switch (code) {
-    case 'TWO_FACTOR_REQUIRED_FOR_OAUTH': return '이 계정은 2단계 인증을 사용합니다. 이메일과 비밀번호로 로그인해 인증 코드를 입력해 주세요.';
-    case 'EMAIL_VERIFICATION_REQUIRED': return '이메일 인증을 완료한 뒤 로그인해 주세요.';
-    case 'REGISTRATION_DISABLED': return '현재 새 계정 가입을 사용할 수 없습니다.';
-    case 'OAUTH_VERIFIED_EMAIL_REQUIRED': return '공급자가 검증된 이메일을 제공하지 않습니다. 관리자에게 문의해 주세요.';
-    case 'OAUTH_CANCELLED': return '공급자 로그인을 취소했습니다.';
-    case 'OAUTH_UNAVAILABLE': return '현재 외부 계정 로그인을 사용할 수 없습니다.';
-    default: return '외부 계정 로그인을 완료하지 못했습니다. 다시 시도해 주세요.';
   }
 }

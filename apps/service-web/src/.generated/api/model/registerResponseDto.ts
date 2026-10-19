@@ -8,5 +8,5 @@
 
 export interface RegisterResponseDto {
   emailVerificationRequired: boolean;
-  verificationEmailSent: boolean;
+  verificationEmailQueued: boolean;
 }

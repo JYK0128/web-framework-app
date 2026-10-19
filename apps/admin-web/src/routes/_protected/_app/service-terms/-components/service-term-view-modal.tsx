@@ -1,6 +1,7 @@
+import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
+
 import type { ServiceTermItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { Modal, type ModalComponentProps } from '#/components/modal';
 
 export function ServiceTermViewModal({ term, open, onOpenChange }: ModalComponentProps & { term: ServiceTermItemDto }) {
   return (
@@ -37,7 +38,11 @@ export function ServiceTermViewModal({ term, open, onOpenChange }: ModalComponen
                     {term.version}
                   </span>
                   <span>·</span>
-                  <span>{term.isPublished ? '게시됨' : '초안'}</span>
+                  <span>
+                    {term.isPublished && '게시됨'}
+                    {term.isScheduled && '예약'}
+                    {term.isDraft && '초안'}
+                  </span>
                   <span>·</span>
                   <span>{term.isRequired ? '필수 동의' : '선택 동의'}</span>
                 </div>

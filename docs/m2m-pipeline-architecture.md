@@ -212,7 +212,7 @@ apps/
 └── service-api/
     └── src/
         ├── env.ts                       # PORT=4000
-        ├── common/
+        ├── core/
         │   ├── decorators/
         │   │   └── auth-mode.decorator.ts        # @Public/@UserAuth/@M2mAuth 메타데이터
         │   ├── guards/

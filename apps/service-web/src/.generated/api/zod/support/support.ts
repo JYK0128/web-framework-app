@@ -212,9 +212,19 @@ export const SupportControllerCreateMessageV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const SupportControllerEventsV1Params = zod.object({
+export const SupportControllerSocketTicketV1Params = zod.object({
   "roomId": zod.string()
 })
 
-export const SupportControllerEventsV1Response = zod.unknown()
-
+export const SupportControllerSocketTicketV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ticket": zod.string()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})

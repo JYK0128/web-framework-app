@@ -9,6 +9,26 @@ import * as zod from 'zod';
 
 
 /**
+ * @summary 시스템 설정 관리자 이메일 테스트 전송
+ */
+export const SystemConfigControllerTestAdminEmailV1Body = zod.object({
+  "to": zod.string()
+})
+
+export const SystemConfigControllerTestAdminEmailV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
  * @summary 시스템 설정 조회
  */
 export const systemConfigControllerGetConfigsV1ResponseDataOauthGoogleOneEnabledDefault = false;
@@ -83,7 +103,7 @@ export const SystemConfigControllerGetConfigsV1Response = zod.object({
   "type": zod.enum(['SLACK', 'DISCORD', 'CHANNEL_TALK', 'TEAMS']).describe('웹훅 전송 채널 종류'),
   "webhookUrl": zod.string().optional().describe('알림 수신 웹훅 URL')
 }),
-  "delivery": zod.object({
+  "notification": zod.object({
   "email": zod.object({
   "from": zod.string().describe('기본 발신자 명칭 및 발신 이메일 주소'),
   "smtp": zod.object({
@@ -482,7 +502,7 @@ export const SystemConfigControllerUpdateConfigsV1Body = zod.object({
   "type": zod.enum(['SLACK', 'DISCORD', 'CHANNEL_TALK', 'TEAMS']).describe('웹훅 전송 채널 종류'),
   "webhookUrl": zod.string().optional().describe('알림 수신 웹훅 URL')
 }).optional(),
-  "delivery": zod.object({
+  "notification": zod.object({
   "email": zod.object({
   "from": zod.string().describe('기본 발신자 명칭 및 발신 이메일 주소'),
   "smtp": zod.object({
@@ -817,65 +837,38 @@ export const SystemConfigControllerUpdateConfigsV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "ok": zod.boolean(),
-  "updatedKeys": zod.array(zod.enum(['operation', 'maintenance', 'inquiry', 'webhook', 'delivery', 'oauth']))
+  "updatedKeys": zod.array(zod.string()),
+  "syncedKeys": zod.array(zod.string()).describe('서비스 API에 동기화가 확인된 관리자 설정'),
+  "unconfirmedKeys": zod.array(zod.string()).describe('서비스 API 반영 결과를 확인하지 못한 설정. 실패 응답의 details에도 같은 구조를 사용합니다.')
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
 /**
- * @summary 시스템 설정 관리자 이메일 테스트 전송
+ * @summary OAuth 아이콘 업로드 URL 발급
  */
-export const SystemConfigControllerTestAdminEmailV1Body = zod.object({
-  "to": zod.string()
+export const systemConfigControllerCreateOAuthIconPresignedUrlV1BodyFileSizeMax = 2097152;
+
+
+
+export const SystemConfigControllerCreateOAuthIconPresignedUrlV1Body = zod.object({
+  "filename": zod.string(),
+  "contentType": zod.enum(['image/png', 'image/jpeg', 'image/webp']),
+  "fileSize": zod.number().max(systemConfigControllerCreateOAuthIconPresignedUrlV1BodyFileSizeMax)
 })
 
-export const SystemConfigControllerTestAdminEmailV1Response = zod.object({
+export const SystemConfigControllerCreateOAuthIconPresignedUrlV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "ok": zod.boolean()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-/**
- * @summary 서비스 설정을 Redis에 동기화
- */
-export const SystemConfigControllerSyncConfigsV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "ok": zod.boolean(),
-  "message": zod.string()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-/**
- * @summary 웹훅 테스트 전송
- */
-export const SystemConfigControllerTestWebhookV1Body = zod.object({
-  "type": zod.enum(['SLACK', 'DISCORD', 'CHANNEL_TALK', 'TEAMS']).describe('웹훅 채널 종류'),
-  "webhookUrl": zod.string().describe('테스트 전송할 웹훅 URL')
-})
-
-export const SystemConfigControllerTestWebhookV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "ok": zod.boolean()
+  "uploadUrl": zod.string(),
+  "fileUrl": zod.string(),
+  "uploadId": zod.string(),
+  "expiresInSeconds": zod.number()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -987,8 +980,32 @@ export const SystemConfigControllerTestPushV1Response = zod.object({
 /**
  * @summary 메신저 테스트 전송
  */
+
+
+export const systemConfigControllerTestMessengerV1BodyAlimtalkOneButtonsItemNameMax = 28;
+
+export const systemConfigControllerTestMessengerV1BodyAlimtalkOneButtonsMax = 5;
+
+
+
 export const SystemConfigControllerTestMessengerV1Body = zod.object({
   "recipient": zod.string(),
+  "alimtalk": zod.object({
+  "templateCode": zod.string().min(1).describe('대행사에 등록된 승인 템플릿 코드. SOLAPI는 templateId.'),
+  "content": zod.string().min(1).describe('승인된 템플릿 원문. #{변수명} 치환 지원.'),
+  "title": zod.string().optional().describe('알리고 발송 제목'),
+  "sender": zod.string().optional().describe('알리고에 등록된 발신번호'),
+  "pfId": zod.string().optional().describe('SOLAPI 채널 pfId. 발신 프로필 키 대신 지정 가능.'),
+  "variables": zod.record(zod.string(), zod.string()).optional().describe('변수명: 치환값. 예: {\"이름\":\"홍길동\"}'),
+  "buttons": zod.array(zod.object({
+  "type": zod.enum(['WL', 'AL', 'DS', 'BK', 'MD', 'AC']),
+  "name": zod.string().min(1).max(systemConfigControllerTestMessengerV1BodyAlimtalkOneButtonsItemNameMax),
+  "linkMo": zod.string().optional(),
+  "linkPc": zod.string().optional(),
+  "schemeIos": zod.string().optional(),
+  "schemeAndroid": zod.string().optional()
+})).max(systemConfigControllerTestMessengerV1BodyAlimtalkOneButtonsMax).optional()
+}).optional().describe('카카오 알림톡 테스트 시 필수'),
   "config": zod.object({
   "enabled": zod.boolean().describe('비즈니스 메신저 발송 활성화 여부'),
   "provider": zod.enum(['KAKAO', 'LINE', 'WHATSAPP', 'TELEGRAM', 'WECHAT']).describe('선택된 메신저 프로바이더 (단일 선택)'),
@@ -1044,31 +1061,22 @@ export const SystemConfigControllerTestMessengerV1Response = zod.object({
 })
 
 /**
- * @summary OAuth 아이콘 업로드 URL 발급
+ * @summary 웹훅 테스트 전송
  */
-export const systemConfigControllerCreateOAuthIconPresignedUrlV1BodyFileSizeMax = 2097152;
-
-
-
-export const SystemConfigControllerCreateOAuthIconPresignedUrlV1Body = zod.object({
-  "filename": zod.string(),
-  "contentType": zod.enum(['image/png', 'image/jpeg', 'image/webp']),
-  "fileSize": zod.number().max(systemConfigControllerCreateOAuthIconPresignedUrlV1BodyFileSizeMax)
+export const SystemConfigControllerTestWebhookV1Body = zod.object({
+  "type": zod.enum(['SLACK', 'DISCORD', 'CHANNEL_TALK', 'TEAMS']).describe('웹훅 채널 종류'),
+  "webhookUrl": zod.string().describe('테스트 전송할 웹훅 URL')
 })
 
-export const SystemConfigControllerCreateOAuthIconPresignedUrlV1Response = zod.object({
+export const SystemConfigControllerTestWebhookV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "uploadUrl": zod.string(),
-  "fileUrl": zod.string(),
-  "uploadId": zod.string(),
-  "expiresInSeconds": zod.number()
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
-

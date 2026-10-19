@@ -1,3 +1,7 @@
+import { alert } from '@pkg/web-core/application';
+import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '@pkg/web-core/data-grid';
+import { openModal } from '@pkg/web-core/modal';
+import { PageSection, SectionCard } from '@pkg/web-core/template';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import type { ColumnDef, ColumnFiltersState } from '@tanstack/react-table';
@@ -7,10 +11,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getOperatorsControllerGetOperatorsV1QueryKey, useOperatorsControllerGetOperatorsV1 } from '#/.generated/api/endpoints/operators/operators';
 import { type OperatorItem, OperatorStatus } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { alert } from '#/components/app/system-dialog';
-import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
-import { PageSection, SectionCard } from '#/components/layout';
-import { openModal } from '#/components/modal';
 
 import { ChangeOperatorRoleModal } from './-components/change-operator-role-modal';
 import { CreateOperatorModal } from './-components/create-operator-modal';

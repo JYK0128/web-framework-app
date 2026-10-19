@@ -1,0 +1,18 @@
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { z } from '@pkg/shared/common';
+import { IsOptional, ValidateBy } from 'class-validator';
+
+export const ServiceAgreementOptionsSchema = z.record(z.string(), z.boolean().nullable());
+
+export class ServiceAgreementMetadataDto extends BaseDto {
+  @ApiPropertyOptional({ type: 'object', additionalProperties: { type: 'boolean', nullable: true }, nullable: true })
+  @IsOptional()
+  @ValidateBy({ name: 'serviceAgreementOptions', validator: { validate: (value: unknown) => ServiceAgreementOptionsSchema.safeParse(value).success } })
+  options?: Record<string, boolean | null> | null;
+
+  static parseMetadata(metadata: Record<string, unknown> | null): ServiceAgreementMetadataDto | null {
+    if (!metadata || metadata.options === undefined || metadata.options === null) return null;
+    return this.parse({ options: ServiceAgreementOptionsSchema.parse(metadata.options) });
+  }
+}

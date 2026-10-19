@@ -256,3 +256,21 @@ export const SupportControllerListMessagePiiV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+export const SupportControllerSocketTicketV1Params = zod.object({
+  "roomId": zod.string()
+})
+
+export const SupportControllerSocketTicketV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ticket": zod.string()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const SupportControllerNotificationsV1Response = zod.unknown()

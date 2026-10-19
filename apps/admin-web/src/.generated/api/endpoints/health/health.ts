@@ -227,9 +227,3 @@ export function useHealthControllerCheckReadyV1<TData = Awaited<ReturnType<typeo
 
   return withQueryKey(query, queryOptions.queryKey);
 }
-
-
-
-
-
-

@@ -1,14 +1,14 @@
 import { z } from '@pkg/shared/common';
+import { FormLayout, useAppForm } from '@pkg/web-core/form';
+import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
+import { Action } from '@pkg/web-core/template';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 
 import { getSupportControllerGetRoomV1QueryKey, getSupportControllerListMessagePiiV1QueryKey, getSupportControllerListMessagesV1QueryKey, getSupportControllerListRoomsV1QueryKey, useSupportControllerCreateMessageV1, useSupportControllerGetRoomV1, useSupportControllerListMessagePiiV1, useSupportControllerListMessagesV1, useSupportControllerUpdateRoomV1 } from '#/.generated/api/endpoints/support/support';
 import type { SupportMessageItem, SupportRoomItem } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
-import { Action } from '#/components/app/action';
-import { FormLayout, useAppForm } from '#/components/form';
-import { Modal, type ModalComponentProps } from '#/components/modal';
-import { SUPPORT_ROOM_MESSAGE_REFRESH_INTERVAL_MS } from '#/configs/app.config';
+import { useSupportSocket } from '#/hooks/use-support-socket';
 
 export type SupportRoomModalProps = ModalComponentProps & { room: SupportRoomItem, onChanged?: () => void | Promise<void> };
 
@@ -22,8 +22,8 @@ export function SupportRoomModal({ room, open, onOpenChange, onChanged }: Suppor
   const queryClient = useQueryClient();
   const [showPii, setShowPii] = useState(false);
   const detail = useSupportControllerGetRoomV1(room.id, { query: { enabled: open } });
-  const maskedMessages = useSupportControllerListMessagesV1(room.id, { query: { enabled: open && !showPii, refetchInterval: open && !showPii ? SUPPORT_ROOM_MESSAGE_REFRESH_INTERVAL_MS : false } });
-  const piiMessages = useSupportControllerListMessagePiiV1(room.id, { query: { enabled: open && showPii, refetchInterval: open && showPii ? SUPPORT_ROOM_MESSAGE_REFRESH_INTERVAL_MS : false } });
+  const maskedMessages = useSupportControllerListMessagesV1(room.id, { query: { enabled: open && !showPii } });
+  const piiMessages = useSupportControllerListMessagePiiV1(room.id, { query: { enabled: open && showPii } });
   const send = useSupportControllerCreateMessageV1();
   const update = useSupportControllerUpdateRoomV1();
   const activeMessages = showPii ? piiMessages : maskedMessages;
@@ -45,6 +45,17 @@ export function SupportRoomModal({ room, open, onOpenChange, onChanged }: Suppor
 
   const currentRoom = detail.data ?? room;
   const isClosed = currentRoom.status === 'closed';
+
+  useSupportSocket(room.id, open === true, (eventType) => {
+    void Promise.all([
+      queryClient.invalidateQueries({ queryKey: getSupportControllerListMessagesV1QueryKey(room.id) }),
+      queryClient.invalidateQueries({ queryKey: getSupportControllerListMessagePiiV1QueryKey(room.id) }),
+    ]);
+    if (eventType === 'support.room.status.changed') {
+      void queryClient.invalidateQueries({ queryKey: getSupportControllerGetRoomV1QueryKey(room.id) });
+      void queryClient.invalidateQueries({ queryKey: getSupportControllerListRoomsV1QueryKey() });
+    }
+  });
 
   useEffect(() => () => {
     queryClient.removeQueries({ queryKey: getSupportControllerListMessagePiiV1QueryKey(room.id) });

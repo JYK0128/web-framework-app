@@ -1,18 +1,16 @@
+import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '@pkg/web-core/data-grid';
+import { PageSection, SectionCard, StatsCard } from '@pkg/web-core/template';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { type ColumnFiltersState, createColumnHelper, type SortingState } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 
 import { getLogsControllerGetLogsV1QueryKey, useLogsControllerGetLogsV1, useLogsControllerGetStatsV1 } from '#/.generated/api/endpoints/logs/logs';
-import type { LogsControllerGetLogsV1Params } from '#/.generated/api/model';
-import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
-import { PageSection, SectionCard, StatsCard } from '#/components/layout';
+import type { LogItemDto, LogsControllerGetLogsV1Params } from '#/.generated/api/model';
 
 export const Route = createFileRoute('/_protected/_app/logs/')({ component: LogsPage });
 
-type LogRow = { id: string, createdAt: string, level: string, method: string, path: string, statusCode: number, durationMs: number, requestId: string | null };
-type LogResponse = { items: LogRow[], page: number, totalPages: number, totalCount: number };
-const column = createColumnHelper<LogRow>();
+const column = createColumnHelper<LogItemDto>();
 
 function LogsPage() {
   const queryClient = useQueryClient();
@@ -26,7 +24,7 @@ function LogsPage() {
   const params: LogsControllerGetLogsV1Params = { page, limit: 20, search: search.trim() || undefined, status };
   const logsQuery = useLogsControllerGetLogsV1(params);
   const statsQuery = useLogsControllerGetStatsV1();
-  const response = logsQuery.data as LogResponse | undefined;
+  const response = logsQuery.data;
   const stats = statsQuery.data;
   const columns = useMemo(() => [
     column.accessor('createdAt', {
@@ -46,7 +44,7 @@ function LogsPage() {
       ),
     }),
     column.accessor('method', { header: '메서드' }),
-    column.accessor('path', { header: '요청 경로' }),
+    column.accessor('url', { header: '요청 경로' }),
     column.accessor('statusCode', {
       header: '상태',
       enableColumnFilter: true,
@@ -72,7 +70,7 @@ function LogsPage() {
         </span>
       ),
     }),
-    column.accessor('durationMs', { header: '소요 시간', cell: ({ getValue }) => `${getValue()}ms` }),
+    column.accessor('duration', { header: '소요 시간', cell: ({ getValue }) => `${getValue()}ms` }),
     column.accessor('requestId', {
       header: 'Request ID',
       cell: ({ getValue }) => (

@@ -1,52 +1,17 @@
-import { ApplicationError, createI18n } from '@pkg/shared/common';
+import { ApplicationError } from '@pkg/shared/common';
+import { createI18nRequestMiddleware } from '@pkg/web-core/i18n/request-middleware';
 import type { Register } from '@tanstack/react-router';
-import { createCsrfMiddleware, createMiddleware, createStart } from '@tanstack/react-start';
-import type { i18n } from 'i18next';
-import { LanguageDetector as HttpLanguageDetector } from 'i18next-http-middleware';
+import { createCsrfMiddleware, createStart } from '@tanstack/react-start';
 
-import { i18nOptions } from './configs/i18n.config';
+import { i18nOptions } from './i18n/config';
 
-type RequestLanguageDetector = {
-  detect(request: unknown): string | string[] | undefined
-};
-
-const serverI18n = createI18n({
-  ...i18nOptions,
-  modules: [HttpLanguageDetector],
-  detection: {
-    order: ['path', 'cookie', 'header'],
-    convertDetectedLanguage: (language) => language.split('-')[0],
-  },
-});
-
-async function createRequestI18n(request: Request): Promise<i18n> {
-  const url = new URL(request.url);
-  const detector = serverI18n.services.languageDetector as RequestLanguageDetector;
-  const detected = detector.detect({
-    url: `${url.pathname}${url.search}`,
-    headers: Object.fromEntries(request.headers.entries()),
-  });
-  const language = Array.isArray(detected) ? detected[0] : detected;
-  const requestI18n = serverI18n.cloneInstance({ initAsync: false });
-  if (language) await requestI18n.changeLanguage(language);
-  return requestI18n;
-}
-
-const i18nMiddleware = createMiddleware().server(async ({ request, next }) => {
-  const i18n = await createRequestI18n(request);
-  const result = await next({ context: { i18n } });
-
-  const language = i18n.resolvedLanguage ?? i18n.language;
-  if (language) result.response.headers.set('Content-Language', language);
-
-  return result;
-});
+const i18nMiddleware = createI18nRequestMiddleware(i18nOptions);
 
 const csrfMiddleware = createCsrfMiddleware<Register, [typeof i18nMiddleware]>({
   filter: ({ request }) => new URL(request.url).pathname.startsWith('/api/')
     && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method),
   secFetchSite: ['same-origin', 'none'],
-  allowRequestsWithoutOriginCheck: true,
+  allowRequestsWithoutOriginCheck: false,
   failureResponse: ({ request, context }) => {
     const url = new URL(request.url);
     const body = new ApplicationError({ code: 'CSRF_VALIDATION_FAILED', status: 403 }).toJSON({

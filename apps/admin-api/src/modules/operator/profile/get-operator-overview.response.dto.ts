@@ -1,0 +1,20 @@
+import { ApiProperty, ApiSchema } from '@nestjs/swagger';
+import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+
+@ApiSchema({ name: 'OperatorOverviewResponse' })
+export class GetOperatorOverviewResponseDto extends BaseDto {
+  @ApiProperty()
+  totalOperators!: number;
+
+  @ApiProperty()
+  activeOperators!: number;
+
+  @ApiProperty()
+  bannedOperators!: number;
+
+  @ApiProperty()
+  deletedOperators!: number;
+
+  @ApiProperty()
+  twoFactorEnabledOperators!: number;
+}

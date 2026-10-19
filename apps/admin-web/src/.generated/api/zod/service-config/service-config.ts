@@ -123,7 +123,7 @@ export const ServiceConfigControllerUpdateConfigsV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "ok": zod.boolean(),
-  "updatedKeys": zod.array(zod.enum(['operation', 'maintenance', 'inquiry', 'webhook', 'delivery', 'oauth']))
+  "updatedKeys": zod.array(zod.string())
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -154,4 +154,3 @@ export const ServiceConfigControllerGetHolidaysV1Response = zod.object({
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
-

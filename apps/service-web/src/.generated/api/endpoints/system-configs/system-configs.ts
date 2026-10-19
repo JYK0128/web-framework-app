@@ -132,9 +132,3 @@ export function useSystemConfigsControllerGetConfigsV1<TData = Awaited<ReturnTyp
 
   return withQueryKey(query, queryOptions.queryKey);
 }
-
-
-
-
-
-

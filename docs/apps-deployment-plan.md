@@ -2,7 +2,7 @@
 
 ## 목표
 
-GitHub Actions의 자동 배포는 apps의 네 개 실행 앱 이미지만 대상으로 한다. 기존 template 단일 이미지 배포 workflow는 제거했다. apps는 네 서비스를 하나의 Compose 릴리스로 관리하며, 한 커밋의 네 이미지를 함께 배포한다. Postgres, Redis, Loki, Vector 등 기존 인프라는 앱 릴리스와 분리한다.
+GitHub Actions의 자동 배포는 apps의 네 개 실행 앱 이미지만 대상으로 한다. 기존 template 단일 이미지 배포 workflow는 제거했다. apps는 네 서비스를 하나의 Compose 릴리스로 관리하며, 한 커밋의 네 이미지를 함께 배포한다. Postgres와 Redis는 앱 릴리스와 분리한다. Loki와 Vector는 앱 Compose에서 로그 수집 경로로 포함한다.
 
 workflow 제거만으로 서버의 기존 `service-factory-app` 컨테이너가 종료되지는 않는다. 운영 라우팅을 새 앱으로 전환한 뒤 기존 앱 컨테이너만 종료·제거해야 한다. 기존 template Compose 전체를 `down`하면 함께 관리하던 인프라와 Cloudflare Tunnel도 종료되므로 사용하지 않는다. template 소스와 수동 배포 파일은 저장소에 남아 있다.
 
@@ -46,7 +46,7 @@ workflow 제거만으로 서버의 기존 `service-factory-app` 컨테이너가 
 
 초기 운영 서비스 ID는 workspace 이름 그대로 사용한다: `admin-api`, `admin-web`, `service-api`, `service-web`. 이미지/포트/환경변수/healthcheck/restart/network 별칭은 서비스별로 명시한다. 고정 `container_name`은 제거해 Compose가 관리하게 한다. 기존 서비스 이름 `app`과 별칭 `frontend`/`backend`를 제거하기 전에 소비처를 찾아 새 DNS 이름으로 바꾼다.
 
-Compose는 네 앱을 하나의 프로젝트로 관리한다. CI는 이미지 ref를 같은 커밋 SHA로 고정하고 서버에서 네 이미지를 함께 pull/up한다. 암호화 env 파일은 이미지 빌드 때 포함하고, 배포 시 외부 network, upload volume, runtime 복호화 키를 확인한다. healthcheck가 모두 통과해야 성공 처리한다. 인프라는 Compose 파일에 포함하지 않으며 운영 서버에 이미 존재해야 한다.
+Compose는 네 앱을 하나의 프로젝트로 관리한다. CI는 이미지 ref를 같은 커밋 SHA로 고정하고 서버에서 네 이미지를 함께 pull/up한다. 암호화 env 파일은 이미지 빌드 때 포함하고, 배포 시 외부 network, upload volume, runtime 복호화 키를 확인한다. healthcheck가 모두 통과해야 성공 처리한다. Postgres와 Redis는 운영 서버가 관리하며, Loki와 Vector는 앱 Compose에 포함한다. `pnpm --dir apps/deployment deploy:telemetry`로 로그 수집기를 최초 기동하거나 갱신한다. API는 구조화 JSON을 stdout에 쓰고 Vector가 Docker stdout/stderr를 읽어 Loki로 보낸다.
 
 ### 변경 범위 및 자동 배포
 
@@ -141,7 +141,7 @@ Compose는 네 앱을 하나의 프로젝트로 관리한다. CI는 이미지 re
 
 - 이미지/런타임: 네 앱 모두 같은 commit의 독립 이미지이며 앱 ID와 full SHA를 이미지 및 배포 기록에서 확인할 수 있다.
 - 릴리스: 네 앱 이미지가 같은 commit SHA를 사용하고 하나의 Compose workflow로 함께 갱신된다.
-- 인프라 경계: apps 배포는 외부 Postgres, Redis, Loki, Vector 및 업로드 volume을 생성·삭제하지 않는다.
+- 인프라 경계: apps 배포는 외부 Postgres, Redis 및 업로드 volume을 생성·삭제하지 않는다. Loki/Vector는 로그 수집 구성으로 앱 Compose에서 실행한다.
 - 배포 안전성: 이미지 pull/preflight/migration/readiness 실패는 성공 처리되지 않으며, 이전 SHA 네 이미지 조합으로 복구할 수 있다.
 - 보존: 기존 DB와 upload data가 유지되고, 배포 과정에 volume 삭제 명령이 없다.
 - 보안: private key/secret은 image와 log에 나타나지 않고, runtime에 앱별로 필요한 값만 제공된다.

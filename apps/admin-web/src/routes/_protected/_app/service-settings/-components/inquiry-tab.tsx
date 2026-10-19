@@ -1,8 +1,8 @@
+import { FormLayout, useAppForm } from '@pkg/web-core/form';
+import { SectionCard } from '@pkg/web-core/template';
 import { forwardRef, useImperativeHandle } from 'react';
 
 import type { InquiryConfigDto } from '#/.generated/api/model';
-import { FormLayout, useAppForm } from '#/components/form';
-import { SectionCard } from '#/components/layout';
 
 export interface InquiryTabHandle {
   submitData: () => Promise<InquiryConfigDto | null>

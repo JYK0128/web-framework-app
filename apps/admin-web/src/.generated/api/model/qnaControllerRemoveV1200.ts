@@ -5,7 +5,7 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { QnaActionResponseDto } from './qnaActionResponseDto';
+import type { DeleteQnaResponseDto } from './deleteQnaResponseDto';
 import type { QnaControllerRemoveV1200Meta } from './qnaControllerRemoveV1200Meta';
 
 export type QnaControllerRemoveV1200 = {
@@ -14,7 +14,7 @@ export type QnaControllerRemoveV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: QnaActionResponseDto;
+  data: DeleteQnaResponseDto;
   message?: string;
   meta?: QnaControllerRemoveV1200Meta;
 };
