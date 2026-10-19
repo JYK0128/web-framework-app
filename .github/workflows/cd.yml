@@ -6,11 +6,22 @@ on:
       - main
     paths:
       - "apps/**"
+      - "!apps/**/e2e/**"
+      - "!apps/**/e2e-integration/**"
+      - "!apps/**/tests/**"
+      - "!apps/**/playwright*"
+      - "!apps/**/*.md"
+      - "!apps/**/.env.example"
+      - "!apps/deployment/docker-compose.e2e.yml"
+      - "!apps/deployment/playwright.e2e.*"
       - "packages/**"
       - "package.json"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
       - "turbo.json"
+      - "tsconfig.json"
+      - ".npmrc"
+      - ".dockerignore"
       - ".github/workflows/cd.yml"
   workflow_dispatch:
 
@@ -50,18 +61,22 @@ jobs:
           ADMIN_WEB_SESSION_SECRET: ${{ secrets.ADMIN_WEB_SESSION_SECRET }}
           SERVICE_WEB_SESSION_SECRET: ${{ secrets.SERVICE_WEB_SESSION_SECRET }}
           VITE_PORTONE_STORE_ID: ${{ vars.VITE_PORTONE_STORE_ID }}
-          VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY: ${{ vars.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY }}
+          VITE_PORTONE_CHANNEL_KEY: ${{ vars.VITE_PORTONE_CHANNEL_KEY }}
         run: |
           required=(SERVER_HOST SERVER_USER SERVER_SSH_KEY SERVER_DEPLOY_PATH
             APPS_RUNTIME_NETWORK ADMIN_API_PORT ADMIN_WEB_PORT SERVICE_API_PORT SERVICE_WEB_PORT
             ADMIN_WEB_URL SERVICE_WEB_URL ADMIN_API_UPLOADS_VOLUME SERVICE_API_UPLOADS_VOLUME
             ADMIN_API_DOTENV_PRIVATE_KEY_PRD SERVICE_API_DOTENV_PRIVATE_KEY_PRD
             ADMIN_WEB_SESSION_SECRET SERVICE_WEB_SESSION_SECRET
-            VITE_PORTONE_STORE_ID VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY)
+            VITE_PORTONE_STORE_ID VITE_PORTONE_CHANNEL_KEY)
           missing=0
           for name in "${required[@]}"; do
-            if [ -z "${!name}" ]; then
+            value="${!name}"
+            if [ -z "$value" ]; then
               echo "Missing production setting: $name" >&2
+              missing=1
+            elif [[ "$name" == *_SESSION_SECRET && ${#value} -lt 32 ]]; then
+              echo "Invalid production setting: $name must be at least 32 characters" >&2
               missing=1
             fi
           done
@@ -103,9 +118,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
@@ -135,6 +147,14 @@ jobs:
             echo "Runtime config is missing the dotenvx public key: $env_file" >&2
             exit 1
           fi
+          if [[ "$APP_NAME" == *-api ]]; then
+            for name in APP_SECRET DATABASE_URL REDIS_URL PORTONE_API_SECRET; do
+              if ! grep -q "^${name}=" "$env_file"; then
+                echo "Runtime config is missing required setting $name: $env_file" >&2
+                exit 1
+              fi
+            done
+          fi
           awk -F= -v app="$APP_NAME" '
             /^[[:space:]]*($|#)/ { next }
             $1 == "DOTENV_PUBLIC_KEY_PRD" { next }
@@ -152,18 +172,37 @@ jobs:
             }
           ' "$env_file"
 
+      - name: Set image build arguments
+        id: build-args
+        env:
+          APP_NAME: ${{ matrix.app }}
+          APP_REVISION: ${{ github.sha }}
+          DOTENV_PRD_REVISION: ${{ hashFiles(format('apps/deployment/env/{0}/.env.prd', matrix.app)) }}
+          VITE_PORTONE_STORE_ID: ${{ vars.VITE_PORTONE_STORE_ID }}
+          VITE_PORTONE_CHANNEL_KEY: ${{ vars.VITE_PORTONE_CHANNEL_KEY }}
+          VITE_ADMIN_WEB_URL: ${{ vars.ADMIN_WEB_URL }}
+        run: |
+          {
+            echo 'args<<EOF'
+            printf 'APP_NAME=%s\nAPP_REVISION=%s\nDOTENV_PRD_REVISION=%s\n' \
+              "$APP_NAME" "$APP_REVISION" "$DOTENV_PRD_REVISION"
+            if [[ "$APP_NAME" == *-web ]]; then
+              printf 'VITE_PORTONE_STORE_ID=%s\nVITE_PORTONE_CHANNEL_KEY=%s\n' \
+                "$VITE_PORTONE_STORE_ID" "$VITE_PORTONE_CHANNEL_KEY"
+            fi
+            if [[ "$APP_NAME" == service-web ]]; then
+              printf 'VITE_ADMIN_WEB_URL=%s\n' "$VITE_ADMIN_WEB_URL"
+            fi
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
       - name: Build and push immutable app image
         uses: docker/build-push-action@v7
         with:
           context: .
           file: apps/deployment/Dockerfile.prd
           push: true
-          build-args: |
-            APP_NAME=${{ matrix.app }}
-            APP_REVISION=${{ github.sha }}
-            DOTENV_PRD_REVISION=${{ hashFiles(format('apps/deployment/env/{0}/.env.prd', matrix.app)) }}
-            VITE_PORTONE_STORE_ID=${{ vars.VITE_PORTONE_STORE_ID }}
-            VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY=${{ vars.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY }}
+          build-args: ${{ steps.build-args.outputs.args }}
           secret-files: |
             DOTENV_PRD=apps/deployment/env/${{ matrix.app }}/.env.prd
           tags: ${{ steps.image.outputs.name }}:${{ github.sha }}

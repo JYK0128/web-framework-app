@@ -5,9 +5,9 @@ import { ArrowDown, ArrowRight, ArrowUpRight, Bot, Boxes, Check, Copy, Layers3, 
 import { useState } from 'react';
 
 import { getI18n } from '#/i18n/i18n';
+import { browserEnv } from '#/lib/browser-env';
 
-const adminWebUrl = import.meta.env.VITE_ADMIN_WEB_URL
-  ?? (import.meta.env.DEV ? 'http://localhost:13000' : 'https://admin.servicefactory.cloud');
+const adminWebUrl = browserEnv.adminWebUrl;
 
 const locales = [
   { code: 'ko', label: '한국어' },

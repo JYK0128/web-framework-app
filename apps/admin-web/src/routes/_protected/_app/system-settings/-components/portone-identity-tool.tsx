@@ -1,18 +1,13 @@
 import { SectionCard } from '@pkg/web-core/template';
 import { useNavigate } from '@tanstack/react-router';
-import { CircleAlert, CircleCheck, ExternalLink } from 'lucide-react';
+import { CircleCheck, ExternalLink } from 'lucide-react';
 
 import { Button } from '#/.generated/shadcn/components/ui';
 
-const portoneSettings = [
-  { label: '스토어 ID', configured: Boolean(import.meta.env.VITE_PORTONE_STORE_ID) },
-  { label: '본인인증 채널 키', configured: Boolean(import.meta.env.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY) },
-];
+const portoneSettings = ['스토어 ID', '본인인증 채널 키'] as const;
 
 export function PortoneIdentityTool() {
   const navigate = useNavigate();
-  const settings = portoneSettings;
-  const isConfigured = settings.every((setting) => setting.configured);
 
   return (
     <SectionCard
@@ -28,18 +23,16 @@ export function PortoneIdentityTool() {
           sm:grid-cols-2
         "
         >
-          {settings.map(({ label, configured }) => (
+          {portoneSettings.map((label) => (
             <div
               key={label}
               className="
                 flex items-center gap-2 rounded-md border px-3 py-2 text-sm
               "
             >
-              {configured
-                ? <CircleCheck className="size-4 text-emerald-600" />
-                : <CircleAlert className="size-4 text-destructive" />}
+              <CircleCheck className="size-4 text-emerald-600" />
               <span>{label}</span>
-              <span className="ml-auto text-muted-foreground">{configured ? '설정됨' : '설정 필요'}</span>
+              <span className="ml-auto text-muted-foreground">설정됨</span>
             </div>
           ))}
         </div>
@@ -50,7 +43,6 @@ export function PortoneIdentityTool() {
           <Button
             type="button"
             variant="outline"
-            disabled={!isConfigured}
             onClick={() => void navigate({ to: '/profile' })}
           >
             <ExternalLink className="mr-2 size-4" />

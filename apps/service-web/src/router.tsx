@@ -1,3 +1,5 @@
+import '#/lib/browser-env';
+
 import { DateUtil } from '@pkg/shared';
 import { DEFAULT_TIMEZONE } from '@pkg/shared/common';
 import { LoadingRouter } from '@pkg/web-core/application';

@@ -6,8 +6,7 @@ services:
       args:
         APP_NAME: admin-api
         APP_REVISION: ${APP_REVISION:-local}
-        DOTENV_PRD_REVISION: ${DOTENV_PRD_REVISION:-local}
-      no_cache: true
+        DOTENV_PRD_REVISION: ${ADMIN_API_DOTENV_PRD_REVISION:?Build through the deployment package script}
       secrets:
         - source: admin-api-env
           target: DOTENV_PRD
@@ -19,10 +18,9 @@ services:
       args:
         APP_NAME: admin-web
         APP_REVISION: ${APP_REVISION:-local}
-        DOTENV_PRD_REVISION: ${DOTENV_PRD_REVISION:-local}
-        VITE_PORTONE_STORE_ID: ${VITE_PORTONE_STORE_ID:-}
-        VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY: ${VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY:-}
-      no_cache: true
+        DOTENV_PRD_REVISION: ${ADMIN_WEB_DOTENV_PRD_REVISION:?Build through the deployment package script}
+        VITE_PORTONE_STORE_ID: ${VITE_PORTONE_STORE_ID:?Set VITE_PORTONE_STORE_ID to build web apps}
+        VITE_PORTONE_CHANNEL_KEY: ${VITE_PORTONE_CHANNEL_KEY:?Set VITE_PORTONE_CHANNEL_KEY to build web apps}
       secrets:
         - source: admin-web-env
           target: DOTENV_PRD
@@ -34,8 +32,7 @@ services:
       args:
         APP_NAME: service-api
         APP_REVISION: ${APP_REVISION:-local}
-        DOTENV_PRD_REVISION: ${DOTENV_PRD_REVISION:-local}
-      no_cache: true
+        DOTENV_PRD_REVISION: ${SERVICE_API_DOTENV_PRD_REVISION:?Build through the deployment package script}
       secrets:
         - source: service-api-env
           target: DOTENV_PRD
@@ -47,8 +44,10 @@ services:
       args:
         APP_NAME: service-web
         APP_REVISION: ${APP_REVISION:-local}
-        DOTENV_PRD_REVISION: ${DOTENV_PRD_REVISION:-local}
-      no_cache: true
+        DOTENV_PRD_REVISION: ${SERVICE_WEB_DOTENV_PRD_REVISION:?Build through the deployment package script}
+        VITE_PORTONE_STORE_ID: ${VITE_PORTONE_STORE_ID:?Set VITE_PORTONE_STORE_ID to build web apps}
+        VITE_PORTONE_CHANNEL_KEY: ${VITE_PORTONE_CHANNEL_KEY:?Set VITE_PORTONE_CHANNEL_KEY to build web apps}
+        VITE_ADMIN_WEB_URL: ${ADMIN_WEB_URL:?Set ADMIN_WEB_URL to build service-web}
       secrets:
         - source: service-web-env
           target: DOTENV_PRD

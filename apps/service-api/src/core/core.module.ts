@@ -33,6 +33,7 @@ import { env } from '#/env';
 
 import { InternalClient } from './internal-client';
 import { OrmAuthReader } from './orm-auth.reader';
+import { CDNStorageAdapter } from './storage/cdn-storage.adapter';
 import { LocalStorageAdapter } from './storage/local-storage.adapter';
 import { S3StorageAdapter } from './storage/s3-storage.adapter';
 import { RedisTokenStore } from './stores/redis-token.store';
@@ -134,7 +135,7 @@ const MESSAGING_MODULES = {
 } satisfies Pick<ModuleMetadata, 'imports' | 'exports'>;
 
 const STORAGE_MODULES = {
-  imports: [StorageModule.forRoot({ local: LocalStorageAdapter, s3: S3StorageAdapter })],
+  imports: [StorageModule.forRoot({ local: LocalStorageAdapter, s3: S3StorageAdapter, cdn: CDNStorageAdapter })],
   exports: [StorageModule],
 } satisfies Pick<ModuleMetadata, 'imports' | 'exports'>;
 

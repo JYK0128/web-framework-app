@@ -36,8 +36,8 @@ services:
     develop:
       watch:
         - action: sync
-          path: ../../apps
-          target: /app/apps
+          path: ../../apps/admin-api
+          target: /app/apps/admin-api
           ignore:
             - "**/node_modules/"
             - "**/dist/"
@@ -71,6 +71,7 @@ services:
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/service_db
       REDIS_URL: redis://redis:6379
       LOKI_URL: http://loki:3100
+      PORTONE_API_SECRET: ${PORTONE_API_SECRET:?PORTONE_API_SECRET must be set}
       ADMIN_API_URL: http://admin-api:14000
       APP_BASE_URL: http://localhost:3000
     depends_on:
@@ -83,8 +84,8 @@ services:
     develop:
       watch:
         - action: sync
-          path: ../../apps
-          target: /app/apps
+          path: ../../apps/service-api
+          target: /app/apps/service-api
           ignore:
             - "**/node_modules/"
             - "**/dist/"
@@ -120,15 +121,15 @@ services:
       API_BASE_URL: http://admin-api:14000
       APP_BASE_URL: http://localhost:13000
       API_SPEC_URL: http://admin-api:14000/api/docs-json
-      VITE_PORTONE_STORE_ID: ${VITE_PORTONE_STORE_ID:-}
-      VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY: ${VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY:-}
+      VITE_PORTONE_STORE_ID: ${VITE_PORTONE_STORE_ID:?VITE_PORTONE_STORE_ID must be set}
+      VITE_PORTONE_CHANNEL_KEY: ${VITE_PORTONE_CHANNEL_KEY:?VITE_PORTONE_CHANNEL_KEY must be set}
     depends_on:
       - admin-api
     develop:
       watch:
         - action: sync
-          path: ../../apps
-          target: /app/apps
+          path: ../../apps/admin-web
+          target: /app/apps/admin-web
           ignore:
             - "**/node_modules/"
             - "**/dist/"
@@ -165,13 +166,15 @@ services:
       APP_BASE_URL: http://localhost:3000
       VITE_ADMIN_WEB_URL: http://localhost:13000
       API_SPEC_URL: http://service-api:4000/api/docs-json
+      VITE_PORTONE_STORE_ID: ${VITE_PORTONE_STORE_ID:?VITE_PORTONE_STORE_ID must be set}
+      VITE_PORTONE_CHANNEL_KEY: ${VITE_PORTONE_CHANNEL_KEY:?VITE_PORTONE_CHANNEL_KEY must be set}
     depends_on:
       - service-api
     develop:
       watch:
         - action: sync
-          path: ../../apps
-          target: /app/apps
+          path: ../../apps/service-web
+          target: /app/apps/service-web
           ignore:
             - "**/node_modules/"
             - "**/dist/"
