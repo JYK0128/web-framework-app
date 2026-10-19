@@ -1,12 +1,12 @@
+import { confirm } from '@pkg/web-core/application';
+import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 import { useQueryClient } from '@tanstack/react-query';
 import { LogOut, Monitor } from 'lucide-react';
 
 import { getCustomersControllerListCustomerSessionsV1QueryKey, useCustomersControllerListCustomerSessionsV1, useCustomersControllerRevokeCustomerSessionsV1, useCustomersControllerRevokeCustomerSessionV1 } from '#/.generated/api/endpoints/customers/customers';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { confirm } from '#/components/app/system-dialog';
-import { Modal, type ModalComponentProps } from '#/components/modal';
 
-type CustomerSessionsModalProps = ModalComponentProps<void> & { customerId: string, customerName: string, canUpdate: boolean };
+type CustomerSessionsModalProps = ModalComponentProps & { customerId: string, customerName: string, canUpdate: boolean };
 
 export function CustomerSessionsModal({ customerId, customerName, canUpdate, open, onOpenChange, close }: CustomerSessionsModalProps) {
   const queryClient = useQueryClient();

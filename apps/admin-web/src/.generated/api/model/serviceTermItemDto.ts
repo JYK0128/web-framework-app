@@ -19,6 +19,8 @@ export interface ServiceTermItemDto {
   isNoticeRequired: boolean;
   isRequired: boolean;
   sortOrder: number;
+  isDraft: boolean;
+  isScheduled: boolean;
   isPublished: boolean;
   /** @nullable */
   publishedAt: string | null;

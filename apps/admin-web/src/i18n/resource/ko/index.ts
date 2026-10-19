@@ -1,0 +1,51 @@
+import auth from './auth.json';
+import errors from './errors.json';
+
+export default {
+  ...errors,
+  app: { ...auth },
+  admin: {
+    meta: {
+      title: 'Service Factory | 관리자 도구',
+    },
+    navigation: {
+      overview: '개요',
+      dashboard: '대시보드',
+      serviceManagement: '서비스 관리',
+      contentManagement: '콘텐츠 관리',
+      operatorManagement: '운영자 관리',
+      systemManagement: '시스템 관리',
+      personal: '개인',
+      customers: '고객 관리',
+      memberships: '멤버십 관리',
+      faqs: 'FAQ 관리',
+      qna: 'Q&A 관리',
+      support: '고객 지원',
+      serviceTerms: '서비스 약관 관리',
+      notices: '공지사항 관리',
+      events: '이벤트 관리',
+      roles: '역할 관리',
+      operators: '운영자 관리',
+      terms: '약관 관리',
+      logs: '로그 관리',
+      serviceSettings: '서비스 설정',
+      systemSettings: '시스템 설정',
+      profile: '프로필',
+      menu: '관리자 메뉴',
+    },
+    dashboard: {
+      title: '대시보드',
+      description: 'Service-Factory 운영 기능으로 이동합니다.',
+      welcome: 'Service-Factory 관리자 화면입니다.',
+      quickAccess: '빠른 이동',
+      quickAccessDescription: '권한이 있는 관리 기능을 선택하세요.',
+      customersDescription: '고객 계정과 멤버십 상태를 확인합니다.',
+      qnaDescription: '고객 문의를 확인하고 답변합니다.',
+      supportDescription: '진행 중인 고객 상담을 확인합니다.',
+      noticesDescription: '서비스 공지사항을 작성하고 관리합니다.',
+      faqsDescription: '자주 묻는 질문을 관리합니다.',
+      settingsDescription: '서비스 운영 정책과 운영 시간을 설정합니다.',
+      profileDescription: '계정 및 보안 설정을 확인합니다.',
+    },
+  },
+};

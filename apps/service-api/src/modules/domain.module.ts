@@ -1,25 +1,31 @@
 import { Module } from '@nestjs/common';
 
-import { AuthModule } from './auth/auth.module';
-import { CustomersModule } from './customers/customers.module';
-import { FaqsModule } from './faqs/faqs.module';
-import { HealthModule } from './health/health.module';
-import { InternalModule } from './internal/internal.module';
-import { QnaModule } from './qna/qna.module';
-import { ServiceTermsModule } from './service-terms/service-terms.module';
-import { SupportModule } from './support/support.module';
-import { SystemConfigsModule } from './system-configs/system-configs.module';
+import { AuthModule } from '#/modules/auth/auth.module';
+import { CustomersModule } from '#/modules/customer/customers.module';
+import { EventsModule } from '#/modules/event/events.module';
+import { FaqsModule } from '#/modules/faq/faqs.module';
+import { HealthModule } from '#/modules/health/health.module';
+import { MembershipsModule } from '#/modules/membership/memberships.module';
+import { NoticesModule } from '#/modules/notice/notices.module';
+import { NotificationsModule } from '#/modules/notification/notifications.module';
+import { QnaModule } from '#/modules/qna/qna.module';
+import { ServiceTermsModule } from '#/modules/service-term/service-terms.module';
+import { SupportModule } from '#/modules/support/support.module';
+import { SystemConfigsModule } from '#/modules/system-config/system-configs.module';
 
 const DOMAIN_MODULES = [
   AuthModule,
+  MembershipsModule,
   CustomersModule,
   HealthModule,
-  InternalModule,
   SystemConfigsModule,
   FaqsModule,
   ServiceTermsModule,
   QnaModule,
   SupportModule,
+  NoticesModule,
+  NotificationsModule,
+  EventsModule,
 ];
 
 @Module({

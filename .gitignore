@@ -4,6 +4,7 @@ node_modules/
 
 # Build & Output
 dist/
+storybook-static/
 build/
 out/
 .output/
@@ -16,6 +17,7 @@ out/
 # Environment files
 # Private keys and local plaintext config stay untracked.
 .env
+.env.e2e
 .env.local
 .env.*.local
 .env.keys

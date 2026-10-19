@@ -1,12 +1,12 @@
+import { confirm } from '@pkg/web-core/application';
+import { createCachePatcher } from '@pkg/web-core/runtime/cache-patcher';
+import { Action } from '@pkg/web-core/template';
 import { type QueryClient, useQueryClient } from '@tanstack/react-query';
 import { Eye, MoreHorizontal } from 'lucide-react';
 
 import { getOperatorsControllerGetOperatorOverviewV1QueryKey, getOperatorsControllerGetOperatorsV1QueryKey, useOperatorsControllerBanOperatorV1, useOperatorsControllerDeleteOperatorV1, useOperatorsControllerResetOperatorTwoFactorV1, useOperatorsControllerRestoreOperatorV1, useOperatorsControllerUnbanOperatorV1 } from '#/.generated/api/endpoints/operators/operators';
 import type { OperatorItem, OperatorsControllerGetOperatorOverviewV1200, OperatorsControllerGetOperatorsV1200 } from '#/.generated/api/model';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
-import { Action } from '#/components/app/action';
-import { confirm } from '#/components/app/system-dialog';
-import { createEntityQueryCache } from '#/lib/entity-query-cache';
 
 type OperatorRowActionsProps = {
   operator: OperatorItem
@@ -18,9 +18,9 @@ type OperatorRowActionsProps = {
 
 export function OperatorRowActions({ operator, canManage, currentOperatorId, onOpenDetail, onChangeRole }: OperatorRowActionsProps) {
   const queryClient = useQueryClient();
-  const operatorCache = createEntityQueryCache<OperatorItem, OperatorsControllerGetOperatorsV1200>(queryClient, getOperatorsControllerGetOperatorsV1QueryKey());
+  const operatorCachePatcher = createCachePatcher<OperatorItem, OperatorsControllerGetOperatorsV1200>(queryClient, getOperatorsControllerGetOperatorsV1QueryKey());
   const handleSuccess = (patch: Partial<OperatorItem>) => () => {
-    operatorCache.patch(operator.id, patch);
+    operatorCachePatcher.patch(operator.id, patch);
     patchOperatorOverviewCache(queryClient, operator, patch);
   };
   const banMutation = useOperatorsControllerBanOperatorV1({ mutation: { onSuccess: handleSuccess({ banned: true }) } });

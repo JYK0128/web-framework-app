@@ -1,0 +1,12 @@
+{
+  "routerError": {
+    "title": "We could not load this page",
+    "description": "Please try again shortly. If the problem persists, copy the error details and contact support.",
+    "copy": "Copy error details",
+    "copySuccess": "Error details copied.",
+    "copyFailed": "Could not copy the error details.",
+    "reload": "Reload",
+    "home": "Go home",
+    "unknown": "An unknown error occurred."
+  }
+}

@@ -86,7 +86,7 @@ export const OperatorsControllerCreateOperatorV1Response = zod.object({
   "data": zod.object({
   "id": zod.string(),
   "emailVerificationRequired": zod.boolean(),
-  "emailVerificationSent": zod.boolean()
+  "emailVerificationQueued": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -168,6 +168,26 @@ export const OperatorsControllerDeleteOperatorV1Response = zod.object({
 })
 
 /**
+ * @summary 운영자 복구
+ */
+export const OperatorsControllerRestoreOperatorV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const OperatorsControllerRestoreOperatorV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
  * @summary 운영자 이용 정지
  */
 export const OperatorsControllerBanOperatorV1Params = zod.object({
@@ -204,26 +224,6 @@ export const OperatorsControllerUnbanOperatorV1Params = zod.object({
 })
 
 export const OperatorsControllerUnbanOperatorV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "ok": zod.boolean()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-/**
- * @summary 운영자 복구
- */
-export const OperatorsControllerRestoreOperatorV1Params = zod.object({
-  "id": zod.string()
-})
-
-export const OperatorsControllerRestoreOperatorV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
@@ -279,4 +279,3 @@ export const OperatorsControllerResetOperatorTwoFactorV1Response = zod.object({
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
-

@@ -5,7 +5,7 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { RoleListResponseDto } from './roleListResponseDto';
+import type { GetRolesResponseDto } from './getRolesResponseDto';
 import type { RolesControllerGetRolesV1200Meta } from './rolesControllerGetRolesV1200Meta';
 
 export type RolesControllerGetRolesV1200 = {
@@ -14,7 +14,7 @@ export type RolesControllerGetRolesV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: RoleListResponseDto;
+  data: GetRolesResponseDto;
   message?: string;
   meta?: RolesControllerGetRolesV1200Meta;
 };

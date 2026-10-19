@@ -1,9 +1,9 @@
-import { getOperationNotice } from '@pkg/shared/common';
+import { getOperationNotice } from '@pkg/shared/policy';
+import { NoticeBanner } from '@pkg/web-core/application';
 import { useEffect, useState } from 'react';
 
 import { useSystemConfigsControllerGetConfigsV1 } from '#/.generated/api/endpoints/system-configs/system-configs';
-import { NoticeBanner } from '#/components/notice-banner';
-import { SYSTEM_CONFIG_REFRESH_INTERVAL_MS } from '#/configs/app.config';
+import { SYSTEM_CONFIG_REFRESH_INTERVAL_MS } from '#/app.config';
 
 export function OperationNotice() {
   const query = useSystemConfigsControllerGetConfigsV1({ query: { refetchInterval: SYSTEM_CONFIG_REFRESH_INTERVAL_MS } });

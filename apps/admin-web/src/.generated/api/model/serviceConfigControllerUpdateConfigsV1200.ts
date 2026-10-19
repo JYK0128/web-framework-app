@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { ServiceConfigControllerUpdateConfigsV1200Meta } from './serviceConfigControllerUpdateConfigsV1200Meta';
-import type { UpdateSystemConfigResponseDto } from './updateSystemConfigResponseDto';
+import type { UpdateServiceConfigResponseDto } from './updateServiceConfigResponseDto';
 
 export type ServiceConfigControllerUpdateConfigsV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type ServiceConfigControllerUpdateConfigsV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: UpdateSystemConfigResponseDto;
+  data: UpdateServiceConfigResponseDto;
   message?: string;
   meta?: ServiceConfigControllerUpdateConfigsV1200Meta;
 };

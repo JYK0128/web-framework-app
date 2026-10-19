@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const baseURL = process.env.ADMIN_WEB_URL ?? process.env.APP_BASE_URL ?? 'http://localhost:13000';
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
@@ -8,7 +10,8 @@ export default defineConfig({
   workers: 1,
   reporter: [['html', { open: 'never' }], ['list']],
   use: {
-    baseURL: process.env.ADMIN_WEB_URL ?? process.env.APP_BASE_URL ?? 'http://localhost:13000',
+    baseURL,
+    extraHTTPHeaders: { Origin: new URL(baseURL).origin },
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },

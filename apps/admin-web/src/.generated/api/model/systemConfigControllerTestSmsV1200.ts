@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { SystemConfigControllerTestSmsV1200Meta } from './systemConfigControllerTestSmsV1200Meta';
-import type { TestChannelResponseDto } from './testChannelResponseDto';
+import type { TestSmsResponseDto } from './testSmsResponseDto';
 
 export type SystemConfigControllerTestSmsV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type SystemConfigControllerTestSmsV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: TestChannelResponseDto;
+  data: TestSmsResponseDto;
   message?: string;
   meta?: SystemConfigControllerTestSmsV1200Meta;
 };

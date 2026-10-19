@@ -5,7 +5,7 @@
  * Data Plane Service API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { PublicSystemConfigsResponseDto } from './publicSystemConfigsResponseDto';
+import type { GetPublicSystemConfigsResponseDto } from './getPublicSystemConfigsResponseDto';
 import type { SystemConfigsControllerGetConfigsV1200Meta } from './systemConfigsControllerGetConfigsV1200Meta';
 
 export type SystemConfigsControllerGetConfigsV1200 = {
@@ -14,7 +14,7 @@ export type SystemConfigsControllerGetConfigsV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: PublicSystemConfigsResponseDto;
+  data: GetPublicSystemConfigsResponseDto;
   message?: string;
   meta?: SystemConfigsControllerGetConfigsV1200Meta;
 };

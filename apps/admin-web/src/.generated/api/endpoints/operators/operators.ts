@@ -467,6 +467,68 @@ export const useOperatorsControllerDeleteOperatorV1 = <TError = unknown,
       return useMutation(getOperatorsControllerDeleteOperatorV1MutationOptions(options), queryClient);
     }
     /**
+ * @summary 운영자 복구
+ */
+export const operatorsControllerRestoreOperatorV1 = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<OperatorsControllerRestoreOperatorV1200>(
+      {url: `/api/v1/operators/${id}/restore`, method: 'POST', signal
+    },
+      options);
+    }
+
+
+
+
+export const getOperatorsControllerRestoreOperatorV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof operatorsControllerRestoreOperatorV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof operatorsControllerRestoreOperatorV1>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['operatorsControllerRestoreOperatorV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof operatorsControllerRestoreOperatorV1>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  operatorsControllerRestoreOperatorV1(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type OperatorsControllerRestoreOperatorV1MutationResult = NonNullable<Awaited<ReturnType<typeof operatorsControllerRestoreOperatorV1>>>
+
+    export type OperatorsControllerRestoreOperatorV1MutationError = unknown
+
+    /**
+ * @summary 운영자 복구
+ */
+export const useOperatorsControllerRestoreOperatorV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof operatorsControllerRestoreOperatorV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof operatorsControllerRestoreOperatorV1>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getOperatorsControllerRestoreOperatorV1MutationOptions(options), queryClient);
+    }
+    /**
  * @summary 운영자 이용 정지
  */
 export const operatorsControllerBanOperatorV1 = (
@@ -592,68 +654,6 @@ export const useOperatorsControllerUnbanOperatorV1 = <TError = unknown,
         TContext
       > => {
       return useMutation(getOperatorsControllerUnbanOperatorV1MutationOptions(options), queryClient);
-    }
-    /**
- * @summary 운영자 복구
- */
-export const operatorsControllerRestoreOperatorV1 = (
-    id: string,
- options?: SecondParameter<typeof axios>,signal?: AbortSignal
-) => {
-
-
-      return axios<OperatorsControllerRestoreOperatorV1200>(
-      {url: `/api/v1/operators/${id}/restore`, method: 'POST', signal
-    },
-      options);
-    }
-
-
-
-
-export const getOperatorsControllerRestoreOperatorV1MutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof operatorsControllerRestoreOperatorV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof operatorsControllerRestoreOperatorV1>>, TError,{id: string}, TContext> => {
-
-const mutationKey = ['operatorsControllerRestoreOperatorV1'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof operatorsControllerRestoreOperatorV1>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
-
-          return  operatorsControllerRestoreOperatorV1(id,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type OperatorsControllerRestoreOperatorV1MutationResult = NonNullable<Awaited<ReturnType<typeof operatorsControllerRestoreOperatorV1>>>
-
-    export type OperatorsControllerRestoreOperatorV1MutationError = unknown
-
-    /**
- * @summary 운영자 복구
- */
-export const useOperatorsControllerRestoreOperatorV1 = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof operatorsControllerRestoreOperatorV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof operatorsControllerRestoreOperatorV1>>,
-        TError,
-        {id: string},
-        TContext
-      > => {
-      return useMutation(getOperatorsControllerRestoreOperatorV1MutationOptions(options), queryClient);
     }
     /**
  * @summary 운영자 역할 변경

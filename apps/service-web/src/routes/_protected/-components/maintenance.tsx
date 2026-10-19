@@ -1,11 +1,11 @@
-import { getMaintenanceMessage } from '@pkg/shared/common';
+import { getMaintenanceMessage } from '@pkg/shared/policy';
+import { LoadingRouter } from '@pkg/web-core/application';
+import { ScreenLayout } from '@pkg/web-core/template';
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@pkg/web-core/ui';
 import { type PropsWithChildren, useEffect, useState } from 'react';
 
 import { useSystemConfigsControllerGetConfigsV1 } from '#/.generated/api/endpoints/system-configs/system-configs';
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
-import { LoadingRouter } from '#/components/app/loading-router';
-import { ScreenLayout } from '#/components/layout';
-import { SYSTEM_CONFIG_REFRESH_INTERVAL_MS } from '#/configs/app.config';
+import { SYSTEM_CONFIG_REFRESH_INTERVAL_MS } from '#/app.config';
 
 export function Maintenance({ children }: PropsWithChildren) {
   const query = useSystemConfigsControllerGetConfigsV1({ query: { refetchInterval: SYSTEM_CONFIG_REFRESH_INTERVAL_MS } });
@@ -22,7 +22,7 @@ export function Maintenance({ children }: PropsWithChildren) {
 
   if (!query.data && query.isError) {
     return (
-      <ScreenLayout>
+      <ScreenLayout.Root>
         <ScreenLayout.Content>
           <Card className="w-full shadow-xl">
             <CardHeader>
@@ -36,7 +36,7 @@ export function Maintenance({ children }: PropsWithChildren) {
             </CardContent>
           </Card>
         </ScreenLayout.Content>
-      </ScreenLayout>
+      </ScreenLayout.Root>
     );
   }
 
@@ -48,7 +48,7 @@ export function Maintenance({ children }: PropsWithChildren) {
       role="status"
       aria-live="polite"
     >
-      <ScreenLayout>
+      <ScreenLayout.Root>
         <ScreenLayout.Content>
           <Card className="w-full shadow-xl">
             <CardHeader>
@@ -60,7 +60,7 @@ export function Maintenance({ children }: PropsWithChildren) {
             </CardContent>
           </Card>
         </ScreenLayout.Content>
-      </ScreenLayout>
+      </ScreenLayout.Root>
     </div>
   );
 }

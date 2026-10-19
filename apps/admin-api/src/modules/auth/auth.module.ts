@@ -1,24 +1,26 @@
 import { Module } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
 
-import { SystemConfigsModule } from '#/modules/system-configs/system-configs.module';
-
-import { AccountRecoveryService } from './account-recovery.service';
-import { AuthController } from './auth.controller';
-import { authHandlers } from './handlers/index';
-import { OAuthController } from './oauth.controller';
-import { OAuthAuthenticationService } from './oauth-authentication.service';
-import { PortoneIdentityService } from './portone-identity.service';
+import { AuthAccountModule } from '#/modules/auth/account/account.module';
+import { AuthCredentialModule } from '#/modules/auth/credential/credential.module';
+import { AuthEmailVerificationModule } from '#/modules/auth/email-verification/email-verification.module';
+import { AuthOAuthModule } from '#/modules/auth/oauth/oauth.module';
+import { AuthPhoneVerificationModule } from '#/modules/auth/phone-verification/phone-verification.module';
+import { AuthProfileModule } from '#/modules/auth/profile/profile.module';
+import { ResetDemoDataScheduler } from '#/modules/auth/reset-demo-data.scheduler';
+import { AuthSessionModule } from '#/modules/auth/session/session.module';
+import { AuthTwoFactorModule } from '#/modules/auth/two-factor/two-factor.module';
 
 @Module({
-  imports: [CqrsModule, SystemConfigsModule],
-  controllers: [AuthController, OAuthController],
-  providers: [
-    AccountRecoveryService,
-    OAuthAuthenticationService,
-    PortoneIdentityService,
-    ...authHandlers,
+  imports: [
+    AuthAccountModule,
+    AuthCredentialModule,
+    AuthEmailVerificationModule,
+    AuthPhoneVerificationModule,
+    AuthProfileModule,
+    AuthSessionModule,
+    AuthTwoFactorModule,
+    AuthOAuthModule,
   ],
-  exports: [AccountRecoveryService],
+  providers: [ResetDemoDataScheduler],
 })
 export class AuthModule {}

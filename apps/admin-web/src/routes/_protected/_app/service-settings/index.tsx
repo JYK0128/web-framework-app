@@ -1,14 +1,13 @@
+import { useHashTab } from '@pkg/web-core/hooks';
+import { PageSection } from '@pkg/web-core/template';
+import { cn } from '@pkg/web-core/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { RefreshCw, Save } from 'lucide-react';
+import { Save } from 'lucide-react';
 import { useRef } from 'react';
 
-import { useSystemConfigControllerSyncConfigsV1 } from '#/.generated/api/endpoints/system-configs/system-configs';
 import type { UpdateServiceConfigRequestDto } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
-import { cn } from '#/.generated/shadcn/lib/utils';
-import { PageSection } from '#/components/layout';
-import { useHashTab } from '#/lib/use-hash-tab';
 
 import { InquiryTab, type InquiryTabHandle } from './-components/inquiry-tab';
 import { MaintenanceTab, type MaintenanceTabHandle } from './-components/maintenance-tab';
@@ -29,7 +28,6 @@ function ServiceSettingsPage() {
   const queryClient = useQueryClient();
   const settingsQuery = useServiceConfigQuery();
   const updateSystemConfigMutation = useUpdateServiceConfigMutation();
-  const syncSystemConfigMutation = useSystemConfigControllerSyncConfigsV1();
 
   const [activeTab, setActiveTab] = useHashTab<SystemConfigKey>(SYSTEM_CONFIG_TABS, 'operation');
 
@@ -89,20 +87,6 @@ function ServiceSettingsPage() {
       description="운영자가 관리하는 서비스 운영시간, 점검 및 문의 처리 정책을 설정합니다."
     >
       <PageSection.Actions>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => syncSystemConfigMutation.mutate()}
-          disabled={syncSystemConfigMutation.isPending || isSaving || !config}
-          className="h-9 min-w-28 gap-2 font-semibold cursor-pointer"
-        >
-          <RefreshCw
-            className={cn('size-4', syncSystemConfigMutation.isPending && `
-              animate-spin
-            `)}
-          />
-          {syncSystemConfigMutation.isPending ? '동기화 중...' : '동기화'}
-        </Button>
         <Button
           type="button"
           onClick={() => void handleSaveClick()}

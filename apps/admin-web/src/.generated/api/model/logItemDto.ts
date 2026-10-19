@@ -5,25 +5,30 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { LogItemDtoErrorMessage } from './logItemDtoErrorMessage';
-import type { LogItemDtoIpAddress } from './logItemDtoIpAddress';
-import type { LogItemDtoRequestId } from './logItemDtoRequestId';
-import type { LogItemDtoUserAgent } from './logItemDtoUserAgent';
+import type { LogErrorInfoDto } from './logErrorInfoDto';
+import type { LogItemDtoRequestBody } from './logItemDtoRequestBody';
+import type { LogItemDtoResponseBody } from './logItemDtoResponseBody';
 
 export interface LogItemDto {
   id: string;
   createdAt: string;
   level: string;
   method: string;
-  path: string;
+  url: string;
   statusCode: number;
-  durationMs: number;
+  duration: number;
+  requestId: string;
   /** @nullable */
-  requestId: LogItemDtoRequestId;
+  ip: string | null;
   /** @nullable */
-  ipAddress: LogItemDtoIpAddress;
+  userAgent: string | null;
   /** @nullable */
-  userAgent: LogItemDtoUserAgent;
+  emailHash: string | null;
   /** @nullable */
-  errorMessage: LogItemDtoErrorMessage;
+  requestBody: LogItemDtoRequestBody;
+  /** @nullable */
+  responseBody: LogItemDtoResponseBody;
+  /** @nullable */
+  errorInfo: LogErrorInfoDto | null;
+  nanoTimestamp?: string;
 }

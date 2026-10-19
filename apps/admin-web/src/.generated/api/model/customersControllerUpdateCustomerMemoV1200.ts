@@ -5,8 +5,8 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { AdminCustomerActionResponse } from './adminCustomerActionResponse';
 import type { CustomersControllerUpdateCustomerMemoV1200Meta } from './customersControllerUpdateCustomerMemoV1200Meta';
+import type { UpdateCustomerMemoResponseDto } from './updateCustomerMemoResponseDto';
 
 export type CustomersControllerUpdateCustomerMemoV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type CustomersControllerUpdateCustomerMemoV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: AdminCustomerActionResponse;
+  data: UpdateCustomerMemoResponseDto;
   message?: string;
   meta?: CustomersControllerUpdateCustomerMemoV1200Meta;
 };

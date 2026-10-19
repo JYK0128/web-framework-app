@@ -1,11 +1,11 @@
 import { z } from '@pkg/shared/common';
+import { FormLayout, useAppForm } from '@pkg/web-core/form';
+import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { getFaqsControllerListFaqsV1QueryKey, useFaqsControllerCreateFaqV1, useFaqsControllerUpdateFaqV1 } from '#/.generated/api/endpoints/faqs/faqs';
 import type { FaqItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { FormLayout, useAppForm } from '#/components/form';
-import { Modal, type ModalComponentProps } from '#/components/modal';
 
 export type FaqEditorModalProps = ModalComponentProps<boolean> & { faq?: FaqItemDto, readOnly?: boolean };
 

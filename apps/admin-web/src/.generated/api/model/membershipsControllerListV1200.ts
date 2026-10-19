@@ -5,7 +5,7 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { MembershipListResponseDto } from './membershipListResponseDto';
+import type { GetMembershipsResponseDto } from './getMembershipsResponseDto';
 import type { MembershipsControllerListV1200Meta } from './membershipsControllerListV1200Meta';
 
 export type MembershipsControllerListV1200 = {
@@ -14,7 +14,7 @@ export type MembershipsControllerListV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: MembershipListResponseDto;
+  data: GetMembershipsResponseDto;
   message?: string;
   meta?: MembershipsControllerListV1200Meta;
 };

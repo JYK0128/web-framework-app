@@ -1,3 +1,7 @@
+import { AppIcon } from '@pkg/web-core/application';
+import { ScreenLayout } from '@pkg/web-core/template';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@pkg/web-core/ui';
+import { cn } from '@pkg/web-core/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useRouter } from '@tanstack/react-router';
 import { Loader2, LogOut } from 'lucide-react';
@@ -5,10 +9,6 @@ import type { IconName } from 'lucide-react/dynamic';
 import type { ReactNode } from 'react';
 
 import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
-import { AppIcon } from '#/components/app';
-import { ScreenLayout } from '#/components/layout';
-import { tokenStorage } from '#/store/token';
 
 type OnboardingLayoutProps = {
   icon?: IconName
@@ -16,9 +16,10 @@ type OnboardingLayoutProps = {
   description?: ReactNode
   footer?: ReactNode
   children: ReactNode
+  scrollContent?: boolean
 };
 
-export function OnboardingLayout({ icon, title, description, footer, children }: OnboardingLayoutProps) {
+export function OnboardingLayout({ icon, title, description, footer, children, scrollContent = true }: OnboardingLayoutProps) {
   const navigate = useNavigate();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -29,7 +30,6 @@ export function OnboardingLayout({ icon, title, description, footer, children }:
       await logoutMutation.mutateAsync({ data: {} });
     }
     finally {
-      tokenStorage.clear();
       queryClient.clear();
       await navigate({ to: '/login', replace: true });
       await router.invalidate();
@@ -37,9 +37,12 @@ export function OnboardingLayout({ icon, title, description, footer, children }:
   };
 
   return (
-    <ScreenLayout>
+    <ScreenLayout.Root>
       <ScreenLayout.Content size="md">
-        <Card className="grid size-full grid-rows-[auto_1fr_auto] shadow-xl">
+        <Card className="
+          grid size-full grid-rows-[auto_minmax(0,1fr)_auto] shadow-xl
+        "
+        >
           <CardHeader className="flex items-center justify-between gap-4">
             <div className="grid gap-1">
               <div className="flex items-center gap-2">
@@ -49,7 +52,16 @@ export function OnboardingLayout({ icon, title, description, footer, children }:
               {description && <CardDescription>{description}</CardDescription>}
             </div>
           </CardHeader>
-          <CardContent className="grid gap-4 p-6">{children}</CardContent>
+          <CardContent
+            className={cn(
+              'grid gap-4 p-6',
+              scrollContent
+                ? 'scroll-y content-start'
+                : 'grid-rows-[minmax(0,1fr)] overflow-hidden',
+            )}
+          >
+            {children}
+          </CardContent>
           {footer && <CardFooter className="border-t pt-4">{footer}</CardFooter>}
         </Card>
       </ScreenLayout.Content>
@@ -73,6 +85,6 @@ export function OnboardingLayout({ icon, title, description, footer, children }:
           로그인으로 돌아가기
         </button>
       </ScreenLayout.Addon>
-    </ScreenLayout>
+    </ScreenLayout.Root>
   );
 }

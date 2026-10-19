@@ -5,8 +5,8 @@
  * Data Plane Service API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { GetTermRevisionsResponseDto } from './getTermRevisionsResponseDto';
 import type { ServiceTermsControllerGetRevisionsV1200Meta } from './serviceTermsControllerGetRevisionsV1200Meta';
-import type { TermRevisionPageResponseDto } from './termRevisionPageResponseDto';
 
 export type ServiceTermsControllerGetRevisionsV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type ServiceTermsControllerGetRevisionsV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: TermRevisionPageResponseDto;
+  data: GetTermRevisionsResponseDto;
   message?: string;
   meta?: ServiceTermsControllerGetRevisionsV1200Meta;
 };

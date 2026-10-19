@@ -3,6 +3,8 @@ name: service-factory-apps-dev
 include:
   - ./infra/postgres/compose.yml
   - ./infra/redis/compose.yml
+  - ./infra/loki/compose.yml
+  - ./infra/vector/compose.yml
 
 services:
   admin-api:
@@ -22,6 +24,7 @@ services:
       APP_SECRET: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/admin_db
       REDIS_URL: redis://redis:6379
+      LOKI_URL: http://loki:3100
       PORTONE_API_SECRET: ${PORTONE_API_SECRET:?PORTONE_API_SECRET must be set}
       SERVICE_API_URL: http://service-api:4000
       APP_BASE_URL: http://localhost:13000
@@ -67,6 +70,7 @@ services:
       APP_SECRET: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/service_db
       REDIS_URL: redis://redis:6379
+      LOKI_URL: http://loki:3100
       ADMIN_API_URL: http://admin-api:14000
       APP_BASE_URL: http://localhost:3000
     depends_on:
@@ -104,13 +108,17 @@ services:
     container_name: service-factory-admin-web
     restart: "no"
     working_dir: /app/apps/admin-web
+    env_file:
+      - ../admin-web/.env
     command: pnpm dev
     ports:
       - "13000:13000"
     environment:
       NODE_ENV: development
       PORT: 13000
+      APP_NAME: admin
       API_BASE_URL: http://admin-api:14000
+      APP_BASE_URL: http://localhost:13000
       API_SPEC_URL: http://admin-api:14000/api/docs-json
       VITE_PORTONE_STORE_ID: ${VITE_PORTONE_STORE_ID:-}
       VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY: ${VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY:-}
@@ -144,13 +152,18 @@ services:
     container_name: service-factory-service-web
     restart: "no"
     working_dir: /app/apps/service-web
+    env_file:
+      - ../service-web/.env
     command: pnpm dev
     ports:
       - "3000:3000"
     environment:
       NODE_ENV: development
       PORT: 3000
+      APP_NAME: service
       API_BASE_URL: http://service-api:4000
+      APP_BASE_URL: http://localhost:3000
+      VITE_ADMIN_WEB_URL: http://localhost:13000
       API_SPEC_URL: http://service-api:4000/api/docs-json
     depends_on:
       - service-api

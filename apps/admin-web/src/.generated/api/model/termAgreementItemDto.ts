@@ -8,7 +8,7 @@
 import type { AgreementMetadataDto } from './agreementMetadataDto';
 
 export interface TermAgreementItemDto {
-  id: string;
+  termId: string;
   groupId: string;
   title: string;
   version: string;

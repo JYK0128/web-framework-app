@@ -16,12 +16,12 @@
 | FAQ | `GET /faqs`, `POST /faqs`, `PATCH /faqs/:id`, `DELETE /faqs/:id` | `GET /faqs`, `GET /faqs/:faqId` | Admin은 관리, Service는 공개 조회. Admin 관리 요청은 `/internal/faqs`로 중계 |
 | Q&A | `GET /qna`, `/qna/:id`; `PATCH /qna/:id`; `DELETE /qna/:id` | 동일 및 `POST /qna` | Service 고객이 질문을 작성하고 Admin이 답변·관리 |
 | 서비스 약관 | `/service-terms`: 목록·생성·수정·게시·삭제 및 그룹 조회·생성·수정·삭제 | `/service-terms`: 목록·상세 조회 및 동의 조회·등록 | Admin은 관리, Service는 공개 약관·동의. Admin 관리 요청은 `/internal/service-terms`로 중계 |
-| 운영자 약관 | `/operator-terms`: 약관·그룹 조회와 생성·수정·삭제, 게시, 동의·동의 이력 조회 및 동의 등록 | 해당 컨트롤러 없음 | Admin 전용 |
+| 운영자 약관 | `/terms`: 약관·그룹 조회와 생성·수정·삭제, 게시, 동의·동의 이력 조회 및 동의 등록 | 해당 컨트롤러 없음 | Admin 전용 |
 | 고객·멤버십 | `/customers`의 목록·상세·PII·차단·삭제·역할·메모·세션 관리; `/memberships`의 목록·권한·생성·수정·삭제 | 공개 고객 프로필 경로 없음; 머신 인증 내부 경로 `/internal/customers/*`로 관리 기능 제공 | Admin 공개 경로가 Service 내부 API를 호출 |
 | 운영자·RBAC | `/operators`, `/roles`, `/permissions`의 목록·상세·생성·수정·삭제 및 운영자 차단·복구·역할·2FA 관리 | 해당 컨트롤러 없음 | Admin 전용 |
 | 로그 | `GET /logs`, `/logs/stats` | 해당 컨트롤러 없음 | Admin 전용 |
-| 시스템·서비스 설정 | `GET/PATCH /system-config`; `/system-config/test-email`; `/service-config`, `/service-config/holidays` 및 테스트·동기화 경로 | 공개 설정 `GET /service-configs`; 머신 인증 `/internal/system-configs`의 조회·수정·동기화·아이콘 경로 | Service가 설정 원장을 소유하고 Admin이 관리 요청을 중계 |
-| OAuth 아이콘 | 공개 업로드·조회 `PUT/GET /uploads/oauth-icons/:filename`; 설정용 presigned URL 요청 | 내부 머신 API `/internal/system-configs/oauth-icons/*` | 실제 아이콘 파일 저장·조회는 Service가 담당 |
+| 시스템·서비스 설정 | `GET/PATCH /system-config`; `/system-config/test-email`; `/service-config`, `/service-config/holidays` 및 테스트·동기화 경로 | 공개 설정 `GET /service-configs`; 머신 인증 `/internal/system-config`의 조회·수정·동기화·아이콘 경로 | Service가 설정 원장을 소유하고 Admin이 관리 요청을 중계 |
+| OAuth 아이콘 | 공개 업로드·조회 `PUT/GET /uploads/oauth-icons/:filename`; 설정용 presigned URL 요청 | 내부 머신 API `/internal/system-config/oauth-icons/*` | 실제 아이콘 파일 저장·조회는 Service가 담당 |
 
 공통 메서드·경로 형태는 총 32개다. `POST /auth/account/find`는 두 앱 모두 `{ name, phoneNumber }`를 받고 `{ items: [{ maskedEmail, provider }] }`를 반환한다. 가입은 두 앱에 같은 입력·응답 계약을 제공하지만 허용 여부와 기본 역할이 다르다. 탈퇴는 로그인한 사용자 본인 요청이며 양쪽 모두 기본 허용이다.
 
@@ -75,7 +75,7 @@
 | 인증 애플리케이션 파일 | `auth/account-recovery.service.ts`; `auth/oauth-provider.config.ts`; `auth/oauth-provider-validation.ts` | `auth/email-verification.helper.ts`; `commands/find-id.command.ts`; `handlers/find-id.handler.ts`; `commands/password-recovery.command.ts`; `handlers/password-recovery.handler.ts`; `commands/verify-email.command.ts` | Admin은 AccountRecoveryService를 사용한다. Service는 CQRS 핸들러가 흐름을 처리하고 이메일 기능은 주입형 서비스 없이 helper 함수로 실행한다. Service의 OAuth 검증 코드는 `modules/system-configs/oauth-provider-validation.ts`에 있다. |
 | 인증 DTO | `auth/interfaces/*` | `auth/dto/*` | 로그인·me·정책·OAuth·2FA·전화번호 인증의 대응 DTO가 있다. 폴더 이름만 다르다고 누락된 기능은 아니다. 실제 필드 차이는 위 `/me` 행 참고. |
 | 인증 공통 기반 | 대응 경로 27개 중 `user/user-auth.guard.ts`만 내용이 다름 | 동일 | Guard의 차이는 현재 검증 기준 변수명(`identityVerified` / `phoneNumberVerified`)이다. 나머지 JWT·세션·머신 인증 파일은 동일하다. |
-| API 공통 코드 | `common` 아래 60개 파일 | `common` 아래 동일한 60개 파일 | 파일 내용이 모두 동일하다. `common/guards` 3개와 `common/decorators` 12개도 동일하다. |
+| API 공통 코드 | `core` 아래 60개 파일 | `core` 아래 동일한 60개 파일 | 파일 내용이 모두 동일하다. `core/guards` 3개와 `core/decorators` 12개도 동일하다. |
 | API 기능 모듈 | `memberships`, `operators`, `permissions`, `roles`, `logs`, `terms` | `internal` | Admin 쪽은 관리 API, Service 쪽은 고객·FAQ·약관 등의 내부 API를 소유한다. Admin 컨트롤러가 관리 요청을 내부 API로 중계하는 기능은 API 경로 표에 적었다. |
 | API 비즈니스 엔티티 | 별도 Admin FAQ·Q&A·Support·Upload 엔티티 없음 | `faqs/faq.entity.ts`, `qna/qna.entity.ts`, `support/*`, `uploads/upload.entity.ts` | Service가 해당 데이터의 저장 엔티티를 갖고 Admin은 업무 화면/중계 API를 제공한다. |
 | 공개 웹 라우트 | `_public/_global/index.tsx` | `_public/_global/register.tsx`; `_public/_app/faq/*`; `_public/_app/service-terms/*`; 공개 locale 홈 파일 | Service에 가입·공개 FAQ·서비스 약관 화면이 있고 Admin에는 공개 가입 화면이 없다. |
@@ -173,7 +173,7 @@
 | 서비스 식별자 | `admin-api` | `service-api` |
 | 권한 | 운영자 권한 목록 및 권한별 운영 메뉴 | 서비스 사용자 권한 목록 및 공개·사용자 메뉴 |
 | 약관 기능 | 운영자 약관과 서비스 약관 관리 화면 | 서비스 약관 동의 화면 |
-| 주요 관리 화면 경로 | `/operators`, `/roles`, `/memberships`, `/operator-terms` | 해당 관리 화면 없음 |
+| 주요 관리 화면 경로 | `/operators`, `/roles`, `/memberships`, `/terms` | 해당 관리 화면 없음 |
 | 업무 화면 | 사용자·운영·시스템 관리 | 프로필·고객지원·서비스 이용 |
 | 앱 레이아웃 | 권한에 따른 관리자 메뉴와 사이드바 | 공개 메뉴와 로그인 상태 기반 메뉴 |
 | 다국어 업무 리소스 | 공통 리소스와 관리자 화면 문구 | 공통 리소스와 서비스 화면 문구 |

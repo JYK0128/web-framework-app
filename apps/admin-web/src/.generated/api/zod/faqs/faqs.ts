@@ -91,14 +91,14 @@ export const FaqsControllerUpdateFaqV1Params = zod.object({
 export const faqsControllerUpdateFaqV1BodySortOrderMin = 0;
 export const faqsControllerUpdateFaqV1BodySortOrderMax = 999999;
 
-export const faqsControllerUpdateFaqV1BodyIsPublishedDefault = true;
+
 
 export const FaqsControllerUpdateFaqV1Body = zod.object({
   "category": zod.string().optional(),
   "question": zod.string().optional(),
   "answer": zod.string().optional(),
   "sortOrder": zod.number().min(faqsControllerUpdateFaqV1BodySortOrderMin).max(faqsControllerUpdateFaqV1BodySortOrderMax).optional(),
-  "isPublished": zod.boolean().default(faqsControllerUpdateFaqV1BodyIsPublishedDefault)
+  "isPublished": zod.boolean().optional()
 })
 
 export const FaqsControllerUpdateFaqV1Response = zod.object({
@@ -137,4 +137,3 @@ export const FaqsControllerDeleteFaqV1Response = zod.object({
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
-

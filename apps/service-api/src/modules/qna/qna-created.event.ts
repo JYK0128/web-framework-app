@@ -1,4 +1,4 @@
-import { QnaPriority } from '#/entities/qna/qna.entity';
+import { QnaPriority } from '@pkg/shared/constants';
 
 export class QnaCreatedEvent {
   constructor(

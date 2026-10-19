@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
 
-import { QnaController } from './qna.controller';
+import { QnaController } from '#/modules/qna/qna.controller';
 
-@Module({ controllers: [QnaController] }) export class QnaModule {}
+@Module({ imports: [CqrsModule], controllers: [QnaController] }) export class QnaModule {}

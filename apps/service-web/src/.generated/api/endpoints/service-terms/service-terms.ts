@@ -160,99 +160,6 @@ export function useServiceTermsControllerGetRevisionsV1<TData = Awaited<ReturnTy
 
 
 /**
- * @summary 게시된 고객용 서비스 약관 목록 조회
- */
-export const serviceTermsControllerGetTermsV1 = (
-    params?: ServiceTermsControllerGetTermsV1Params,
- options?: SecondParameter<typeof axios>,signal?: AbortSignal
-) => {
-
-
-      return axios<ServiceTermsControllerGetTermsV1200>(
-      {url: `/api/v1/service-terms`, method: 'GET',
-        params, signal
-    },
-      options);
-    }
-
-
-
-
-export const getServiceTermsControllerGetTermsV1QueryKey = (params?: ServiceTermsControllerGetTermsV1Params,) => {
-    return [
-    `/api/v1/service-terms`, ...(params ? [params] : [])
-    ] as const;
-    }
-
-
-export const getServiceTermsControllerGetTermsV1QueryOptions = <TData = Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>, TError = unknown>(params?: ServiceTermsControllerGetTermsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getServiceTermsControllerGetTermsV1QueryKey(params);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>> = ({ signal }) => serviceTermsControllerGetTermsV1(params, requestOptions, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type ServiceTermsControllerGetTermsV1QueryResult = NonNullable<Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>>
-export type ServiceTermsControllerGetTermsV1QueryError = unknown
-
-
-export function useServiceTermsControllerGetTermsV1<TData = Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>, TError = unknown>(
- params: undefined |  ServiceTermsControllerGetTermsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>,
-          TError,
-          Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useServiceTermsControllerGetTermsV1<TData = Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>, TError = unknown>(
- params?: ServiceTermsControllerGetTermsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>,
-          TError,
-          Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useServiceTermsControllerGetTermsV1<TData = Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>, TError = unknown>(
- params?: ServiceTermsControllerGetTermsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary 게시된 고객용 서비스 약관 목록 조회
- */
-
-export function useServiceTermsControllerGetTermsV1<TData = Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>, TError = unknown>(
- params?: ServiceTermsControllerGetTermsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getServiceTermsControllerGetTermsV1QueryOptions(params,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-
-
-
-
-
-/**
  * @summary 현재 사용자의 서비스 약관 동의 상태 조회
  */
 export const serviceTermsControllerGetAgreementsV1 = (
@@ -502,6 +409,99 @@ export function useServiceTermsControllerGetAgreementHistoryV1<TData = Awaited<R
 
 
 /**
+ * @summary 게시된 고객용 서비스 약관 목록 조회
+ */
+export const serviceTermsControllerGetTermsV1 = (
+    params?: ServiceTermsControllerGetTermsV1Params,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<ServiceTermsControllerGetTermsV1200>(
+      {url: `/api/v1/service-terms`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+
+
+
+
+export const getServiceTermsControllerGetTermsV1QueryKey = (params?: ServiceTermsControllerGetTermsV1Params,) => {
+    return [
+    `/api/v1/service-terms`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getServiceTermsControllerGetTermsV1QueryOptions = <TData = Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>, TError = unknown>(params?: ServiceTermsControllerGetTermsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getServiceTermsControllerGetTermsV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>> = ({ signal }) => serviceTermsControllerGetTermsV1(params, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ServiceTermsControllerGetTermsV1QueryResult = NonNullable<Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>>
+export type ServiceTermsControllerGetTermsV1QueryError = unknown
+
+
+export function useServiceTermsControllerGetTermsV1<TData = Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>, TError = unknown>(
+ params: undefined |  ServiceTermsControllerGetTermsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>,
+          TError,
+          Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useServiceTermsControllerGetTermsV1<TData = Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>, TError = unknown>(
+ params?: ServiceTermsControllerGetTermsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>,
+          TError,
+          Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useServiceTermsControllerGetTermsV1<TData = Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>, TError = unknown>(
+ params?: ServiceTermsControllerGetTermsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 게시된 고객용 서비스 약관 목록 조회
+ */
+
+export function useServiceTermsControllerGetTermsV1<TData = Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>, TError = unknown>(
+ params?: ServiceTermsControllerGetTermsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof serviceTermsControllerGetTermsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getServiceTermsControllerGetTermsV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
  * @summary 게시된 고객용 서비스 약관 상세 조회
  */
 export const serviceTermsControllerGetTermV1 = (
@@ -587,9 +587,3 @@ export function useServiceTermsControllerGetTermV1<TData = Awaited<ReturnType<ty
 
   return withQueryKey(query, queryOptions.queryKey);
 }
-
-
-
-
-
-

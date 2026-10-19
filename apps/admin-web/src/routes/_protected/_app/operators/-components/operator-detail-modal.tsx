@@ -1,10 +1,10 @@
+import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 import { Loader2, RefreshCw } from 'lucide-react';
 
 import { useOperatorsControllerGetOperatorByIdV1 } from '#/.generated/api/endpoints/operators/operators';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { Modal, type ModalComponentProps } from '#/components/modal';
 
-type OperatorDetailModalProps = ModalComponentProps<void> & {
+type OperatorDetailModalProps = ModalComponentProps & {
   operatorId: string
 };
 

@@ -297,9 +297,3 @@ export function useServiceConfigControllerGetHolidaysV1<TData = Awaited<ReturnTy
 
   return withQueryKey(query, queryOptions.queryKey);
 }
-
-
-
-
-
-

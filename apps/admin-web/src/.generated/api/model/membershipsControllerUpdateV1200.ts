@@ -5,8 +5,8 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { MembershipItemDto } from './membershipItemDto';
 import type { MembershipsControllerUpdateV1200Meta } from './membershipsControllerUpdateV1200Meta';
+import type { UpdateMembershipResponseDto } from './updateMembershipResponseDto';
 
 export type MembershipsControllerUpdateV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type MembershipsControllerUpdateV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: MembershipItemDto;
+  data: UpdateMembershipResponseDto;
   message?: string;
   meta?: MembershipsControllerUpdateV1200Meta;
 };

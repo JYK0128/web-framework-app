@@ -8,7 +8,7 @@ description: >-
 
 # Guard integration
 
-- Follow the registration order and application style in `src/common/core.module.ts` and the relevant guard implementation.
+- Follow the registration order and application style in `src/core/core.module.ts` and the relevant guard implementation.
 - Do not redundantly declare globally registered guards on individual endpoints.
 - Verify the full request path from authentication principal through authorization decision.
 - Fail closed for missing or invalid security input; never invent an identity or silently continue after a required security failure.

@@ -5,7 +5,7 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { FaqItemDto } from './faqItemDto';
+import type { CreateFaqResponseDto } from './createFaqResponseDto';
 import type { FaqsControllerCreateFaqV1201Meta } from './faqsControllerCreateFaqV1201Meta';
 
 export type FaqsControllerCreateFaqV1201 = {
@@ -14,7 +14,7 @@ export type FaqsControllerCreateFaqV1201 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: FaqItemDto;
+  data: CreateFaqResponseDto;
   message?: string;
   meta?: FaqsControllerCreateFaqV1201Meta;
 };

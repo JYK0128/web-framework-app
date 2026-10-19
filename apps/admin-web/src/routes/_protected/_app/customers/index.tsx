@@ -1,4 +1,8 @@
 import { AdminPermission } from '@pkg/shared';
+import { alert } from '@pkg/web-core/application';
+import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '@pkg/web-core/data-grid';
+import { openModal } from '@pkg/web-core/modal';
+import { Action, PageSection, SectionCard } from '@pkg/web-core/template';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -7,11 +11,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getCustomersControllerListCustomersV1QueryKey, useCustomersControllerListCustomerPiiV1, useCustomersControllerListCustomersV1 } from '#/.generated/api/endpoints/customers/customers';
 import type { AdminCustomerItem } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { Action } from '#/components/app/action';
-import { alert } from '#/components/app/system-dialog';
-import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
-import { PageSection, SectionCard } from '#/components/layout';
-import { openModal } from '#/components/modal';
 
 import { CustomerDetailModal } from './-components/customer-detail-modal';
 import { CustomerMemoModal } from './-components/customer-memo-modal';

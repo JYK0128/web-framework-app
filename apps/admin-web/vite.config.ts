@@ -30,6 +30,8 @@ export default defineConfig(({ mode }) => {
       nitro({
         preset: 'node-server',
         serverDir: './server',
+        // API paths with file extensions must reach the session proxy in development too.
+        handlers: [{ route: '/api/**', handler: './server/api.ts' }],
       }),
       tailwindcss(),
       react(),

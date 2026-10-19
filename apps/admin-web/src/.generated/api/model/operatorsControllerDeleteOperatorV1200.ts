@@ -5,7 +5,7 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { OperatorActionResponse } from './operatorActionResponse';
+import type { DeleteOperatorResponseDto } from './deleteOperatorResponseDto';
 import type { OperatorsControllerDeleteOperatorV1200Meta } from './operatorsControllerDeleteOperatorV1200Meta';
 
 export type OperatorsControllerDeleteOperatorV1200 = {
@@ -14,7 +14,7 @@ export type OperatorsControllerDeleteOperatorV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: OperatorActionResponse;
+  data: DeleteOperatorResponseDto;
   message?: string;
   meta?: OperatorsControllerDeleteOperatorV1200Meta;
 };

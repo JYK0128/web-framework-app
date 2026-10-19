@@ -7,13 +7,18 @@ import { VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { FileStorageService } from '@pkg/server-core/file-storage/file-storage.service';
+import { serveStorageFiles } from '@pkg/server-core/file-storage/storage.http';
+import { ApiErrorResponseDto } from '@pkg/server-core/http/dto/response/api.response.dto';
+import { createI18nMiddleware } from '@pkg/server-core/http/middlewares/i18n.middleware';
+import { LoggerService } from '@pkg/server-core/logger/logger.service';
+import { SocketIoAdapter } from '@pkg/server-core/realtime/adapters/socket-io.adapter';
 import helmet from 'helmet';
 
 import { SECURITY_CONFIG, SERVICE_RUNTIME_CONFIG } from '#/app.config';
-import { ApiErrorResponseDto } from '#/common/dto/api-response.dto';
-import { DatabaseSeeder } from '#/infra/database/seeders/database.seeder';
-import { createI18nMiddleware } from '#/infra/i18n/i18n.middleware';
-import { serveStorageFiles } from '#/infra/storage/storage.http';
+import { DatabaseSeeder } from '#/core/database/seeders/database.seeder';
+import en from '#/locales/en.json';
+import ko from '#/locales/ko.json';
 
 import { AppModule } from './app.module';
 import { env } from './env';
@@ -39,7 +44,10 @@ async function bootstrap(): Promise<void> {
     bufferLogs: true,
   });
 
+  const logger = app.get(LoggerService);
+  app.useLogger(logger);
   app.enableShutdownHooks();
+  app.useWebSocketAdapter(app.get(SocketIoAdapter));
 
   app.useBodyParser('json', { limit: SECURITY_CONFIG.request.bodyMaxSizeBytes });
   app.useBodyParser('raw', { type: ['application/octet-stream', 'image/*'], limit: SECURITY_CONFIG.request.bodyMaxSizeBytes });
@@ -58,12 +66,14 @@ async function bootstrap(): Promise<void> {
     origin: false,
   });
 
-  await serveStorageFiles(app, {
-    directory: resolve(process.cwd(), SERVICE_RUNTIME_CONFIG.storage.localDirectory),
-    publicUrlPrefix: SERVICE_RUNTIME_CONFIG.storage.publicUrlPrefix,
-    cacheMaxAgeSeconds: SERVICE_RUNTIME_CONFIG.staticAssetsCacheMaxAgeSeconds,
-  });
-  app.use(createI18nMiddleware());
+  if (app.get(FileStorageService).has('local')) {
+    await serveStorageFiles(app, {
+      directory: resolve(process.cwd(), SERVICE_RUNTIME_CONFIG.storage.localDirectory),
+      publicUrlPrefix: SERVICE_RUNTIME_CONFIG.storage.publicUrlPrefix,
+      cacheMaxAgeSeconds: SERVICE_RUNTIME_CONFIG.staticAssetsCacheMaxAgeSeconds,
+    });
+  }
+  app.use(createI18nMiddleware({ en: { translation: en }, ko: { translation: ko } }));
 
   setupSwagger(app);
 
@@ -71,16 +81,21 @@ async function bootstrap(): Promise<void> {
     const orm = app.get(MikroORM);
     await orm.migrator.up();
     await orm.seeder.seed(DatabaseSeeder);
-    console.log('[Bootstrap] Database seed completed');
+    logger.log('Database seed completed', 'Bootstrap');
   }
   catch (err) {
-    console.error(`[Bootstrap] Database migration or seed failed: ${err instanceof Error ? err.message : String(err)}`);
-    await app.close();
+    logger.error(`Database migration or seed failed: ${err instanceof Error ? err.message : String(err)}`, 'Bootstrap');
+    try {
+      await app.close();
+    }
+    catch (cleanupError) {
+      logger.error(`Application shutdown after bootstrap failure failed: ${cleanupError instanceof Error ? cleanupError.message : String(cleanupError)}`, 'Bootstrap');
+    }
     throw err;
   }
 
   await app.listen(env.PORT, '0.0.0.0');
-  console.log(`service-api listening on :${env.PORT}`);
+  logger.log(`service-api listening on :${env.PORT}`, 'Bootstrap');
 }
 
 void bootstrap();

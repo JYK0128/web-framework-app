@@ -28,7 +28,6 @@ import type {
   CreateOAuthIconPresignedUrlRequestDto,
   SystemConfigControllerCreateOAuthIconPresignedUrlV1200,
   SystemConfigControllerGetConfigsV1200,
-  SystemConfigControllerSyncConfigsV1200,
   SystemConfigControllerTestAdminEmailV1200,
   SystemConfigControllerTestEmailV1200,
   SystemConfigControllerTestMessengerV1200,
@@ -36,6 +35,7 @@ import type {
   SystemConfigControllerTestSmsV1200,
   SystemConfigControllerTestWebhookV1200,
   SystemConfigControllerUpdateConfigsV1200,
+  SystemConfigControllerUpdateConfigsV1503,
   TestAdminEmailRequestDto,
   TestEmailRequestDto,
   TestMessengerRequestDto,
@@ -68,6 +68,70 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
 };
 
 /**
+ * @summary 시스템 설정 관리자 이메일 테스트 전송
+ */
+export const systemConfigControllerTestAdminEmailV1 = (
+    testAdminEmailRequestDto: TestAdminEmailRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<SystemConfigControllerTestAdminEmailV1200>(
+      {url: `/api/v1/system-config/test-email`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: testAdminEmailRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getSystemConfigControllerTestAdminEmailV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerTestAdminEmailV1>>, TError,{data: TestAdminEmailRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerTestAdminEmailV1>>, TError,{data: TestAdminEmailRequestDto}, TContext> => {
+
+const mutationKey = ['systemConfigControllerTestAdminEmailV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof systemConfigControllerTestAdminEmailV1>>, {data: TestAdminEmailRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  systemConfigControllerTestAdminEmailV1(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SystemConfigControllerTestAdminEmailV1MutationResult = NonNullable<Awaited<ReturnType<typeof systemConfigControllerTestAdminEmailV1>>>
+    export type SystemConfigControllerTestAdminEmailV1MutationBody = TestAdminEmailRequestDto
+    export type SystemConfigControllerTestAdminEmailV1MutationError = unknown
+
+    /**
+ * @summary 시스템 설정 관리자 이메일 테스트 전송
+ */
+export const useSystemConfigControllerTestAdminEmailV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerTestAdminEmailV1>>, TError,{data: TestAdminEmailRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof systemConfigControllerTestAdminEmailV1>>,
+        TError,
+        {data: TestAdminEmailRequestDto},
+        TContext
+      > => {
+      return useMutation(getSystemConfigControllerTestAdminEmailV1MutationOptions(options), queryClient);
+    }
+    /**
  * @summary 시스템 설정 조회
  */
 export const systemConfigControllerGetConfigsV1 = (
@@ -179,7 +243,7 @@ export const systemConfigControllerUpdateConfigsV1 = (
 
 
 
-export const getSystemConfigControllerUpdateConfigsV1MutationOptions = <TError = unknown,
+export const getSystemConfigControllerUpdateConfigsV1MutationOptions = <TError = SystemConfigControllerUpdateConfigsV1503,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerUpdateConfigsV1>>, TError,{data: UpdateSystemSettingsRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
 ): UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerUpdateConfigsV1>>, TError,{data: UpdateSystemSettingsRequestDto}, TContext> => {
 
@@ -208,12 +272,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type SystemConfigControllerUpdateConfigsV1MutationResult = NonNullable<Awaited<ReturnType<typeof systemConfigControllerUpdateConfigsV1>>>
     export type SystemConfigControllerUpdateConfigsV1MutationBody = UpdateSystemSettingsRequestDto
-    export type SystemConfigControllerUpdateConfigsV1MutationError = unknown
+    export type SystemConfigControllerUpdateConfigsV1MutationError = SystemConfigControllerUpdateConfigsV1503
 
     /**
  * @summary 시스템 설정 수정
  */
-export const useSystemConfigControllerUpdateConfigsV1 = <TError = unknown,
+export const useSystemConfigControllerUpdateConfigsV1 = <TError = SystemConfigControllerUpdateConfigsV1503,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerUpdateConfigsV1>>, TError,{data: UpdateSystemSettingsRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof systemConfigControllerUpdateConfigsV1>>,
@@ -224,18 +288,18 @@ export const useSystemConfigControllerUpdateConfigsV1 = <TError = unknown,
       return useMutation(getSystemConfigControllerUpdateConfigsV1MutationOptions(options), queryClient);
     }
     /**
- * @summary 시스템 설정 관리자 이메일 테스트 전송
+ * @summary OAuth 아이콘 업로드 URL 발급
  */
-export const systemConfigControllerTestAdminEmailV1 = (
-    testAdminEmailRequestDto: TestAdminEmailRequestDto,
+export const systemConfigControllerCreateOAuthIconPresignedUrlV1 = (
+    createOAuthIconPresignedUrlRequestDto: CreateOAuthIconPresignedUrlRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<SystemConfigControllerTestAdminEmailV1200>(
-      {url: `/api/v1/system-config/test-email`, method: 'POST',
+      return axios<SystemConfigControllerCreateOAuthIconPresignedUrlV1200>(
+      {url: `/api/v1/system-config/oauth-icon/presigned-url`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: testAdminEmailRequestDto, signal
+      data: createOAuthIconPresignedUrlRequestDto, signal
     },
       options);
     }
@@ -243,11 +307,11 @@ export const systemConfigControllerTestAdminEmailV1 = (
 
 
 
-export const getSystemConfigControllerTestAdminEmailV1MutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerTestAdminEmailV1>>, TError,{data: TestAdminEmailRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerTestAdminEmailV1>>, TError,{data: TestAdminEmailRequestDto}, TContext> => {
+export const getSystemConfigControllerCreateOAuthIconPresignedUrlV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerCreateOAuthIconPresignedUrlV1>>, TError,{data: CreateOAuthIconPresignedUrlRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerCreateOAuthIconPresignedUrlV1>>, TError,{data: CreateOAuthIconPresignedUrlRequestDto}, TContext> => {
 
-const mutationKey = ['systemConfigControllerTestAdminEmailV1'];
+const mutationKey = ['systemConfigControllerCreateOAuthIconPresignedUrlV1'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -257,10 +321,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof systemConfigControllerTestAdminEmailV1>>, {data: TestAdminEmailRequestDto}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof systemConfigControllerCreateOAuthIconPresignedUrlV1>>, {data: CreateOAuthIconPresignedUrlRequestDto}> = (props) => {
           const {data} = props ?? {};
 
-          return  systemConfigControllerTestAdminEmailV1(data,requestOptions)
+          return  systemConfigControllerCreateOAuthIconPresignedUrlV1(data,requestOptions)
         }
 
 
@@ -270,148 +334,22 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type SystemConfigControllerTestAdminEmailV1MutationResult = NonNullable<Awaited<ReturnType<typeof systemConfigControllerTestAdminEmailV1>>>
-    export type SystemConfigControllerTestAdminEmailV1MutationBody = TestAdminEmailRequestDto
-    export type SystemConfigControllerTestAdminEmailV1MutationError = unknown
+    export type SystemConfigControllerCreateOAuthIconPresignedUrlV1MutationResult = NonNullable<Awaited<ReturnType<typeof systemConfigControllerCreateOAuthIconPresignedUrlV1>>>
+    export type SystemConfigControllerCreateOAuthIconPresignedUrlV1MutationBody = CreateOAuthIconPresignedUrlRequestDto
+    export type SystemConfigControllerCreateOAuthIconPresignedUrlV1MutationError = unknown
 
     /**
- * @summary 시스템 설정 관리자 이메일 테스트 전송
+ * @summary OAuth 아이콘 업로드 URL 발급
  */
-export const useSystemConfigControllerTestAdminEmailV1 = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerTestAdminEmailV1>>, TError,{data: TestAdminEmailRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+export const useSystemConfigControllerCreateOAuthIconPresignedUrlV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerCreateOAuthIconPresignedUrlV1>>, TError,{data: CreateOAuthIconPresignedUrlRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof systemConfigControllerTestAdminEmailV1>>,
+        Awaited<ReturnType<typeof systemConfigControllerCreateOAuthIconPresignedUrlV1>>,
         TError,
-        {data: TestAdminEmailRequestDto},
+        {data: CreateOAuthIconPresignedUrlRequestDto},
         TContext
       > => {
-      return useMutation(getSystemConfigControllerTestAdminEmailV1MutationOptions(options), queryClient);
-    }
-    /**
- * @summary 서비스 설정을 Redis에 동기화
- */
-export const systemConfigControllerSyncConfigsV1 = (
-
- options?: SecondParameter<typeof axios>,signal?: AbortSignal
-) => {
-
-
-      return axios<SystemConfigControllerSyncConfigsV1200>(
-      {url: `/api/v1/service-config/sync`, method: 'POST', signal
-    },
-      options);
-    }
-
-
-
-
-export const getSystemConfigControllerSyncConfigsV1MutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerSyncConfigsV1>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerSyncConfigsV1>>, TError,void, TContext> => {
-
-const mutationKey = ['systemConfigControllerSyncConfigsV1'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof systemConfigControllerSyncConfigsV1>>, void> = () => {
-
-
-          return  systemConfigControllerSyncConfigsV1(requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type SystemConfigControllerSyncConfigsV1MutationResult = NonNullable<Awaited<ReturnType<typeof systemConfigControllerSyncConfigsV1>>>
-
-    export type SystemConfigControllerSyncConfigsV1MutationError = unknown
-
-    /**
- * @summary 서비스 설정을 Redis에 동기화
- */
-export const useSystemConfigControllerSyncConfigsV1 = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerSyncConfigsV1>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof systemConfigControllerSyncConfigsV1>>,
-        TError,
-        void,
-        TContext
-      > => {
-      return useMutation(getSystemConfigControllerSyncConfigsV1MutationOptions(options), queryClient);
-    }
-    /**
- * @summary 웹훅 테스트 전송
- */
-export const systemConfigControllerTestWebhookV1 = (
-    testWebhookRequestDto: TestWebhookRequestDto,
- options?: SecondParameter<typeof axios>,signal?: AbortSignal
-) => {
-
-
-      return axios<SystemConfigControllerTestWebhookV1200>(
-      {url: `/api/v1/service-config/test-webhook`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: testWebhookRequestDto, signal
-    },
-      options);
-    }
-
-
-
-
-export const getSystemConfigControllerTestWebhookV1MutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerTestWebhookV1>>, TError,{data: TestWebhookRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerTestWebhookV1>>, TError,{data: TestWebhookRequestDto}, TContext> => {
-
-const mutationKey = ['systemConfigControllerTestWebhookV1'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof systemConfigControllerTestWebhookV1>>, {data: TestWebhookRequestDto}> = (props) => {
-          const {data} = props ?? {};
-
-          return  systemConfigControllerTestWebhookV1(data,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type SystemConfigControllerTestWebhookV1MutationResult = NonNullable<Awaited<ReturnType<typeof systemConfigControllerTestWebhookV1>>>
-    export type SystemConfigControllerTestWebhookV1MutationBody = TestWebhookRequestDto
-    export type SystemConfigControllerTestWebhookV1MutationError = unknown
-
-    /**
- * @summary 웹훅 테스트 전송
- */
-export const useSystemConfigControllerTestWebhookV1 = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerTestWebhookV1>>, TError,{data: TestWebhookRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof systemConfigControllerTestWebhookV1>>,
-        TError,
-        {data: TestWebhookRequestDto},
-        TContext
-      > => {
-      return useMutation(getSystemConfigControllerTestWebhookV1MutationOptions(options), queryClient);
+      return useMutation(getSystemConfigControllerCreateOAuthIconPresignedUrlV1MutationOptions(options), queryClient);
     }
     /**
  * @summary 이메일 테스트 전송
@@ -423,7 +361,7 @@ export const systemConfigControllerTestEmailV1 = (
 
 
       return axios<SystemConfigControllerTestEmailV1200>(
-      {url: `/api/v1/service-config/test-email`, method: 'POST',
+      {url: `/api/v1/system-config/notification/test-email`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: testEmailRequestDto, signal
     },
@@ -487,7 +425,7 @@ export const systemConfigControllerTestSmsV1 = (
 
 
       return axios<SystemConfigControllerTestSmsV1200>(
-      {url: `/api/v1/service-config/test-sms`, method: 'POST',
+      {url: `/api/v1/system-config/notification/test-sms`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: testSmsRequestDto, signal
     },
@@ -551,7 +489,7 @@ export const systemConfigControllerTestPushV1 = (
 
 
       return axios<SystemConfigControllerTestPushV1200>(
-      {url: `/api/v1/service-config/test-push`, method: 'POST',
+      {url: `/api/v1/system-config/notification/test-push`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: testPushRequestDto, signal
     },
@@ -615,7 +553,7 @@ export const systemConfigControllerTestMessengerV1 = (
 
 
       return axios<SystemConfigControllerTestMessengerV1200>(
-      {url: `/api/v1/service-config/test-messenger`, method: 'POST',
+      {url: `/api/v1/system-config/notification/test-messenger`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: testMessengerRequestDto, signal
     },
@@ -670,18 +608,18 @@ export const useSystemConfigControllerTestMessengerV1 = <TError = unknown,
       return useMutation(getSystemConfigControllerTestMessengerV1MutationOptions(options), queryClient);
     }
     /**
- * @summary OAuth 아이콘 업로드 URL 발급
+ * @summary 웹훅 테스트 전송
  */
-export const systemConfigControllerCreateOAuthIconPresignedUrlV1 = (
-    createOAuthIconPresignedUrlRequestDto: CreateOAuthIconPresignedUrlRequestDto,
+export const systemConfigControllerTestWebhookV1 = (
+    testWebhookRequestDto: TestWebhookRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<SystemConfigControllerCreateOAuthIconPresignedUrlV1200>(
-      {url: `/api/v1/service-config/oauth-icon/presigned-url`, method: 'POST',
+      return axios<SystemConfigControllerTestWebhookV1200>(
+      {url: `/api/v1/system-config/webhook/test`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: createOAuthIconPresignedUrlRequestDto, signal
+      data: testWebhookRequestDto, signal
     },
       options);
     }
@@ -689,11 +627,11 @@ export const systemConfigControllerCreateOAuthIconPresignedUrlV1 = (
 
 
 
-export const getSystemConfigControllerCreateOAuthIconPresignedUrlV1MutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerCreateOAuthIconPresignedUrlV1>>, TError,{data: CreateOAuthIconPresignedUrlRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerCreateOAuthIconPresignedUrlV1>>, TError,{data: CreateOAuthIconPresignedUrlRequestDto}, TContext> => {
+export const getSystemConfigControllerTestWebhookV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerTestWebhookV1>>, TError,{data: TestWebhookRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerTestWebhookV1>>, TError,{data: TestWebhookRequestDto}, TContext> => {
 
-const mutationKey = ['systemConfigControllerCreateOAuthIconPresignedUrlV1'];
+const mutationKey = ['systemConfigControllerTestWebhookV1'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -703,10 +641,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof systemConfigControllerCreateOAuthIconPresignedUrlV1>>, {data: CreateOAuthIconPresignedUrlRequestDto}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof systemConfigControllerTestWebhookV1>>, {data: TestWebhookRequestDto}> = (props) => {
           const {data} = props ?? {};
 
-          return  systemConfigControllerCreateOAuthIconPresignedUrlV1(data,requestOptions)
+          return  systemConfigControllerTestWebhookV1(data,requestOptions)
         }
 
 
@@ -716,20 +654,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type SystemConfigControllerCreateOAuthIconPresignedUrlV1MutationResult = NonNullable<Awaited<ReturnType<typeof systemConfigControllerCreateOAuthIconPresignedUrlV1>>>
-    export type SystemConfigControllerCreateOAuthIconPresignedUrlV1MutationBody = CreateOAuthIconPresignedUrlRequestDto
-    export type SystemConfigControllerCreateOAuthIconPresignedUrlV1MutationError = unknown
+    export type SystemConfigControllerTestWebhookV1MutationResult = NonNullable<Awaited<ReturnType<typeof systemConfigControllerTestWebhookV1>>>
+    export type SystemConfigControllerTestWebhookV1MutationBody = TestWebhookRequestDto
+    export type SystemConfigControllerTestWebhookV1MutationError = unknown
 
     /**
- * @summary OAuth 아이콘 업로드 URL 발급
+ * @summary 웹훅 테스트 전송
  */
-export const useSystemConfigControllerCreateOAuthIconPresignedUrlV1 = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerCreateOAuthIconPresignedUrlV1>>, TError,{data: CreateOAuthIconPresignedUrlRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+export const useSystemConfigControllerTestWebhookV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerTestWebhookV1>>, TError,{data: TestWebhookRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof systemConfigControllerCreateOAuthIconPresignedUrlV1>>,
+        Awaited<ReturnType<typeof systemConfigControllerTestWebhookV1>>,
         TError,
-        {data: CreateOAuthIconPresignedUrlRequestDto},
+        {data: TestWebhookRequestDto},
         TContext
       > => {
-      return useMutation(getSystemConfigControllerCreateOAuthIconPresignedUrlV1MutationOptions(options), queryClient);
+      return useMutation(getSystemConfigControllerTestWebhookV1MutationOptions(options), queryClient);
     }

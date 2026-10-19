@@ -9,9 +9,9 @@ const isWatching = process.argv.includes('--watch');
 
 const entryPoints = [
   'src/main.ts',
-  'src/infra/database/mikro-orm.config.ts',
-  ...globSync('src/infra/database/migrations/*.ts', { cwd: root }),
-  ...globSync('src/infra/database/seeders/*.ts', { cwd: root }),
+  'src/core/database/mikro-orm.config.ts',
+  ...globSync('src/core/database/migrations/*.ts', { cwd: root }),
+  ...globSync('src/core/database/seeders/*.ts', { cwd: root }),
 ];
 
 const entries = entryPoints.reduce<Record<string, { import: string, html: false }>>(
@@ -50,11 +50,14 @@ export default defineConfig({
     minify: false,
     sourceMap: true,
     module: true,
+    externals: {
+      '@nestjs/common': '@nestjs/common',
+    },
     autoExternal: {
       dependencies: true,
       optionalDependencies: true,
       peerDependencies: true,
-      exclude: [/^@pkg\//],
+      exclude: [/^@pkg\//, '@nestjs/common'],
     },
   },
 });

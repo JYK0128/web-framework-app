@@ -137,4 +137,3 @@ export const MembershipsControllerDeleteV1Response = zod.object({
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
-

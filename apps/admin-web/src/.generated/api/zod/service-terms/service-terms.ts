@@ -9,6 +9,211 @@ import * as zod from 'zod';
 
 
 /**
+ * @summary 서비스 약관 목록 조회
+ */
+export const serviceTermsControllerListV1QueryPageDefault = 1;
+export const serviceTermsControllerListV1QueryLimitDefault = 20;
+
+export const ServiceTermsControllerListV1QueryParams = zod.object({
+  "sort": zod.array(zod.string()).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional(),
+  "page": zod.number().default(serviceTermsControllerListV1QueryPageDefault),
+  "limit": zod.number().default(serviceTermsControllerListV1QueryLimitDefault),
+  "groupId": zod.uuid().optional()
+})
+
+export const ServiceTermsControllerListV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "page": zod.number(),
+  "totalPages": zod.number(),
+  "hasNextPage": zod.boolean(),
+  "hasPrevPage": zod.boolean(),
+  "totalCount": zod.number(),
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "groupId": zod.string(),
+  "title": zod.string(),
+  "version": zod.string(),
+  "content": zod.string(),
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number(),
+  "isDraft": zod.boolean(),
+  "isScheduled": zod.boolean(),
+  "isPublished": zod.boolean(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true}),
+  "metadata": zod.object({
+  "options": zod.record(zod.string(), zod.boolean().nullable()).nullish()
+}).nullish()
+}))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const serviceTermsControllerCreateV1BodyVersionMax = 50;
+
+
+
+export const ServiceTermsControllerCreateV1Body = zod.object({
+  "groupId": zod.uuid(),
+  "version": zod.string().max(serviceTermsControllerCreateV1BodyVersionMax),
+  "content": zod.string(),
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullish().describe('게시 예정 시각 (null이면 예약 취소)'),
+  "metadata": zod.object({
+  "options": zod.record(zod.string(), zod.boolean().nullable()).nullish()
+}).nullish()
+})
+
+export const ServiceTermsControllerCreateV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "groupId": zod.string(),
+  "title": zod.string(),
+  "version": zod.string(),
+  "content": zod.string(),
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number(),
+  "isDraft": zod.boolean(),
+  "isScheduled": zod.boolean(),
+  "isPublished": zod.boolean(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true}),
+  "metadata": zod.object({
+  "options": zod.record(zod.string(), zod.boolean().nullable()).nullish()
+}).nullish()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const ServiceTermsControllerUpdateV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const serviceTermsControllerUpdateV1BodyVersionMax = 50;
+
+
+
+export const ServiceTermsControllerUpdateV1Body = zod.object({
+  "groupId": zod.uuid().optional(),
+  "version": zod.string().max(serviceTermsControllerUpdateV1BodyVersionMax).optional(),
+  "content": zod.string().optional(),
+  "reason": zod.string().optional(),
+  "summary": zod.string().optional(),
+  "isNoticeRequired": zod.boolean().optional(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullish().describe('게시 예정 시각 (null이면 예약 취소)'),
+  "metadata": zod.object({
+  "options": zod.record(zod.string(), zod.boolean().nullable()).nullish()
+}).nullish()
+})
+
+export const ServiceTermsControllerUpdateV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "groupId": zod.string(),
+  "title": zod.string(),
+  "version": zod.string(),
+  "content": zod.string(),
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number(),
+  "isDraft": zod.boolean(),
+  "isScheduled": zod.boolean(),
+  "isPublished": zod.boolean(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true}),
+  "metadata": zod.object({
+  "options": zod.record(zod.string(), zod.boolean().nullable()).nullish()
+}).nullish()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const ServiceTermsControllerDeleteV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const ServiceTermsControllerDeleteV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const ServiceTermsControllerPublishV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const ServiceTermsControllerPublishV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "groupId": zod.string(),
+  "title": zod.string(),
+  "version": zod.string(),
+  "content": zod.string(),
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number(),
+  "isDraft": zod.boolean(),
+  "isScheduled": zod.boolean(),
+  "isPublished": zod.boolean(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true}),
+  "metadata": zod.object({
+  "options": zod.record(zod.string(), zod.boolean().nullable()).nullish()
+}).nullish()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
  * @summary 서비스 약관 그룹 목록 조회
  */
 export const ServiceTermsControllerGroupsV1Response = zod.object({
@@ -66,13 +271,12 @@ export const ServiceTermsControllerUpdateGroupV1Params = zod.object({
 
 export const serviceTermsControllerUpdateGroupV1BodyTitleMax = 255;
 
-export const serviceTermsControllerUpdateGroupV1BodyIsRequiredDefault = true;
-export const serviceTermsControllerUpdateGroupV1BodySortOrderDefault = 0;
+
 
 export const ServiceTermsControllerUpdateGroupV1Body = zod.object({
-  "title": zod.string().max(serviceTermsControllerUpdateGroupV1BodyTitleMax),
-  "isRequired": zod.boolean().default(serviceTermsControllerUpdateGroupV1BodyIsRequiredDefault),
-  "sortOrder": zod.number().default(serviceTermsControllerUpdateGroupV1BodySortOrderDefault)
+  "title": zod.string().max(serviceTermsControllerUpdateGroupV1BodyTitleMax).optional(),
+  "isRequired": zod.boolean().optional(),
+  "sortOrder": zod.number().optional()
 })
 
 export const ServiceTermsControllerUpdateGroupV1Response = zod.object({
@@ -111,21 +315,21 @@ export const ServiceTermsControllerDeleteGroupV1Response = zod.object({
 })
 
 /**
- * @summary 서비스 약관 목록 조회
+ * @summary 서비스 약관 개정 이력 조회
  */
-export const serviceTermsControllerListV1QueryPageDefault = 1;
-export const serviceTermsControllerListV1QueryLimitDefault = 20;
-
-export const ServiceTermsControllerListV1QueryParams = zod.object({
-  "sort": zod.array(zod.string()).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
-  "search": zod.string().optional(),
-  "page": zod.number().default(serviceTermsControllerListV1QueryPageDefault),
-  "limit": zod.number().default(serviceTermsControllerListV1QueryLimitDefault),
-  "groupId": zod.uuid().optional()
+export const ServiceTermsControllerGetRevisionsV1Params = zod.object({
+  "groupId": zod.string()
 })
 
-export const ServiceTermsControllerListV1Response = zod.object({
+export const serviceTermsControllerGetRevisionsV1QueryPageDefault = 1;
+export const serviceTermsControllerGetRevisionsV1QueryLimitDefault = 20;
+
+export const ServiceTermsControllerGetRevisionsV1QueryParams = zod.object({
+  "page": zod.number().default(serviceTermsControllerGetRevisionsV1QueryPageDefault),
+  "limit": zod.number().default(serviceTermsControllerGetRevisionsV1QueryLimitDefault)
+})
+
+export const ServiceTermsControllerGetRevisionsV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
@@ -139,163 +343,13 @@ export const ServiceTermsControllerListV1Response = zod.object({
   "totalCount": zod.number(),
   "items": zod.array(zod.object({
   "id": zod.string(),
-  "groupId": zod.string(),
-  "title": zod.string(),
   "version": zod.string(),
-  "content": zod.string(),
+  "publishedAt": zod.iso.datetime({"offset":true}),
   "reason": zod.string(),
   "summary": zod.string(),
-  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
-  "isRequired": zod.boolean(),
-  "sortOrder": zod.number(),
-  "isPublished": zod.boolean(),
-  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true}),
-  "metadata": zod.object({
-  "options": zod.record(zod.string(), zod.boolean().nullable()).nullish()
-}).nullish()
+  "content": zod.string()
 }))
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
-
-export const ServiceTermsControllerCreateV1Body = zod.object({
-  "groupId": zod.uuid(),
-  "version": zod.string(),
-  "content": zod.string(),
-  "reason": zod.string(),
-  "summary": zod.string(),
-  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
-  "publishedAt": zod.iso.datetime({"offset":true}).nullish().describe('게시 예정 시각 (null이면 예약 취소)'),
-  "metadata": zod.object({
-  "options": zod.record(zod.string(), zod.boolean().nullable()).nullish()
-}).nullish()
-})
-
-export const ServiceTermsControllerCreateV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "id": zod.string(),
-  "groupId": zod.string(),
-  "title": zod.string(),
-  "version": zod.string(),
-  "content": zod.string(),
-  "reason": zod.string(),
-  "summary": zod.string(),
-  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
-  "isRequired": zod.boolean(),
-  "sortOrder": zod.number(),
-  "isPublished": zod.boolean(),
-  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true}),
-  "metadata": zod.object({
-  "options": zod.record(zod.string(), zod.boolean().nullable()).nullish()
-}).nullish()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-export const ServiceTermsControllerUpdateV1Params = zod.object({
-  "id": zod.string()
-})
-
-export const ServiceTermsControllerUpdateV1Body = zod.object({
-  "groupId": zod.uuid(),
-  "version": zod.string(),
-  "content": zod.string(),
-  "reason": zod.string(),
-  "summary": zod.string(),
-  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
-  "publishedAt": zod.iso.datetime({"offset":true}).nullish().describe('게시 예정 시각 (null이면 예약 취소)'),
-  "metadata": zod.object({
-  "options": zod.record(zod.string(), zod.boolean().nullable()).nullish()
-}).nullish()
-})
-
-export const ServiceTermsControllerUpdateV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "id": zod.string(),
-  "groupId": zod.string(),
-  "title": zod.string(),
-  "version": zod.string(),
-  "content": zod.string(),
-  "reason": zod.string(),
-  "summary": zod.string(),
-  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
-  "isRequired": zod.boolean(),
-  "sortOrder": zod.number(),
-  "isPublished": zod.boolean(),
-  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true}),
-  "metadata": zod.object({
-  "options": zod.record(zod.string(), zod.boolean().nullable()).nullish()
-}).nullish()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-export const ServiceTermsControllerDeleteV1Params = zod.object({
-  "id": zod.string()
-})
-
-export const ServiceTermsControllerDeleteV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "ok": zod.boolean()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-export const ServiceTermsControllerPublishV1Params = zod.object({
-  "id": zod.string()
-})
-
-export const ServiceTermsControllerPublishV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "id": zod.string(),
-  "groupId": zod.string(),
-  "title": zod.string(),
-  "version": zod.string(),
-  "content": zod.string(),
-  "reason": zod.string(),
-  "summary": zod.string(),
-  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
-  "isRequired": zod.boolean(),
-  "sortOrder": zod.number(),
-  "isPublished": zod.boolean(),
-  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true}),
-  "metadata": zod.object({
-  "options": zod.record(zod.string(), zod.boolean().nullable()).nullish()
-}).nullish()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-

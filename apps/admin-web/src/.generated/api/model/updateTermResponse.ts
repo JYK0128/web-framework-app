@@ -24,6 +24,7 @@ export interface UpdateTermResponse {
   /** @nullable */
   metadata?: AgreementMetadataDto | null;
   isPublished: boolean;
+  isScheduled: boolean;
   isDraft: boolean;
   createdAt: string;
   updatedAt: string;

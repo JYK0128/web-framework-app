@@ -1,6 +1,22 @@
 name: service-factory-apps-prd
 
+include:
+  - ./infra/loki/compose.yml
+  - ./infra/vector/compose.yml
+
 services:
+  loki:
+    ports: !override []
+    networks:
+      - runtime
+
+  vector:
+    ports: []
+    environment:
+      APP_ENV: apps-prd
+    networks:
+      - runtime
+
   admin-api:
     image: ${ADMIN_API_IMAGE:?Set ADMIN_API_IMAGE to an immutable image reference}
     restart: unless-stopped
@@ -10,6 +26,7 @@ services:
       DOTENV_PRIVATE_KEY_PRD: ${ADMIN_API_DOTENV_PRIVATE_KEY_PRD:?Set the admin-api dotenvx key}
       SERVICE_API_URL: http://service-api:${SERVICE_API_PORT:?Set SERVICE_API_PORT}
       APP_BASE_URL: ${ADMIN_WEB_URL:?Set ADMIN_WEB_URL}
+      LOKI_URL: http://loki:3100
     volumes:
       - admin-api-uploads:/app/data/uploads
     networks:
@@ -29,8 +46,10 @@ services:
     environment:
       NODE_ENV: production
       PORT: ${ADMIN_WEB_PORT:?Set ADMIN_WEB_PORT}
-      DOTENV_PRIVATE_KEY_PRD: ${ADMIN_WEB_DOTENV_PRIVATE_KEY_PRD:?Set the admin-web dotenvx key}
+      APP_NAME: admin
       API_BASE_URL: http://admin-api:${ADMIN_API_PORT:?Set ADMIN_API_PORT}
+      APP_BASE_URL: ${ADMIN_WEB_URL:?Set ADMIN_WEB_URL}
+      SESSION_SECRET: ${ADMIN_WEB_SESSION_SECRET:?Set ADMIN_WEB_SESSION_SECRET}
     networks:
       - runtime
     healthcheck:
@@ -51,6 +70,7 @@ services:
       DOTENV_PRIVATE_KEY_PRD: ${SERVICE_API_DOTENV_PRIVATE_KEY_PRD:?Set the service-api dotenvx key}
       ADMIN_API_URL: http://admin-api:${ADMIN_API_PORT:?Set ADMIN_API_PORT}
       APP_BASE_URL: ${SERVICE_WEB_URL:?Set SERVICE_WEB_URL}
+      LOKI_URL: http://loki:3100
     volumes:
       - service-api-uploads:/app/data/uploads
     networks:
@@ -70,8 +90,10 @@ services:
     environment:
       NODE_ENV: production
       PORT: ${SERVICE_WEB_PORT:?Set SERVICE_WEB_PORT}
-      DOTENV_PRIVATE_KEY_PRD: ${SERVICE_WEB_DOTENV_PRIVATE_KEY_PRD:?Set the service-web dotenvx key}
+      APP_NAME: service
       API_BASE_URL: http://service-api:${SERVICE_API_PORT:?Set SERVICE_API_PORT}
+      APP_BASE_URL: ${SERVICE_WEB_URL:?Set SERVICE_WEB_URL}
+      SESSION_SECRET: ${SERVICE_WEB_SESSION_SECRET:?Set SERVICE_WEB_SESSION_SECRET}
     networks:
       - runtime
     healthcheck:

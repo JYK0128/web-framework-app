@@ -1,3 +1,6 @@
+import { confirm } from '@pkg/web-core/application';
+import { openModal } from '@pkg/web-core/modal';
+import { PageSection, SectionCard } from '@pkg/web-core/template';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { Pencil, Plus, ShieldCheck, Trash2 } from 'lucide-react';
@@ -6,9 +9,6 @@ import { useMemo, useState } from 'react';
 import { getMembershipsControllerListV1QueryKey, useMembershipsControllerDeleteV1, useMembershipsControllerListV1 } from '#/.generated/api/endpoints/memberships/memberships';
 import type { MembershipItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { confirm } from '#/components/app/system-dialog';
-import { PageSection, SectionCard } from '#/components/layout';
-import { openModal } from '#/components/modal';
 
 import { MembershipEditor } from './-components/membership-editor-modal';
 
@@ -34,7 +34,7 @@ function MembershipManagementPage() {
   return (
     <PageSection icon="crown" title="멤버십 관리" description="서비스 고객 멤버십과 고객별 적용 기준을 관리합니다.">
       <PageSection.Content className="
-        grid gap-4 p-2
+        grid grid-rows-[minmax(0,3fr)_minmax(0,7fr)] gap-4 p-2
         lg:grid-cols-[20rem_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)]
       "
       >

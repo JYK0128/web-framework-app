@@ -10,5 +10,5 @@
     "experimentalDecorators": true,
     "useDefineForClassFields": false
   },
-  "include": ["src/auth/**/*", "src/constants/**/*", "src/common/**/*", "src/server/**/*"]
+  "include": ["src/policy/auth/**/*", "src/constants/**/*", "src/common/**/*", "src/server/**/*", "src/policy/operation.ts", "src/policy/maintenance.ts"]
 }
