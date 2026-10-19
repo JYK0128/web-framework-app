@@ -5,6 +5,9 @@ export default {
   ...errors,
   app: { ...auth },
   admin: {
+    meta: {
+      title: 'Service Factory | Admin Console',
+    },
     navigation: {
       overview: 'Overview',
       dashboard: 'Dashboard',

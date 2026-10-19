@@ -5,6 +5,9 @@ export default {
   ...errors,
   app: { ...auth },
   admin: {
+    meta: {
+      title: 'Service Factory | 관리자 도구',
+    },
     navigation: {
       overview: '개요',
       dashboard: '대시보드',

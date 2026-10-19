@@ -45,7 +45,6 @@ export const Route = createRootRouteWithContext<AppRouterContext>()({
   head: () => ({
     links: [{ rel: 'stylesheet', href: appStylesHref }],
     meta: [
-      { title: 'Service-Factory Admin' },
       { name: 'description', content: 'Service-Factory administration' },
     ],
   }),
@@ -90,6 +89,7 @@ function ShellDocument({ children }: PropsWithChildren) {
   const router = useRouter();
   const { i18n } = router.options.context;
   const i18nContextValue = useI18nContextValue(i18n);
+  const documentTitle = i18n.getFixedT(i18nContextValue.language)('admin.meta.title');
 
   return (
     <html lang={i18nContextValue.language} suppressHydrationWarning>
@@ -97,6 +97,7 @@ function ShellDocument({ children }: PropsWithChildren) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
         <HeadContent />
+        <title>{documentTitle}</title>
       </head>
       <body>
         <I18nContext.Provider value={i18nContextValue}>
