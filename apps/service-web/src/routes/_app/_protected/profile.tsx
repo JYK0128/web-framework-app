@@ -14,6 +14,7 @@ import { useEffect, useRef, useState } from 'react';
 import { getAuthControllerMeV1QueryKey, useAuthControllerDisableTwoFactorV1, useAuthControllerUnregisterV1, useAuthControllerVerifyPhoneNumberV1 } from '#/.generated/api/endpoints/auth/auth';
 import { useServiceTermsControllerGetAgreementsV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
 import type { MeResponse } from '#/.generated/api/model';
+import { browserEnv } from '#/lib/browser-env';
 
 import { ProfileChangePasswordModal } from './profile/-components/change-password-modal';
 import { ProfileTermsTab } from './profile/-components/terms-tab';
@@ -164,12 +165,7 @@ function ProfilePage() {
     });
   };
   const openPhoneVerification = async () => {
-    const storeId = String(import.meta.env.VITE_PORTONE_STORE_ID ?? '');
-    const channelKey = String(import.meta.env.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY ?? '');
-    if (!storeId || !channelKey) {
-      setPhoneNumberVerificationError('지금은 본인인증을 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.');
-      return;
-    }
+    const { portoneStoreId: storeId, portoneChannelKey: channelKey } = browserEnv;
     setPhoneNumberVerificationError('');
     try {
       const redirectUrl = new URL(window.location.href);

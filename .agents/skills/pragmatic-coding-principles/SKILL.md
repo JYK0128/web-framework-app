@@ -18,6 +18,8 @@ Use the smallest clear abstraction that owns real behavior, policy, validation, 
 - Extract only for a real invariant, policy, validation, side effect, boundary, or meaningful repeated complexity.
 - High cohesion, low coupling: keep related responsibilities together and minimize dependencies between modules.
 - Preserve invariants: identify the existing rules and state conditions the system relies on, and keep them true through the change.
+- User-facing language: write messages in plain language users understand; do not expose internal implementation details, infrastructure, or technical names users do not need.
+- Fail closed by default: under any condition, proceed only when required inputs, state, configuration, and checks are positively established; missing, invalid, ambiguous, or failed prerequisites must stop the operation or deny access rather than silently permit it.
 - When an abstraction is wrong, inline or split it at its callers.
 - Simplification pass: after implementing or reviewing a change, remove unnecessary layers, branches, state, and configuration while preserving required behavior.
 - Review findings as correctness/security, harmful indirection, or optional style; state the concrete cost and smallest alternative.

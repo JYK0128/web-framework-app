@@ -1,15 +1,12 @@
 import { existsSync } from 'node:fs';
 
 import { defineConfig } from 'orval';
+import { z } from 'zod';
 
 const envFile = existsSync('.env') ? '.env' : '.env.example';
 if (existsSync(envFile)) process.loadEnvFile?.(envFile);
 
-const targetUrl = process.env.API_SPEC_URL;
-
-if (!targetUrl) {
-  throw new Error('❌ Missing required environment variable: API_SPEC_URL');
-}
+const targetUrl = z.url().parse(process.env.API_SPEC_URL);
 
 export default defineConfig({
   api: {
