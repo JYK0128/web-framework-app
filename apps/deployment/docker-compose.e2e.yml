@@ -71,6 +71,7 @@ services:
       DATABASE_URL: postgres://postgres:${E2E_POSTGRES_PASSWORD:?E2E_POSTGRES_PASSWORD is required}@e2e-postgres:5432/service_db
       REDIS_URL: redis://e2e-redis:6379
       LOKI_URL: http://e2e-loki:3100
+      PORTONE_API_SECRET: e2e-only-placeholder
       ADMIN_API_URL: http://e2e-admin-api:14000
       APP_BASE_URL: http://localhost:3100
     depends_on:

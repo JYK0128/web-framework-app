@@ -3,15 +3,18 @@ import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import react from '@vitejs/plugin-react';
 import { nitro } from 'nitro/vite';
 import { defineConfig, loadEnv } from 'vite';
+import { z } from 'zod';
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '');
+  const loadedEnv = loadEnv(mode, process.cwd(), '');
+  const env = z.object({
+    PORT: z.coerce.number().int().positive(),
+    API_BASE_URL: z.url(),
+  }).parse(loadedEnv);
 
-  if (!env.PORT) {
-    throw new Error('❌ Missing required environment variable: PORT');
-  }
-  if (!env.API_BASE_URL) {
-    throw new Error('❌ Missing required environment variable: API_BASE_URL');
+  for (const key of ['NODE_ENV', 'PORT', 'APP_NAME', 'API_BASE_URL', 'APP_BASE_URL', 'SESSION_SECRET'] as const) {
+    const value = loadedEnv[key];
+    if (Object.hasOwn(loadedEnv, key)) process.env[key] = value;
   }
 
   return {
@@ -23,7 +26,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       host: true,
-      port: Number(env.PORT),
+      port: env.PORT,
     },
     plugins: [
       tanstackStart(),

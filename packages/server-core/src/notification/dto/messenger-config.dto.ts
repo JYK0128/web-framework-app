@@ -138,7 +138,7 @@ export class TelegramMessengerDetailsDto {
 }
 
 export class WeChatMessengerDetailsDto {
-  @ApiPropertyOptional({ description: 'WeChat Official Account AppID', example: 'wx1234567890abcdef' })
+  @ApiPropertyOptional({ description: 'WeChat Official Account AppID' })
   @IsOptional()
   @IsString()
   appId?: string;

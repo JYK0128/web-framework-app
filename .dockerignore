@@ -2,12 +2,15 @@
 **/node_modules
 .git
 .local
+.agents
+**/.playwright-mcp
 **/.turbo
 **/dist
 **/.output
 **/test-results
 **/playwright-report
 **/data
+**/.DS_Store
 
 # Env files stay outside build contexts; encrypted production files are passed separately as build secrets.
 **/.env*

@@ -1,98 +1,68 @@
-import { createHash, createHmac } from 'node:crypto';
+import { existsSync } from 'node:fs';
 
-import { Injectable, Logger } from '@nestjs/common';
+import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { fromIni } from '@aws-sdk/credential-provider-ini';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { Injectable } from '@nestjs/common';
 import { type FileStorageAdapter, type PresignedUploadUrlResult, type SaveFileResult } from '@pkg/server-core/file-storage/file-storage.interface';
 import { ApplicationError } from '@pkg/shared/common';
-import axios from 'axios';
 
 import { env } from '#/env';
 
 interface S3StorageOptions {
   bucket: string
-  region?: string
+  region: string
   endpoint?: string
-  accessKeyId: string
-  secretAccessKey: string
-  publicUrlPrefix?: string
+  awsConfigFile: string
+  awsProfile: string
 }
 
-/**
- * AWS S3 및 S3 호환 스토리지(Cloudflare R2, MinIO) 어댑터
- * AWS Signature Version 4 (SigV4) 기반 직접 연동
- */
+/** S3 설정은 실제 접근 시점에 검증한다. */
 @Injectable()
 export class S3StorageAdapter implements FileStorageAdapter {
-  private readonly client = axios.create({ validateStatus: () => true });
   readonly name = 's3';
-  private readonly logger = new Logger(S3StorageAdapter.name);
   private readonly s3Config = {
-    bucket: env.STORAGE_S3_BUCKET,
-    region: env.STORAGE_S3_REGION,
-    endpoint: env.STORAGE_S3_ENDPOINT,
-    accessKeyId: env.STORAGE_S3_ACCESS_KEY_ID,
-    secretAccessKey: env.STORAGE_S3_SECRET_ACCESS_KEY,
-    publicUrlPrefix: env.STORAGE_S3_PUBLIC_URL_PREFIX,
+    bucket: env.AWS_S3_BUCKET,
+    region: env.AWS_S3_REGION,
+    endpoint: env.AWS_S3_ENDPOINT,
+    awsConfigFile: env.AWS_CONFIG_FILE,
+    awsProfile: env.AWS_PROFILE,
   };
 
   async saveFile(subDir: string, filename: string, buffer: Buffer): Promise<SaveFileResult> {
     const config = this.ensureConfig();
     const key = this.buildKey(subDir, filename);
-    const host = this.getHost(config);
-    const url = `https://${host}/${key}`;
-
-    const headers: Record<string, string> = {
-      host,
-      'x-amz-content-sha256': createHash('sha256').update(buffer).digest('hex'),
-      'content-length': buffer.length.toString(),
-    };
-
-    const signedHeaders = this.signRequest('PUT', `/${key}`, headers, config);
 
     try {
-      const response = await this.client.put<string>(url, buffer, { headers: signedHeaders });
+      await this.createClient(config).send(new PutObjectCommand({
+        Bucket: config.bucket,
+        Key: key,
+        Body: buffer,
+      }));
 
-      if (response.status < 200 || response.status >= 300) {
-        const errorText = response.data;
-        this.logger.error(`[S3] Upload failed (${response.status}): ${errorText}`);
-        throw new ApplicationError({
-          code: 'STORAGE_UPLOAD_FAILED',
-          status: 502,
-        });
-      }
-
-      return {
-        filePath: key,
-        url: this.getPublicUrl(subDir, filename),
-      };
+      return { filePath: key, url: this.getPublicUrl(subDir, filename) };
     }
-    catch (err) {
-      if (err instanceof ApplicationError) throw err;
-      throw ApplicationError.from(err, {
-        code: 'STORAGE_UPLOAD_ERROR',
-        status: 502,
-      });
+    catch (error) {
+      throw ApplicationError.from(error, { code: 'STORAGE_UPLOAD_ERROR', status: 502 });
     }
   }
 
   async readFile(subDir: string, filename: string): Promise<Buffer> {
     const config = this.ensureConfig();
     const key = this.buildKey(subDir, filename);
-    const host = this.getHost(config);
-    const headers: Record<string, string> = {
-      host,
-      'x-amz-content-sha256': createHash('sha256').update('').digest('hex'),
-    };
 
     try {
-      const response = await this.client.get<ArrayBuffer>(`https://${host}/${key}`, { headers: this.signRequest('GET', `/${key}`, headers, config), responseType: 'arraybuffer' });
-      if (response.status < 200 || response.status >= 300) {
-        this.logger.error(`[S3] Download failed (${response.status}): ${Buffer.from(response.data).toString()}`);
-        throw new ApplicationError({ code: 'STORAGE_READ_FAILED', status: 502 });
-      }
-      return Buffer.from(response.data);
+      const response = await this.createClient(config).send(new GetObjectCommand({
+        Bucket: config.bucket,
+        Key: key,
+      }));
+      const body = await response.Body?.transformToByteArray();
+      return Buffer.from(body ?? new Uint8Array());
     }
     catch (error) {
-      if (error instanceof ApplicationError) throw error;
+      if (this.isMissingObjectError(error)) {
+        throw new ApplicationError({ code: 'STORAGE_FILE_NOT_FOUND', status: 404 });
+      }
       throw ApplicationError.from(error, { code: 'STORAGE_READ_ERROR', status: 502 });
     }
   }
@@ -105,68 +75,45 @@ export class S3StorageAdapter implements FileStorageAdapter {
   ): Promise<PresignedUploadUrlResult> {
     const config = this.ensureConfig();
     const key = this.buildKey(subDir, filename);
-    const host = this.getHost(config);
-    const region = config.region ?? 'us-east-1';
 
-    const now = new Date();
-    const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, '');
-    const dateStamp = amzDate.slice(0, 8);
-    const credential = `${config.accessKeyId}/${dateStamp}/${region}/s3/aws4_request`;
+    try {
+      const uploadUrl = await getSignedUrl(
+        this.createClient(config),
+        new PutObjectCommand({ Bucket: config.bucket, Key: key, ContentType: contentType }),
+        { expiresIn: expiresInSeconds, signableHeaders: new Set(['content-type']) },
+      );
 
-    const queryParams: Record<string, string> = {
-      'X-Amz-Algorithm': 'AWS4-HMAC-SHA256',
-      'X-Amz-Credential': credential,
-      'X-Amz-Date': amzDate,
-      'X-Amz-Expires': expiresInSeconds.toString(),
-      'X-Amz-SignedHeaders': 'content-type;host',
-    };
-
-    const canonicalQueryString = Object.keys(queryParams)
-      .sort()
-      .map((k) => `${encodeURIComponent(k)}=${encodeURIComponent(queryParams[k])}`)
-      .join('&');
-
-    const canonicalHeaders = `content-type:${contentType}\nhost:${host}\n`;
-    const signedHeaders = 'content-type;host';
-    const payloadHash = 'UNSIGNED-PAYLOAD';
-
-    const canonicalRequest = [
-      'PUT',
-      `/${key}`,
-      canonicalQueryString,
-      canonicalHeaders,
-      signedHeaders,
-      payloadHash,
-    ].join('\n');
-
-    const stringToSign = [
-      'AWS4-HMAC-SHA256',
-      amzDate,
-      `${dateStamp}/${region}/s3/aws4_request`,
-      createHash('sha256').update(canonicalRequest).digest('hex'),
-    ].join('\n');
-
-    const signingKey = this.getSignatureKey(config.secretAccessKey ?? '', dateStamp, region, 's3');
-    const signature = createHmac('sha256', signingKey).update(stringToSign).digest('hex');
-
-    const uploadUrl = `https://${host}/${key}?${canonicalQueryString}&X-Amz-Signature=${signature}`;
-
-    return {
-      uploadUrl,
-      fileUrl: this.getPublicUrl(subDir, filename),
-      expiresInSeconds,
-    };
+      return {
+        uploadUrl,
+        fileUrl: this.getPublicUrl(subDir, filename),
+        expiresInSeconds,
+      };
+    }
+    catch (error) {
+      throw ApplicationError.from(error, { code: 'STORAGE_PRESIGN_ERROR', status: 502 });
+    }
   }
 
   getPublicUrl(subDir: string, filename: string): string {
-    const key = this.buildKey(subDir, filename);
-    if (this.s3Config.publicUrlPrefix) {
-      const cleanPrefix = this.s3Config.publicUrlPrefix.replace(/\/$/, '');
-      return `${cleanPrefix}/${key}`;
-    }
     const config = this.ensureConfig();
-    const host = this.getHost(config);
-    return `https://${host}/${key}`;
+    const key = this.buildKey(subDir, filename);
+    const region = config.region;
+    let protocol = 'https:';
+    let host: string;
+
+    if (config.endpoint) {
+      const endpoint = new URL(config.endpoint);
+      protocol = endpoint.protocol;
+      host = `${config.bucket}.${endpoint.host}`;
+    }
+    else if (region === 'us-east-1') {
+      host = `${config.bucket}.s3.amazonaws.com`;
+    }
+    else {
+      host = `${config.bucket}.s3.${region}.amazonaws.com`;
+    }
+
+    return `${protocol}//${host}/${key}`;
   }
 
   private buildKey(subDir: string, filename: string): string {
@@ -174,71 +121,45 @@ export class S3StorageAdapter implements FileStorageAdapter {
     return cleanSubDir ? `${cleanSubDir}/${filename}` : filename;
   }
 
+  private isMissingObjectError(error: unknown): boolean {
+    if (!error || typeof error !== 'object') return false;
+
+    const candidate = error as { name?: unknown, Code?: unknown, code?: unknown };
+    return candidate.name === 'NoSuchKey' || candidate.Code === 'NoSuchKey' || candidate.code === 'NoSuchKey';
+  }
+
   private ensureConfig(): S3StorageOptions {
-    const { bucket, accessKeyId, secretAccessKey } = this.s3Config;
-    if (!bucket || !accessKeyId || !secretAccessKey) {
-      throw new ApplicationError({ code: 'S3_STORAGE_NOT_CONFIGURED', status: 500 });
+    const { bucket, region, awsConfigFile, awsProfile } = this.s3Config;
+    if (!bucket || !region || !awsConfigFile || !awsProfile) {
+      const missing = [
+        !bucket && 'AWS_S3_BUCKET',
+        !region && 'AWS_S3_REGION',
+        !awsConfigFile && 'AWS_CONFIG_FILE',
+        !awsProfile && 'AWS_PROFILE',
+      ].filter(Boolean);
+      throw new ApplicationError({
+        code: 'S3_STORAGE_NOT_CONFIGURED',
+        message: `S3 access requires: ${missing.join(', ')}`,
+        status: 503,
+      });
     }
-    return { ...this.s3Config, bucket, accessKeyId, secretAccessKey };
-  }
 
-  private getHost(config: S3StorageOptions): string {
-    if (config.endpoint) {
-      const stripped = config.endpoint.replace(/^https?:\/\//, '').replace(/\/$/, '');
-      return `${config.bucket}.${stripped}`;
+    if (!existsSync(awsConfigFile)) {
+      throw new ApplicationError({
+        code: 'S3_STORAGE_NOT_CONFIGURED',
+        message: `AWS config file does not exist: ${awsConfigFile}`,
+        status: 503,
+      });
     }
-    const region = config.region ?? 'us-east-1';
-    return region === 'us-east-1'
-      ? `${config.bucket}.s3.amazonaws.com`
-      : `${config.bucket}.s3.${region}.amazonaws.com`;
+
+    return { ...this.s3Config, bucket, region, awsConfigFile, awsProfile };
   }
 
-  private signRequest(
-    method: string,
-    path: string,
-    headers: Record<string, string>,
-    config: S3StorageOptions,
-  ): Record<string, string> {
-    const region = config.region ?? 'us-east-1';
-    const now = new Date();
-    const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, '');
-    const dateStamp = amzDate.slice(0, 8);
-
-    headers['x-amz-date'] = amzDate;
-
-    const sortedHeaderKeys = Object.keys(headers).sort();
-    const canonicalHeaders = sortedHeaderKeys.map((k) => `${k.toLowerCase()}:${headers[k]}\n`).join('');
-    const signedHeaders = sortedHeaderKeys.map((k) => k.toLowerCase()).join(';');
-
-    const canonicalRequest = [
-      method,
-      path,
-      '',
-      canonicalHeaders,
-      signedHeaders,
-      headers['x-amz-content-sha256'],
-    ].join('\n');
-
-    const stringToSign = [
-      'AWS4-HMAC-SHA256',
-      amzDate,
-      `${dateStamp}/${region}/s3/aws4_request`,
-      createHash('sha256').update(canonicalRequest).digest('hex'),
-    ].join('\n');
-
-    const signingKey = this.getSignatureKey(config.secretAccessKey ?? '', dateStamp, region, 's3');
-    const signature = createHmac('sha256', signingKey).update(stringToSign).digest('hex');
-
-    const credential = `${config.accessKeyId}/${dateStamp}/${region}/s3/aws4_request`;
-    headers.authorization = `AWS4-HMAC-SHA256 Credential=${credential}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
-
-    return headers;
-  }
-
-  private getSignatureKey(key: string, dateStamp: string, regionName: string, serviceName: string): Buffer {
-    const kDate = createHmac('sha256', `AWS4${key}`).update(dateStamp).digest();
-    const kRegion = createHmac('sha256', kDate).update(regionName).digest();
-    const kService = createHmac('sha256', kRegion).update(serviceName).digest();
-    return createHmac('sha256', kService).update('aws4_request').digest();
+  private createClient(config: S3StorageOptions): S3Client {
+    return new S3Client({
+      region: config.region,
+      endpoint: config.endpoint,
+      credentials: fromIni({ profile: config.awsProfile, filepath: config.awsConfigFile }),
+    });
   }
 }

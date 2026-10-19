@@ -4,27 +4,24 @@ import { deriveSecretKey } from '@pkg/shared/server';
 import { SECRET_KEY_PURPOSE } from './app.secret';
 
 const envSchema = z.object({
-  // Process identity and runtime
   NODE_ENV: z.enum(['development', 'test', 'production']),
   DEMO_ENABLED: z.enum(['true', 'false']).default('false').transform((value) => value === 'true'),
   PORT: z.coerce.number().int().positive(),
 
-  // Required runtime infrastructure and security
   APP_SECRET: z.string().regex(/^[A-Za-z0-9_-]{43}$/, 'must be a base64url-encoded 32-byte random key'),
-  DATABASE_URL: z.string().min(1),
-  REDIS_URL: z.string().min(1),
+  DATABASE_URL: z.url(),
+  REDIS_URL: z.url(),
   LOKI_URL: z.url(),
-  STORAGE_S3_BUCKET: z.string().min(1).optional(),
-  STORAGE_S3_REGION: z.string().min(1).optional(),
-  STORAGE_S3_ENDPOINT: z.url().optional(),
-  STORAGE_S3_ACCESS_KEY_ID: z.string().min(1).optional(),
-  STORAGE_S3_SECRET_ACCESS_KEY: z.string().min(1).optional(),
-  STORAGE_S3_PUBLIC_URL_PREFIX: z.url().optional(),
+  AWS_S3_BUCKET: z.string().trim().min(1).optional(),
+  AWS_S3_REGION: z.string().trim().min(1).optional(),
+  AWS_S3_ENDPOINT: z.url().optional(),
+  AWS_CONFIG_FILE: z.string().trim().min(1).optional(),
+  AWS_PROFILE: z.string().trim().min(1).optional(),
+  CDN_URL: z.url().optional(),
 
-  // Required machine integration
   SERVICE_API_URL: z.url(),
+  PORTONE_API_SECRET: z.string().trim().min(1),
   APP_BASE_URL: z.url(),
-  PORTONE_API_SECRET: z.string().min(1),
 });
 
 const parsed = envSchema.safeParse(process.env);

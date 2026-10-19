@@ -6,6 +6,7 @@ import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 
 import { getAuthControllerMeV1QueryKey, useAuthControllerVerifyPhoneNumberV1 } from '#/.generated/api/endpoints/auth/auth';
+import { browserEnv } from '#/lib/browser-env';
 
 import { OnboardingLayout } from './-components/onboarding-layout';
 
@@ -36,10 +37,6 @@ function IdentityVerificationPage() {
       },
     },
   });
-  const configured = Boolean(import.meta.env.VITE_PORTONE_STORE_ID && import.meta.env.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY);
-  const storeId = String(import.meta.env.VITE_PORTONE_STORE_ID ?? '');
-  const channelKey = String(import.meta.env.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY ?? '');
-
   useEffect(() => {
     if ((!identityVerificationId && !code) || redirectedProcessedRef.current) return;
     redirectedProcessedRef.current = true;
@@ -62,7 +59,7 @@ function IdentityVerificationPage() {
   const startVerification = useMutation({
     onMutate: () => setErrorMessage(''),
     mutationFn: async () => {
-      if (!configured) throw new Error('지금은 본인인증을 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.');
+      const { portoneStoreId: storeId, portoneChannelKey: channelKey } = browserEnv;
 
       const redirectUrl = new URL(window.location.href);
       for (const key of ['identityVerificationId', 'code', 'message']) redirectUrl.searchParams.delete(key);
@@ -95,13 +92,12 @@ function IdentityVerificationPage() {
       title="본인인증"
       description="안전한 이용을 위해 본인인증을 진행해 주세요."
       footer={(
-        <Button className="w-full" onClick={() => startVerification.mutate()} disabled={!configured || startVerification.isPending || verifyMutation.isPending}>
+        <Button className="w-full" onClick={() => startVerification.mutate()} disabled={startVerification.isPending || verifyMutation.isPending}>
           {startVerification.isPending || verifyMutation.isPending ? '본인인증 중...' : '본인인증 시작'}
         </Button>
       )}
     >
       <p className="text-sm text-muted-foreground">본인인증을 마치면 다음 단계로 안내해 드릴게요.</p>
-      {!configured && <p role="alert" className="text-sm text-destructive">지금은 본인인증을 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.</p>}
       {(startVerification.isPending || verifyMutation.isPending) && !errorMessage && (
         <p role="status" className="text-sm text-muted-foreground">본인인증 결과를 확인하고 있습니다.</p>
       )}

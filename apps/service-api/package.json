@@ -16,13 +16,7 @@
     "codegen:entities": "MIKRO_ORM_CLI_PREFER_TS=true mikro-orm discovery:export --path './src/core/database/entities/**/*.entity.ts' --out ./src/entities.generated.ts",
     "codegen:migration": "mikro-orm migration:create",
     "db:migrate": "mikro-orm migration:up",
-    "db:seed": "mikro-orm seeder:run",
-    "test:event-broker": "node tests/event-broker.integration.mjs",
-    "test:alimtalk": "node tests/alimtalk.integration.mjs",
-    "test:service-terms": "node tests/service-terms.regression.mjs",
-    "test:content-update": "node tests/content-update.regression.mjs",
-    "test:two-factor": "node tests/two-factor.regression.mjs",
-    "test:domain-structure": "node tests/domain-structure.regression.mjs"
+    "db:seed": "mikro-orm seeder:run"
   },
   "mikro-orm": {
     "tsConfigPath": "./tsconfig.app.json",
@@ -33,6 +27,9 @@
     "preferTs": false
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "3.1152.0",
+    "@aws-sdk/credential-provider-ini": "3.973.19",
+    "@aws-sdk/s3-request-presigner": "3.1152.0",
     "@date-fns/tz": "1.5.0",
     "@mikro-orm/core": "7.1.10",
     "@mikro-orm/decorators": "7.1.10",
@@ -50,8 +47,8 @@
     "@nestjs/terminus": "12.0.0",
     "@nestjs/throttler": "6.5.0",
     "@nestjs/websockets": "11.1.28",
-    "@pkg/shared": "workspace:*",
     "@pkg/server-core": "workspace:*",
+    "@pkg/shared": "workspace:*",
     "@socket.io/redis-adapter": "8.3.0",
     "amqplib": "2.2.0",
     "axios": "1.20.0",

@@ -35,6 +35,7 @@ import { env } from '#/env';
 
 import { InternalClient } from './internal-client';
 import { OrmAuthReader } from './orm-auth.reader';
+import { CDNStorageAdapter } from './storage/cdn-storage.adapter';
 import { LocalStorageAdapter } from './storage/local-storage.adapter';
 import { S3StorageAdapter } from './storage/s3-storage.adapter';
 import { RedisTokenStore } from './store/redis-token.store';
@@ -135,6 +136,7 @@ const STORAGE_MODULES = {
   imports: [FileStorageModule.forRoot({
     local: LocalStorageAdapter,
     s3: S3StorageAdapter,
+    cdn: CDNStorageAdapter,
   })],
   exports: [FileStorageModule],
 } satisfies Pick<ModuleMetadata, 'imports' | 'exports'>;

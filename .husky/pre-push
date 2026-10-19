@@ -1,1 +1,11 @@
-pnpm lint && pnpm typecheck
+should_lint=0
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if [ "$remote_ref" = "refs/heads/dev" ] && [ "$local_sha" != "0000000000000000000000000000000000000000" ]; then
+    should_lint=1
+  fi
+done
+
+if [ "$should_lint" -eq 1 ]; then
+  pnpm lint
+fi

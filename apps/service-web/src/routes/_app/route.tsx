@@ -9,11 +9,11 @@ import { type ReactNode, useEffect, useRef, useState } from 'react';
 
 import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
 import type { MeResponse } from '#/.generated/api/model';
+import { browserEnv } from '#/lib/browser-env';
 
 import { ServiceNotifications } from './-components/service-notifications';
 
-const adminWebUrl = import.meta.env.VITE_ADMIN_WEB_URL
-  ?? (import.meta.env.DEV ? 'http://localhost:13000' : 'https://admin.servicefactory.cloud');
+const adminWebUrl = browserEnv.adminWebUrl;
 
 const navigation = [
   { label: 'service.navigation.home', to: '/' as const },
