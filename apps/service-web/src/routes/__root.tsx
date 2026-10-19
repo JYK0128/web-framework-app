@@ -26,7 +26,13 @@ function AppRouterNotFound() {
 }
 
 export const Route = createRootRouteWithContext<AppRouterContext>()({
-  beforeLoad: async ({ context }) => {
+  beforeLoad: async ({ context, location }) => {
+    // The public landing pages are prerendered at build time and do not need
+    // session data. Avoid making the static build depend on the live API.
+    if (['/', '/en', '/en/', '/ko', '/ko/'].includes(location.pathname)) {
+      return { user: null, terms: [] };
+    }
+
     try {
       const user = await context.queryClient.fetchQuery(
         getAuthControllerMeV1QueryOptions(),

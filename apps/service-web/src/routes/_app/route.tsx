@@ -1,11 +1,10 @@
 import { BrandLogo, LocaleSwitcher, Navigation, type NavigationItem, ProfileDropdown } from '@pkg/web-core/application';
 import { useI18n } from '@pkg/web-core/i18n';
 import { AppLayout as AppLayoutParts } from '@pkg/web-core/template';
-import { Button, buttonVariants, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, ThemeToggle } from '@pkg/web-core/ui';
+import { Button, buttonVariants, ThemeToggle } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, Outlet, useLocation, useNavigate, useRouter } from '@tanstack/react-router';
-import { Globe, LogIn, Menu, Moon, Sun } from 'lucide-react';
-import { useTheme } from 'next-themes';
+import { LogIn, Menu } from 'lucide-react';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 
 import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
@@ -36,8 +35,6 @@ function ServiceAppLayout({ children, user }: { children: ReactNode, user: MeRes
   const [isNavigationOpen, setIsNavigationOpen] = useState(false);
   const navigationContainerRef = useRef<HTMLDivElement>(null);
   const navigationTriggerRef = useRef<HTMLButtonElement>(null);
-  const { resolvedTheme, setTheme } = useTheme();
-  const isDark = resolvedTheme === 'dark';
   const navigationItems: NavigationItem[] = navigation.map((item) => ({
     id: item.to ?? item.externalHref,
     label: t(item.label),
@@ -79,8 +76,8 @@ function ServiceAppLayout({ children, user }: { children: ReactNode, user: MeRes
         >
           <div
             className="
-              mx-auto flex h-16 w-full max-w-6xl items-center justify-between
-              relative gap-4 px-4
+              mx-auto relative flex h-16 w-full max-w-6xl items-center
+              justify-between gap-3 px-4
               md:px-6
             "
             ref={navigationContainerRef}
@@ -91,7 +88,9 @@ function ServiceAppLayout({ children, user }: { children: ReactNode, user: MeRes
               }
             }}
           >
-            <BrandLogo />
+            <div className="shrink-0">
+              <BrandLogo />
+            </div>
             <Navigation
               items={navigationItems}
               variant={{ base: 'side', lg: 'bar' }}
@@ -101,13 +100,35 @@ function ServiceAppLayout({ children, user }: { children: ReactNode, user: MeRes
               onNavigate={() => setIsNavigationOpen(false)}
               sideClassName="absolute left-0 right-0 top-full z-40 max-h-[calc(100dvh-4rem)] overflow-y-auto border-b bg-background p-4 shadow-lg lg:hidden"
             />
-            <div className="flex items-center gap-2">
+            <div className="flex shrink-0 items-center gap-1.5">
               <div className="
                 hidden items-center gap-2
                 lg:flex
               "
               >
                 <LocaleSwitcher />
+                <ThemeToggle />
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="
+                  shrink-0
+                  lg:hidden
+                "
+                aria-label={t('service.navigation.openMenu')}
+                aria-expanded={isNavigationOpen}
+                aria-controls="service-navigation-side"
+                ref={navigationTriggerRef}
+                onClick={() => setIsNavigationOpen((open) => !open)}
+              >
+                <Menu className="size-4" />
+              </Button>
+              <div className="lg:hidden">
+                <LocaleSwitcher />
+              </div>
+              <div className="lg:hidden">
                 <ThemeToggle />
               </div>
               {user && <ServiceNotifications userId={user.id} />}
@@ -122,7 +143,10 @@ function ServiceAppLayout({ children, user }: { children: ReactNode, user: MeRes
                 )
                 : (
                   <Link
-                    className={buttonVariants({ variant: 'outline', size: 'icon' })}
+                    className={`
+                      ${buttonVariants({ variant: 'outline', size: 'icon' })}
+                      shrink-0
+                    `}
                     to="/login"
                     search={{ callback: `${location.pathname}${location.searchStr}${location.hash}` }}
                     aria-label={t('service.navigation.login')}
@@ -131,48 +155,6 @@ function ServiceAppLayout({ children, user }: { children: ReactNode, user: MeRes
                     <LogIn className="size-4" />
                   </Link>
                 )}
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                className="lg:hidden"
-                aria-label={t('service.navigation.openMenu')}
-                aria-expanded={isNavigationOpen}
-                aria-controls="service-navigation-side"
-                ref={navigationTriggerRef}
-                onClick={() => setIsNavigationOpen((open) => !open)}
-              >
-                <Menu className="size-4" />
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={(props) => (
-                    <Button
-                      {...props}
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      className="lg:hidden"
-                      aria-label={t('localeSwitcher.language')}
-                    >
-                      <Globe className="size-4" />
-                    </Button>
-                  )}
-                />
-                <DropdownMenuContent
-                  align="end"
-                  className="
-                    w-56
-                    lg:hidden
-                  "
-                >
-                  <LocaleSwitcher presentation="submenu" />
-                  <DropdownMenuItem onClick={() => setTheme(isDark ? 'light' : 'dark')}>
-                    {isDark ? <Sun /> : <Moon />}
-                    {t(isDark ? 'app.theme.switchToLight' : 'app.theme.switchToDark')}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
           </div>
         </AppLayoutParts.Header>

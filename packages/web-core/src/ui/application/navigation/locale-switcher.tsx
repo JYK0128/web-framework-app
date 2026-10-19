@@ -27,7 +27,7 @@ export function LocaleSwitcher({ presentation = 'button' }: LocaleSwitcherProps)
     await i18n.changeLanguage(nextLocale);
     if (!hasLocalePath) return;
 
-    const hash = location.hash ? `#${location.hash}` : '';
+    const hash = location.hash;
     void navigate({
       href: `/${nextLocale}${location.searchStr}${hash}`,
       replace: true,

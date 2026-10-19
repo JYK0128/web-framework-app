@@ -26,7 +26,19 @@ export default defineConfig(({ mode }) => {
       port: Number(env.PORT),
     },
     plugins: [
-      tanstackStart(),
+      tanstackStart({
+        prerender: {
+          enabled: true,
+          autoStaticPathsDiscovery: false,
+          crawlLinks: false,
+          failOnError: true,
+        },
+        pages: [
+          { path: '/', prerender: { enabled: true } },
+          { path: '/en', prerender: { enabled: true } },
+          { path: '/ko', prerender: { enabled: true } },
+        ],
+      }),
       nitro({
         preset: 'node-server',
         serverDir: './server',
