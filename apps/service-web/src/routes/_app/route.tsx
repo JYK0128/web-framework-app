@@ -95,7 +95,7 @@ function ServiceAppLayout({ children, user }: { children: ReactNode, user: MeRes
             }}
           >
             <div className="shrink-0">
-              <BrandLogo to="/" />
+              <BrandLogo text="SERVICE FACTORY" to="/" />
             </div>
             <Navigation
               items={navigationItems}
