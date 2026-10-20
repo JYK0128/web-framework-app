@@ -14,7 +14,6 @@ on:
       - "!apps/**/.env.example"
       - "!apps/deployment/docker-compose.e2e.yml"
       - "!apps/deployment/playwright.e2e.*"
-      - "apps/deployment/env/.env.prd"
       - "packages/**"
       - "package.json"
       - "pnpm-lock.yaml"
@@ -59,16 +58,17 @@ jobs:
           SERVICE_API_UPLOADS_VOLUME: ${{ vars.SERVICE_API_UPLOADS_VOLUME }}
           ADMIN_API_DOTENV_PRIVATE_KEY_PRD: ${{ secrets.ADMIN_API_DOTENV_PRIVATE_KEY_PRD }}
           SERVICE_API_DOTENV_PRIVATE_KEY_PRD: ${{ secrets.SERVICE_API_DOTENV_PRIVATE_KEY_PRD }}
-          DOTENV_PRIVATE_KEY_PRD: ${{ secrets.DOTENV_PRIVATE_KEY_PRD }}
           ADMIN_WEB_SESSION_SECRET: ${{ secrets.ADMIN_WEB_SESSION_SECRET }}
           SERVICE_WEB_SESSION_SECRET: ${{ secrets.SERVICE_WEB_SESSION_SECRET }}
+          VITE_PORTONE_STORE_ID: ${{ vars.VITE_PORTONE_STORE_ID }}
+          VITE_PORTONE_CHANNEL_KEY: ${{ vars.VITE_PORTONE_CHANNEL_KEY }}
         run: |
           required=(SERVER_HOST SERVER_USER SERVER_SSH_KEY SERVER_DEPLOY_PATH
             APPS_RUNTIME_NETWORK ADMIN_API_PORT ADMIN_WEB_PORT SERVICE_API_PORT SERVICE_WEB_PORT
             ADMIN_WEB_URL SERVICE_WEB_URL ADMIN_API_UPLOADS_VOLUME SERVICE_API_UPLOADS_VOLUME
             ADMIN_API_DOTENV_PRIVATE_KEY_PRD SERVICE_API_DOTENV_PRIVATE_KEY_PRD
-            DOTENV_PRIVATE_KEY_PRD
-            ADMIN_WEB_SESSION_SECRET SERVICE_WEB_SESSION_SECRET)
+            ADMIN_WEB_SESSION_SECRET SERVICE_WEB_SESSION_SECRET
+            VITE_PORTONE_STORE_ID VITE_PORTONE_CHANNEL_KEY)
           missing=0
           for name in "${required[@]}"; do
             value="${!name}"
@@ -178,12 +178,18 @@ jobs:
           APP_NAME: ${{ matrix.app }}
           APP_REVISION: ${{ github.sha }}
           DOTENV_PRD_REVISION: ${{ hashFiles(format('apps/deployment/env/{0}/.env.prd', matrix.app)) }}
+          VITE_PORTONE_STORE_ID: ${{ vars.VITE_PORTONE_STORE_ID }}
+          VITE_PORTONE_CHANNEL_KEY: ${{ vars.VITE_PORTONE_CHANNEL_KEY }}
           VITE_ADMIN_WEB_URL: ${{ vars.ADMIN_WEB_URL }}
         run: |
           {
             echo 'args<<EOF'
             printf 'APP_NAME=%s\nAPP_REVISION=%s\nDOTENV_PRD_REVISION=%s\n' \
               "$APP_NAME" "$APP_REVISION" "$DOTENV_PRD_REVISION"
+            if [[ "$APP_NAME" == *-web ]]; then
+              printf 'VITE_PORTONE_STORE_ID=%s\nVITE_PORTONE_CHANNEL_KEY=%s\n' \
+                "$VITE_PORTONE_STORE_ID" "$VITE_PORTONE_CHANNEL_KEY"
+            fi
             if [[ "$APP_NAME" == service-web ]]; then
               printf 'VITE_ADMIN_WEB_URL=%s\n' "$VITE_ADMIN_WEB_URL"
             fi
@@ -199,9 +205,6 @@ jobs:
           build-args: ${{ steps.build-args.outputs.args }}
           secret-files: |
             DOTENV_PRD=apps/deployment/env/${{ matrix.app }}/.env.prd
-            DOTENV_BUILD_CONFIG=apps/deployment/env/.env.prd
-          secrets: |
-            DOTENV_PRIVATE_KEY_PRD=${{ secrets.DOTENV_PRIVATE_KEY_PRD }}
           tags: ${{ steps.image.outputs.name }}:${{ github.sha }}
           cache-from: type=gha,scope=${{ matrix.app }}
           cache-to: type=gha,mode=max,scope=${{ matrix.app }}

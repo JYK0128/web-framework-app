@@ -71,17 +71,7 @@ function EventsPage() {
       md:px-8
     "
     >
-      <PageSection icon="calendar-days" title="이벤트" description="진행 중인 이벤트부터 예정 및 종료된 이벤트까지 확인하세요." isLoading={query.isLoading}>
-        <PageSection.Skeleton>
-          <div className="grid content-start gap-3 p-4">
-            {[1, 2, 3].map((item) => (
-              <Skeleton
-                key={item}
-                className="h-16 w-full"
-              />
-            ))}
-          </div>
-        </PageSection.Skeleton>
+      <PageSection icon="calendar-days" title="이벤트" description="진행 중인 이벤트부터 예정 및 종료된 이벤트까지 확인하세요.">
         <PageSection.Content className="
           mx-auto grid size-full w-full max-w-4xl grid-rows-[minmax(0,1fr)]
           gap-4 pt-2
@@ -110,8 +100,18 @@ function EventsPage() {
               </div>
               <DataGridToolbar table={table} searchPlaceholder="제목 또는 내용 검색" />
               <div className="grid grid-rows-[minmax(0,1fr)] overflow-hidden">
+                {query.isLoading && (
+                  <div className="grid content-start gap-3 p-4">
+                    {[1, 2, 3].map((item) => (
+                      <Skeleton
+                        key={item}
+                        className="h-16 w-full"
+                      />
+                    ))}
+                  </div>
+                )}
                 {query.isError && <p className="p-6 text-sm text-destructive">이벤트을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>}
-                {!query.isError && (
+                {!query.isLoading && !query.isError && (
                   <DataGrid
                     key={search + phase}
                     table={table}

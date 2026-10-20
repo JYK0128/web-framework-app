@@ -2,7 +2,9 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestj
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
 import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
+import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { ServicePermission } from '@pkg/shared';
 
 import { CreateOwnQnaCommand } from '#/modules/qna/create-own-qna.command';
 import { CreateQnaRequestDto } from '#/modules/qna/create-qna.request.dto';
@@ -23,15 +25,15 @@ import { UpdateOwnQnaResponseDto } from '#/modules/qna/update-own-qna.response.d
 @ApiTags('qna') @UserAuth() @Controller('qna')
 export class QnaController {
   constructor(private readonly commandBus: CommandBus, private readonly queryBus: QueryBus) {}
-  @Get() @SwaggerApiResponse(GetQnasResponseDto) list(@Query() query: GetQnasRequestDto): Promise<GetQnasResponseDto> { return this.queryBus.execute(new GetOwnQnasQuery(query)); }
-  @Post() @SwaggerApiResponse(CreateQnaResponseDto) create(@Body() input: CreateQnaRequestDto): Promise<CreateQnaResponseDto> { return this.commandBus.execute(new CreateOwnQnaCommand(input)); }
-  @Get(':id') @SwaggerApiResponse(GetOwnQnaResponseDto) get(@Param('id') id: string): Promise<GetOwnQnaResponseDto> {
+  @Get() @Permissions(ServicePermission.qna.read) @SwaggerApiResponse(GetQnasResponseDto) list(@Query() query: GetQnasRequestDto): Promise<GetQnasResponseDto> { return this.queryBus.execute(new GetOwnQnasQuery(query)); }
+  @Post() @Permissions(ServicePermission.qna.create) @SwaggerApiResponse(CreateQnaResponseDto) create(@Body() input: CreateQnaRequestDto): Promise<CreateQnaResponseDto> { return this.commandBus.execute(new CreateOwnQnaCommand(input)); }
+  @Get(':id') @Permissions(ServicePermission.qna.read) @SwaggerApiResponse(GetOwnQnaResponseDto) get(@Param('id') id: string): Promise<GetOwnQnaResponseDto> {
     const request = GetOwnQnaRequestDto.parse({ qnaId: id }).validate();
     return this.queryBus.execute(new GetOwnQnaQuery(request));
   }
 
-  @Patch(':id') @SwaggerApiResponse(UpdateOwnQnaResponseDto) update(@Param('id') id: string, @Body() input: UpdateOwnQnaRequestDto): Promise<UpdateOwnQnaResponseDto> { return this.commandBus.execute(new UpdateOwnQnaCommand({ qnaId: id, dto: input })); }
-  @Delete(':id') @SwaggerApiResponse(DeleteOwnQnaResponseDto) remove(@Param('id') id: string): Promise<DeleteOwnQnaResponseDto> {
+  @Patch(':id') @Permissions(ServicePermission.qna.update) @SwaggerApiResponse(UpdateOwnQnaResponseDto) update(@Param('id') id: string, @Body() input: UpdateOwnQnaRequestDto): Promise<UpdateOwnQnaResponseDto> { return this.commandBus.execute(new UpdateOwnQnaCommand({ qnaId: id, dto: input })); }
+  @Delete(':id') @Permissions(ServicePermission.qna.delete) @SwaggerApiResponse(DeleteOwnQnaResponseDto) remove(@Param('id') id: string): Promise<DeleteOwnQnaResponseDto> {
     const request = DeleteOwnQnaRequestDto.parse({ qnaId: id }).validate();
     return this.commandBus.execute(new DeleteOwnQnaCommand(request));
   }

@@ -85,17 +85,7 @@ function NoticesPage() {
       md:px-8
     "
     >
-      <PageSection icon="megaphone" title="공지사항" description="서비스의 주요 안내와 긴급 공지를 확인하세요." isLoading={query.isLoading}>
-        <PageSection.Skeleton>
-          <div className="grid content-start gap-3 p-4">
-            {[1, 2, 3].map((item) => (
-              <Skeleton
-                key={item}
-                className="h-16 w-full"
-              />
-            ))}
-          </div>
-        </PageSection.Skeleton>
+      <PageSection icon="megaphone" title="공지사항" description="서비스의 주요 안내와 긴급 공지를 확인하세요.">
         <PageSection.Content className="
           mx-auto grid size-full w-full max-w-4xl grid-rows-[minmax(0,1fr)]
           gap-4 pt-2
@@ -108,8 +98,18 @@ function NoticesPage() {
             >
               <DataGridToolbar table={table} searchPlaceholder="제목 또는 내용 검색" />
               <div className="grid grid-rows-[minmax(0,1fr)] overflow-hidden">
+                {query.isLoading && (
+                  <div className="grid content-start gap-3 p-4">
+                    {[1, 2, 3].map((item) => (
+                      <Skeleton
+                        key={item}
+                        className="h-16 w-full"
+                      />
+                    ))}
+                  </div>
+                )}
                 {query.isError && <p className="p-6 text-sm text-destructive">공지사항을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>}
-                {!query.isError && (
+                {!query.isLoading && !query.isError && (
                   <DataGrid
                     key={search}
                     table={table}

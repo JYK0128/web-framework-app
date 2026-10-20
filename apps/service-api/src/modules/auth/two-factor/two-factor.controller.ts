@@ -3,7 +3,9 @@ import { CommandBus } from '@nestjs/cqrs';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public, SkipPasswordExpiry, SkipTwoFactorSetup, UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
 import { NoStore } from '@pkg/server-core/http/decorators/no-store.decorator';
+import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { ServicePermission } from '@pkg/shared';
 
 import { DisableTwoFactorCommand } from '#/modules/auth/two-factor/disable-two-factor.command';
 import { DisableTwoFactorRequestDto } from '#/modules/auth/two-factor/disable-two-factor.request.dto';
@@ -39,6 +41,7 @@ export class AuthTwoFactorController {
   }
 
   @Post('2fa/setup')
+  @Permissions(ServicePermission.account.update)
   @HttpCode(HttpStatus.OK)
   @SkipPasswordExpiry()
   @SkipTwoFactorSetup()
@@ -50,6 +53,7 @@ export class AuthTwoFactorController {
   }
 
   @Post('2fa/enable')
+  @Permissions(ServicePermission.account.update)
   @HttpCode(HttpStatus.OK)
   @SkipPasswordExpiry()
   @SkipTwoFactorSetup()
@@ -61,6 +65,7 @@ export class AuthTwoFactorController {
   }
 
   @Post('2fa/disable')
+  @Permissions(ServicePermission.account.update)
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ operationId: 'AuthController_disableTwoFactor_v1', summary: '2단계 인증 비활성화' })

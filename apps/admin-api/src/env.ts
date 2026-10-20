@@ -15,9 +15,8 @@ const envSchema = z.object({
   AWS_S3_BUCKET: z.string().trim().min(1).optional(),
   AWS_S3_REGION: z.string().trim().min(1).optional(),
   AWS_S3_ENDPOINT: z.url().optional(),
-  AWS_ACCESS_KEY_ID: z.string().trim().min(1).optional(),
-  AWS_SECRET_ACCESS_KEY: z.string().min(1).optional(),
-  AWS_SESSION_TOKEN: z.string().min(1).optional(),
+  AWS_CONFIG_FILE: z.string().trim().min(1).optional(),
+  AWS_PROFILE: z.string().trim().min(1).optional(),
   CDN_URL: z.url().optional(),
 
   SERVICE_API_URL: z.url(),

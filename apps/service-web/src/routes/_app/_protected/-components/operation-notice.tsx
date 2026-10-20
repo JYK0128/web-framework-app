@@ -2,13 +2,13 @@ import { getOperationNotice } from '@pkg/shared/policy';
 import { NoticeBanner } from '@pkg/web-core/application';
 import { useEffect, useState } from 'react';
 
-import { useSystemConfigsControllerGetConfigsV1 } from '#/.generated/api/endpoints/system-configs/system-configs';
 import { SYSTEM_CONFIG_REFRESH_INTERVAL_MS } from '#/app.config';
+import { Route as RootRoute } from '#/routes/__root';
 
 export function OperationNotice() {
-  const query = useSystemConfigsControllerGetConfigsV1({ query: { refetchInterval: SYSTEM_CONFIG_REFRESH_INTERVAL_MS } });
+  const { config } = RootRoute.useRouteContext();
   const [now, setNow] = useState<Date>(() => new Date());
-  const operation = query.data?.operation;
+  const operation = config?.operation;
   const message = operation ? getOperationNotice(operation, now) : null;
 
   useEffect(() => {
@@ -18,10 +18,10 @@ export function OperationNotice() {
 
   return (
     <div>
-      {query.isError || message
+      {message
         ? (
-          <NoticeBanner tone="warning" title={query.isError ? '운영시간 안내' : '고객센터 안내'} dismissible>
-            {query.isError ? '현재 운영시간 정보를 불러오지 못했습니다.' : message}
+          <NoticeBanner tone="warning" title="고객센터 안내" dismissible>
+            {message}
           </NoticeBanner>
         )
         : null}

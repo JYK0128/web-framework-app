@@ -2,7 +2,9 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
+import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { ServicePermission } from '@pkg/shared';
 
 import { CreateOwnSupportMessageCommand } from '#/modules/support/message/create-own-support-message.command';
 import { CreateSupportMessageRequestDto } from '#/modules/support/message/create-support-message.request.dto';
@@ -18,13 +20,13 @@ export class SupportMessagesController {
   constructor(private readonly commandBus: CommandBus, private readonly queryBus: QueryBus) {}
 
   @ApiOperation({ summary: undefined, operationId: 'SupportController_listMessages_v1' })
-  @Get('rooms/:roomId/messages') @SwaggerApiResponse(GetSupportMessagesResponseDto)
+  @Get('rooms/:roomId/messages') @Permissions(ServicePermission.support.read) @SwaggerApiResponse(GetSupportMessagesResponseDto)
   async listMessages(@Param('roomId') roomId: string): Promise<GetSupportMessagesResponseDto> {
     const request = GetSupportMessagesRequestDto.parse({ roomId }).validate();
     return this.queryBus.execute(new GetOwnSupportMessagesQuery(request));
   }
 
   @ApiOperation({ summary: undefined, operationId: 'SupportController_createMessage_v1' })
-  @Post('rooms/:roomId/messages') @SwaggerApiResponse(CreateSupportMessageResponseDto)
+  @Post('rooms/:roomId/messages') @Permissions(ServicePermission.support.create) @SwaggerApiResponse(CreateSupportMessageResponseDto)
   createMessage(@Param('roomId') roomId: string, @Body() input: CreateSupportMessageRequestDto): Promise<CreateSupportMessageResponseDto> { return this.commandBus.execute(new CreateOwnSupportMessageCommand({ roomId, dto: input })); }
 }

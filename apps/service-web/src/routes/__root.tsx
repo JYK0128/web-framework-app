@@ -6,14 +6,19 @@ import { ModalContainer } from '@pkg/web-core/modal';
 import { PermissionProvider } from '@pkg/web-core/permission';
 import { ThemeProvider, Toaster } from '@pkg/web-core/ui';
 import type { QueryClient } from '@tanstack/react-query';
-import { createRootRouteWithContext, HeadContent, Outlet, Scripts, useRouter } from '@tanstack/react-router';
+import { createRootRouteWithContext, HeadContent, Outlet, Scripts, useLocation, useRouter } from '@tanstack/react-router';
 import type { i18n } from 'i18next';
 import { Provider as JotaiProvider } from 'jotai';
-import { type PropsWithChildren, useEffect } from 'react';
+import type { PropsWithChildren } from 'react';
 
 import { getAuthControllerMeV1QueryKey, getAuthControllerMeV1QueryOptions } from '#/.generated/api/endpoints/auth/auth';
 import { getServiceTermsControllerGetAgreementsV1QueryKey, getServiceTermsControllerGetAgreementsV1QueryOptions } from '#/.generated/api/endpoints/service-terms/service-terms';
+import { getSystemConfigsControllerGetConfigsV1QueryOptions } from '#/.generated/api/endpoints/system-configs/system-configs';
+import { useSessionExpiration } from '#/hooks/use-session-expiration';
+import { i18nOptions } from '#/i18n/config';
 import appStylesHref from '#/styles/styles.css?url';
+
+import { Maintenance } from './-components/maintenance';
 
 export type AppRouterContext = {
   queryClient: QueryClient
@@ -25,26 +30,49 @@ function AppRouterNotFound() {
   return <RouterNotFound onBack={() => router.history.back()} />;
 }
 
+function isLandingPath(pathname: string) {
+  const normalizedPath = pathname.replace(/\/$/, '') || '/';
+  return normalizedPath === '/'
+    || i18nOptions.supportedLngs.some((locale) => normalizedPath === `/${locale}`);
+}
+
 export const Route = createRootRouteWithContext<AppRouterContext>()({
+  shouldReload: true,
   beforeLoad: async ({ context, location }) => {
     // The public landing pages are prerendered at build time and do not need
     // session data. Avoid making the static build depend on the live API.
-    if (['/', '/en', '/en/', '/ko', '/ko/'].includes(location.pathname)) {
-      return { user: null, terms: [] };
+    if (isLandingPath(location.pathname)) {
+      return { user: null, terms: [], config: null };
+    }
+
+    const [config, user] = await Promise.all([
+      context.queryClient.fetchQuery(
+        getSystemConfigsControllerGetConfigsV1QueryOptions({ query: { staleTime: 60_000 } }),
+      ),
+      context.queryClient.fetchQuery(
+        getAuthControllerMeV1QueryOptions({ query: { staleTime: 60_000 } }),
+      ).catch((error: unknown) => {
+        if (!(error instanceof ApplicationError) || error.status !== 401) throw error;
+        return null;
+      }),
+    ]);
+    if (!user) {
+      context.queryClient.removeQueries({ queryKey: getAuthControllerMeV1QueryKey() });
+      context.queryClient.removeQueries({ queryKey: getServiceTermsControllerGetAgreementsV1QueryKey() });
+      return { user: null, terms: [], config };
     }
 
     try {
-      const user = await context.queryClient.fetchQuery(
-        getAuthControllerMeV1QueryOptions(),
+      const terms = await context.queryClient.fetchQuery(
+        getServiceTermsControllerGetAgreementsV1QueryOptions({ query: { staleTime: 60_000 } }),
       );
-      const terms = await context.queryClient.fetchQuery(getServiceTermsControllerGetAgreementsV1QueryOptions());
-      return { user, terms: terms.items };
+      return { user, terms: terms.items, config };
     }
     catch (error) {
       if (!(error instanceof ApplicationError) || error.status !== 401) throw error;
       context.queryClient.removeQueries({ queryKey: getAuthControllerMeV1QueryKey() });
       context.queryClient.removeQueries({ queryKey: getServiceTermsControllerGetAgreementsV1QueryKey() });
-      return { user: null, terms: [] };
+      return { user: null, terms: [], config };
     }
   },
   head: () => ({
@@ -62,25 +90,16 @@ export const Route = createRootRouteWithContext<AppRouterContext>()({
 
 function RootComponent() {
   const router = useRouter();
-  const { user, queryClient } = Route.useRouteContext();
+  const location = useLocation();
+  const { user } = Route.useRouteContext();
+  const isLandingPage = isLandingPath(location.pathname);
   useHydrationMarker();
-  useEffect(() => {
-    if (!user) return;
-    let invalidating = false;
-    const expireSession = () => {
-      if (invalidating) return;
-      invalidating = true;
-      queryClient.clear();
-      void router.invalidate();
-    };
-    window.addEventListener('auth-session-expired', expireSession);
-    return () => window.removeEventListener('auth-session-expired', expireSession);
-  }, [router, queryClient, user]);
+  useSessionExpiration(Boolean(user));
   return (
     <JotaiProvider>
       <ThemeProvider nonce={router.options.ssr?.nonce} attribute="class" defaultTheme="system" enableSystem>
         <PermissionProvider permissions={user?.permissions}>
-          <Outlet />
+          {isLandingPage ? <Outlet /> : <Maintenance><Outlet /></Maintenance>}
         </PermissionProvider>
         <SystemDialog />
         <ModalContainer />

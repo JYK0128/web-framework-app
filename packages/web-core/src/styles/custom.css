@@ -1,3 +1,13 @@
+@keyframes web-core-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-web-core-loading-spin {
+  animation: web-core-loading-spin 1s linear infinite;
+}
+
 @layer base {
   * {
     @apply min-h-0 min-w-0 select-none whitespace-pre-line;
