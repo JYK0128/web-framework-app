@@ -1,6 +1,6 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
-import { ALL_SERVICE_PERMISSIONS, ServicePermission } from '@pkg/shared';
+import { ALL_SERVICE_PERMISSIONS, MEMBER_PERMISSION_CODES } from '@pkg/shared';
 import { encrypt, hashPassword, hashWithSecret } from '@pkg/shared/server';
 
 import { Account, Profile, User } from '#/core/database/entities/auth';
@@ -30,17 +30,22 @@ export class UserSeeder extends Seeder {
 
     await em.flush();
 
-    const memberRole = await em.findOne(Role, { code: RoleCode.MEMBER }, { filters: false });
+    let memberRole = await em.findOne(Role, { code: RoleCode.MEMBER }, { filters: false });
     if (!memberRole) {
-      em.persist(em.create(Role, {
+      memberRole = em.create(Role, {
         code: RoleCode.MEMBER,
         label: '회원',
         description: '기본 서비스 이용 회원',
         isSystem: true,
-        permissions: [ServicePermission.feature.access.code],
-      }));
-      await em.flush();
+        permissions: MEMBER_PERMISSION_CODES,
+      });
+      em.persist(memberRole);
     }
+    else {
+      memberRole.permissions = MEMBER_PERMISSION_CODES;
+    }
+
+    await em.flush();
 
     const existingUserCount = await em.count(User, {
       role: superUserRole,

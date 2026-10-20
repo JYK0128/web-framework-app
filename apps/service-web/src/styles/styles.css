@@ -25,12 +25,11 @@
 .landing-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
 .landing-button, .landing-demo-trigger { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; gap: 12px; padding: 0 18px; border: 1px solid transparent; border-radius: 3px; font-family: inherit; font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer; transition: transform .2s, background .2s; }
 .landing-button:hover { transform: translateY(-2px); }
-.landing-demo-trigger:hover { transform: translateY(-2px); }
+.landing-demo-trigger:hover { transform: translateY(-2px); background: #ffffff12; }
 .landing-button-primary { color: #14221f; background: #a8e6b5; }
 .landing-button-quiet { color: #e6eee8; border-color: #52625c; }
 .landing-demo-trigger { height: 46px; min-height: 46px; padding: 0; color: #e6eee8; }
 .landing-demo-link { display: inline-flex; align-items: center; justify-content: center; gap: 12px; padding: 0 39px; color: inherit; white-space: nowrap; }
-.landing-demo-link:hover { background: #ffffff12; }
 .landing-proof { display: flex; align-items: center; gap: 12px; margin-top: 40px; color: #91a29a; font-size: 11px; }
 .landing-proof-line { width: 28px; height: 1px; background: #6e8978; }
 .landing-orbit { position: absolute; top: 50%; right: max(0px, calc((100vw - 1120px)/2 - 28px)); width: min(40vw, 460px); aspect-ratio: 1; transform: translateY(-47%); }

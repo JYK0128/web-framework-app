@@ -1,5 +1,7 @@
+import { ServicePermission } from '@pkg/shared';
 import { BrandLogo, LocaleSwitcher, Navigation, type NavigationItem, ProfileDropdown } from '@pkg/web-core/application';
 import { useI18n } from '@pkg/web-core/i18n';
+import { usePermissions } from '@pkg/web-core/permission';
 import { AppLayout as AppLayoutParts } from '@pkg/web-core/template';
 import { Button, buttonVariants, ThemeToggle } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
@@ -17,16 +19,17 @@ const adminWebUrl = browserEnv.adminWebUrl;
 
 const navigation = [
   { label: 'service.navigation.home', to: '/' as const },
-  { label: 'service.navigation.support', to: '/support' as const },
-  { label: 'service.navigation.notices', to: '/notices' as const },
   { label: 'service.navigation.events', to: '/events' as const },
-  { label: 'service.navigation.qna', to: '/qna' as const },
+  { label: 'service.navigation.notices', to: '/notices' as const },
   { label: 'service.navigation.faq', to: '/faq' as const },
-  { label: 'service.navigation.admin', externalHref: adminWebUrl },
+  { label: 'service.navigation.qna', to: '/qna' as const },
+  { label: 'service.navigation.support', to: '/support' as const, permission: ServicePermission.support.read.code },
+  { label: 'service.navigation.admin', externalHref: adminWebUrl, roleCode: 'super_user' },
 ];
 
 function ServiceAppLayout({ children, user }: { children: ReactNode, user: MeResponse | null }) {
   const { t } = useI18n();
+  const permissions = usePermissions();
   const location = useLocation();
   const navigate = useNavigate();
   const router = useRouter();
@@ -35,14 +38,17 @@ function ServiceAppLayout({ children, user }: { children: ReactNode, user: MeRes
   const [isNavigationOpen, setIsNavigationOpen] = useState(false);
   const navigationContainerRef = useRef<HTMLDivElement>(null);
   const navigationTriggerRef = useRef<HTMLButtonElement>(null);
-  const navigationItems: NavigationItem[] = navigation.map((item) => ({
-    id: item.to ?? item.externalHref,
-    label: t(item.label),
-    to: item.to,
-    externalHref: item.externalHref,
-    active: location.pathname === item.to
-      || (item.to !== '/' && location.pathname.startsWith(`${item.to}/`)),
-  }));
+  const navigationItems: NavigationItem[] = navigation
+    .filter((item) => item.permission === undefined || permissions?.includes(item.permission) === true)
+    .filter((item) => !('roleCode' in item) || user?.roleCode === item.roleCode)
+    .map((item) => ({
+      id: item.to ?? item.externalHref,
+      label: t(item.label),
+      to: item.to,
+      externalHref: item.externalHref,
+      active: location.pathname === item.to
+        || (item.to !== '/' && location.pathname.startsWith(`${item.to}/`)),
+    }));
 
   useEffect(() => {
     if (!isNavigationOpen) return;
@@ -89,7 +95,7 @@ function ServiceAppLayout({ children, user }: { children: ReactNode, user: MeRes
             }}
           >
             <div className="shrink-0">
-              <BrandLogo />
+              <BrandLogo to="/" />
             </div>
             <Navigation
               items={navigationItems}
@@ -131,7 +137,7 @@ function ServiceAppLayout({ children, user }: { children: ReactNode, user: MeRes
               <div className="lg:hidden">
                 <ThemeToggle />
               </div>
-              {user && <ServiceNotifications userId={user.id} />}
+              {user && <ServiceNotifications userId={user.id} canAccessSupport={permissions?.includes(ServicePermission.support.read.code) === true} />}
               {user
                 ? (
                   <ProfileDropdown

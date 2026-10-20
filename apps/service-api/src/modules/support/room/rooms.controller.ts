@@ -2,7 +2,9 @@ import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
+import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { ServicePermission } from '@pkg/shared';
 
 import { CreateSupportRoomCommand } from '#/modules/support/room/create-support-room.command';
 import { CreateSupportRoomRequestDto } from '#/modules/support/room/create-support-room.request.dto';
@@ -24,21 +26,21 @@ export class SupportRoomsController {
   constructor(private readonly commandBus: CommandBus, private readonly queryBus: QueryBus) {}
 
   @ApiOperation({ summary: undefined, operationId: 'SupportController_listRooms_v1' })
-  @Get('rooms') @SwaggerApiResponse(GetSupportRoomsCursorResponseDto)
+  @Get('rooms') @Permissions(ServicePermission.support.read) @SwaggerApiResponse(GetSupportRoomsCursorResponseDto)
   listRooms(@Query() query: GetSupportRoomsCursorRequestDto): Promise<GetSupportRoomsCursorResponseDto> { return this.queryBus.execute(new GetOwnSupportRoomsQuery(query)); }
 
   @ApiOperation({ summary: undefined, operationId: 'SupportController_createRoom_v1' })
-  @Post('rooms') @SwaggerApiResponse(CreateSupportRoomResponseDto)
+  @Post('rooms') @Permissions(ServicePermission.support.create) @SwaggerApiResponse(CreateSupportRoomResponseDto)
   createRoom(@Body() input: CreateSupportRoomRequestDto): Promise<CreateSupportRoomResponseDto> { return this.commandBus.execute(new CreateSupportRoomCommand(input)); }
 
   @ApiOperation({ summary: undefined, operationId: 'SupportController_getRoom_v1' })
-  @Get('rooms/:roomId') @SwaggerApiResponse(GetSupportRoomResponseDto)
+  @Get('rooms/:roomId') @Permissions(ServicePermission.support.read) @SwaggerApiResponse(GetSupportRoomResponseDto)
   getRoom(@Param('roomId') roomId: string): Promise<GetSupportRoomResponseDto> {
     const request = GetSupportRoomRequestDto.parse({ roomId }).validate();
     return this.queryBus.execute(new GetOwnSupportRoomQuery(request));
   }
 
   @ApiOperation({ summary: undefined, operationId: 'SupportController_updateRoom_v1' })
-  @Patch('rooms/:roomId') @SwaggerApiResponse(UpdateSupportRoomResponseDto)
+  @Patch('rooms/:roomId') @Permissions(ServicePermission.support.update) @SwaggerApiResponse(UpdateSupportRoomResponseDto)
   updateRoom(@Param('roomId') roomId: string, @Body() input: UpdateSupportRoomRequestDto): Promise<UpdateSupportRoomResponseDto> { return this.commandBus.execute(new UpdateOwnSupportRoomCommand({ roomId, dto: input })); }
 }
