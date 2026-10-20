@@ -23,38 +23,24 @@ ENV NODE_ENV=production
 COPY --from=pruner /app/out/full/ ./
 
 ARG APP_NAME
-# Public browser config is supplied as build args and baked into web assets.
-ARG VITE_PORTONE_STORE_ID
-ARG VITE_PORTONE_CHANNEL_KEY
 ARG VITE_ADMIN_WEB_URL
 
-# The web builds read PORT and API_BASE_URL from Vite config. These values are
-# build-time placeholders; the container receives its real service URL at runtime.
-RUN set -eu; \
+RUN --mount=type=secret,id=DOTENV_PRIVATE_KEY_PRD,required=true \
+    --mount=type=secret,id=DOTENV_BUILD_CONFIG,required=true \
+    set -eu; \
+    export DOTENV_PRIVATE_KEY_PRD="$(cat /run/secrets/DOTENV_PRIVATE_KEY_PRD)"; \
     BUILD_APP_NAME="${APP_NAME}"; \
     case "${BUILD_APP_NAME}" in \
-      admin-api|service-api) ;; \
-      admin-web) \
-        export PORT=3000 \
-          API_BASE_URL=http://127.0.0.1 \
-          APP_BASE_URL=http://127.0.0.1 \
-          APP_NAME=admin \
-          SESSION_SECRET=build-only-session-secret-not-for-runtime ;; \
-      service-web) \
-        export PORT=3000 \
-          API_BASE_URL=http://127.0.0.1 \
-          APP_BASE_URL=http://127.0.0.1 \
-          APP_NAME=service \
-          SESSION_SECRET=build-only-session-secret-not-for-runtime ;; \
+      admin-api|admin-web|service-api|service-web) ;; \
       *) echo "Unsupported APP_NAME: ${BUILD_APP_NAME}" >&2; exit 1 ;; \
     esac; \
-    pnpm exec turbo run build --env-mode=loose --filter="${BUILD_APP_NAME}..."
+    pnpm exec dotenvx run --quiet --strict -f /run/secrets/DOTENV_BUILD_CONFIG -- \
+      pnpm exec turbo run build --env-mode=loose --filter="${BUILD_APP_NAME}..."
 
 RUN pnpm --filter="${APP_NAME}" --prod deploy --legacy /app/deployed
 
 FROM node:24-alpine AS runner
 
-ENV NODE_ENV=production
 WORKDIR /app
 
 RUN apk add --no-cache tini gcompat \

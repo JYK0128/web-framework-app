@@ -166,7 +166,7 @@ const REQUEST_MODULES = {
 const GLOBAL_GUARDS = [
   AuthenticationGuard,
   PermissionGuard,
-  ...(process.env.NODE_ENV === 'development' ? [] : [ThrottlerGuard]),
+  ...(env.NODE_ENV === 'development' ? [] : [ThrottlerGuard]),
 ].map((useClass) => ({ provide: APP_GUARD, useClass }));
 
 const GLOBAL_FILTERS = [

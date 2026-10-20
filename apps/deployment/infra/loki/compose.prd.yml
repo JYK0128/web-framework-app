@@ -1,0 +1,14 @@
+services:
+  loki:
+    ports: !reset []
+    networks:
+      - apps-runtime
+
+networks:
+  apps-runtime:
+    name: ${APPS_RUNTIME_NETWORK:?Set APPS_RUNTIME_NETWORK to the verified shared runtime network}
+    external: true
+
+volumes:
+  loki-data:
+    name: service-factory-apps-prd_loki-data
