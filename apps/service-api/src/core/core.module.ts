@@ -159,7 +159,7 @@ const REQUEST_MODULES = {
 } satisfies Pick<ModuleMetadata, 'imports' | 'exports'>;
 
 const GLOBAL_GUARDS = [
-  ...(process.env.NODE_ENV === 'development' ? [] : [ThrottlerGuard]),
+  ...(env.NODE_ENV === 'development' ? [] : [ThrottlerGuard]),
   AuthenticationGuard,
   PermissionGuard,
 ].map((useClass) => ({ provide: APP_GUARD, useClass }));

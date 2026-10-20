@@ -1,0 +1,11 @@
+services:
+  vector:
+    environment:
+      APP_ENV: apps-prd
+    networks:
+      - apps-runtime
+
+networks:
+  apps-runtime:
+    name: ${APPS_RUNTIME_NETWORK:?Set APPS_RUNTIME_NETWORK to the verified shared runtime network}
+    external: true

@@ -1,32 +1,14 @@
 name: service-factory-apps-prd
 
+include:
+  - path:
+      - ./infra/loki/compose.yml
+      - ./infra/loki/compose.prd.yml
+  - path:
+      - ./infra/vector/compose.yml
+      - ./infra/vector/compose.prd.yml
+
 services:
-  loki:
-    image: grafana/loki:3.0.0
-    container_name: service-factory-apps-loki
-    restart: unless-stopped
-    volumes:
-      - ./infra/loki/manifest.yml:/etc/loki/loki.yaml:ro
-      - loki-data:/loki
-    command: ["-config.file=/etc/loki/loki.yaml"]
-    networks:
-      - runtime
-
-  vector:
-    image: timberio/vector:0.43.0-alpine
-    container_name: service-factory-apps-vector
-    restart: unless-stopped
-    environment:
-      APP_ENV: apps-prd
-    volumes:
-      - ./infra/vector/manifest.yml:/etc/vector/vector.yaml:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    command: ["--config", "/etc/vector/vector.yaml"]
-    depends_on:
-      - loki
-    networks:
-      - runtime
-
   admin-api:
     image: ${ADMIN_API_IMAGE:?Set ADMIN_API_IMAGE to an immutable image reference}
     restart: unless-stopped
@@ -121,8 +103,6 @@ networks:
     external: true
 
 volumes:
-  loki-data:
-    name: service-factory-apps-prd_loki-data
   admin-api-uploads:
     name: ${ADMIN_API_UPLOADS_VOLUME:?Set ADMIN_API_UPLOADS_VOLUME after confirming the data migration}
     external: true
