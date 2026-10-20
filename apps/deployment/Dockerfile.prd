@@ -34,6 +34,9 @@ RUN --mount=type=secret,id=DOTENV_PRIVATE_KEY_PRD,required=true \
       admin-api|admin-web|service-api|service-web) ;; \
       *) echo "Unsupported APP_NAME: ${BUILD_APP_NAME}" >&2; exit 1 ;; \
     esac; \
+    if [ "${BUILD_APP_NAME}" = "service-web" ]; then \
+      STORYBOOK_BASE_PATH=/storybook/ pnpm --filter @pkg/web-core exec storybook build --output-dir ../../apps/service-web/public/storybook --quiet; \
+    fi; \
     pnpm exec dotenvx run --quiet --strict -f /run/secrets/DOTENV_BUILD_CONFIG -- \
       pnpm exec turbo run build --env-mode=loose --filter="${BUILD_APP_NAME}..."
 
