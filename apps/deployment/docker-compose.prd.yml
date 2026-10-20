@@ -1,22 +1,14 @@
 name: service-factory-apps-prd
 
 include:
-  - ./infra/loki/compose.yml
-  - ./infra/vector/compose.yml
+  - path:
+      - ./infra/loki/compose.yml
+      - ./infra/loki/compose.prd.yml
+  - path:
+      - ./infra/vector/compose.yml
+      - ./infra/vector/compose.prd.yml
 
 services:
-  loki:
-    ports: !override []
-    networks:
-      - runtime
-
-  vector:
-    ports: []
-    environment:
-      APP_ENV: apps-prd
-    networks:
-      - runtime
-
   admin-api:
     image: ${ADMIN_API_IMAGE:?Set ADMIN_API_IMAGE to an immutable image reference}
     restart: unless-stopped
@@ -27,23 +19,8 @@ services:
       SERVICE_API_URL: http://service-api:${SERVICE_API_PORT:?Set SERVICE_API_PORT}
       APP_BASE_URL: ${ADMIN_WEB_URL:?Set ADMIN_WEB_URL}
       LOKI_URL: http://loki:3100
-      AWS_CONFIG_FILE: /run/aws/rolesanywhere/config
-      AWS_PROFILE: app
-      AWS_SDK_LOAD_CONFIG: '1'
     volumes:
       - admin-api-uploads:/app/data/uploads
-      - type: bind
-        source: /usr/local/bin/aws_signing_helper
-        target: /usr/local/bin/aws_signing_helper
-        read_only: true
-        bind:
-          create_host_path: false
-      - type: bind
-        source: /etc/aws/rolesanywhere/admin-api
-        target: /run/aws/rolesanywhere
-        read_only: true
-        bind:
-          create_host_path: false
     networks:
       - runtime
     healthcheck:
@@ -86,23 +63,8 @@ services:
       ADMIN_API_URL: http://admin-api:${ADMIN_API_PORT:?Set ADMIN_API_PORT}
       APP_BASE_URL: ${SERVICE_WEB_URL:?Set SERVICE_WEB_URL}
       LOKI_URL: http://loki:3100
-      AWS_CONFIG_FILE: /run/aws/rolesanywhere/config
-      AWS_PROFILE: app
-      AWS_SDK_LOAD_CONFIG: '1'
     volumes:
       - service-api-uploads:/app/data/uploads
-      - type: bind
-        source: /usr/local/bin/aws_signing_helper
-        target: /usr/local/bin/aws_signing_helper
-        read_only: true
-        bind:
-          create_host_path: false
-      - type: bind
-        source: /etc/aws/rolesanywhere/service-api
-        target: /run/aws/rolesanywhere
-        read_only: true
-        bind:
-          create_host_path: false
     networks:
       - runtime
     healthcheck:

@@ -17,7 +17,7 @@ export default defineConfig({
   namingStrategy: EntityCaseNamingStrategy,
   persistOnCreate: false,
   ignoreUndefinedInQuery: true,
-  debug: process.env.NODE_ENV !== 'production',
+  debug: env.NODE_ENV !== 'production',
   extensions: [Migrator, SeedManager],
   migrations: {
     path: './dist/core/database/migrations',

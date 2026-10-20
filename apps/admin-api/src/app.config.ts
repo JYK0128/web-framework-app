@@ -1,12 +1,14 @@
 import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 
+import { env } from './env';
+
 export const SERVICE_ID = 'admin-api';
 export const MACHINE_ALLOWED_LIST = ['service-api'];
 export const SECURITY_CONFIG = {
   request: { bodyMaxSizeBytes: 10 * 1024 * 1024, trustProxy: true },
   credentialAvailable: ADMIN_AUTH_POLICY_CONFIG.credentialAvailable,
   oauthAvailable: ADMIN_AUTH_POLICY_CONFIG.oauthAvailable,
-  cookie: { secure: process.env.NODE_ENV === 'production', sameSite: 'lax' },
+  cookie: { secure: env.NODE_ENV === 'production', sameSite: 'lax' },
   registration: { oauthDefaultRoleCode: '', allowRegistration: ADMIN_AUTH_POLICY_CONFIG.registrationAvailable, requireEmailVerification: ADMIN_AUTH_POLICY_CONFIG.emailVerificationRequired, requirePhoneNumberVerification: ADMIN_AUTH_POLICY_CONFIG.phoneNumberVerificationRequired, emailVerificationTokenTtlMinutes: 15 },
   session: { cookieName: 'session' },
   token: { revokeOnLogin: false, refreshCookieName: 'admin_refresh_token', refreshIdleTimeoutMinutes: 30, accessTokenTtlMinutes: 10, machineTokenTtlMinutes: 1, oauthStateTtlMinutes: 10, passwordResetTokenTtlMinutes: 15, rememberMeDays: 30 },
