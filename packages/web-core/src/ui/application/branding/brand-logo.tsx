@@ -21,9 +21,7 @@ export function BrandLogo({ logoSrc, iconSrc, alt = '', to }: BrandLogoProps) {
     )
     : (
       <span className="text-lg font-extrabold tracking-tight text-foreground">
-        Service
-        <span className="text-primary">-</span>
-        Factory
+        SERVICE FACTORY
       </span>
     );
 
