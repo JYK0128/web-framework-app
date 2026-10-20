@@ -10,10 +10,6 @@ services:
       secrets:
         - source: admin-api-env
           target: DOTENV_PRD
-        - source: dotenv-build-config
-          target: DOTENV_BUILD_CONFIG
-        - source: dotenv-prd-key
-          target: DOTENV_PRIVATE_KEY_PRD
 
   admin-web:
     build:
@@ -23,13 +19,11 @@ services:
         APP_NAME: admin-web
         APP_REVISION: ${APP_REVISION:-local}
         DOTENV_PRD_REVISION: ${ADMIN_WEB_DOTENV_PRD_REVISION:?Build through the deployment package script}
+        VITE_PORTONE_STORE_ID: ${VITE_PORTONE_STORE_ID:?Set VITE_PORTONE_STORE_ID to build web apps}
+        VITE_PORTONE_CHANNEL_KEY: ${VITE_PORTONE_CHANNEL_KEY:?Set VITE_PORTONE_CHANNEL_KEY to build web apps}
       secrets:
         - source: admin-web-env
           target: DOTENV_PRD
-        - source: dotenv-build-config
-          target: DOTENV_BUILD_CONFIG
-        - source: dotenv-prd-key
-          target: DOTENV_PRIVATE_KEY_PRD
 
   service-api:
     build:
@@ -42,10 +36,6 @@ services:
       secrets:
         - source: service-api-env
           target: DOTENV_PRD
-        - source: dotenv-build-config
-          target: DOTENV_BUILD_CONFIG
-        - source: dotenv-prd-key
-          target: DOTENV_PRIVATE_KEY_PRD
 
   service-web:
     build:
@@ -55,24 +45,18 @@ services:
         APP_NAME: service-web
         APP_REVISION: ${APP_REVISION:-local}
         DOTENV_PRD_REVISION: ${SERVICE_WEB_DOTENV_PRD_REVISION:?Build through the deployment package script}
+        VITE_PORTONE_STORE_ID: ${VITE_PORTONE_STORE_ID:?Set VITE_PORTONE_STORE_ID to build web apps}
+        VITE_PORTONE_CHANNEL_KEY: ${VITE_PORTONE_CHANNEL_KEY:?Set VITE_PORTONE_CHANNEL_KEY to build web apps}
         VITE_ADMIN_WEB_URL: ${ADMIN_WEB_URL:?Set ADMIN_WEB_URL to build service-web}
       secrets:
         - source: service-web-env
           target: DOTENV_PRD
-        - source: dotenv-build-config
-          target: DOTENV_BUILD_CONFIG
-        - source: dotenv-prd-key
-          target: DOTENV_PRIVATE_KEY_PRD
 
 secrets:
   admin-api-env:
     file: ./env/admin-api/.env.prd
   admin-web-env:
     file: ./env/admin-web/.env.prd
-  dotenv-build-config:
-    file: ./env/.env.prd
-  dotenv-prd-key:
-    environment: DOTENV_PRIVATE_KEY_PRD
   service-api-env:
     file: ./env/service-api/.env.prd
   service-web-env:

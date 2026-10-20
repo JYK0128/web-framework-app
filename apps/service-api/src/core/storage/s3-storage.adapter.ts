@@ -1,4 +1,7 @@
+import { existsSync } from 'node:fs';
+
 import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { fromIni } from '@aws-sdk/credential-provider-ini';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable } from '@nestjs/common';
 import { type FileStorageAdapter, type PresignedUploadUrlResult, type SaveFileResult } from '@pkg/server-core/file-storage/file-storage.interface';
@@ -10,9 +13,8 @@ interface S3StorageOptions {
   bucket: string
   region: string
   endpoint?: string
-  accessKeyId: string
-  secretAccessKey: string
-  sessionToken?: string
+  awsConfigFile: string
+  awsProfile: string
 }
 
 /** S3 설정은 실제 접근 시점에 검증한다. */
@@ -23,9 +25,8 @@ export class S3StorageAdapter implements FileStorageAdapter {
     bucket: env.AWS_S3_BUCKET,
     region: env.AWS_S3_REGION,
     endpoint: env.AWS_S3_ENDPOINT,
-    accessKeyId: env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
-    sessionToken: env.AWS_SESSION_TOKEN,
+    awsConfigFile: env.AWS_CONFIG_FILE,
+    awsProfile: env.AWS_PROFILE,
   };
 
   async saveFile(subDir: string, filename: string, buffer: Buffer): Promise<SaveFileResult> {
@@ -128,13 +129,13 @@ export class S3StorageAdapter implements FileStorageAdapter {
   }
 
   private ensureConfig(): S3StorageOptions {
-    const { bucket, region, accessKeyId, secretAccessKey } = this.s3Config;
-    if (!bucket || !region || !accessKeyId || !secretAccessKey) {
+    const { bucket, region, awsConfigFile, awsProfile } = this.s3Config;
+    if (!bucket || !region || !awsConfigFile || !awsProfile) {
       const missing = [
         !bucket && 'AWS_S3_BUCKET',
         !region && 'AWS_S3_REGION',
-        !accessKeyId && 'AWS_ACCESS_KEY_ID',
-        !secretAccessKey && 'AWS_SECRET_ACCESS_KEY',
+        !awsConfigFile && 'AWS_CONFIG_FILE',
+        !awsProfile && 'AWS_PROFILE',
       ].filter(Boolean);
       throw new ApplicationError({
         code: 'S3_STORAGE_NOT_CONFIGURED',
@@ -143,18 +144,22 @@ export class S3StorageAdapter implements FileStorageAdapter {
       });
     }
 
-    return { ...this.s3Config, bucket, region, accessKeyId, secretAccessKey };
+    if (!existsSync(awsConfigFile)) {
+      throw new ApplicationError({
+        code: 'S3_STORAGE_NOT_CONFIGURED',
+        message: `AWS config file does not exist: ${awsConfigFile}`,
+        status: 503,
+      });
+    }
+
+    return { ...this.s3Config, bucket, region, awsConfigFile, awsProfile };
   }
 
   private createClient(config: S3StorageOptions): S3Client {
     return new S3Client({
       region: config.region,
       endpoint: config.endpoint,
-      credentials: {
-        accessKeyId: config.accessKeyId,
-        secretAccessKey: config.secretAccessKey,
-        ...(config.sessionToken && { sessionToken: config.sessionToken }),
-      },
+      credentials: fromIni({ profile: config.awsProfile, filepath: config.awsConfigFile }),
     });
   }
 }

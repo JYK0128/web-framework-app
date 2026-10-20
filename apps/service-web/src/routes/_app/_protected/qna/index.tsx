@@ -11,7 +11,7 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { qnaControllerListV1, useQnaControllerRemoveV1 } from '#/.generated/api/endpoints/qna/qna';
 import type { QnaControllerListV1Params, QnaControllerListV1SortItem, QnaItem } from '#/.generated/api/model';
-import { OperationNotice } from '#/routes/_protected/-components/operation-notice';
+import { OperationNotice } from '#/routes/_app/_protected/-components/operation-notice';
 
 import { QnaCreateModal } from './-components/qna-create-modal';
 import { QnaDetailModal } from './-components/qna-detail-modal';
@@ -102,7 +102,7 @@ function QnaPage() {
           <Button type="button" variant="outline" onClick={() => void openModal(QnaCreateModal)}>문의 등록</Button>
         </PageSection.Actions>
         <PageSection.Content className="
-          mx-auto grid size-full min-w-0 max-w-5xl
+          mx-auto grid size-full w-full min-w-0 max-w-4xl
           grid-rows-[auto_minmax(0,1fr)] gap-4 pt-2
         "
         >
@@ -121,7 +121,16 @@ function QnaPage() {
                   setSorting([{ id: 'createdAt', desc: true }]);
                 }}
               />
-              {query.isLoading && <Skeleton className="h-32 w-full" />}
+              {query.isLoading && (
+                <div className="grid content-start gap-3 p-4">
+                  {[1, 2, 3].map((item) => (
+                    <Skeleton
+                      key={item}
+                      className="h-16 w-full"
+                    />
+                  ))}
+                </div>
+              )}
               {query.isError && (
                 <p className="text-sm text-destructive">
                   문의 목록을 불러오지 못했습니다.

@@ -21,7 +21,7 @@ type ServiceNotificationEvent = {
   createdAt: string
 };
 
-export function ServiceNotifications({ userId }: { userId: string }) {
+export function ServiceNotifications({ userId, canAccessSupport }: { userId: string, canAccessSupport: boolean }) {
   const { t } = useI18n();
   const navigate = useNavigate();
   const [notificationState, setNotificationState] = useState<{ userId: string, items: ServiceNotificationEvent[] }>({ userId, items: [] });
@@ -31,6 +31,7 @@ export function ServiceNotifications({ userId }: { userId: string }) {
     url: '/api/v1/notifications/events',
     onEvent: (event) => {
       if (event.type !== 'notification.created') return;
+      if (!canAccessSupport && event.data.kind === 'support.reply') return;
       if (event.data.kind === 'support.reply' && isSupportChatOpen(event.data.roomId)) return;
       setNotificationState((current) => ({
         userId,

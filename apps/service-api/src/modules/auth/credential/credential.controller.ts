@@ -3,7 +3,9 @@ import { CommandBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public, SkipPasswordExpiry, UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
 import { NoStore } from '@pkg/server-core/http/decorators/no-store.decorator';
+import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { ServicePermission } from '@pkg/shared';
 
 import { ChangePasswordCommand } from '#/modules/auth/credential/change-password.command';
 import { ChangePasswordRequestDto } from '#/modules/auth/credential/change-password.request.dto';
@@ -41,6 +43,7 @@ export class AuthCredentialController {
   }
 
   @Post('password/change')
+  @Permissions(ServicePermission.account.update)
   @SkipPasswordExpiry()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ operationId: 'AuthController_changePassword_v1', summary: '인증된 서비스 사용자의 비밀번호 변경' })

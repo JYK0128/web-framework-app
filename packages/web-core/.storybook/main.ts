@@ -22,6 +22,9 @@ const config: StorybookConfig = {
   framework: '@storybook/react-vite',
   docs: { autodocs: 'tag' },
   async viteFinal(viteConfig) {
+    if (process.env.STORYBOOK_BASE_PATH) {
+      viteConfig.base = process.env.STORYBOOK_BASE_PATH;
+    }
     viteConfig.plugins ??= [];
     viteConfig.plugins.push(tailwindcss());
     viteConfig.optimizeDeps ??= {};

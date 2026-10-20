@@ -3,7 +3,9 @@ import { CommandBus } from '@nestjs/cqrs';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SkipPasswordExpiry, SkipPhoneVerification, SkipTwoFactorSetup, UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
 import { NoStore } from '@pkg/server-core/http/decorators/no-store.decorator';
+import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { ServicePermission } from '@pkg/shared';
 
 import { VerifyPhoneNumberCommand } from '#/modules/auth/phone-verification/verify-phone-number.command';
 import { VerifyPhoneNumberRequestDto } from '#/modules/auth/phone-verification/verify-phone-number.request.dto';
@@ -17,6 +19,7 @@ export class AuthPhoneVerificationController {
   constructor(private readonly commandBus: CommandBus) {}
 
   @Post('phone/verify')
+  @Permissions(ServicePermission.account.update)
   @HttpCode(HttpStatus.OK)
   @SkipPasswordExpiry()
   @SkipPhoneVerification()

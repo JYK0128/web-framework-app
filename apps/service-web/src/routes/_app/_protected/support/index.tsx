@@ -1,19 +1,25 @@
+import { ServicePermission } from '@pkg/shared';
 import { DataGrid, DataGridToolbar, useDataGrid } from '@pkg/web-core/data-grid';
 import { openModal } from '@pkg/web-core/modal';
 import { PageSection, SectionCard } from '@pkg/web-core/template';
 import { Button, Skeleton } from '@pkg/web-core/ui';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, notFound } from '@tanstack/react-router';
 import { type ColumnFiltersState, createColumnHelper } from '@tanstack/react-table';
 import { useCallback, useMemo, useState } from 'react';
 
 import { getSupportControllerListRoomsV1QueryKey, supportControllerListRoomsV1 } from '#/.generated/api/endpoints/support/support';
 import type { SupportRoomItem } from '#/.generated/api/model';
-import { OperationNotice } from '#/routes/_protected/-components/operation-notice';
+import { OperationNotice } from '#/routes/_app/_protected/-components/operation-notice';
 
 import { SupportRoomDetailModal } from './-components/support-room-detail-modal';
 
-export const Route = createFileRoute('/_app/_protected/support/')({ component: SupportPage });
+export const Route = createFileRoute('/_app/_protected/support/')({
+  beforeLoad: ({ context }) => {
+    if (!context.user?.permissions.includes(ServicePermission.support.read.code)) throw notFound();
+  },
+  component: SupportPage,
+});
 
 const columnHelper = createColumnHelper<SupportRoomItem>();
 const statusOptions = [{ label: '대기', value: 'open' }, { label: '상담 중', value: 'in_progress' }, { label: '종료', value: 'closed' }] as const;
@@ -71,7 +77,7 @@ function SupportPage() {
           <Button type="button" variant="outline" onClick={() => void openModal(SupportRoomDetailModal, {})}>새 상담 시작</Button>
         </PageSection.Actions>
         <PageSection.Content className="
-          mx-auto grid size-full min-w-0 max-w-5xl
+          mx-auto grid size-full w-full min-w-0 max-w-4xl
           grid-rows-[auto_minmax(0,1fr)] gap-4 pt-2
         "
         >

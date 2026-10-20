@@ -3,7 +3,9 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public, UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
 import { NoStore } from '@pkg/server-core/http/decorators/no-store.decorator';
+import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { ServicePermission } from '@pkg/shared';
 
 import { FindIdQuery } from '#/modules/auth/account/find-id.query';
 import { FindIdRequestDto } from '#/modules/auth/account/find-id.request.dto';
@@ -41,6 +43,7 @@ export class AuthAccountController {
   }
 
   @Post('unregister')
+  @Permissions(ServicePermission.account.delete)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ operationId: 'AuthController_unregister_v1', summary: '서비스 사용자 계정 탈퇴 (정책 설정 적용)' })
   @SwaggerApiResponse(UnregisterResponseDto)
