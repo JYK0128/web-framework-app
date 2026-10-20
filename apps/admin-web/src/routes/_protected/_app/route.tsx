@@ -200,7 +200,7 @@ function AdminAppLayout({ user, children }: AppLayoutProps) {
         ? `w-18`
         : `w-64`)}
       >
-        <div className="flex h-16 items-center border-b px-5"><BrandLogo /></div>
+        <div className="flex h-16 items-center border-b px-5"><BrandLogo text="SERVICE FACTORY" /></div>
         <NavigationMenu groups={visibleNavigationGroups} activeHref={activeItem?.href} collapsed={isCollapsed} label={t('admin.navigation.menu')} />
       </AppLayoutParts.Sidebar>
       <AppLayoutParts.Sidebar
@@ -214,7 +214,7 @@ function AdminAppLayout({ user, children }: AppLayoutProps) {
         )}
       >
         <div className="flex h-16 items-center justify-between border-b px-5">
-          <BrandLogo />
+          <BrandLogo text="SERVICE FACTORY" />
           <Button type="button" variant="ghost" size="icon" aria-label="메뉴 닫기" onClick={() => setIsMobileOpen(false)}>
             <X className="size-5" />
           </Button>
