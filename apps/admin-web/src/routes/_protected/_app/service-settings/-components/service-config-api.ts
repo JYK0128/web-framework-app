@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import type { GetServiceConfigResponseDto, ServiceConfigControllerGetConfigsV1200, ServiceConfigControllerUpdateConfigsV1200, UpdateServiceConfigRequestDto } from '#/.generated/api/model';
-import { axios } from '#/lib/axios';
+import type { GetServiceConfigResponseDto, ServiceConfigControllerGetConfigsV1200, ServiceConfigControllerUpdateConfigsV1200, UpdateServiceConfigRequestDto } from '~/.generated/api/model';
+import { axios } from '~/lib/axios';
 
 const SERVICE_CONFIG_URL = '/api/v1/service-config';
 type ServiceConfigData = Pick<GetServiceConfigResponseDto, 'operation' | 'maintenance' | 'inquiry'>;

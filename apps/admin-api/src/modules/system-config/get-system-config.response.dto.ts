@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 import { NotificationConfigDto } from '@pkg/server-core/notification/dto';
 import { Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
 
-import { AdminEmailConfigResponseDto } from '#/modules/system-config/admin-email/admin-email-config.response.dto';
-import { OAuthConfigDto } from '#/modules/system-config/oauth/oauth-config.dto';
-import { WebhookConfigDto } from '#/modules/system-config/webhook/webhook-config.dto';
+import { AdminEmailConfigResponseDto } from '~/modules/system-config/admin-email/admin-email-config.response.dto';
+import { OAuthConfigDto } from '~/modules/system-config/oauth/oauth-config.dto';
+import { WebhookConfigDto } from '~/modules/system-config/webhook/webhook-config.dto';
 
 export class GetSystemConfigResponseDto extends BaseDto {
   @ApiProperty({ type: WebhookConfigDto })

@@ -1,8 +1,8 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { Ellipsis, Eye, Trash2 } from 'lucide-react';
 
-import type { OperatingHolidayItemDto } from '#/.generated/api/model';
-import { Badge, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
+import type { OperatingHolidayItemDto } from '~/.generated/api/model';
+import { Badge, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '~/.generated/shadcn/components/ui';
 
 type HolidayRow = OperatingHolidayItemDto & { dayOfWeek: string };
 

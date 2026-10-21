@@ -1,13 +1,13 @@
 import { ApplicationError, z } from '@pkg/shared/common';
 import { ADMIN_AUTH_POLICY_CONFIG, assertPasswordPolicy } from '@pkg/shared/policy';
+import { useI18n } from '@pkg/web-core/context/i18n';
 import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
-import { useI18n } from '@pkg/web-core/i18n';
 import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 
-import { useOperatorsControllerCreateOperatorV1 } from '#/.generated/api/endpoints/operators/operators';
-import { useRolesControllerGetRolesV1 } from '#/.generated/api/endpoints/roles/roles';
-import { OperatorsControllerCreateOperatorV1Body } from '#/.generated/api/zod/operators/operators';
-import { Button } from '#/.generated/shadcn/components/ui';
+import { useOperatorsControllerCreateOperatorV1 } from '~/.generated/api/endpoints/operators/operators';
+import { useRolesControllerGetRolesV1 } from '~/.generated/api/endpoints/roles/roles';
+import { OperatorsControllerCreateOperatorV1Body } from '~/.generated/api/zod/operators/operators';
+import { Button } from '~/.generated/shadcn/components/ui';
 
 type CreateOperatorModalProps = ModalComponentProps<boolean>;
 

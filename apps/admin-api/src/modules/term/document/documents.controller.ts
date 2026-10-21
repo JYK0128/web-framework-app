@@ -1,29 +1,27 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { AdminPermission } from '@pkg/shared';
 
-import { CreateTermCommand } from '#/modules/term/document/create-term.command';
-import { CreateTermRequestDto } from '#/modules/term/document/create-term.request.dto';
-import { CreateTermResponseDto } from '#/modules/term/document/create-term.response.dto';
-import { DeleteTermCommand } from '#/modules/term/document/delete-term.command';
-import { DeleteTermRequestDto } from '#/modules/term/document/delete-term.request.dto';
-import { DeleteTermResponseDto } from '#/modules/term/document/delete-term.response.dto';
-import { GetTermQuery } from '#/modules/term/document/get-term.query';
-import { GetTermRequestDto } from '#/modules/term/document/get-term.request.dto';
-import { GetTermResponseDto } from '#/modules/term/document/get-term.response.dto';
-import { GetTermsQuery } from '#/modules/term/document/get-terms.query';
-import { GetTermsRequestDto } from '#/modules/term/document/get-terms.request.dto';
-import { GetTermsResponseDto } from '#/modules/term/document/get-terms.response.dto';
-import { PublishTermCommand } from '#/modules/term/document/publish-term.command';
-import { PublishTermRequestDto } from '#/modules/term/document/publish-term.request.dto';
-import { PublishTermResponseDto } from '#/modules/term/document/publish-term.response.dto';
-import { UpdateTermCommand } from '#/modules/term/document/update-term.command';
-import { UpdateTermRequestDto } from '#/modules/term/document/update-term.request.dto';
-import { UpdateTermResponseDto } from '#/modules/term/document/update-term.response.dto';
+import { CreateTermCommand } from '~/modules/term/document/create-term.command';
+import { CreateTermRequestDto } from '~/modules/term/document/create-term.request.dto';
+import { CreateTermResponseDto } from '~/modules/term/document/create-term.response.dto';
+import { DeleteTermCommand } from '~/modules/term/document/delete-term.command';
+import { DeleteTermRequestDto } from '~/modules/term/document/delete-term.request.dto';
+import { DeleteTermResponseDto } from '~/modules/term/document/delete-term.response.dto';
+import { GetTermQuery } from '~/modules/term/document/get-term.query';
+import { GetTermRequestDto } from '~/modules/term/document/get-term.request.dto';
+import { GetTermResponseDto } from '~/modules/term/document/get-term.response.dto';
+import { GetTermsQuery } from '~/modules/term/document/get-terms.query';
+import { GetTermsRequestDto } from '~/modules/term/document/get-terms.request.dto';
+import { GetTermsResponseDto } from '~/modules/term/document/get-terms.response.dto';
+import { PublishTermCommand } from '~/modules/term/document/publish-term.command';
+import { PublishTermRequestDto } from '~/modules/term/document/publish-term.request.dto';
+import { PublishTermResponseDto } from '~/modules/term/document/publish-term.response.dto';
+import { UpdateTermCommand } from '~/modules/term/document/update-term.command';
+import { UpdateTermRequestDto } from '~/modules/term/document/update-term.request.dto';
+import { UpdateTermResponseDto } from '~/modules/term/document/update-term.response.dto';
 
 @ApiTags('terms')
 @UserAuth()

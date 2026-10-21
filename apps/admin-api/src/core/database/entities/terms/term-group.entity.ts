@@ -1,7 +1,7 @@
 import { Collection, type Opt } from '@mikro-orm/core';
 import { Entity, OneToMany, Property } from '@mikro-orm/decorators/legacy';
 
-import { BaseEntity } from '#/core/database/entities/base.entity';
+import { BaseEntity } from '~/core/database/entities/base.entity';
 
 import { Term } from './term.entity';
 

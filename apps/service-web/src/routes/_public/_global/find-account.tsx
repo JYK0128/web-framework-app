@@ -1,7 +1,7 @@
 import { z } from '@pkg/shared/common';
+import { useI18n } from '@pkg/web-core/context/i18n';
 import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
 import { useHashTab } from '@pkg/web-core/hooks';
-import { useI18n } from '@pkg/web-core/i18n';
 import { ScreenLayout } from '@pkg/web-core/template';
 import { Button, Card, CardContent, Tabs, TabsList, TabsTrigger } from '@pkg/web-core/ui';
 import { createFileRoute, Link } from '@tanstack/react-router';
@@ -9,7 +9,7 @@ import { ArrowRight, Check, CheckCircle2, Copy, Mail, Phone, RefreshCw, Search, 
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { useAuthControllerFindIdV1, useAuthControllerRequestPasswordResetV1 } from '#/.generated/api/endpoints/auth/auth';
+import { useAuthControllerFindIdV1, useAuthControllerRequestPasswordResetV1 } from '~/.generated/api/endpoints/auth/auth';
 
 type FindAccountTab = 'id' | 'password';
 type FoundAccount = { maskedEmail: string, provider: string };

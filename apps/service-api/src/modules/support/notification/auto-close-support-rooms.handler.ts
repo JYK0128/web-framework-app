@@ -1,15 +1,15 @@
 import { QueryOrder, RequestContext as MikroRequestContext } from '@mikro-orm/core';
 import { Logger } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
-import { RealtimeService } from '@pkg/server-core/realtime/realtime.service';
+import { KvStore } from '@pkg/server-core/kv-store';
+import { RealtimeService } from '@pkg/server-core/realtime';
 import { TimeUtil } from '@pkg/shared/common';
 
-import { SERVICE_RUNTIME_CONFIG } from '#/app.config';
-import { SupportMessage, SupportMessageSenderType, SupportRoom, SupportRoomStatus } from '#/core/database/entities/support';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { AutoCloseSupportRoomsCommand } from '#/modules/support/notification/auto-close-support-rooms.command';
-import { ServiceContext } from '#/modules/system-config/service.context';
+import { SERVICE_RUNTIME_CONFIG } from '~/app.config';
+import { SupportMessage, SupportMessageSenderType, SupportRoom, SupportRoomStatus } from '~/core/database/entities/support';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { AutoCloseSupportRoomsCommand } from '~/modules/support/notification/auto-close-support-rooms.command';
+import { ServiceContext } from '~/modules/system-config/service.context';
 
 const AUTO_CLOSE_JOB_LOCK = 'service:support:scheduler:auto-close';
 

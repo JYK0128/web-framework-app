@@ -2,8 +2,8 @@ import { Collection, type Opt } from '@mikro-orm/core';
 import { Entity, OneToMany, Property } from '@mikro-orm/decorators/legacy';
 import { defineEnum } from '@pkg/shared/common';
 
-import { User } from '#/core/database/entities/auth/user.entity';
-import { BaseEntity } from '#/core/database/entities/base.entity';
+import { User } from '~/core/database/entities/auth/user.entity';
+import { BaseEntity } from '~/core/database/entities/base.entity';
 
 export const RoleCode = defineEnum('RoleCode', {
   SUPER_ADMIN: 'super_admin',

@@ -1,7 +1,7 @@
 import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 
-import type { ServiceTermItemDto } from '#/.generated/api/model';
-import { Button } from '#/.generated/shadcn/components/ui';
+import type { ServiceTermItemDto } from '~/.generated/api/model';
+import { Button } from '~/.generated/shadcn/components/ui';
 
 export function ServiceTermViewModal({ term, open, onOpenChange }: ModalComponentProps & { term: ServiceTermItemDto }) {
   return (

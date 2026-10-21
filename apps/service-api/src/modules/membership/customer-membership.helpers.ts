@@ -1,8 +1,8 @@
 import { HttpStatus } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Permission } from '#/core/database/entities/auth.extensions';
-import { AppEntityManager } from '#/core/database/entity-manager';
+import { Permission } from '~/core/database/entities/auth.extensions';
+import { AppEntityManager } from '~/core/database/entity-manager';
 
 export async function normalizePermissions(em: AppEntityManager, permissions?: string[]): Promise<string[]> {
   const normalized = [...new Set((permissions ?? []).map((permission) => permission.trim().toLowerCase()).filter(Boolean))];

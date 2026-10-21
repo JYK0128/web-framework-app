@@ -1,7 +1,7 @@
 import { ApiPropertyOptional, OmitType, PartialType } from '@nestjs/swagger';
 import { IsBoolean, IsInt, Max, Min, ValidateIf } from 'class-validator';
 
-import { CreateFaqRequestDto } from '#/modules/faq/create-faq.request.dto';
+import { CreateFaqRequestDto } from '~/modules/faq/create-faq.request.dto';
 
 export class UpdateFaqRequestDto extends PartialType(OmitType(CreateFaqRequestDto, ['sortOrder', 'isPublished'] as const), { skipNullProperties: false }) {
   @ApiPropertyOptional({ type: Number, minimum: 0, maximum: 999999 })

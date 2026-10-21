@@ -1,21 +1,20 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiExcludeController, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { MachineAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { MachineAuth, SwaggerApiResponse } from '@pkg/server-core/http/decorators';
 
-import { CreateFaqCommand } from '#/modules/faq/create-faq.command';
-import { CreateFaqRequestDto } from '#/modules/faq/create-faq.request.dto';
-import { CreateFaqResponseDto } from '#/modules/faq/create-faq.response.dto';
-import { DeleteFaqCommand } from '#/modules/faq/delete-faq.command';
-import { DeleteFaqRequestDto } from '#/modules/faq/delete-faq.request.dto';
-import { DeleteFaqResponseDto } from '#/modules/faq/delete-faq.response.dto';
-import { GetFaqsRequestDto } from '#/modules/faq/get-faqs.request.dto';
-import { GetFaqsResponseDto } from '#/modules/faq/get-faqs.response.dto';
-import { GetInternalFaqsQuery } from '#/modules/faq/get-internal-faqs.query';
-import { UpdateFaqCommand } from '#/modules/faq/update-faq.command';
-import { UpdateFaqRequestDto } from '#/modules/faq/update-faq.request.dto';
-import { UpdateFaqResponseDto } from '#/modules/faq/update-faq.response.dto';
+import { CreateFaqCommand } from '~/modules/faq/create-faq.command';
+import { CreateFaqRequestDto } from '~/modules/faq/create-faq.request.dto';
+import { CreateFaqResponseDto } from '~/modules/faq/create-faq.response.dto';
+import { DeleteFaqCommand } from '~/modules/faq/delete-faq.command';
+import { DeleteFaqRequestDto } from '~/modules/faq/delete-faq.request.dto';
+import { DeleteFaqResponseDto } from '~/modules/faq/delete-faq.response.dto';
+import { GetFaqsRequestDto } from '~/modules/faq/get-faqs.request.dto';
+import { GetFaqsResponseDto } from '~/modules/faq/get-faqs.response.dto';
+import { GetInternalFaqsQuery } from '~/modules/faq/get-internal-faqs.query';
+import { UpdateFaqCommand } from '~/modules/faq/update-faq.command';
+import { UpdateFaqRequestDto } from '~/modules/faq/update-faq.request.dto';
+import { UpdateFaqResponseDto } from '~/modules/faq/update-faq.response.dto';
 
 @ApiTags('Internal (Machine)')
 @ApiExcludeController()

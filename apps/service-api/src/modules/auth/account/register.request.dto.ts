@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ToLowerCase } from '@pkg/server-core/http/decorators/to-lower-case.decorator';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { ToLowerCase } from '@pkg/server-core/http/decorators';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 
-import { SECURITY_CONFIG } from '#/app.config';
+import { SECURITY_CONFIG } from '~/app.config';
 
 export class RegisterRequestDto extends BaseDto {
   @ApiProperty({ type: String, format: 'email' })

@@ -1,11 +1,11 @@
 import { z } from '@pkg/shared/common';
-import { useI18n } from '@pkg/web-core/i18n';
+import { useI18n } from '@pkg/web-core/context/i18n';
 import { ScreenLayout } from '@pkg/web-core/template';
 import { createFileRoute, Link, notFound } from '@tanstack/react-router';
 import { ShieldCheck } from 'lucide-react';
 
-import { useAuthControllerVerifyEmailV1 } from '#/.generated/api/endpoints/auth/auth';
-import { Button, Card, CardContent } from '#/.generated/shadcn/components/ui';
+import { useAuthControllerVerifyEmailV1 } from '~/.generated/api/endpoints/auth/auth';
+import { Button, Card, CardContent } from '~/.generated/shadcn/components/ui';
 
 export const Route = createFileRoute('/_public/_global/verify-email')({
   validateSearch: z.object({

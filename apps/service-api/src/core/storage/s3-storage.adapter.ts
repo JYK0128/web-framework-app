@@ -4,10 +4,10 @@ import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3
 import { fromIni } from '@aws-sdk/credential-provider-ini';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable } from '@nestjs/common';
-import { type FileStorageAdapter, type PresignedUploadUrlResult, type SaveFileResult } from '@pkg/server-core/file-storage/file-storage.interface';
+import { type FileStorageAdapter, type PresignedUploadUrlResult, type SaveFileResult } from '@pkg/server-core/file-storage';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { env } from '#/env';
+import { env } from '~/env';
 
 interface S3StorageOptions {
   bucket: string

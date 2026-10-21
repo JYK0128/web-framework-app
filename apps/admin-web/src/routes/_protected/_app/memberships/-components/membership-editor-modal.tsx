@@ -2,9 +2,9 @@ import { z } from '@pkg/shared/common';
 import { FormLayout, useAppForm, useFieldContext } from '@pkg/web-core/form';
 import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 
-import { useMembershipsControllerCreateV1, useMembershipsControllerListPermissionsV1, useMembershipsControllerUpdateV1 } from '#/.generated/api/endpoints/memberships/memberships';
-import type { MembershipItemDto, MembershipPermissionItemDto } from '#/.generated/api/model';
-import { Button, Checkbox, FieldLabel } from '#/.generated/shadcn/components/ui';
+import { useMembershipsControllerCreateV1, useMembershipsControllerListPermissionsV1, useMembershipsControllerUpdateV1 } from '~/.generated/api/endpoints/memberships/memberships';
+import type { MembershipItemDto, MembershipPermissionItemDto } from '~/.generated/api/model';
+import { Button, Checkbox, FieldLabel } from '~/.generated/shadcn/components/ui';
 
 export type MembershipEditorProps = ModalComponentProps<boolean> & { membership?: MembershipItemDto };
 

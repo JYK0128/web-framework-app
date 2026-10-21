@@ -1,7 +1,7 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
-import { EntityResponseDto } from '@pkg/server-core/http/dto/response/entity.response.dto';
+import { EntityResponseDto } from '@pkg/server-core/http/dto/response';
 
-import { User } from '#/core/database/entities/auth';
+import { User } from '~/core/database/entities/auth';
 
 @ApiSchema({ name: 'OperatorCreateResponse' })
 export class CreateOperatorResponseDto extends EntityResponseDto(User) {

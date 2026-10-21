@@ -24,11 +24,10 @@ COPY --from=pruner /app/out/full/ ./
 
 ARG APP_NAME
 ARG VITE_ADMIN_WEB_URL
+ARG VITE_PORTONE_STORE_ID
+ARG VITE_PORTONE_CHANNEL_KEY
 
-RUN --mount=type=secret,id=DOTENV_PRIVATE_KEY_PRD,required=true \
-    --mount=type=secret,id=DOTENV_BUILD_CONFIG,required=true \
-    set -eu; \
-    export DOTENV_PRIVATE_KEY_PRD="$(cat /run/secrets/DOTENV_PRIVATE_KEY_PRD)"; \
+RUN set -eu; \
     BUILD_APP_NAME="${APP_NAME}"; \
     case "${BUILD_APP_NAME}" in \
       admin-api|admin-web|service-api|service-web) ;; \
@@ -37,8 +36,7 @@ RUN --mount=type=secret,id=DOTENV_PRIVATE_KEY_PRD,required=true \
     if [ "${BUILD_APP_NAME}" = "service-web" ]; then \
       STORYBOOK_BASE_PATH=/storybook/ pnpm --filter @pkg/web-core exec storybook build --output-dir ../../apps/service-web/public/storybook --quiet; \
     fi; \
-    pnpm exec dotenvx run --quiet --strict -f /run/secrets/DOTENV_BUILD_CONFIG -- \
-      pnpm exec turbo run build --env-mode=loose --filter="${BUILD_APP_NAME}..."
+    pnpm exec turbo run build --env-mode=loose --filter="${BUILD_APP_NAME}..."
 
 RUN pnpm --filter="${APP_NAME}" --prod deploy --legacy /app/deployed
 

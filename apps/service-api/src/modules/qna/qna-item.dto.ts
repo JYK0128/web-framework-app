@@ -1,15 +1,14 @@
 import { HttpStatus } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
-import { MaskEmail } from '@pkg/server-core/http/decorators/mask-email.decorator';
-import { MaskName } from '@pkg/server-core/http/decorators/mask-name.decorator';
-import { EntityDto } from '@pkg/server-core/http/dto/base/entity.dto';
+import { MaskEmail, MaskName } from '@pkg/server-core/http/decorators';
+import { EntityDto } from '@pkg/server-core/http/dto/base';
 import { ApplicationError } from '@pkg/shared/common';
 import { QnaPriority, QnaStatus } from '@pkg/shared/constants';
 import { decrypt } from '@pkg/shared/server';
 
-import { type User } from '#/core/database/entities/auth';
-import { Qna, QnaCategory } from '#/core/database/entities/qna';
-import { env } from '#/env';
+import { type User } from '~/core/database/entities/auth';
+import { Qna, QnaCategory } from '~/core/database/entities/qna';
+import { env } from '~/env';
 
 @ApiSchema({ name: 'QnaItem' })
 export class QnaItemDto extends EntityDto(Qna) {

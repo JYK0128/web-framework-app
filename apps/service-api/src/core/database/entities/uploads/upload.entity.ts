@@ -2,7 +2,7 @@ import type { Opt } from '@mikro-orm/core';
 import { Entity, Enum, Index, Property } from '@mikro-orm/decorators/legacy';
 import { defineEnum } from '@pkg/shared/common';
 
-import { BaseEntity } from '#/core/database/entities/base.entity';
+import { BaseEntity } from '~/core/database/entities/base.entity';
 
 export const UploadStatus = defineEnum('UploadStatus', {
   PENDING: 'pending',

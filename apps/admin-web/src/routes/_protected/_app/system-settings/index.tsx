@@ -7,10 +7,10 @@ import { createFileRoute } from '@tanstack/react-router';
 import { Save } from 'lucide-react';
 import { useRef, useState } from 'react';
 
-import { useSystemConfigControllerUpdateConfigsV1 } from '#/.generated/api/endpoints/system-configs/system-configs';
-import type { UpdateSystemConfigResponseDto, UpdateSystemSettingsRequestDto } from '#/.generated/api/model';
-import { SystemConfigControllerUpdateConfigsV1Response } from '#/.generated/api/zod/system-configs/system-configs';
-import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
+import { useSystemConfigControllerUpdateConfigsV1 } from '~/.generated/api/endpoints/system-configs/system-configs';
+import type { UpdateSystemConfigResponseDto, UpdateSystemSettingsRequestDto } from '~/.generated/api/model';
+import { SystemConfigControllerUpdateConfigsV1Response } from '~/.generated/api/zod/system-configs/system-configs';
+import { Button, Skeleton } from '~/.generated/shadcn/components/ui';
 
 import { AdminEmailSettingsTab, type AdminEmailSettingsTabHandle } from './-components/admin-email-settings-tab';
 import { NotificationTab, type NotificationTabHandle } from './-components/notification-tab';

@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ListResponseDto } from '@pkg/server-core/http/dto/response/list.response.dto';
+import { ListResponseDto } from '@pkg/server-core/http/dto/response';
 import { Type } from 'class-transformer';
 
-import { RoleItemDto } from '#/modules/role/role-item.dto';
+import { RoleItemDto } from '~/modules/role/role-item.dto';
 
 export class GetRolesResponseDto extends ListResponseDto<RoleItemDto> {
   @ApiProperty({ type: () => [RoleItemDto] })

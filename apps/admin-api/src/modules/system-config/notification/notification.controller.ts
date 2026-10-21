@@ -1,23 +1,21 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { AdminPermission } from '@pkg/shared';
 
-import { TestEmailCommand } from '#/modules/system-config/notification/test-email.command';
-import { TestEmailRequestDto } from '#/modules/system-config/notification/test-email.request.dto';
-import { TestEmailResponseDto } from '#/modules/system-config/notification/test-email.response.dto';
-import { TestMessengerCommand } from '#/modules/system-config/notification/test-messenger.command';
-import { TestMessengerRequestDto } from '#/modules/system-config/notification/test-messenger.request.dto';
-import { TestMessengerResponseDto } from '#/modules/system-config/notification/test-messenger.response.dto';
-import { TestPushCommand } from '#/modules/system-config/notification/test-push.command';
-import { TestPushRequestDto } from '#/modules/system-config/notification/test-push.request.dto';
-import { TestPushResponseDto } from '#/modules/system-config/notification/test-push.response.dto';
-import { TestSmsCommand } from '#/modules/system-config/notification/test-sms.command';
-import { TestSmsRequestDto } from '#/modules/system-config/notification/test-sms.request.dto';
-import { TestSmsResponseDto } from '#/modules/system-config/notification/test-sms.response.dto';
+import { TestEmailCommand } from '~/modules/system-config/notification/test-email.command';
+import { TestEmailRequestDto } from '~/modules/system-config/notification/test-email.request.dto';
+import { TestEmailResponseDto } from '~/modules/system-config/notification/test-email.response.dto';
+import { TestMessengerCommand } from '~/modules/system-config/notification/test-messenger.command';
+import { TestMessengerRequestDto } from '~/modules/system-config/notification/test-messenger.request.dto';
+import { TestMessengerResponseDto } from '~/modules/system-config/notification/test-messenger.response.dto';
+import { TestPushCommand } from '~/modules/system-config/notification/test-push.command';
+import { TestPushRequestDto } from '~/modules/system-config/notification/test-push.request.dto';
+import { TestPushResponseDto } from '~/modules/system-config/notification/test-push.response.dto';
+import { TestSmsCommand } from '~/modules/system-config/notification/test-sms.command';
+import { TestSmsRequestDto } from '~/modules/system-config/notification/test-sms.request.dto';
+import { TestSmsResponseDto } from '~/modules/system-config/notification/test-sms.response.dto';
 
 @ApiTags('system-configs')
 @UserAuth()

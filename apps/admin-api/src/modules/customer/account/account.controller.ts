@@ -1,17 +1,15 @@
 import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalClient } from '#/core/internal-client';
-import { BanCustomerRequestDto } from '#/modules/customer/account/ban-customer.request.dto';
-import { BanCustomerResponseDto } from '#/modules/customer/account/ban-customer.response.dto';
-import { DeleteCustomerRequestDto } from '#/modules/customer/account/delete-customer.request.dto';
-import { DeleteCustomerResponseDto } from '#/modules/customer/account/delete-customer.response.dto';
-import { UnbanCustomerRequestDto } from '#/modules/customer/account/unban-customer.request.dto';
-import { UnbanCustomerResponseDto } from '#/modules/customer/account/unban-customer.response.dto';
+import { InternalClient } from '~/core/internal-client';
+import { BanCustomerRequestDto } from '~/modules/customer/account/ban-customer.request.dto';
+import { BanCustomerResponseDto } from '~/modules/customer/account/ban-customer.response.dto';
+import { DeleteCustomerRequestDto } from '~/modules/customer/account/delete-customer.request.dto';
+import { DeleteCustomerResponseDto } from '~/modules/customer/account/delete-customer.response.dto';
+import { UnbanCustomerRequestDto } from '~/modules/customer/account/unban-customer.request.dto';
+import { UnbanCustomerResponseDto } from '~/modules/customer/account/unban-customer.response.dto';
 
 @ApiTags('customers')
 @UserAuth()

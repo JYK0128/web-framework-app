@@ -1,6 +1,6 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
-import { ToLowerCase } from '@pkg/server-core/http/decorators/to-lower-case.decorator';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { ToLowerCase } from '@pkg/server-core/http/decorators';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 import { IsEmail } from 'class-validator';
 
 @ApiSchema({ name: 'EmailVerificationRequestDto' })

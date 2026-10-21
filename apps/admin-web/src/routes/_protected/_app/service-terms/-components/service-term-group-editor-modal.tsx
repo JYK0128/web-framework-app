@@ -3,9 +3,9 @@ import { FormLayout, useAppForm } from '@pkg/web-core/form';
 import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { getServiceTermsControllerGroupsV1QueryKey, useServiceTermsControllerCreateGroupV1, useServiceTermsControllerUpdateGroupV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
-import type { ServiceTermGroupItemDto } from '#/.generated/api/model';
-import { Button } from '#/.generated/shadcn/components/ui';
+import { getServiceTermsControllerGroupsV1QueryKey, useServiceTermsControllerCreateGroupV1, useServiceTermsControllerUpdateGroupV1 } from '~/.generated/api/endpoints/service-terms/service-terms';
+import type { ServiceTermGroupItemDto } from '~/.generated/api/model';
+import { Button } from '~/.generated/shadcn/components/ui';
 
 export type ServiceTermGroupEditorModalProps = ModalComponentProps<string> & { group?: ServiceTermGroupItemDto };
 

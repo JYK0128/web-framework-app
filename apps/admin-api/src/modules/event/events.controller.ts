@@ -1,19 +1,17 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalClient } from '#/core/internal-client';
-import { CreateEventRequestDto } from '#/modules/event/create-event.request.dto';
-import { CreateEventResponseDto } from '#/modules/event/create-event.response.dto';
-import { DeleteEventRequestDto } from '#/modules/event/delete-event.request.dto';
-import { DeleteEventResponseDto } from '#/modules/event/delete-event.response.dto';
-import { GetEventsRequestDto } from '#/modules/event/get-events.request.dto';
-import { GetEventsResponseDto } from '#/modules/event/get-events.response.dto';
-import { UpdateEventRequestDto } from '#/modules/event/update-event.request.dto';
-import { UpdateEventResponseDto } from '#/modules/event/update-event.response.dto';
+import { InternalClient } from '~/core/internal-client';
+import { CreateEventRequestDto } from '~/modules/event/create-event.request.dto';
+import { CreateEventResponseDto } from '~/modules/event/create-event.response.dto';
+import { DeleteEventRequestDto } from '~/modules/event/delete-event.request.dto';
+import { DeleteEventResponseDto } from '~/modules/event/delete-event.response.dto';
+import { GetEventsRequestDto } from '~/modules/event/get-events.request.dto';
+import { GetEventsResponseDto } from '~/modules/event/get-events.response.dto';
+import { UpdateEventRequestDto } from '~/modules/event/update-event.request.dto';
+import { UpdateEventResponseDto } from '~/modules/event/update-event.response.dto';
 
 @ApiTags('events')
 @UserAuth()

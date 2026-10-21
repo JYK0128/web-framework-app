@@ -1,9 +1,9 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { PageRequestDto } from '@pkg/server-core/http/dto/request/page.request.dto';
+import { PageRequestDto } from '@pkg/server-core/http/dto/request';
 import { QnaPriority, QnaStatus } from '@pkg/shared/constants';
 import { IsEnum, IsIn, IsOptional } from 'class-validator';
 
-import type { BaseEntity } from '#/core/database/entities/base.entity';
+import type { BaseEntity } from '~/core/database/entities/base.entity';
 
 export class GetQnasRequestDto extends PageRequestDto<BaseEntity, 'createdAt' | 'updatedAt'> {
   @ApiPropertyOptional({ isArray: true, enum: ['createdAt', 'updatedAt'] })

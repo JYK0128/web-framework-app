@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 import { IsBoolean, IsString, Matches } from 'class-validator';
 
 export class OperatingLunchBreakDto extends BaseDto {

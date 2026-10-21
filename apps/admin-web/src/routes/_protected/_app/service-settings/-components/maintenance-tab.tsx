@@ -3,9 +3,9 @@ import { SectionCard } from '@pkg/web-core/template';
 import { cn } from '@pkg/web-core/utils';
 import { forwardRef, useImperativeHandle } from 'react';
 
-import type { MaintenanceConfigDto } from '#/.generated/api/model';
-import { Button, Switch } from '#/.generated/shadcn/components/ui';
-import { DAYS_OF_WEEK } from '#/routes/_protected/_app/service-settings/-constants/operations';
+import type { MaintenanceConfigDto } from '~/.generated/api/model';
+import { Button, Switch } from '~/.generated/shadcn/components/ui';
+import { DAYS_OF_WEEK } from '~/routes/_protected/_app/service-settings/-constants/operations';
 
 interface DaySelectorProps {
   days: number[]

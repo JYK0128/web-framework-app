@@ -3,11 +3,11 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { decrypt } from '@pkg/shared/server';
 
-import { SystemContext } from '#/core/system.context';
-import { env } from '#/env';
-import { AdminEmailConfigDto } from '#/modules/system-config/admin-email/admin-email-config.dto';
-import { AdminSmtpConfigResponseDto } from '#/modules/system-config/admin-email/admin-smtp-config.response.dto';
-import { GetAdminSmtpConfigQuery } from '#/modules/system-config/admin-email/get-admin-smtp-config.query';
+import { SystemContext } from '~/core/system.context';
+import { env } from '~/env';
+import { AdminEmailConfigDto } from '~/modules/system-config/admin-email/admin-email-config.dto';
+import { AdminSmtpConfigResponseDto } from '~/modules/system-config/admin-email/admin-smtp-config.response.dto';
+import { GetAdminSmtpConfigQuery } from '~/modules/system-config/admin-email/get-admin-smtp-config.query';
 
 @Injectable()
 @QueryHandler(GetAdminSmtpConfigQuery)

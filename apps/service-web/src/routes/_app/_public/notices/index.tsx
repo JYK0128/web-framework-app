@@ -8,8 +8,8 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { ChevronDown } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
-import { noticesControllerListV1 } from '#/.generated/api/endpoints/notices/notices';
-import type { NoticeItem } from '#/.generated/api/model';
+import { noticesControllerListV1 } from '~/.generated/api/endpoints/notices/notices';
+import type { NoticeItem } from '~/.generated/api/model';
 
 export const Route = createFileRoute('/_app/_public/notices/')({ component: NoticesPage });
 

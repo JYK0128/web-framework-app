@@ -1,7 +1,7 @@
 import { ApplicationError } from '@pkg/shared/common';
 import { GlobalLoading, RouterError, RouterNotFound, SystemDialog } from '@pkg/web-core/application';
+import { I18nContext, useI18nContextValue } from '@pkg/web-core/context/i18n';
 import { useHydrationMarker } from '@pkg/web-core/hooks';
-import { I18nContext, useI18nContextValue } from '@pkg/web-core/i18n';
 import { ModalContainer } from '@pkg/web-core/modal';
 import { PermissionProvider } from '@pkg/web-core/permission';
 import { ThemeProvider } from '@pkg/web-core/ui';
@@ -11,10 +11,10 @@ import type { i18n } from 'i18next';
 import { Provider as JotaiProvider } from 'jotai';
 import { type PropsWithChildren, useEffect } from 'react';
 
-import { getAuthControllerMeV1QueryKey, getAuthControllerMeV1QueryOptions } from '#/.generated/api/endpoints/auth/auth';
-import { getTermsControllerGetAgreementsV1QueryKey, getTermsControllerGetAgreementsV1QueryOptions } from '#/.generated/api/endpoints/terms/terms';
-import { Toaster } from '#/.generated/shadcn/components/ui';
-import appStylesHref from '#/styles/styles.css?url';
+import { getAuthControllerMeV1QueryKey, getAuthControllerMeV1QueryOptions } from '~/.generated/api/endpoints/auth/auth';
+import { getTermsControllerGetAgreementsV1QueryKey, getTermsControllerGetAgreementsV1QueryOptions } from '~/.generated/api/endpoints/terms/terms';
+import { Toaster } from '~/.generated/shadcn/components/ui';
+import appStylesHref from '~/styles/styles.css?url';
 
 export type AppRouterContext = {
   queryClient: QueryClient

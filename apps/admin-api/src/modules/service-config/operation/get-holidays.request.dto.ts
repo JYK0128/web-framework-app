@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { ToNumber } from '@pkg/server-core/http/decorators/to-number.decorator';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { ToNumber } from '@pkg/server-core/http/decorators';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 import { IsInt, IsOptional, Max, Min } from 'class-validator';
 
 export class GetHolidaysRequestDto extends BaseDto {

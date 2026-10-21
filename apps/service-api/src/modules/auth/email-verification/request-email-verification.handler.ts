@@ -2,22 +2,21 @@ import { randomBytes, randomUUID } from 'node:crypto';
 
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { EVENT_BROKER } from '@pkg/server-core/event-broker/event-broker.interface';
-import { EventBroker } from '@pkg/server-core/event-broker/event-broker.service';
-import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
+import { EVENT_BROKER, EventBroker } from '@pkg/server-core/event-broker';
+import { KvStore } from '@pkg/server-core/kv-store';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { hashWithSecret } from '@pkg/shared/server';
 
-import { SECURITY_CONFIG } from '#/app.config';
-import { User } from '#/core/database/entities/auth';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { env } from '#/env';
-import { AuthKvStoreKey } from '#/modules/auth/auth.key';
-import { EmailVerificationEvent } from '#/modules/auth/email-verification/email-verification.event';
-import { RequestEmailVerificationCommand } from '#/modules/auth/email-verification/request-email-verification.command';
-import { RequestEmailVerificationResponseDto } from '#/modules/auth/email-verification/request-email-verification.response.dto';
-import { ensureEmailNotificationConfigured } from '#/modules/system-config/notification/service-email-config.helper';
-import { SystemContext } from '#/modules/system-config/system.context';
+import { SECURITY_CONFIG } from '~/app.config';
+import { User } from '~/core/database/entities/auth';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { env } from '~/env';
+import { AuthKvStoreKey } from '~/modules/auth/auth.key';
+import { EmailVerificationEvent } from '~/modules/auth/email-verification/email-verification.event';
+import { RequestEmailVerificationCommand } from '~/modules/auth/email-verification/request-email-verification.command';
+import { RequestEmailVerificationResponseDto } from '~/modules/auth/email-verification/request-email-verification.response.dto';
+import { ensureEmailNotificationConfigured } from '~/modules/system-config/notification/service-email-config.helper';
+import { SystemContext } from '~/modules/system-config/system.context';
 
 @Injectable()
 @CommandHandler(RequestEmailVerificationCommand)

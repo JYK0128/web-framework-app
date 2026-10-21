@@ -1,15 +1,14 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Public } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Public, SwaggerApiResponse } from '@pkg/server-core/http/decorators';
 
-import { GetServiceTermQuery } from '#/modules/service-term/document/get-service-term.query';
-import { GetServiceTermRequestDto } from '#/modules/service-term/document/get-service-term.request.dto';
-import { GetServiceTermResponseDto } from '#/modules/service-term/document/get-service-term.response.dto';
-import { GetServiceTermsQuery } from '#/modules/service-term/document/get-service-terms.query';
-import { GetServiceTermsRequestDto } from '#/modules/service-term/document/get-service-terms.request.dto';
-import { GetServiceTermsResponseDto } from '#/modules/service-term/document/get-service-terms.response.dto';
+import { GetServiceTermQuery } from '~/modules/service-term/document/get-service-term.query';
+import { GetServiceTermRequestDto } from '~/modules/service-term/document/get-service-term.request.dto';
+import { GetServiceTermResponseDto } from '~/modules/service-term/document/get-service-term.response.dto';
+import { GetServiceTermsQuery } from '~/modules/service-term/document/get-service-terms.query';
+import { GetServiceTermsRequestDto } from '~/modules/service-term/document/get-service-terms.request.dto';
+import { GetServiceTermsResponseDto } from '~/modules/service-term/document/get-service-terms.response.dto';
 
 @ApiTags('service-terms')
 @Controller('service-terms')

@@ -9,9 +9,9 @@ import { type ColumnFiltersState, createColumnHelper, type SortingState } from '
 import { Eye, MoreHorizontal, Trash2 } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
-import { qnaControllerListV1, useQnaControllerRemoveV1 } from '#/.generated/api/endpoints/qna/qna';
-import type { QnaControllerListV1Params, QnaControllerListV1SortItem, QnaItem } from '#/.generated/api/model';
-import { OperationNotice } from '#/routes/_app/_protected/-components/operation-notice';
+import { qnaControllerListV1, useQnaControllerRemoveV1 } from '~/.generated/api/endpoints/qna/qna';
+import type { QnaControllerListV1Params, QnaControllerListV1SortItem, QnaItem } from '~/.generated/api/model';
+import { OperationNotice } from '~/routes/_app/_protected/-components/operation-notice';
 
 import { QnaCreateModal } from './-components/qna-create-modal';
 import { QnaDetailModal } from './-components/qna-detail-modal';

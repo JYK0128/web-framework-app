@@ -1,12 +1,12 @@
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
+import { PrincipalContext } from '@pkg/server-core/http/contexts';
 
-import { SupportMessage } from '#/core/database/entities/support';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { GetSupportMessagesQuery } from '#/modules/support/message/get-support-messages.query';
-import { GetSupportMessagesResponseDto } from '#/modules/support/message/get-support-messages.response.dto';
-import { SupportMessageItemDto } from '#/modules/support/message/support-message-item.dto';
-import { findSupportRoom } from '#/modules/support/room/support-rooms.helpers';
+import { SupportMessage } from '~/core/database/entities/support';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { GetSupportMessagesQuery } from '~/modules/support/message/get-support-messages.query';
+import { GetSupportMessagesResponseDto } from '~/modules/support/message/get-support-messages.response.dto';
+import { SupportMessageItemDto } from '~/modules/support/message/support-message-item.dto';
+import { findSupportRoom } from '~/modules/support/room/support-rooms.helpers';
 
 @QueryHandler(GetSupportMessagesQuery)
 export class GetSupportMessagesHandler implements IQueryHandler<GetSupportMessagesQuery, GetSupportMessagesResponseDto> {

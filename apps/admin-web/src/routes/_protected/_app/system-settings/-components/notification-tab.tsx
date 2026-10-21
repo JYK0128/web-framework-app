@@ -5,10 +5,10 @@ import { forwardRef, useImperativeHandle } from 'react';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { useSystemConfigControllerTestEmailV1, useSystemConfigControllerTestMessengerV1, useSystemConfigControllerTestPushV1, useSystemConfigControllerTestSmsV1 } from '#/.generated/api/endpoints/system-configs/system-configs';
-import { type KakaoMessengerDetailsDtoAgency, type MessengerConfigDtoProvider, type NotificationConfigDto, type PushConfigDtoProvider, type SmsConfigDtoProvider } from '#/.generated/api/model';
-import { SystemConfigControllerTestMessengerV1Body } from '#/.generated/api/zod/system-configs/system-configs';
-import { Button, Label, Switch } from '#/.generated/shadcn/components/ui';
+import { useSystemConfigControllerTestEmailV1, useSystemConfigControllerTestMessengerV1, useSystemConfigControllerTestPushV1, useSystemConfigControllerTestSmsV1 } from '~/.generated/api/endpoints/system-configs/system-configs';
+import { type KakaoMessengerDetailsDtoAgency, type MessengerConfigDtoProvider, type NotificationConfigDto, type PushConfigDtoProvider, type SmsConfigDtoProvider } from '~/.generated/api/model';
+import { SystemConfigControllerTestMessengerV1Body } from '~/.generated/api/zod/system-configs/system-configs';
+import { Button, Label, Switch } from '~/.generated/shadcn/components/ui';
 
 export interface NotificationTabHandle {
   submitData: () => Promise<NotificationConfigDto | null | undefined>

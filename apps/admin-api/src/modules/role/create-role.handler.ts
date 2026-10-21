@@ -2,10 +2,10 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Permission as PermissionEntity, Role } from '#/core/database/entities/auth.extensions';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { CreateRoleCommand } from '#/modules/role/create-role.command';
-import { CreateRoleResponseDto } from '#/modules/role/create-role.response.dto';
+import { Permission as PermissionEntity, Role } from '~/core/database/entities/auth.extensions';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { CreateRoleCommand } from '~/modules/role/create-role.command';
+import { CreateRoleResponseDto } from '~/modules/role/create-role.response.dto';
 
 @Injectable()
 @CommandHandler(CreateRoleCommand)

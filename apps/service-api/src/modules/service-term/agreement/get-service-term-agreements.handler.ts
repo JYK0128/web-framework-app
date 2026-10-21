@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { Term, UserTermAgreement } from '#/core/database/entities/terms';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { GetServiceTermAgreementsQuery } from '#/modules/service-term/agreement/get-service-term-agreements.query';
-import { GetServiceTermAgreementsResponseDto } from '#/modules/service-term/agreement/get-service-term-agreements.response.dto';
-import { ServiceTermAgreementItemDto } from '#/modules/service-term/agreement/service-term-agreement-item.dto';
-import { isPublished, latestPublishedTerms } from '#/modules/service-term/service-term.helpers';
+import { Term, UserTermAgreement } from '~/core/database/entities/terms';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { GetServiceTermAgreementsQuery } from '~/modules/service-term/agreement/get-service-term-agreements.query';
+import { GetServiceTermAgreementsResponseDto } from '~/modules/service-term/agreement/get-service-term-agreements.response.dto';
+import { ServiceTermAgreementItemDto } from '~/modules/service-term/agreement/service-term-agreement-item.dto';
+import { isPublished, latestPublishedTerms } from '~/modules/service-term/service-term.helpers';
 
 @Injectable()
 @QueryHandler(GetServiceTermAgreementsQuery)

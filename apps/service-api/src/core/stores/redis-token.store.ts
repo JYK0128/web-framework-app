@@ -1,10 +1,10 @@
 import { createHash } from 'node:crypto';
 
 import { Injectable } from '@nestjs/common';
-import { type RefreshToken, type TokenConsumeResult, TokenStore } from '@pkg/server-core/auth/user/token/stores/token.store';
-import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
+import { type RefreshToken, type TokenConsumeResult, TokenStore } from '@pkg/server-core/auth';
+import { KvStore } from '@pkg/server-core/kv-store';
 
-import { SERVICE_ID } from '#/app.config';
+import { SERVICE_ID } from '~/app.config';
 
 @Injectable()
 export class RedisTokenStore extends TokenStore {

@@ -1,13 +1,12 @@
 import { RequestContext } from '@mikro-orm/core';
 import { ConnectedSocket, MessageBody, OnGatewayInit, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
-import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { RealtimeService } from '@pkg/server-core/realtime/realtime.service';
+import { Permissions, UserAuth } from '@pkg/server-core/http/decorators';
+import { RealtimeService } from '@pkg/server-core/realtime';
 import { AdminPermission } from '@pkg/shared';
 import type { Namespace, Socket } from 'socket.io';
 
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { InternalClient } from '#/core/internal-client';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { InternalClient } from '~/core/internal-client';
 
 @WebSocketGateway({ namespace: '/support', path: '/api/v1/socket.io', cors: { origin: false } })
 export class SupportGateway implements OnGatewayInit {

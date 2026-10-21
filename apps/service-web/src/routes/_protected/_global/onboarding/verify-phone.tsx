@@ -5,8 +5,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 
-import { getAuthControllerMeV1QueryKey, useAuthControllerVerifyPhoneNumberV1 } from '#/.generated/api/endpoints/auth/auth';
-import { browserEnv } from '#/lib/browser-env';
+import { getAuthControllerMeV1QueryKey, useAuthControllerVerifyPhoneNumberV1 } from '~/.generated/api/endpoints/auth/auth';
+import { browserEnv } from '~/lib/browser-env';
 
 import { OnboardingLayout } from './-components/onboarding-layout';
 

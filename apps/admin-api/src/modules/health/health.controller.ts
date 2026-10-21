@@ -1,14 +1,13 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { HealthCheck, HealthCheckService, HealthIndicatorService, MikroOrmHealthIndicator } from '@nestjs/terminus';
-import { Public } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
-import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
+import { Public, SwaggerApiResponse } from '@pkg/server-core/http/decorators';
+import { KvStore } from '@pkg/server-core/kv-store';
 
-import { CheckLiveRequestDto } from '#/modules/health/check-live.request.dto';
-import { CheckLiveResponseDto } from '#/modules/health/check-live.response.dto';
-import { CheckReadyRequestDto } from '#/modules/health/check-ready.request.dto';
-import { CheckReadyResponseDto } from '#/modules/health/check-ready.response.dto';
+import { CheckLiveRequestDto } from '~/modules/health/check-live.request.dto';
+import { CheckLiveResponseDto } from '~/modules/health/check-live.response.dto';
+import { CheckReadyRequestDto } from '~/modules/health/check-ready.request.dto';
+import { CheckReadyResponseDto } from '~/modules/health/check-ready.response.dto';
 
 /**
  * Health check controller

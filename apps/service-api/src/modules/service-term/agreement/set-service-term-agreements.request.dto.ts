@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { ArrayUnique, IsArray, IsBoolean, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 
-import { ServiceAgreementMetadataDto } from '#/modules/service-term/agreement/service-agreement-metadata.dto';
+import { ServiceAgreementMetadataDto } from '~/modules/service-term/agreement/service-agreement-metadata.dto';
 
 class ServiceTermAgreementInputDto {
   @ApiProperty() @IsString() @IsUUID() termId!: string;

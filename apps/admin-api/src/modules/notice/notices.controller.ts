@@ -1,19 +1,17 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalClient } from '#/core/internal-client';
-import { CreateNoticeRequestDto } from '#/modules/notice/create-notice.request.dto';
-import { CreateNoticeResponseDto } from '#/modules/notice/create-notice.response.dto';
-import { DeleteNoticeRequestDto } from '#/modules/notice/delete-notice.request.dto';
-import { DeleteNoticeResponseDto } from '#/modules/notice/delete-notice.response.dto';
-import { GetNoticesRequestDto } from '#/modules/notice/get-notices.request.dto';
-import { GetNoticesResponseDto } from '#/modules/notice/get-notices.response.dto';
-import { UpdateNoticeRequestDto } from '#/modules/notice/update-notice.request.dto';
-import { UpdateNoticeResponseDto } from '#/modules/notice/update-notice.response.dto';
+import { InternalClient } from '~/core/internal-client';
+import { CreateNoticeRequestDto } from '~/modules/notice/create-notice.request.dto';
+import { CreateNoticeResponseDto } from '~/modules/notice/create-notice.response.dto';
+import { DeleteNoticeRequestDto } from '~/modules/notice/delete-notice.request.dto';
+import { DeleteNoticeResponseDto } from '~/modules/notice/delete-notice.response.dto';
+import { GetNoticesRequestDto } from '~/modules/notice/get-notices.request.dto';
+import { GetNoticesResponseDto } from '~/modules/notice/get-notices.response.dto';
+import { UpdateNoticeRequestDto } from '~/modules/notice/update-notice.request.dto';
+import { UpdateNoticeResponseDto } from '~/modules/notice/update-notice.response.dto';
 
 @ApiTags('notices')
 @UserAuth()

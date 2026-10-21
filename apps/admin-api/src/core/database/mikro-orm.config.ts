@@ -5,9 +5,9 @@ import { Migrator } from '@mikro-orm/migrations';
 import { defineConfig, PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { SeedManager } from '@mikro-orm/seeder';
 
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { entities } from '#/entities.generated';
-import { env } from '#/env';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { entities } from '~/entities.generated';
+import { env } from '~/env';
 
 export default defineConfig({
   clientUrl: env.DATABASE_URL,

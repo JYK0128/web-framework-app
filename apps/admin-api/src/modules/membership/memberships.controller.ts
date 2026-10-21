@@ -1,21 +1,19 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalClient } from '#/core/internal-client';
-import { CreateMembershipRequestDto } from '#/modules/membership/create-membership.request.dto';
-import { CreateMembershipResponseDto } from '#/modules/membership/create-membership.response.dto';
-import { DeleteMembershipRequestDto } from '#/modules/membership/delete-membership.request.dto';
-import { DeleteMembershipResponseDto } from '#/modules/membership/delete-membership.response.dto';
-import { GetMembershipPermissionsRequestDto } from '#/modules/membership/get-membership-permissions.request.dto';
-import { GetMembershipPermissionsResponseDto } from '#/modules/membership/get-membership-permissions.response.dto';
-import { GetMembershipsRequestDto } from '#/modules/membership/get-memberships.request.dto';
-import { GetMembershipsResponseDto } from '#/modules/membership/get-memberships.response.dto';
-import { UpdateMembershipRequestDto } from '#/modules/membership/update-membership.request.dto';
-import { UpdateMembershipResponseDto } from '#/modules/membership/update-membership.response.dto';
+import { InternalClient } from '~/core/internal-client';
+import { CreateMembershipRequestDto } from '~/modules/membership/create-membership.request.dto';
+import { CreateMembershipResponseDto } from '~/modules/membership/create-membership.response.dto';
+import { DeleteMembershipRequestDto } from '~/modules/membership/delete-membership.request.dto';
+import { DeleteMembershipResponseDto } from '~/modules/membership/delete-membership.response.dto';
+import { GetMembershipPermissionsRequestDto } from '~/modules/membership/get-membership-permissions.request.dto';
+import { GetMembershipPermissionsResponseDto } from '~/modules/membership/get-membership-permissions.response.dto';
+import { GetMembershipsRequestDto } from '~/modules/membership/get-memberships.request.dto';
+import { GetMembershipsResponseDto } from '~/modules/membership/get-memberships.response.dto';
+import { UpdateMembershipRequestDto } from '~/modules/membership/update-membership.request.dto';
+import { UpdateMembershipResponseDto } from '~/modules/membership/update-membership.response.dto';
 
 @ApiTags('memberships')
 @UserAuth()

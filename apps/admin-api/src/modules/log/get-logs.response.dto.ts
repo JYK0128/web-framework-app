@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PageResponseDto } from '@pkg/server-core/http/dto/response/page.response.dto';
+import { PageResponseDto } from '@pkg/server-core/http/dto/response';
 import { Type } from 'class-transformer';
 
-import { LogItemDto } from '#/modules/log/log-item.dto';
+import { LogItemDto } from '~/modules/log/log-item.dto';
 
 export class GetLogsResponseDto extends PageResponseDto<LogItemDto> {
   @ApiProperty({ type: [LogItemDto] })

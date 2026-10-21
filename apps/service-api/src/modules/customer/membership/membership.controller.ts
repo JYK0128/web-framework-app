@@ -1,12 +1,11 @@
 import { Body, Controller, Param, Patch } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiExcludeController, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { MachineAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { MachineAuth, SwaggerApiResponse } from '@pkg/server-core/http/decorators';
 
-import { UpdateCustomerRoleCommand } from '#/modules/customer/membership/update-customer-role.command';
-import { UpdateCustomerRoleRequestDto } from '#/modules/customer/membership/update-customer-role.request.dto';
-import { UpdateCustomerRoleResponseDto } from '#/modules/customer/membership/update-customer-role.response.dto';
+import { UpdateCustomerRoleCommand } from '~/modules/customer/membership/update-customer-role.command';
+import { UpdateCustomerRoleRequestDto } from '~/modules/customer/membership/update-customer-role.request.dto';
+import { UpdateCustomerRoleResponseDto } from '~/modules/customer/membership/update-customer-role.response.dto';
 
 @ApiTags('Internal (Machine)')
 @ApiExcludeController()

@@ -1,8 +1,8 @@
 import type { Opt } from '@mikro-orm/core';
 import { Entity, Enum, Property } from '@mikro-orm/decorators/legacy';
 
-import { BaseEntity } from '#/core/database/entities/base.entity';
-import { ContentCategory } from '#/core/database/entities/common/content-category';
+import { BaseEntity } from '~/core/database/entities/base.entity';
+import { ContentCategory } from '~/core/database/entities/common/content-category';
 
 export const FaqCategory = ContentCategory;
 export type FaqCategory = ContentCategory;

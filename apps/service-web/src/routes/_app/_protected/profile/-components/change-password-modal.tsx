@@ -1,12 +1,12 @@
 import { ApplicationError, getValidationFieldErrors } from '@pkg/shared/common';
 import { assertPasswordPolicy, SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
+import { useI18n } from '@pkg/web-core/context/i18n';
 import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
-import { useI18n } from '@pkg/web-core/i18n';
 import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 import { Button } from '@pkg/web-core/ui';
 
-import { useAuthControllerChangePasswordV1 } from '#/.generated/api/endpoints/auth/auth';
-import { AuthControllerChangePasswordV1Body } from '#/.generated/api/zod/auth/auth';
+import { useAuthControllerChangePasswordV1 } from '~/.generated/api/endpoints/auth/auth';
+import { AuthControllerChangePasswordV1Body } from '~/.generated/api/zod/auth/auth';
 
 export function ProfileChangePasswordModal({ open, onOpenChange, close }: ModalComponentProps<boolean>) {
   const { t, i18n } = useI18n();

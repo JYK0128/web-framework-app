@@ -4,28 +4,11 @@
   "private": true,
   "type": "module",
   "imports": {
-    "#.generated/shadcn/components/ui/button": "./src/.generated/shadcn/components/ui/button.tsx",
-    "#.generated/shadcn/components/ui/chart": "./src/.generated/shadcn/components/ui/chart.tsx",
-    "#.generated/shadcn/components/ui/select": "./src/.generated/shadcn/components/ui/select.tsx",
-    "#.generated/shadcn/lib/utils": "./src/.generated/shadcn/lib/utils.ts",
-    "#context/i18n": "./src/context/i18n/index.ts",
-    "#context/permission": "./src/context/permission/index.ts",
-    "#ui": "./src/ui/index.ts",
-    "#ui/application/navigation": "./src/ui/application/navigation/index.ts",
-    "#ui/date-time": "./src/ui/date-time/index.ts",
-    "#ui/editor": "./src/ui/editor/index.ts",
-    "#ui/form": "./src/ui/form/index.ts",
-    "#ui/form/components": "./src/ui/form/components/index.ts",
-    "#ui/form/fields": "./src/ui/form/fields/index.ts",
-    "#ui/modal": "./src/ui/modal/index.ts",
-    "#ui/slot": "./src/ui/slot/index.ts",
-    "#ui/template": "./src/ui/template/index.ts",
     "#*": [
       "./src/*.ts",
       "./src/*.tsx",
       "./src/*/index.ts",
-      "./src/*/index.tsx",
-      "./src/*"
+      "./src/*/index.tsx"
     ]
   },
   "exports": {
@@ -33,21 +16,17 @@
       "types": "./src/ui/application/index.ts",
       "default": "./src/ui/application/index.ts"
     },
-    "./data-grid": {
-      "types": "./src/ui/data-grid/index.ts",
-      "default": "./src/ui/data-grid/index.ts"
-    },
     "./chart": {
       "types": "./src/ui/chart/index.ts",
       "default": "./src/ui/chart/index.ts"
     },
-    "./survey-flow": {
-      "types": "./src/ui/survey-flow/index.ts",
-      "default": "./src/ui/survey-flow/index.ts"
+    "./context/i18n": {
+      "types": "./src/context/i18n/index.ts",
+      "default": "./src/context/i18n/index.ts"
     },
-    "./survey-flow.css": {
-      "types": "./src/ui/survey-flow/survey-flow.css",
-      "default": "./src/ui/survey-flow/survey-flow.css"
+    "./data-grid": {
+      "types": "./src/ui/data-grid/index.ts",
+      "default": "./src/ui/data-grid/index.ts"
     },
     "./date-time": {
       "types": "./src/ui/date-time/index.ts",
@@ -65,29 +44,17 @@
       "types": "./src/ui/form/index.ts",
       "default": "./src/ui/form/index.ts"
     },
+    "./hooks": {
+      "types": "./src/hooks/index.ts",
+      "default": "./src/hooks/index.ts"
+    },
     "./i18n": {
-      "types": "./src/context/i18n/index.ts",
-      "default": "./src/context/i18n/index.ts"
+      "types": "./src/i18n/index.ts",
+      "default": "./src/i18n/index.ts"
     },
-    "./runtime": {
-      "types": "./src/runtime/index.ts",
-      "default": "./src/runtime/index.ts"
-    },
-    "./i18n/request-middleware": {
-      "types": "./src/i18n/request-middleware.ts",
-      "default": "./src/i18n/request-middleware.ts"
-    },
-    "./i18n/web-instance": {
-      "types": "./src/i18n/web-instance.ts",
-      "default": "./src/i18n/web-instance.ts"
-    },
-    "./runtime/sse-client": {
-      "types": "./src/runtime/sse-client.ts",
-      "default": "./src/runtime/sse-client.ts"
-    },
-    "./template": {
-      "types": "./src/ui/template/index.ts",
-      "default": "./src/ui/template/index.ts"
+    "./i18n/resource": {
+      "types": "./src/i18n/resource/index.ts",
+      "default": "./src/i18n/resource/index.ts"
     },
     "./modal": {
       "types": "./src/ui/modal/index.ts",
@@ -97,41 +64,37 @@
       "types": "./src/context/permission/index.ts",
       "default": "./src/context/permission/index.ts"
     },
-    "./styles.css": {
-      "types": "./src/styles/index.css",
-      "default": "./src/styles/index.css"
+    "./runtime": {
+      "types": "./src/runtime/index.ts",
+      "default": "./src/runtime/index.ts"
     },
     "./slot": {
       "types": "./src/ui/slot/index.ts",
       "default": "./src/ui/slot/index.ts"
+    },
+    "./styles.css": {
+      "types": "./src/styles/index.css",
+      "default": "./src/styles/index.css"
+    },
+    "./survey-flow": {
+      "types": "./src/ui/survey-flow/index.ts",
+      "default": "./src/ui/survey-flow/index.ts"
+    },
+    "./survey-flow.css": {
+      "types": "./src/ui/survey-flow/survey-flow.css",
+      "default": "./src/ui/survey-flow/survey-flow.css"
+    },
+    "./template": {
+      "types": "./src/ui/template/index.ts",
+      "default": "./src/ui/template/index.ts"
     },
     "./ui": {
       "types": "./src/ui/index.ts",
       "default": "./src/ui/index.ts"
     },
     "./utils": {
-      "types": "./src/.generated/shadcn/lib/utils.ts",
-      "default": "./src/.generated/shadcn/lib/utils.ts"
-    },
-    "./hooks": {
-      "types": "./src/hooks/index.ts",
-      "default": "./src/hooks/index.ts"
-    },
-    "./runtime/api-client": {
-      "types": "./src/runtime/api-client.ts",
-      "default": "./src/runtime/api-client.ts"
-    },
-    "./runtime/cache-patcher": {
-      "types": "./src/runtime/cache-patcher.ts",
-      "default": "./src/runtime/cache-patcher.ts"
-    },
-    "./runtime/session": {
-      "types": "./src/runtime/session.ts",
-      "default": "./src/runtime/session.ts"
-    },
-    "./i18n/resource": {
-      "types": "./src/i18n/resource/index.ts",
-      "default": "./src/i18n/resource/index.ts"
+      "types": "./src/utils/index.ts",
+      "default": "./src/utils/index.ts"
     }
   },
   "scripts": {

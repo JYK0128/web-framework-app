@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { LogTelemetryService } from '@pkg/server-core/log-telemetry/log-telemetry.service';
+import { LogTelemetryService } from '@pkg/server-core/log-telemetry';
 
-import { GetLogStatsQuery } from '#/modules/log/get-log-stats.query';
-import { GetLogStatsResponseDto } from '#/modules/log/get-log-stats.response.dto';
+import { GetLogStatsQuery } from '~/modules/log/get-log-stats.query';
+import { GetLogStatsResponseDto } from '~/modules/log/get-log-stats.response.dto';
 
 @Injectable()
 @QueryHandler(GetLogStatsQuery)

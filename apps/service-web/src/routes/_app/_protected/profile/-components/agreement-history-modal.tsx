@@ -3,8 +3,8 @@ import { Button } from '@pkg/web-core/ui';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
-import { getServiceTermsControllerGetAgreementHistoryV1QueryKey, serviceTermsControllerGetAgreementHistoryV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
-import type { ServiceAgreementHistoryItemDto, ServiceTermAgreementItem } from '#/.generated/api/model';
+import { getServiceTermsControllerGetAgreementHistoryV1QueryKey, serviceTermsControllerGetAgreementHistoryV1 } from '~/.generated/api/endpoints/service-terms/service-terms';
+import type { ServiceAgreementHistoryItemDto, ServiceTermAgreementItem } from '~/.generated/api/model';
 
 export function AgreementHistoryModal({ term, open, onOpenChange }: ModalComponentProps & { term: ServiceTermAgreementItem }) {
   const [selected, setSelected] = useState<ServiceAgreementHistoryItemDto | null>(null);

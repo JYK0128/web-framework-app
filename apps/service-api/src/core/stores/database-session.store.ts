@@ -1,12 +1,12 @@
 import { RequestContext as MikroRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { SessionStore } from '@pkg/server-core/auth/user/session/session.store';
-import { RequestContext } from '@pkg/server-core/http/contexts/request.context';
+import { SessionStore } from '@pkg/server-core/auth';
+import { RequestContext } from '@pkg/server-core/http/contexts';
 import { type Cookie, type SessionData } from 'express-session';
 
-import { SECURITY_CONFIG } from '#/app.config';
-import { Session } from '#/core/database/entities/auth';
-import { AppEntityManager } from '#/core/database/entity-manager';
+import { SECURITY_CONFIG } from '~/app.config';
+import { Session } from '~/core/database/entities/auth';
+import { AppEntityManager } from '~/core/database/entity-manager';
 
 @Injectable()
 export class DatabaseSessionStore extends SessionStore {

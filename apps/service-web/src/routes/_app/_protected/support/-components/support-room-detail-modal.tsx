@@ -5,9 +5,9 @@ import { Button, Skeleton } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
-import { getSupportControllerGetRoomV1QueryKey, getSupportControllerListMessagesV1QueryKey, getSupportControllerListRoomsV1QueryKey, useSupportControllerCreateMessageV1, useSupportControllerCreateRoomV1, useSupportControllerGetRoomV1, useSupportControllerListMessagesV1, useSupportControllerUpdateRoomV1 } from '#/.generated/api/endpoints/support/support';
-import type { SupportMessageItem, SupportRoomItem } from '#/.generated/api/model';
-import { useSupportSocket } from '#/hooks/use-support-socket';
+import { getSupportControllerGetRoomV1QueryKey, getSupportControllerListMessagesV1QueryKey, getSupportControllerListRoomsV1QueryKey, useSupportControllerCreateMessageV1, useSupportControllerCreateRoomV1, useSupportControllerGetRoomV1, useSupportControllerListMessagesV1, useSupportControllerUpdateRoomV1 } from '~/.generated/api/endpoints/support/support';
+import type { SupportMessageItem, SupportRoomItem } from '~/.generated/api/model';
+import { useSupportSocket } from '~/hooks/use-support-socket';
 
 export type SupportRoomDetailModalProps = ModalComponentProps & { room?: SupportRoomItem };
 

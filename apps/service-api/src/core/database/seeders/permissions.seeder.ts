@@ -2,7 +2,7 @@ import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 import { ALL_SERVICE_PERMISSIONS } from '@pkg/shared';
 
-import { Permission } from '#/core/database/entities/auth.extensions';
+import { Permission } from '~/core/database/entities/auth.extensions';
 
 export class PermissionsSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
