@@ -1,21 +1,19 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
-import { SkipPasswordExpiry, UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { PrincipalContext } from '@pkg/server-core/http/contexts';
+import { Permissions, SkipPasswordExpiry, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { ServicePermission } from '@pkg/shared';
 
-import { GetServiceAgreementHistoryQuery } from '#/modules/service-term/agreement/get-service-agreement-history.query';
-import { GetServiceAgreementHistoryRequestDto } from '#/modules/service-term/agreement/get-service-agreement-history.request.dto';
-import { GetServiceAgreementHistoryResponseDto } from '#/modules/service-term/agreement/get-service-agreement-history.response.dto';
-import { GetServiceTermAgreementsQuery } from '#/modules/service-term/agreement/get-service-term-agreements.query';
-import { GetServiceTermAgreementsRequestDto } from '#/modules/service-term/agreement/get-service-term-agreements.request.dto';
-import { GetServiceTermAgreementsResponseDto } from '#/modules/service-term/agreement/get-service-term-agreements.response.dto';
-import { SetServiceTermAgreementsCommand } from '#/modules/service-term/agreement/set-service-term-agreements.command';
-import { SetServiceTermAgreementsRequestDto } from '#/modules/service-term/agreement/set-service-term-agreements.request.dto';
-import { SetServiceTermAgreementsResponseDto } from '#/modules/service-term/agreement/set-service-term-agreements.response.dto';
+import { GetServiceAgreementHistoryQuery } from '~/modules/service-term/agreement/get-service-agreement-history.query';
+import { GetServiceAgreementHistoryRequestDto } from '~/modules/service-term/agreement/get-service-agreement-history.request.dto';
+import { GetServiceAgreementHistoryResponseDto } from '~/modules/service-term/agreement/get-service-agreement-history.response.dto';
+import { GetServiceTermAgreementsQuery } from '~/modules/service-term/agreement/get-service-term-agreements.query';
+import { GetServiceTermAgreementsRequestDto } from '~/modules/service-term/agreement/get-service-term-agreements.request.dto';
+import { GetServiceTermAgreementsResponseDto } from '~/modules/service-term/agreement/get-service-term-agreements.response.dto';
+import { SetServiceTermAgreementsCommand } from '~/modules/service-term/agreement/set-service-term-agreements.command';
+import { SetServiceTermAgreementsRequestDto } from '~/modules/service-term/agreement/set-service-term-agreements.request.dto';
+import { SetServiceTermAgreementsResponseDto } from '~/modules/service-term/agreement/set-service-term-agreements.response.dto';
 
 @ApiTags('service-terms')
 @Controller('service-terms')

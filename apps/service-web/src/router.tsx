@@ -1,4 +1,4 @@
-import '#/lib/browser-env';
+import '~/lib/browser-env';
 
 import { DateUtil } from '@pkg/shared';
 import { DEFAULT_TIMEZONE } from '@pkg/shared/common';
@@ -8,7 +8,7 @@ import { createRouter } from '@tanstack/react-router';
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query';
 import { createIsomorphicFn, getGlobalStartContext } from '@tanstack/react-start';
 
-import { getI18n } from '#/i18n/i18n';
+import { getI18n } from '~/i18n/i18n';
 
 import { routeTree } from './routeTree.gen';
 

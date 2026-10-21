@@ -7,9 +7,9 @@ import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { ArrowRight, Check, ChevronRight, Loader2 } from 'lucide-react';
 import { useMemo } from 'react';
 
-import { getTermsControllerGetAgreementsV1QueryKey, useTermsControllerGetAgreementsV1, useTermsControllerSetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
-import type { TermAgreementItemDto } from '#/.generated/api/model';
-import { Button, Checkbox, Field, FieldContent, FieldDescription, FieldLabel, Skeleton } from '#/.generated/shadcn/components/ui';
+import { getTermsControllerGetAgreementsV1QueryKey, useTermsControllerGetAgreementsV1, useTermsControllerSetAgreementsV1 } from '~/.generated/api/endpoints/terms/terms';
+import type { TermAgreementItemDto } from '~/.generated/api/model';
+import { Button, Checkbox, Field, FieldContent, FieldDescription, FieldLabel, Skeleton } from '~/.generated/shadcn/components/ui';
 
 import { OnboardingLayout } from './-components/onboarding-layout';
 import { OnboardingTermDetailModal } from './-components/term-detail-modal';

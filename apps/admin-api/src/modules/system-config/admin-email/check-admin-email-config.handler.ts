@@ -2,10 +2,10 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { SystemContext } from '#/core/system.context';
-import { AdminEmailConfigDto } from '#/modules/system-config/admin-email/admin-email-config.dto';
-import { CheckAdminEmailConfigQuery } from '#/modules/system-config/admin-email/check-admin-email-config.query';
-import { CheckAdminEmailConfigResponseDto } from '#/modules/system-config/admin-email/check-admin-email-config.response.dto';
+import { SystemContext } from '~/core/system.context';
+import { AdminEmailConfigDto } from '~/modules/system-config/admin-email/admin-email-config.dto';
+import { CheckAdminEmailConfigQuery } from '~/modules/system-config/admin-email/check-admin-email-config.query';
+import { CheckAdminEmailConfigResponseDto } from '~/modules/system-config/admin-email/check-admin-email-config.response.dto';
 
 @Injectable()
 @QueryHandler(CheckAdminEmailConfigQuery)

@@ -4,9 +4,9 @@ import { SectionCard } from '@pkg/web-core/template';
 import { useMutation } from '@tanstack/react-query';
 import { Send } from 'lucide-react';
 
-import type { SystemConfigControllerTestAdminEmailV1200 } from '#/.generated/api/model/systemConfigControllerTestAdminEmailV1200';
-import type { TestAdminEmailRequestDto } from '#/.generated/api/model/testAdminEmailRequestDto';
-import { axios } from '#/lib/axios';
+import type { SystemConfigControllerTestAdminEmailV1200 } from '~/.generated/api/model/systemConfigControllerTestAdminEmailV1200';
+import type { TestAdminEmailRequestDto } from '~/.generated/api/model/testAdminEmailRequestDto';
+import { axios } from '~/lib/axios';
 
 export function AdminEmailTestCard() {
   const testMutation = useMutation({

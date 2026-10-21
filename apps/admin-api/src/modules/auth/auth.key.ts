@@ -1,6 +1,6 @@
 import { hash } from '@pkg/shared/server';
 
-import { SERVICE_ID } from '#/app.config';
+import { SERVICE_ID } from '~/app.config';
 
 export const AuthKvStoreKey = {
   emailVerificationChallenge: (challengeId: string) => `${SERVICE_ID}:auth_email_verification:${challengeId}`,

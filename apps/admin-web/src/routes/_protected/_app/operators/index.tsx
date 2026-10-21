@@ -8,9 +8,9 @@ import type { ColumnDef, ColumnFiltersState } from '@tanstack/react-table';
 import { UserPlus } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { getOperatorsControllerGetOperatorsV1QueryKey, useOperatorsControllerGetOperatorsV1 } from '#/.generated/api/endpoints/operators/operators';
-import { type OperatorItem, OperatorStatus } from '#/.generated/api/model';
-import { Button } from '#/.generated/shadcn/components/ui';
+import { getOperatorsControllerGetOperatorsV1QueryKey, useOperatorsControllerGetOperatorsV1 } from '~/.generated/api/endpoints/operators/operators';
+import { type OperatorItem, OperatorStatus } from '~/.generated/api/model';
+import { Button } from '~/.generated/shadcn/components/ui';
 
 import { ChangeOperatorRoleModal } from './-components/change-operator-role-modal';
 import { CreateOperatorModal } from './-components/create-operator-modal';

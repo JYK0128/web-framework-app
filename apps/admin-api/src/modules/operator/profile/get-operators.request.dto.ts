@@ -1,16 +1,14 @@
 import type { ObjectQuery, QueryOrderMap } from '@mikro-orm/core';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { ApiEnumOptional } from '@pkg/server-core/http/decorators/api-enum.decorator';
-import { ToBoolean } from '@pkg/server-core/http/decorators/to-boolean.decorator';
-import { PageRequestDto, type PageRequestOptions } from '@pkg/server-core/http/dto/request/page.request.dto';
-import { SortDirection } from '@pkg/server-core/http/dto/request/sortable.request.dto';
+import { ApiEnumOptional, ToBoolean } from '@pkg/server-core/http/decorators';
+import { PageRequestDto, type PageRequestOptions, SortDirection } from '@pkg/server-core/http/dto/request';
 import { parseSearchTokens } from '@pkg/shared/common';
 import { hashWithSecret } from '@pkg/shared/server';
 import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
 
-import { User } from '#/core/database/entities/auth';
-import { env } from '#/env';
-import { OperatorStatus } from '#/modules/operator/profile/operator-status.enum';
+import { User } from '~/core/database/entities/auth';
+import { env } from '~/env';
+import { OperatorStatus } from '~/modules/operator/profile/operator-status.enum';
 
 export const OPERATOR_SORT_FIELDS = ['name', 'twoFactorEnabled', 'createdAt', 'updatedAt'] as const;
 export type OperatorSortField = (typeof OPERATOR_SORT_FIELDS)[number];

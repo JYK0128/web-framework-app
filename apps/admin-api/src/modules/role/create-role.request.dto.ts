@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { EntityDto } from '@pkg/server-core/http/dto/base/entity.dto';
+import { EntityDto } from '@pkg/server-core/http/dto/base';
 import { IsArray, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
-import { Role } from '#/core/database/entities/auth.extensions';
+import { Role } from '~/core/database/entities/auth.extensions';
 
 export class CreateRoleRequestDto extends EntityDto(Role) {
   @ApiProperty({ example: 'content_manager' }) @IsString() @MinLength(1) @MaxLength(50) code!: string;

@@ -3,8 +3,8 @@ import { FormLayout, useAppForm } from '@pkg/web-core/form';
 import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 import { useEffect } from 'react';
 
-import { useCustomersControllerGetCustomerV1, useCustomersControllerUpdateCustomerMemoV1 } from '#/.generated/api/endpoints/customers/customers';
-import { Button } from '#/.generated/shadcn/components/ui';
+import { useCustomersControllerGetCustomerV1, useCustomersControllerUpdateCustomerMemoV1 } from '~/.generated/api/endpoints/customers/customers';
+import { Button } from '~/.generated/shadcn/components/ui';
 
 type CustomerMemoModalProps = ModalComponentProps & { customerId: string, canUpdate: boolean };
 

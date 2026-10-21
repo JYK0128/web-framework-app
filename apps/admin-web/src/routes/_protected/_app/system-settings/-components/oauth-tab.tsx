@@ -8,10 +8,10 @@ import { Plus, Search, Trash2 } from 'lucide-react';
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-import { systemConfigControllerCreateOAuthIconPresignedUrlV1 } from '#/.generated/api/endpoints/system-configs/system-configs';
-import type { OAuthConfigDto, OAuthProviderDetailDto } from '#/.generated/api/model';
-import { Badge, Button, Input } from '#/.generated/shadcn/components/ui';
-import { getI18n } from '#/i18n/i18n';
+import { systemConfigControllerCreateOAuthIconPresignedUrlV1 } from '~/.generated/api/endpoints/system-configs/system-configs';
+import type { OAuthConfigDto, OAuthProviderDetailDto } from '~/.generated/api/model';
+import { Badge, Button, Input } from '~/.generated/shadcn/components/ui';
+import { getI18n } from '~/i18n/i18n';
 
 import { hasOAuthProviderConnectionFields, type OAuthProviderMeta } from './oauth-provider.types';
 import { OAuthProviderAddDialog } from './oauth-provider-add-dialog';

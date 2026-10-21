@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 
-import { WebhookConfigDto } from '#/modules/system-config/webhook/webhook-config.dto';
+import { WebhookConfigDto } from '~/modules/system-config/webhook/webhook-config.dto';
 
 export class AdminWebhookConfigResponseDto extends WebhookConfigDto {
   protected static override readonly validationError = {

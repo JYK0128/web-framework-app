@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { type IUserAuthService, USER_AUTH_SERVICE } from '@pkg/server-core/auth/user/user-auth.interface';
+import { type IUserAuthService, USER_AUTH_SERVICE } from '@pkg/server-core/auth';
 
-import { RefreshCommand } from '#/modules/auth/session/refresh.command';
-import { RefreshResponseDto } from '#/modules/auth/session/refresh.response.dto';
+import { RefreshCommand } from '~/modules/auth/session/refresh.command';
+import { RefreshResponseDto } from '~/modules/auth/session/refresh.response.dto';
 
 @Injectable()
 @CommandHandler(RefreshCommand)

@@ -6,9 +6,9 @@ import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useCallback, useEffect, useState } from 'react';
 
-import { getSupportControllerListRoomPiiV1QueryKey, getSupportControllerListRoomsV1QueryKey, useSupportControllerListRoomPiiV1, useSupportControllerListRoomsV1 } from '#/.generated/api/endpoints/support/support';
-import type { SupportRoomItem } from '#/.generated/api/model';
-import { Button } from '#/.generated/shadcn/components/ui';
+import { getSupportControllerListRoomPiiV1QueryKey, getSupportControllerListRoomsV1QueryKey, useSupportControllerListRoomPiiV1, useSupportControllerListRoomsV1 } from '~/.generated/api/endpoints/support/support';
+import type { SupportRoomItem } from '~/.generated/api/model';
+import { Button } from '~/.generated/shadcn/components/ui';
 
 import { SupportRoomModal } from './-components/support-room-modal';
 

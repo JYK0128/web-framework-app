@@ -1,8 +1,8 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
-import { EntityDto } from '@pkg/server-core/http/dto/base/entity.dto';
+import { EntityDto } from '@pkg/server-core/http/dto/base';
 import { NoticeImportance } from '@pkg/shared/constants';
 
-import { Notice } from '#/core/database/entities/notices';
+import { Notice } from '~/core/database/entities/notices';
 
 @ApiSchema({ name: 'NoticeItem' })
 export class NoticeItemDto extends EntityDto(Notice) {

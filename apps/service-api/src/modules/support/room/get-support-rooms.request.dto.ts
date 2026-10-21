@@ -2,7 +2,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PageRequestDto } from '@pkg/server-core/http/dto/request';
 import { IsEnum, IsIn, IsOptional } from 'class-validator';
 
-import { SupportRoom, SupportRoomStatus } from '#/core/database/entities/support';
+import { SupportRoom, SupportRoomStatus } from '~/core/database/entities/support';
 
 export class GetSupportRoomsRequestDto extends PageRequestDto<SupportRoom, 'lastMessageAt' | 'createdAt' | 'updatedAt' | 'id'> {
   @ApiPropertyOptional({ isArray: true, enum: ['lastMessageAt', 'createdAt', 'updatedAt', 'id'] })

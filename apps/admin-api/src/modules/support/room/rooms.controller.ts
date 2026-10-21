@@ -1,20 +1,18 @@
 import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalClient } from '#/core/internal-client';
-import { GetSupportRoomRequestDto } from '#/modules/support/room/get-support-room.request.dto';
-import { GetSupportRoomResponseDto } from '#/modules/support/room/get-support-room.response.dto';
-import { GetSupportRoomPiiListRequestDto } from '#/modules/support/room/get-support-room-pii-list.request.dto';
-import { GetSupportRoomPiiListResponseDto } from '#/modules/support/room/get-support-room-pii-list.response.dto';
-import { GetSupportRoomsRequestDto } from '#/modules/support/room/get-support-rooms.request.dto';
-import { GetSupportRoomsResponseDto } from '#/modules/support/room/get-support-rooms.response.dto';
-import { UpdateSupportRoomRequestDto } from '#/modules/support/room/update-support-room.request.dto';
-import { UpdateSupportRoomResponseDto } from '#/modules/support/room/update-support-room.response.dto';
-import { maskRoom } from '#/modules/support/support.helper';
+import { InternalClient } from '~/core/internal-client';
+import { GetSupportRoomRequestDto } from '~/modules/support/room/get-support-room.request.dto';
+import { GetSupportRoomResponseDto } from '~/modules/support/room/get-support-room.response.dto';
+import { GetSupportRoomPiiListRequestDto } from '~/modules/support/room/get-support-room-pii-list.request.dto';
+import { GetSupportRoomPiiListResponseDto } from '~/modules/support/room/get-support-room-pii-list.response.dto';
+import { GetSupportRoomsRequestDto } from '~/modules/support/room/get-support-rooms.request.dto';
+import { GetSupportRoomsResponseDto } from '~/modules/support/room/get-support-rooms.response.dto';
+import { UpdateSupportRoomRequestDto } from '~/modules/support/room/update-support-room.request.dto';
+import { UpdateSupportRoomResponseDto } from '~/modules/support/room/update-support-room.response.dto';
+import { maskRoom } from '~/modules/support/support.helper';
 
 @ApiTags('support')
 @UserAuth()

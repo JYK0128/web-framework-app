@@ -1,8 +1,8 @@
 import { HttpStatus } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Faq, FaqCategory } from '#/core/database/entities/faqs';
-import { AppEntityManager } from '#/core/database/entity-manager';
+import { Faq, FaqCategory } from '~/core/database/entities/faqs';
+import { AppEntityManager } from '~/core/database/entity-manager';
 
 export async function findFaq(em: AppEntityManager, faqId: string): Promise<Faq> {
   const faq = await em.findOne(Faq, { id: faqId }, { filters: false });

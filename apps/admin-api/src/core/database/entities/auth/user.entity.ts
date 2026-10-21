@@ -2,9 +2,9 @@ import type { Opt, Rel } from '@mikro-orm/core';
 import { Embeddable, Embedded, Entity, ManyToOne, OneToOne, Property } from '@mikro-orm/decorators/legacy';
 import { isFuture } from '@pkg/shared/common';
 
-import { Role } from '#/core/database/entities/auth.extensions/role.entity';
-import { Profile } from '#/core/database/entities/auth/profile.entity';
-import { BaseEntity } from '#/core/database/entities/base.entity';
+import { Role } from '~/core/database/entities/auth.extensions/role.entity';
+import { Profile } from '~/core/database/entities/auth/profile.entity';
+import { BaseEntity } from '~/core/database/entities/base.entity';
 
 @Embeddable()
 export class UserMetadata {

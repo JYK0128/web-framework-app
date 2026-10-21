@@ -1,8 +1,8 @@
 import type { CreateI18nOptions } from '@pkg/shared/common';
 import { localeResources } from '@pkg/web-core/i18n/resource';
 
-import en from '#/i18n/resource/en';
-import ko from '#/i18n/resource/ko';
+import en from '~/i18n/resource/en';
+import ko from '~/i18n/resource/ko';
 
 const resources = {
   en: { translation: { ...localeResources.en, ...en, app: { ...localeResources.en.app, ...en.app } } },

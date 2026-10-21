@@ -47,7 +47,7 @@ services:
         DOTENV_PRD_REVISION: ${SERVICE_WEB_DOTENV_PRD_REVISION:?Build through the deployment package script}
         VITE_PORTONE_STORE_ID: ${VITE_PORTONE_STORE_ID:?Set VITE_PORTONE_STORE_ID to build web apps}
         VITE_PORTONE_CHANNEL_KEY: ${VITE_PORTONE_CHANNEL_KEY:?Set VITE_PORTONE_CHANNEL_KEY to build web apps}
-        VITE_ADMIN_WEB_URL: ${ADMIN_WEB_URL:?Set ADMIN_WEB_URL to build service-web}
+        VITE_ADMIN_WEB_URL: ${VITE_ADMIN_WEB_URL:-http://localhost:13000}
       secrets:
         - source: service-web-env
           target: DOTENV_PRD

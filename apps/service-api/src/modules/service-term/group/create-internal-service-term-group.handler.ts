@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
-import { TermGroup } from '#/core/database/entities/terms';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { CreateInternalServiceTermGroupCommand } from '#/modules/service-term/group/create-internal-service-term-group.command';
-import { CreateInternalServiceTermGroupResponseDto } from '#/modules/service-term/group/create-internal-service-term-group.response.dto';
+import { TermGroup } from '~/core/database/entities/terms';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { CreateInternalServiceTermGroupCommand } from '~/modules/service-term/group/create-internal-service-term-group.command';
+import { CreateInternalServiceTermGroupResponseDto } from '~/modules/service-term/group/create-internal-service-term-group.response.dto';
 
 @Injectable()
 @CommandHandler(CreateInternalServiceTermGroupCommand)

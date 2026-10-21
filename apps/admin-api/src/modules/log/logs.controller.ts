@@ -1,17 +1,15 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { AdminPermission } from '@pkg/shared';
 
-import { GetLogStatsQuery } from '#/modules/log/get-log-stats.query';
-import { GetLogStatsRequestDto } from '#/modules/log/get-log-stats.request.dto';
-import { GetLogStatsResponseDto } from '#/modules/log/get-log-stats.response.dto';
-import { GetLogsQuery } from '#/modules/log/get-logs.query';
-import { GetLogsRequestDto } from '#/modules/log/get-logs.request.dto';
-import { GetLogsResponseDto } from '#/modules/log/get-logs.response.dto';
+import { GetLogStatsQuery } from '~/modules/log/get-log-stats.query';
+import { GetLogStatsRequestDto } from '~/modules/log/get-log-stats.request.dto';
+import { GetLogStatsResponseDto } from '~/modules/log/get-log-stats.response.dto';
+import { GetLogsQuery } from '~/modules/log/get-logs.query';
+import { GetLogsRequestDto } from '~/modules/log/get-logs.request.dto';
+import { GetLogsResponseDto } from '~/modules/log/get-logs.response.dto';
 
 @ApiTags('logs')
 @UserAuth()

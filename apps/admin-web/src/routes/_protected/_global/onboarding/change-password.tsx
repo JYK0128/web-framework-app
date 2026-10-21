@@ -1,12 +1,12 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { ADMIN_AUTH_POLICY_CONFIG, assertPasswordPolicy } from '@pkg/shared/policy';
+import { useI18n } from '@pkg/web-core/context/i18n';
 import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
-import { useI18n } from '@pkg/web-core/i18n';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 
-import { getAuthControllerMeV1QueryKey, useAuthControllerChangePasswordV1 } from '#/.generated/api/endpoints/auth/auth';
-import { AuthControllerChangePasswordV1Body } from '#/.generated/api/zod/auth/auth';
+import { getAuthControllerMeV1QueryKey, useAuthControllerChangePasswordV1 } from '~/.generated/api/endpoints/auth/auth';
+import { AuthControllerChangePasswordV1Body } from '~/.generated/api/zod/auth/auth';
 
 import { OnboardingLayout } from './-components/onboarding-layout';
 

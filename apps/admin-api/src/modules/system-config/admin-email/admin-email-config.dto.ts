@@ -1,10 +1,9 @@
 import { HttpStatus } from '@nestjs/common';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
-import { EntityDto } from '@pkg/server-core/http/dto/base/entity.dto';
+import { BaseDto, EntityDto } from '@pkg/server-core/http/dto/base';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsDefined, isEmail, IsInt, IsString, Max, Min, ValidateNested } from 'class-validator';
 
-import { SystemConfig } from '#/core/database/entities/system-configs';
+import { SystemConfig } from '~/core/database/entities/system-configs';
 
 export class AdminEmailConfigSmtpDto extends BaseDto {
   @IsString() host!: string;

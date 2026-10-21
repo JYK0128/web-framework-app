@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
-import { Faq, FaqCategory } from '#/core/database/entities/faqs';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { CreateFaqCommand } from '#/modules/faq/create-faq.command';
-import { CreateFaqResponseDto } from '#/modules/faq/create-faq.response.dto';
-import { normalize } from '#/modules/faq/internal-faq-actions.helpers';
+import { Faq, FaqCategory } from '~/core/database/entities/faqs';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { CreateFaqCommand } from '~/modules/faq/create-faq.command';
+import { CreateFaqResponseDto } from '~/modules/faq/create-faq.response.dto';
+import { normalize } from '~/modules/faq/internal-faq-actions.helpers';
 
 @Injectable()
 @CommandHandler(CreateFaqCommand)

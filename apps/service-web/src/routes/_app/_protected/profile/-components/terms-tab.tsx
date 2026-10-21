@@ -4,8 +4,8 @@ import { Button, Checkbox } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { FileText } from 'lucide-react';
 
-import { getServiceTermsControllerGetAgreementHistoryV1QueryKey, getServiceTermsControllerGetAgreementsV1QueryKey, useServiceTermsControllerSetAgreementsV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
-import type { GetServiceTermAgreementsResponseDto, ServiceTermAgreementItem } from '#/.generated/api/model';
+import { getServiceTermsControllerGetAgreementHistoryV1QueryKey, getServiceTermsControllerGetAgreementsV1QueryKey, useServiceTermsControllerSetAgreementsV1 } from '~/.generated/api/endpoints/service-terms/service-terms';
+import type { GetServiceTermAgreementsResponseDto, ServiceTermAgreementItem } from '~/.generated/api/model';
 
 import { AgreementHistoryModal } from './agreement-history-modal';
 import { ProfileTermDetailModal } from './term-detail-modal';

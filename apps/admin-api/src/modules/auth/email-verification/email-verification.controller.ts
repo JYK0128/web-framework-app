@@ -1,16 +1,14 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Public, UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { NoStore } from '@pkg/server-core/http/decorators/no-store.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { NoStore, Public, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 
-import { RequestEmailVerificationCommand } from '#/modules/auth/email-verification/request-email-verification.command';
-import { RequestEmailVerificationRequestDto } from '#/modules/auth/email-verification/request-email-verification.request.dto';
-import { RequestEmailVerificationResponseDto } from '#/modules/auth/email-verification/request-email-verification.response.dto';
-import { VerifyEmailCommand } from '#/modules/auth/email-verification/verify-email.command';
-import { VerifyEmailRequestDto } from '#/modules/auth/email-verification/verify-email.request.dto';
-import { VerifyEmailResponseDto } from '#/modules/auth/email-verification/verify-email.response.dto';
+import { RequestEmailVerificationCommand } from '~/modules/auth/email-verification/request-email-verification.command';
+import { RequestEmailVerificationRequestDto } from '~/modules/auth/email-verification/request-email-verification.request.dto';
+import { RequestEmailVerificationResponseDto } from '~/modules/auth/email-verification/request-email-verification.response.dto';
+import { VerifyEmailCommand } from '~/modules/auth/email-verification/verify-email.command';
+import { VerifyEmailRequestDto } from '~/modules/auth/email-verification/verify-email.request.dto';
+import { VerifyEmailResponseDto } from '~/modules/auth/email-verification/verify-email.response.dto';
 
 @ApiTags('Auth')
 @UserAuth()

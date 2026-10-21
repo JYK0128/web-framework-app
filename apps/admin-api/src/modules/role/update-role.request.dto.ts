@@ -1,8 +1,8 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { EntityDto } from '@pkg/server-core/http/dto/base/entity.dto';
+import { EntityDto } from '@pkg/server-core/http/dto/base';
 import { IsArray, IsString, MaxLength, MinLength, ValidateIf } from 'class-validator';
 
-import { Role } from '#/core/database/entities/auth.extensions';
+import { Role } from '~/core/database/entities/auth.extensions';
 
 export class UpdateRoleRequestDto extends EntityDto(Role) {
   @ApiPropertyOptional() @ValidateIf((_object, value) => value !== undefined) @IsString() @MinLength(1) @MaxLength(100) label?: string;

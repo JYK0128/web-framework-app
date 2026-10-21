@@ -3,9 +3,9 @@ import { FormLayout, useAppForm } from '@pkg/web-core/form';
 import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { getQnaControllerListV1QueryKey, useQnaControllerUpdateV1 } from '#/.generated/api/endpoints/qna/qna';
-import type { QnaItem } from '#/.generated/api/model';
-import { Button } from '#/.generated/shadcn/components/ui';
+import { getQnaControllerListV1QueryKey, useQnaControllerUpdateV1 } from '~/.generated/api/endpoints/qna/qna';
+import type { QnaItem } from '~/.generated/api/model';
+import { Button } from '~/.generated/shadcn/components/ui';
 
 export type QnaEditorModalProps = ModalComponentProps<boolean> & { qna: QnaItem, readOnly?: boolean };
 

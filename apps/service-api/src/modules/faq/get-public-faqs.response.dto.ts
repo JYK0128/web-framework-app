@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CursorResponseDto } from '@pkg/server-core/http/dto/response/cursor.response.dto';
+import { CursorResponseDto } from '@pkg/server-core/http/dto/response';
 import { Type } from 'class-transformer';
 
-import { FaqItemDto } from '#/modules/faq/faq-item.dto';
+import { FaqItemDto } from '~/modules/faq/faq-item.dto';
 
 export class GetPublicFaqsResponseDto extends CursorResponseDto<FaqItemDto> {
   @ApiProperty({ type: () => [FaqItemDto] })

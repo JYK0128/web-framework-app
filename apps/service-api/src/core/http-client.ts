@@ -1,7 +1,7 @@
 import { TimeUtil } from '@pkg/shared/common';
 import axios from 'axios';
 
-import { SECURITY_CONFIG } from '#/app.config';
+import { SECURITY_CONFIG } from '~/app.config';
 
 /** Shared Axios instance for outbound HTTP integrations. */
 export const httpClient = axios.create({

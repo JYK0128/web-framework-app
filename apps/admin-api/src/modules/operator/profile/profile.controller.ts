@@ -1,20 +1,18 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { AdminPermission } from '@pkg/shared';
 
-import { GetOperatorByIdQuery } from '#/modules/operator/profile/get-operator-by-id.query';
-import { GetOperatorByIdRequestDto } from '#/modules/operator/profile/get-operator-by-id.request.dto';
-import { GetOperatorByIdResponseDto } from '#/modules/operator/profile/get-operator-by-id.response.dto';
-import { GetOperatorOverviewQuery } from '#/modules/operator/profile/get-operator-overview.query';
-import { GetOperatorOverviewRequestDto } from '#/modules/operator/profile/get-operator-overview.request.dto';
-import { GetOperatorOverviewResponseDto } from '#/modules/operator/profile/get-operator-overview.response.dto';
-import { GetOperatorsQuery } from '#/modules/operator/profile/get-operators.query';
-import { GetOperatorsRequestDto } from '#/modules/operator/profile/get-operators.request.dto';
-import { GetOperatorsResponseDto } from '#/modules/operator/profile/get-operators.response.dto';
+import { GetOperatorByIdQuery } from '~/modules/operator/profile/get-operator-by-id.query';
+import { GetOperatorByIdRequestDto } from '~/modules/operator/profile/get-operator-by-id.request.dto';
+import { GetOperatorByIdResponseDto } from '~/modules/operator/profile/get-operator-by-id.response.dto';
+import { GetOperatorOverviewQuery } from '~/modules/operator/profile/get-operator-overview.query';
+import { GetOperatorOverviewRequestDto } from '~/modules/operator/profile/get-operator-overview.request.dto';
+import { GetOperatorOverviewResponseDto } from '~/modules/operator/profile/get-operator-overview.response.dto';
+import { GetOperatorsQuery } from '~/modules/operator/profile/get-operators.query';
+import { GetOperatorsRequestDto } from '~/modules/operator/profile/get-operators.request.dto';
+import { GetOperatorsResponseDto } from '~/modules/operator/profile/get-operators.response.dto';
 
 @ApiTags('operators')
 @UserAuth()

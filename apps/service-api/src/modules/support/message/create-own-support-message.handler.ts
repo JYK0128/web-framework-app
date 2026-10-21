@@ -1,17 +1,17 @@
 import { HttpStatus } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
-import { RealtimeService } from '@pkg/server-core/realtime/realtime.service';
+import { PrincipalContext } from '@pkg/server-core/http/contexts';
+import { RealtimeService } from '@pkg/server-core/realtime';
 import { ApplicationError } from '@pkg/shared/common';
 import { isWithinOperatingHours } from '@pkg/shared/policy';
 
-import { SupportMessage, SupportMessageSenderType, SupportRoom, SupportRoomStatus } from '#/core/database/entities/support';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { CreateOwnSupportMessageCommand } from '#/modules/support/message/create-own-support-message.command';
-import { CreateSupportMessageResponseDto } from '#/modules/support/message/create-support-message.response.dto';
-import { SupportMessageItemDto } from '#/modules/support/message/support-message-item.dto';
-import { findSupportRoom } from '#/modules/support/room/support-rooms.helpers';
-import { ServiceContext } from '#/modules/system-config/service.context';
+import { SupportMessage, SupportMessageSenderType, SupportRoom, SupportRoomStatus } from '~/core/database/entities/support';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { CreateOwnSupportMessageCommand } from '~/modules/support/message/create-own-support-message.command';
+import { CreateSupportMessageResponseDto } from '~/modules/support/message/create-support-message.response.dto';
+import { SupportMessageItemDto } from '~/modules/support/message/support-message-item.dto';
+import { findSupportRoom } from '~/modules/support/room/support-rooms.helpers';
+import { ServiceContext } from '~/modules/system-config/service.context';
 
 @CommandHandler(CreateOwnSupportMessageCommand)
 export class CreateOwnSupportMessageHandler implements ICommandHandler<CreateOwnSupportMessageCommand, CreateSupportMessageResponseDto> {

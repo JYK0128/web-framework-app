@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
-import type { GetSystemConfigResponseDto, SystemConfigControllerGetConfigsV1200 } from '#/.generated/api/model';
-import { axios } from '#/lib/axios';
+import type { GetSystemConfigResponseDto, SystemConfigControllerGetConfigsV1200 } from '~/.generated/api/model';
+import { axios } from '~/lib/axios';
 
 const SYSTEM_CONFIG_URL = '/api/v1/system-config';
 type SystemSettingsData = Pick<GetSystemConfigResponseDto, 'notification' | 'oauth' | 'webhook' | 'adminEmail'>;

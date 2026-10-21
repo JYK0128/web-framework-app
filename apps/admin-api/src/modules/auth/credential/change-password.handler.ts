@@ -1,15 +1,15 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { updateCredentialPassword } from '@pkg/server-core/auth/user/credential-password';
-import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
+import { updateCredentialPassword } from '@pkg/server-core/auth';
+import { PrincipalContext } from '@pkg/server-core/http/contexts';
 import { ApplicationError } from '@pkg/shared/common';
 import { verifyPassword } from '@pkg/shared/server';
 
-import { SECURITY_CONFIG } from '#/app.config';
-import { Account } from '#/core/database/entities/auth';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { ChangePasswordCommand } from '#/modules/auth/credential/change-password.command';
-import { ChangePasswordResponseDto } from '#/modules/auth/credential/change-password.response.dto';
+import { SECURITY_CONFIG } from '~/app.config';
+import { Account } from '~/core/database/entities/auth';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { ChangePasswordCommand } from '~/modules/auth/credential/change-password.command';
+import { ChangePasswordResponseDto } from '~/modules/auth/credential/change-password.response.dto';
 
 @Injectable()
 @CommandHandler(ChangePasswordCommand)

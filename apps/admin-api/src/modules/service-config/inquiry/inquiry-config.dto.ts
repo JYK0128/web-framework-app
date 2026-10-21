@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 import { Transform } from 'class-transformer';
 import { IsInt, Matches, Max, MaxLength, Min, MinLength } from 'class-validator';
 

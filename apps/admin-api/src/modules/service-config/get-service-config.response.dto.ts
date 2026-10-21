@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 import { Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
 
-import { InquiryConfigDto } from '#/modules/service-config/inquiry/inquiry-config.dto';
-import { MaintenanceConfigDto } from '#/modules/service-config/maintenance/maintenance-config.dto';
-import { OperationConfigDto } from '#/modules/service-config/operation/operation-config.dto';
+import { InquiryConfigDto } from '~/modules/service-config/inquiry/inquiry-config.dto';
+import { MaintenanceConfigDto } from '~/modules/service-config/maintenance/maintenance-config.dto';
+import { OperationConfigDto } from '~/modules/service-config/operation/operation-config.dto';
 
 export class GetServiceConfigResponseDto extends BaseDto {
   @ApiProperty({ type: OperationConfigDto })

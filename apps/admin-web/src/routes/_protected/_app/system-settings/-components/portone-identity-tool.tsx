@@ -2,7 +2,7 @@ import { SectionCard } from '@pkg/web-core/template';
 import { useNavigate } from '@tanstack/react-router';
 import { CircleCheck, ExternalLink } from 'lucide-react';
 
-import { Button } from '#/.generated/shadcn/components/ui';
+import { Button } from '~/.generated/shadcn/components/ui';
 
 const portoneSettings = ['스토어 ID', '본인인증 채널 키'] as const;
 

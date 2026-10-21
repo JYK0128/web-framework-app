@@ -1,12 +1,12 @@
 import { confirm } from '@pkg/web-core/application';
-import { createCachePatcher } from '@pkg/web-core/runtime/cache-patcher';
+import { createCachePatcher } from '@pkg/web-core/runtime';
 import { Action } from '@pkg/web-core/template';
 import { type QueryClient, useQueryClient } from '@tanstack/react-query';
 import { Eye, MoreHorizontal } from 'lucide-react';
 
-import { getOperatorsControllerGetOperatorOverviewV1QueryKey, getOperatorsControllerGetOperatorsV1QueryKey, useOperatorsControllerBanOperatorV1, useOperatorsControllerDeleteOperatorV1, useOperatorsControllerResetOperatorTwoFactorV1, useOperatorsControllerRestoreOperatorV1, useOperatorsControllerUnbanOperatorV1 } from '#/.generated/api/endpoints/operators/operators';
-import type { OperatorItem, OperatorsControllerGetOperatorOverviewV1200, OperatorsControllerGetOperatorsV1200 } from '#/.generated/api/model';
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
+import { getOperatorsControllerGetOperatorOverviewV1QueryKey, getOperatorsControllerGetOperatorsV1QueryKey, useOperatorsControllerBanOperatorV1, useOperatorsControllerDeleteOperatorV1, useOperatorsControllerResetOperatorTwoFactorV1, useOperatorsControllerRestoreOperatorV1, useOperatorsControllerUnbanOperatorV1 } from '~/.generated/api/endpoints/operators/operators';
+import type { OperatorItem, OperatorsControllerGetOperatorOverviewV1200, OperatorsControllerGetOperatorsV1200 } from '~/.generated/api/model';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '~/.generated/shadcn/components/ui';
 
 type OperatorRowActionsProps = {
   operator: OperatorItem

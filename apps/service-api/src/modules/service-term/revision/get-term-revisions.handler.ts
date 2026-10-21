@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { Term } from '#/core/database/entities/terms';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { GetTermRevisionsQuery } from '#/modules/service-term/revision/get-term-revisions.query';
-import { GetTermRevisionsResponseDto } from '#/modules/service-term/revision/get-term-revisions.response.dto';
-import { TermRevisionItemDto } from '#/modules/service-term/revision/term-revision-item.dto';
+import { Term } from '~/core/database/entities/terms';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { GetTermRevisionsQuery } from '~/modules/service-term/revision/get-term-revisions.query';
+import { GetTermRevisionsResponseDto } from '~/modules/service-term/revision/get-term-revisions.response.dto';
+import { TermRevisionItemDto } from '~/modules/service-term/revision/term-revision-item.dto';
 
 @Injectable()
 @QueryHandler(GetTermRevisionsQuery)

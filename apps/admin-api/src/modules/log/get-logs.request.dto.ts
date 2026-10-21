@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { PageRequestDto } from '@pkg/server-core/http/dto/request/page.request.dto';
-import type { LogEntry } from '@pkg/server-core/log-telemetry/log-telemetry.interface';
+import { PageRequestDto } from '@pkg/server-core/http/dto/request';
+import type { LogEntry } from '@pkg/server-core/log-telemetry';
 import { IsIn, IsOptional, IsString } from 'class-validator';
 
 export class GetLogsRequestDto extends PageRequestDto<LogEntry, 'createdAt' | 'level' | 'method' | 'url' | 'statusCode' | 'duration' | 'requestId'> {

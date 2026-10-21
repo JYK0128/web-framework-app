@@ -4,7 +4,7 @@ import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import axios from 'axios';
 
-import type { SmsConfigDto } from '#notification/dto';
+import type { SmsConfigDto } from '#notification/dto/sms-config.dto';
 import { NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions, type SmsMessage } from '#notification/notification.interface';
 import { type NotificationProvider, parseNotificationResult } from '#notification/provider-response';
 

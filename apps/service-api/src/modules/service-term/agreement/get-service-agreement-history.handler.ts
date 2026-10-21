@@ -1,10 +1,10 @@
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { UserTermAgreement } from '#/core/database/entities/terms';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { GetServiceAgreementHistoryQuery } from '#/modules/service-term/agreement/get-service-agreement-history.query';
-import { GetServiceAgreementHistoryResponseDto } from '#/modules/service-term/agreement/get-service-agreement-history.response.dto';
-import { ServiceAgreementHistoryItemDto } from '#/modules/service-term/agreement/service-agreement-history-item.dto';
+import { UserTermAgreement } from '~/core/database/entities/terms';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { GetServiceAgreementHistoryQuery } from '~/modules/service-term/agreement/get-service-agreement-history.query';
+import { GetServiceAgreementHistoryResponseDto } from '~/modules/service-term/agreement/get-service-agreement-history.response.dto';
+import { ServiceAgreementHistoryItemDto } from '~/modules/service-term/agreement/service-agreement-history-item.dto';
 
 @QueryHandler(GetServiceAgreementHistoryQuery)
 export class GetServiceAgreementHistoryHandler implements IQueryHandler<GetServiceAgreementHistoryQuery, GetServiceAgreementHistoryResponseDto> {

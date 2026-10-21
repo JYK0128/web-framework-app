@@ -2,8 +2,8 @@ import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { HttpStatus } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Term, TermGroup } from '#/core/database/entities/terms';
-import { AppEntityManager } from '#/core/database/entity-manager';
+import { Term, TermGroup } from '~/core/database/entities/terms';
+import { AppEntityManager } from '~/core/database/entity-manager';
 
 export async function findServiceTerm(em: AppEntityManager, termId: string): Promise<Term> {
   const term = await em.findOne(Term, { id: termId }, { populate: ['termGroup'], filters: false });

@@ -2,8 +2,8 @@ import { Collection, type Opt, type Rel } from '@mikro-orm/core';
 import { Entity, ManyToOne, OneToMany, Property, Unique } from '@mikro-orm/decorators/legacy';
 import { DateUtil } from '@pkg/shared';
 
-import { BaseEntity } from '#/core/database/entities/base.entity';
-import { UserTermAgreement } from '#/core/database/entities/terms/user-term-agreement.entity';
+import { BaseEntity } from '~/core/database/entities/base.entity';
+import { UserTermAgreement } from '~/core/database/entities/terms/user-term-agreement.entity';
 
 import { TermGroup } from './term-group.entity';
 

@@ -1,19 +1,17 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalClient } from '#/core/internal-client';
-import { DeleteQnaRequestDto } from '#/modules/qna/delete-qna.request.dto';
-import { DeleteQnaResponseDto } from '#/modules/qna/delete-qna.response.dto';
-import { GetQnaRequestDto } from '#/modules/qna/get-qna.request.dto';
-import { GetQnaResponseDto } from '#/modules/qna/get-qna.response.dto';
-import { GetQnasRequestDto } from '#/modules/qna/get-qnas.request.dto';
-import { GetQnasResponseDto } from '#/modules/qna/get-qnas.response.dto';
-import { UpdateQnaRequestDto } from '#/modules/qna/update-qna.request.dto';
-import { UpdateQnaResponseDto } from '#/modules/qna/update-qna.response.dto';
+import { InternalClient } from '~/core/internal-client';
+import { DeleteQnaRequestDto } from '~/modules/qna/delete-qna.request.dto';
+import { DeleteQnaResponseDto } from '~/modules/qna/delete-qna.response.dto';
+import { GetQnaRequestDto } from '~/modules/qna/get-qna.request.dto';
+import { GetQnaResponseDto } from '~/modules/qna/get-qna.response.dto';
+import { GetQnasRequestDto } from '~/modules/qna/get-qnas.request.dto';
+import { GetQnasResponseDto } from '~/modules/qna/get-qnas.response.dto';
+import { UpdateQnaRequestDto } from '~/modules/qna/update-qna.request.dto';
+import { UpdateQnaResponseDto } from '~/modules/qna/update-qna.response.dto';
 
 @ApiTags('qna') @UserAuth() @Controller('qna')
 export class QnaController {

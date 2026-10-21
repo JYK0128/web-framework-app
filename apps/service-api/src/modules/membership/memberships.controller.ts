@@ -1,24 +1,23 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiExcludeController, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { MachineAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { MachineAuth, SwaggerApiResponse } from '@pkg/server-core/http/decorators';
 
-import { CreateCustomerMembershipCommand } from '#/modules/membership/create-customer-membership.command';
-import { CreateCustomerMembershipRequestDto } from '#/modules/membership/create-customer-membership.request.dto';
-import { CreateCustomerMembershipResponseDto } from '#/modules/membership/create-customer-membership.response.dto';
-import { DeleteCustomerMembershipCommand } from '#/modules/membership/delete-customer-membership.command';
-import { DeleteCustomerMembershipRequestDto } from '#/modules/membership/delete-customer-membership.request.dto';
-import { DeleteCustomerMembershipResponseDto } from '#/modules/membership/delete-customer-membership.response.dto';
-import { GetCustomerMembershipPermissionsQuery } from '#/modules/membership/get-customer-membership-permissions.query';
-import { GetCustomerMembershipPermissionsRequestDto } from '#/modules/membership/get-customer-membership-permissions.request.dto';
-import { GetCustomerMembershipPermissionsResponseDto } from '#/modules/membership/get-customer-membership-permissions.response.dto';
-import { GetCustomerMembershipsQuery } from '#/modules/membership/get-customer-memberships.query';
-import { GetCustomerMembershipsRequestDto } from '#/modules/membership/get-customer-memberships.request.dto';
-import { GetCustomerMembershipsResponseDto } from '#/modules/membership/get-customer-memberships.response.dto';
-import { UpdateCustomerMembershipCommand } from '#/modules/membership/update-customer-membership.command';
-import { UpdateCustomerMembershipRequestDto } from '#/modules/membership/update-customer-membership.request.dto';
-import { UpdateCustomerMembershipResponseDto } from '#/modules/membership/update-customer-membership.response.dto';
+import { CreateCustomerMembershipCommand } from '~/modules/membership/create-customer-membership.command';
+import { CreateCustomerMembershipRequestDto } from '~/modules/membership/create-customer-membership.request.dto';
+import { CreateCustomerMembershipResponseDto } from '~/modules/membership/create-customer-membership.response.dto';
+import { DeleteCustomerMembershipCommand } from '~/modules/membership/delete-customer-membership.command';
+import { DeleteCustomerMembershipRequestDto } from '~/modules/membership/delete-customer-membership.request.dto';
+import { DeleteCustomerMembershipResponseDto } from '~/modules/membership/delete-customer-membership.response.dto';
+import { GetCustomerMembershipPermissionsQuery } from '~/modules/membership/get-customer-membership-permissions.query';
+import { GetCustomerMembershipPermissionsRequestDto } from '~/modules/membership/get-customer-membership-permissions.request.dto';
+import { GetCustomerMembershipPermissionsResponseDto } from '~/modules/membership/get-customer-membership-permissions.response.dto';
+import { GetCustomerMembershipsQuery } from '~/modules/membership/get-customer-memberships.query';
+import { GetCustomerMembershipsRequestDto } from '~/modules/membership/get-customer-memberships.request.dto';
+import { GetCustomerMembershipsResponseDto } from '~/modules/membership/get-customer-memberships.response.dto';
+import { UpdateCustomerMembershipCommand } from '~/modules/membership/update-customer-membership.command';
+import { UpdateCustomerMembershipRequestDto } from '~/modules/membership/update-customer-membership.request.dto';
+import { UpdateCustomerMembershipResponseDto } from '~/modules/membership/update-customer-membership.response.dto';
 
 @ApiTags('Internal (Machine)')
 @ApiExcludeController()

@@ -3,8 +3,8 @@ import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 import { SectionCard } from '@pkg/web-core/template';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { getTermsControllerGetRevisionsV1QueryKey, termsControllerGetRevisionsV1 } from '#/.generated/api/endpoints/terms/terms';
-import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
+import { getTermsControllerGetRevisionsV1QueryKey, termsControllerGetRevisionsV1 } from '~/.generated/api/endpoints/terms/terms';
+import { Button, Skeleton } from '~/.generated/shadcn/components/ui';
 
 type TermRevisionHistoryModalProps = ModalComponentProps & {
   term: { groupId: string, title: string }

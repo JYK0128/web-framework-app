@@ -8,9 +8,9 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
-import { eventsControllerListV1, eventsControllerRemoveV1, getEventsControllerListV1QueryKey } from '#/.generated/api/endpoints/events/events';
-import type { EventItemDto } from '#/.generated/api/model';
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
+import { eventsControllerListV1, eventsControllerRemoveV1, getEventsControllerListV1QueryKey } from '~/.generated/api/endpoints/events/events';
+import type { EventItemDto } from '~/.generated/api/model';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '~/.generated/shadcn/components/ui';
 
 import { EventEditorModal } from './-components/event-editor-modal';
 

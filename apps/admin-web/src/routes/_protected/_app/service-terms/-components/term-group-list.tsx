@@ -1,7 +1,7 @@
 import { cn } from '@pkg/web-core/utils';
 import { Pencil, Trash2 } from 'lucide-react';
 
-import { Button } from '#/.generated/shadcn/components/ui';
+import { Button } from '~/.generated/shadcn/components/ui';
 
 type GroupItem = { id: string, title: string };
 

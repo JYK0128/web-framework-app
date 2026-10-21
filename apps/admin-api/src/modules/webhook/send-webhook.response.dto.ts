@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 
 export class SendWebhookResponseDto extends BaseDto {
   @ApiProperty({ description: '쿨다운을 통과해 알림 처리 대상인지 여부' })

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ApiEnum } from '@pkg/server-core/http/decorators/api-enum.decorator';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { ApiEnum } from '@pkg/server-core/http/decorators';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 import { defineEnum } from '@pkg/shared/common';
 
 export const HolidayType = defineEnum('HolidayType', {

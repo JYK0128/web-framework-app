@@ -5,10 +5,10 @@ import { Action } from '@pkg/web-core/template';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 
-import { getSupportControllerGetRoomV1QueryKey, getSupportControllerListMessagePiiV1QueryKey, getSupportControllerListMessagesV1QueryKey, getSupportControllerListRoomsV1QueryKey, useSupportControllerCreateMessageV1, useSupportControllerGetRoomV1, useSupportControllerListMessagePiiV1, useSupportControllerListMessagesV1, useSupportControllerUpdateRoomV1 } from '#/.generated/api/endpoints/support/support';
-import type { SupportMessageItem, SupportRoomItem } from '#/.generated/api/model';
-import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
-import { useSupportSocket } from '#/hooks/use-support-socket';
+import { getSupportControllerGetRoomV1QueryKey, getSupportControllerListMessagePiiV1QueryKey, getSupportControllerListMessagesV1QueryKey, getSupportControllerListRoomsV1QueryKey, useSupportControllerCreateMessageV1, useSupportControllerGetRoomV1, useSupportControllerListMessagePiiV1, useSupportControllerListMessagesV1, useSupportControllerUpdateRoomV1 } from '~/.generated/api/endpoints/support/support';
+import type { SupportMessageItem, SupportRoomItem } from '~/.generated/api/model';
+import { Button, Skeleton } from '~/.generated/shadcn/components/ui';
+import { useSupportSocket } from '~/hooks/use-support-socket';
 
 export type SupportRoomModalProps = ModalComponentProps & { room: SupportRoomItem, onChanged?: () => void | Promise<void> };
 

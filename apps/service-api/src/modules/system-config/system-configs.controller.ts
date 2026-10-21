@@ -1,13 +1,11 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Public, UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { NoStore } from '@pkg/server-core/http/decorators/no-store.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { NoStore, Public, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { plainToInstance } from 'class-transformer';
 
-import { GetPublicSystemConfigsRequestDto } from '#/modules/system-config/get-public-system-configs.request.dto';
-import { GetPublicSystemConfigsResponseDto } from '#/modules/system-config/get-public-system-configs.response.dto';
-import { ServiceContext } from '#/modules/system-config/service.context';
+import { GetPublicSystemConfigsRequestDto } from '~/modules/system-config/get-public-system-configs.request.dto';
+import { GetPublicSystemConfigsResponseDto } from '~/modules/system-config/get-public-system-configs.response.dto';
+import { ServiceContext } from '~/modules/system-config/service.context';
 
 @ApiTags('System Configs')
 @UserAuth()

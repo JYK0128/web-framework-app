@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 import { IsBoolean, IsDateString, IsOptional, IsString, Validate, type ValidationArguments } from 'class-validator';
 
 export class TemporaryMaintenanceDto extends BaseDto {

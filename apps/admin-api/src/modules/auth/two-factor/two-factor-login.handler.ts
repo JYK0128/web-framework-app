@@ -1,20 +1,19 @@
 import { LockMode } from '@mikro-orm/core';
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { verifyTotp } from '@pkg/server-core/auth/user/totp';
-import { type IUserAuthService, USER_AUTH_SERVICE } from '@pkg/server-core/auth/user/user-auth.interface';
-import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
+import { type IUserAuthService, USER_AUTH_SERVICE, verifyTotp } from '@pkg/server-core/auth';
+import { KvStore } from '@pkg/server-core/kv-store';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { decrypt } from '@pkg/shared/server';
 
-import { SECURITY_CONFIG } from '#/app.config';
-import { User } from '#/core/database/entities/auth';
-import { TwoFactor } from '#/core/database/entities/auth.extensions';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { env } from '#/env';
-import { AuthKvStoreKey } from '#/modules/auth/auth.key';
-import { TwoFactorLoginCommand } from '#/modules/auth/two-factor/two-factor-login.command';
-import { TwoFactorLoginResponseDto } from '#/modules/auth/two-factor/two-factor-login.response.dto';
+import { SECURITY_CONFIG } from '~/app.config';
+import { User } from '~/core/database/entities/auth';
+import { TwoFactor } from '~/core/database/entities/auth.extensions';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { env } from '~/env';
+import { AuthKvStoreKey } from '~/modules/auth/auth.key';
+import { TwoFactorLoginCommand } from '~/modules/auth/two-factor/two-factor-login.command';
+import { TwoFactorLoginResponseDto } from '~/modules/auth/two-factor/two-factor-login.response.dto';
 
 interface TwoFactorLoginChallenge {
   userId: string

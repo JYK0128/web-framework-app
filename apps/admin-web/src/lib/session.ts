@@ -1,6 +1,6 @@
-import { createSessionRequestHandler } from '@pkg/web-core/runtime/session';
+import { createSessionRequestHandler } from '@pkg/web-core/runtime';
 
-import { serverEnvSchema } from '#/lib/server-env';
+import { serverEnvSchema } from '~/lib/server-env';
 
 let handler: ReturnType<typeof createSessionRequestHandler> | undefined;
 

@@ -1,9 +1,9 @@
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
-import { MACHINE_AUTH_ISSUER, MACHINE_CONNECTION, type MachineAuthIssuer, type MachineConnection } from '@pkg/server-core/auth/machine/machine-auth.interface';
-import { RequestContext } from '@pkg/server-core/http/contexts/request.context';
+import { MACHINE_AUTH_ISSUER, MACHINE_CONNECTION, type MachineAuthIssuer, type MachineConnection } from '@pkg/server-core/auth';
+import { RequestContext } from '@pkg/server-core/http/contexts';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { httpClient } from '#/core/http-client';
+import { httpClient } from '~/core/http-client';
 
 interface InternalApiResponse<T> {
   data: T

@@ -2,11 +2,11 @@ import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Term, UserTermAgreement } from '#/core/database/entities/terms';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { SetServiceTermAgreementsCommand } from '#/modules/service-term/agreement/set-service-term-agreements.command';
-import { SetServiceTermAgreementsResponseDto } from '#/modules/service-term/agreement/set-service-term-agreements.response.dto';
-import { isPublished } from '#/modules/service-term/service-term.helpers';
+import { Term, UserTermAgreement } from '~/core/database/entities/terms';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { SetServiceTermAgreementsCommand } from '~/modules/service-term/agreement/set-service-term-agreements.command';
+import { SetServiceTermAgreementsResponseDto } from '~/modules/service-term/agreement/set-service-term-agreements.response.dto';
+import { isPublished } from '~/modules/service-term/service-term.helpers';
 
 @Injectable()
 @CommandHandler(SetServiceTermAgreementsCommand)

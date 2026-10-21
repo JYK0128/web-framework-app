@@ -1,11 +1,11 @@
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
+import { PrincipalContext } from '@pkg/server-core/http/contexts';
 
-import { SupportRoom } from '#/core/database/entities/support';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { GetOwnSupportRoomsQuery } from '#/modules/support/room/get-own-support-rooms.query';
-import { GetSupportRoomsCursorResponseDto } from '#/modules/support/room/get-support-rooms-cursor.response.dto';
-import { SupportRoomItemDto } from '#/modules/support/room/support-room-item.dto';
+import { SupportRoom } from '~/core/database/entities/support';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { GetOwnSupportRoomsQuery } from '~/modules/support/room/get-own-support-rooms.query';
+import { GetSupportRoomsCursorResponseDto } from '~/modules/support/room/get-support-rooms-cursor.response.dto';
+import { SupportRoomItemDto } from '~/modules/support/room/support-room-item.dto';
 
 @QueryHandler(GetOwnSupportRoomsQuery)
 export class GetOwnSupportRoomsHandler implements IQueryHandler<GetOwnSupportRoomsQuery, GetSupportRoomsCursorResponseDto> {

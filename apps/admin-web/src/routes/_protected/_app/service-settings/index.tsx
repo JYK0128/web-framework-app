@@ -6,8 +6,8 @@ import { createFileRoute } from '@tanstack/react-router';
 import { Save } from 'lucide-react';
 import { useRef } from 'react';
 
-import type { UpdateServiceConfigRequestDto } from '#/.generated/api/model';
-import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
+import type { UpdateServiceConfigRequestDto } from '~/.generated/api/model';
+import { Button, Skeleton } from '~/.generated/shadcn/components/ui';
 
 import { InquiryTab, type InquiryTabHandle } from './-components/inquiry-tab';
 import { MaintenanceTab, type MaintenanceTabHandle } from './-components/maintenance-tab';

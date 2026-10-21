@@ -2,7 +2,7 @@ import { randomBytes } from 'node:crypto';
 
 import handler, { createServerEntry } from '@tanstack/react-start/server-entry';
 
-import { serverEnvSchema } from '#/lib/server-env';
+import { serverEnvSchema } from '~/lib/server-env';
 
 export default createServerEntry({
   async fetch(request, options) {

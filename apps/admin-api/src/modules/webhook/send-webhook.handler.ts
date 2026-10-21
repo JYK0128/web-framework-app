@@ -1,13 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
-import { WebhookService } from '@pkg/server-core/webhook/webhook.service';
+import { KvStore } from '@pkg/server-core/kv-store';
+import { WebhookService } from '@pkg/server-core/webhook';
 import { uuid } from '@pkg/shared/common';
 
-import { SystemContext } from '#/core/system.context';
-import { AdminWebhookConfigResponseDto } from '#/modules/system-config/webhook/admin-webhook-config.response.dto';
-import { SendWebhookCommand } from '#/modules/webhook/send-webhook.command';
-import { SendWebhookResponseDto } from '#/modules/webhook/send-webhook.response.dto';
+import { SystemContext } from '~/core/system.context';
+import { AdminWebhookConfigResponseDto } from '~/modules/system-config/webhook/admin-webhook-config.response.dto';
+import { SendWebhookCommand } from '~/modules/webhook/send-webhook.command';
+import { SendWebhookResponseDto } from '~/modules/webhook/send-webhook.response.dto';
 
 @Injectable()
 @CommandHandler(SendWebhookCommand)

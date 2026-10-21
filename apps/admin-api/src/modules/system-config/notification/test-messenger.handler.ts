@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { NotificationService } from '@pkg/server-core/notification';
 import type { NotificationConfigDto } from '@pkg/server-core/notification/dto';
-import { NotificationService } from '@pkg/server-core/notification/notification.service';
 
-import { InternalClient } from '#/core/internal-client';
-import { TestMessengerCommand } from '#/modules/system-config/notification/test-messenger.command';
-import { TestMessengerResponseDto } from '#/modules/system-config/notification/test-messenger.response.dto';
+import { InternalClient } from '~/core/internal-client';
+import { TestMessengerCommand } from '~/modules/system-config/notification/test-messenger.command';
+import { TestMessengerResponseDto } from '~/modules/system-config/notification/test-messenger.response.dto';
 
 @Injectable()
 @CommandHandler(TestMessengerCommand)

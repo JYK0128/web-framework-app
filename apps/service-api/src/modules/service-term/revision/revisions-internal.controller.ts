@@ -1,12 +1,11 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { ApiExcludeController, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { MachineAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { MachineAuth, SwaggerApiResponse } from '@pkg/server-core/http/decorators';
 
-import { GetTermRevisionsQuery } from '#/modules/service-term/revision/get-term-revisions.query';
-import { GetTermRevisionsRequestDto } from '#/modules/service-term/revision/get-term-revisions.request.dto';
-import { GetTermRevisionsResponseDto } from '#/modules/service-term/revision/get-term-revisions.response.dto';
+import { GetTermRevisionsQuery } from '~/modules/service-term/revision/get-term-revisions.query';
+import { GetTermRevisionsRequestDto } from '~/modules/service-term/revision/get-term-revisions.request.dto';
+import { GetTermRevisionsResponseDto } from '~/modules/service-term/revision/get-term-revisions.response.dto';
 
 @ApiTags('Internal (Machine)')
 @ApiExcludeController()

@@ -1,7 +1,7 @@
 import type { Opt } from '@mikro-orm/core';
 import { Entity, Index, Property } from '@mikro-orm/decorators/legacy';
 
-import { BaseEntity } from '#/core/database/entities/base.entity';
+import { BaseEntity } from '~/core/database/entities/base.entity';
 
 export enum EventPhase {
   ongoing = 'ongoing',

@@ -4,7 +4,7 @@ import { Check, Copy, Globe, ListChecks, Shield, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { Badge, Button, Input, Switch } from '#/.generated/shadcn/components/ui';
+import { Badge, Button, Input, Switch } from '~/.generated/shadcn/components/ui';
 
 import { hasOAuthProviderConnectionFields, type OAuthProviderMeta } from './oauth-provider.types';
 import type { OAuthFormInstance } from './oauth-tab';

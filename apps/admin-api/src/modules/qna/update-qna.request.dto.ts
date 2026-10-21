@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 import { QnaPriority, QnaStatus } from '@pkg/shared/constants';
 import { IsEnum, IsOptional, IsString, ValidateIf } from 'class-validator';
 

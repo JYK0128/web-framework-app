@@ -1,21 +1,20 @@
 import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiExcludeController, ApiTags } from '@nestjs/swagger';
-import { MachineAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { MachineAuth, SwaggerApiResponse } from '@pkg/server-core/http/decorators';
 
-import { DeleteQnaCommand } from '#/modules/qna/delete-qna.command';
-import { DeleteQnaRequestDto } from '#/modules/qna/delete-qna.request.dto';
-import { DeleteQnaResponseDto } from '#/modules/qna/delete-qna.response.dto';
-import { GetAllQnaQuery } from '#/modules/qna/get-all-qna.query';
-import { GetAllQnasQuery } from '#/modules/qna/get-all-qnas.query';
-import { GetQnaRequestDto } from '#/modules/qna/get-qna.request.dto';
-import { GetQnaResponseDto } from '#/modules/qna/get-qna.response.dto';
-import { GetQnasRequestDto } from '#/modules/qna/get-qnas.request.dto';
-import { GetQnasResponseDto } from '#/modules/qna/get-qnas.response.dto';
-import { UpdateQnaCommand } from '#/modules/qna/update-qna.command';
-import { UpdateQnaRequestDto } from '#/modules/qna/update-qna.request.dto';
-import { UpdateQnaResponseDto } from '#/modules/qna/update-qna.response.dto';
+import { DeleteQnaCommand } from '~/modules/qna/delete-qna.command';
+import { DeleteQnaRequestDto } from '~/modules/qna/delete-qna.request.dto';
+import { DeleteQnaResponseDto } from '~/modules/qna/delete-qna.response.dto';
+import { GetAllQnaQuery } from '~/modules/qna/get-all-qna.query';
+import { GetAllQnasQuery } from '~/modules/qna/get-all-qnas.query';
+import { GetQnaRequestDto } from '~/modules/qna/get-qna.request.dto';
+import { GetQnaResponseDto } from '~/modules/qna/get-qna.response.dto';
+import { GetQnasRequestDto } from '~/modules/qna/get-qnas.request.dto';
+import { GetQnasResponseDto } from '~/modules/qna/get-qnas.response.dto';
+import { UpdateQnaCommand } from '~/modules/qna/update-qna.command';
+import { UpdateQnaRequestDto } from '~/modules/qna/update-qna.request.dto';
+import { UpdateQnaResponseDto } from '~/modules/qna/update-qna.response.dto';
 
 @ApiTags('Internal (Machine)') @ApiExcludeController() @MachineAuth() @Controller('internal/qna')
 export class QnaInternalController {

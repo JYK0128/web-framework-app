@@ -1,10 +1,10 @@
 import { HttpStatus } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
-import { EntityDto } from '@pkg/server-core/http/dto/base/entity.dto';
+import { EntityDto } from '@pkg/server-core/http/dto/base';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { User } from '#/core/database/entities/auth';
-import { SupportMessage, SupportMessageSenderType, SupportRoom } from '#/core/database/entities/support';
+import { User } from '~/core/database/entities/auth';
+import { SupportMessage, SupportMessageSenderType, SupportRoom } from '~/core/database/entities/support';
 
 @ApiSchema({ name: 'SupportMessageItem' })
 export class SupportMessageItemDto extends EntityDto(SupportMessage) {

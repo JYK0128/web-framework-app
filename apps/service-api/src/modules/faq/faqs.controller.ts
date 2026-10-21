@@ -1,15 +1,14 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Public } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Public, SwaggerApiResponse } from '@pkg/server-core/http/decorators';
 
-import { GetFaqQuery } from '#/modules/faq/get-faq.query';
-import { GetFaqRequestDto } from '#/modules/faq/get-faq.request.dto';
-import { GetFaqResponseDto } from '#/modules/faq/get-faq.response.dto';
-import { GetFaqsQuery } from '#/modules/faq/get-faqs.query';
-import { GetPublicFaqsRequestDto } from '#/modules/faq/get-public-faqs.request.dto';
-import { GetPublicFaqsResponseDto } from '#/modules/faq/get-public-faqs.response.dto';
+import { GetFaqQuery } from '~/modules/faq/get-faq.query';
+import { GetFaqRequestDto } from '~/modules/faq/get-faq.request.dto';
+import { GetFaqResponseDto } from '~/modules/faq/get-faq.response.dto';
+import { GetFaqsQuery } from '~/modules/faq/get-faqs.query';
+import { GetPublicFaqsRequestDto } from '~/modules/faq/get-public-faqs.request.dto';
+import { GetPublicFaqsResponseDto } from '~/modules/faq/get-public-faqs.response.dto';
 
 @ApiTags('faqs')
 @Public()

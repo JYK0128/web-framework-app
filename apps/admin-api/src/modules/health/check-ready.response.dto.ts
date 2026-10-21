@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 
 export class CheckReadyResponseDto extends BaseDto {
   @ApiProperty({ example: 'ok', enum: ['ok', 'error', 'shutting_down'], description: '종합 상태' })
