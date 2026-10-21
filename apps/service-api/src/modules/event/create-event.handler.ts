@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
-import { Event } from '#/core/database/entities/events';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { CreateEventCommand } from '#/modules/event/create-event.command';
-import { CreateEventResponseDto } from '#/modules/event/create-event.response.dto';
-import { validateDates } from '#/modules/event/events.helpers';
+import { Event } from '~/core/database/entities/events';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { CreateEventCommand } from '~/modules/event/create-event.command';
+import { CreateEventResponseDto } from '~/modules/event/create-event.response.dto';
+import { validateDates } from '~/modules/event/events.helpers';
 
 @Injectable()
 @CommandHandler(CreateEventCommand)

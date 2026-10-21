@@ -7,7 +7,7 @@ import { toString as qrToString } from 'qrcode';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import { useAuthControllerEnableTwoFactorV1, useAuthControllerGenerateTwoFactorV1 } from '#/.generated/api/endpoints/auth/auth';
+import { useAuthControllerEnableTwoFactorV1, useAuthControllerGenerateTwoFactorV1 } from '~/.generated/api/endpoints/auth/auth';
 
 export function ProfileTwoFactorSetupModal({ open, onOpenChange, close, email }: ModalComponentProps<boolean> & { email?: string }) {
   const generate = useAuthControllerGenerateTwoFactorV1();

@@ -1,14 +1,14 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
+import { KvStore } from '@pkg/server-core/kv-store';
 import { type NotificationConfigDto } from '@pkg/server-core/notification/dto';
 import { ApplicationError, z } from '@pkg/shared/common';
 import { decrypt, isEncrypted } from '@pkg/shared/server';
 import { cloneDeep } from 'lodash-es';
 
-import { SERVICE_RUNTIME_CONFIG } from '#/app.config';
-import { env } from '#/env';
-import { transformNotificationSecrets } from '#/modules/system-config/notification/notification-config-secrets';
-import { SERVICE_SYSTEM_CONTEXT_REDIS_KEY } from '#/modules/system-config/system-config.constants';
+import { SERVICE_RUNTIME_CONFIG } from '~/app.config';
+import { env } from '~/env';
+import { transformNotificationSecrets } from '~/modules/system-config/notification/notification-config-secrets';
+import { SERVICE_SYSTEM_CONTEXT_REDIS_KEY } from '~/modules/system-config/system-config.constants';
 
 export const SystemContextSnapshotSchema = z.object({
   notification: z.record(z.string(), z.unknown()).nullable(),

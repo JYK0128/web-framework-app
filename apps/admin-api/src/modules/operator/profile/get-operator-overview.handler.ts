@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { User } from '#/core/database/entities/auth';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { GetOperatorOverviewQuery } from '#/modules/operator/profile/get-operator-overview.query';
-import { GetOperatorOverviewResponseDto } from '#/modules/operator/profile/get-operator-overview.response.dto';
+import { User } from '~/core/database/entities/auth';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { GetOperatorOverviewQuery } from '~/modules/operator/profile/get-operator-overview.query';
+import { GetOperatorOverviewResponseDto } from '~/modules/operator/profile/get-operator-overview.response.dto';
 
 @Injectable()
 @QueryHandler(GetOperatorOverviewQuery)

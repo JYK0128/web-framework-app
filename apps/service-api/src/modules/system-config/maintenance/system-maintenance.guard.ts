@@ -3,7 +3,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { getMaintenanceMessage } from '@pkg/shared/policy';
 import type { Request } from 'express';
 
-import { ServiceContext } from '#/modules/system-config/service.context';
+import { ServiceContext } from '~/modules/system-config/service.context';
 
 const MAINTENANCE_EXEMPT_PATHS = [
   '/health/live',

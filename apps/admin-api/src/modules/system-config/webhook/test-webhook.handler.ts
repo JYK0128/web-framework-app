@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { WebhookService } from '@pkg/server-core/webhook/webhook.service';
+import { WebhookService } from '@pkg/server-core/webhook';
 
-import { TestWebhookCommand } from '#/modules/system-config/webhook/test-webhook.command';
-import { TestWebhookResponseDto } from '#/modules/system-config/webhook/test-webhook.response.dto';
+import { TestWebhookCommand } from '~/modules/system-config/webhook/test-webhook.command';
+import { TestWebhookResponseDto } from '~/modules/system-config/webhook/test-webhook.response.dto';
 
 @Injectable()
 @CommandHandler(TestWebhookCommand)

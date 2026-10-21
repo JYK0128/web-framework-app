@@ -1,6 +1,6 @@
 import { AppIcon, BrandLogo, LocaleSwitcher, ProfileDropdown } from '@pkg/web-core/application';
+import { useI18n } from '@pkg/web-core/context/i18n';
 import { useSSE } from '@pkg/web-core/hooks';
-import { useI18n } from '@pkg/web-core/i18n';
 import { AppLayout as AppLayoutParts, LinkCard } from '@pkg/web-core/template';
 import { ThemeToggle } from '@pkg/web-core/ui';
 import { cn } from '@pkg/web-core/utils';
@@ -10,10 +10,10 @@ import { Bell, Menu, PanelLeftClose, PanelLeftOpen, X } from 'lucide-react';
 import type { IconName } from 'lucide-react/dynamic';
 import { type ReactNode, useState } from 'react';
 
-import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
-import type { MeResponse } from '#/.generated/api/model';
-import { Button } from '#/.generated/shadcn/components/ui';
-import { isSupportChatOpen } from '#/hooks/use-support-socket';
+import { useAuthControllerLogoutV1 } from '~/.generated/api/endpoints/auth/auth';
+import type { MeResponse } from '~/.generated/api/model';
+import { Button } from '~/.generated/shadcn/components/ui';
+import { isSupportChatOpen } from '~/hooks/use-support-socket';
 
 type AdminAlert = {
   kind: 'support.unanswered'

@@ -1,23 +1,21 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { AdminPermission } from '@pkg/shared';
 
-import { CreateTermGroupCommand } from '#/modules/term/group/create-term-group.command';
-import { CreateTermGroupRequestDto } from '#/modules/term/group/create-term-group.request.dto';
-import { CreateTermGroupResponseDto } from '#/modules/term/group/create-term-group.response.dto';
-import { DeleteTermGroupCommand } from '#/modules/term/group/delete-term-group.command';
-import { DeleteTermGroupRequestDto } from '#/modules/term/group/delete-term-group.request.dto';
-import { DeleteTermGroupResponseDto } from '#/modules/term/group/delete-term-group.response.dto';
-import { GetTermGroupsQuery } from '#/modules/term/group/get-term-groups.query';
-import { GetTermGroupsRequestDto } from '#/modules/term/group/get-term-groups.request.dto';
-import { GetTermGroupsResponseDto } from '#/modules/term/group/get-term-groups.response.dto';
-import { UpdateTermGroupCommand } from '#/modules/term/group/update-term-group.command';
-import { UpdateTermGroupRequestDto } from '#/modules/term/group/update-term-group.request.dto';
-import { UpdateTermGroupResponseDto } from '#/modules/term/group/update-term-group.response.dto';
+import { CreateTermGroupCommand } from '~/modules/term/group/create-term-group.command';
+import { CreateTermGroupRequestDto } from '~/modules/term/group/create-term-group.request.dto';
+import { CreateTermGroupResponseDto } from '~/modules/term/group/create-term-group.response.dto';
+import { DeleteTermGroupCommand } from '~/modules/term/group/delete-term-group.command';
+import { DeleteTermGroupRequestDto } from '~/modules/term/group/delete-term-group.request.dto';
+import { DeleteTermGroupResponseDto } from '~/modules/term/group/delete-term-group.response.dto';
+import { GetTermGroupsQuery } from '~/modules/term/group/get-term-groups.query';
+import { GetTermGroupsRequestDto } from '~/modules/term/group/get-term-groups.request.dto';
+import { GetTermGroupsResponseDto } from '~/modules/term/group/get-term-groups.response.dto';
+import { UpdateTermGroupCommand } from '~/modules/term/group/update-term-group.command';
+import { UpdateTermGroupRequestDto } from '~/modules/term/group/update-term-group.request.dto';
+import { UpdateTermGroupResponseDto } from '~/modules/term/group/update-term-group.response.dto';
 
 @ApiTags('terms')
 @UserAuth()

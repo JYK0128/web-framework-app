@@ -1,10 +1,10 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
+import { PrincipalContext } from '@pkg/server-core/http/contexts';
 
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { DeleteOwnQnaCommand } from '#/modules/qna/delete-own-qna.command';
-import { DeleteOwnQnaResponseDto } from '#/modules/qna/delete-own-qna.response.dto';
-import { findQna } from '#/modules/qna/qna.helpers';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { DeleteOwnQnaCommand } from '~/modules/qna/delete-own-qna.command';
+import { DeleteOwnQnaResponseDto } from '~/modules/qna/delete-own-qna.response.dto';
+import { findQna } from '~/modules/qna/qna.helpers';
 
 @CommandHandler(DeleteOwnQnaCommand)
 export class DeleteOwnQnaHandler implements ICommandHandler<DeleteOwnQnaCommand, DeleteOwnQnaResponseDto> {

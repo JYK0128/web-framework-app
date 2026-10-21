@@ -1,19 +1,17 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Public, UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { NoStore } from '@pkg/server-core/http/decorators/no-store.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { NoStore, Public, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 
-import { LoginCommand } from '#/modules/auth/session/login.command';
-import { LoginRequestDto } from '#/modules/auth/session/login.request.dto';
-import { LoginResponseDto } from '#/modules/auth/session/login.response.dto';
-import { LogoutCommand } from '#/modules/auth/session/logout.command';
-import { LogoutRequestDto } from '#/modules/auth/session/logout.request.dto';
-import { LogoutResponseDto } from '#/modules/auth/session/logout.response.dto';
-import { RefreshCommand } from '#/modules/auth/session/refresh.command';
-import { RefreshRequestDto } from '#/modules/auth/session/refresh.request.dto';
-import { RefreshResponseDto } from '#/modules/auth/session/refresh.response.dto';
+import { LoginCommand } from '~/modules/auth/session/login.command';
+import { LoginRequestDto } from '~/modules/auth/session/login.request.dto';
+import { LoginResponseDto } from '~/modules/auth/session/login.response.dto';
+import { LogoutCommand } from '~/modules/auth/session/logout.command';
+import { LogoutRequestDto } from '~/modules/auth/session/logout.request.dto';
+import { LogoutResponseDto } from '~/modules/auth/session/logout.response.dto';
+import { RefreshCommand } from '~/modules/auth/session/refresh.command';
+import { RefreshRequestDto } from '~/modules/auth/session/refresh.request.dto';
+import { RefreshResponseDto } from '~/modules/auth/session/refresh.response.dto';
 
 @ApiTags('Auth')
 @UserAuth()

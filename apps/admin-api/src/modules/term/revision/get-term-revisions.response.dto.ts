@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PageResponseDto } from '@pkg/server-core/http/dto/response/page.response.dto';
+import { PageResponseDto } from '@pkg/server-core/http/dto/response';
 import { Type } from 'class-transformer';
 
-import { TermRevisionItemDto } from '#/modules/term/revision/term-revision-item.dto';
+import { TermRevisionItemDto } from '~/modules/term/revision/term-revision-item.dto';
 
 export class GetTermRevisionsResponseDto extends PageResponseDto<TermRevisionItemDto> {
   @ApiProperty({ type: [TermRevisionItemDto] }) @Type(() => TermRevisionItemDto) override items!: TermRevisionItemDto[];

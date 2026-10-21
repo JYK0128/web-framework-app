@@ -1,11 +1,11 @@
 import type { ObjectQuery } from '@mikro-orm/core';
 import { ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
-import { PageRequestDto } from '@pkg/server-core/http/dto/request/page.request.dto';
+import { PageRequestDto } from '@pkg/server-core/http/dto/request';
 import { hashWithSecret } from '@pkg/shared/server';
 import { IsIn, IsOptional, IsString } from 'class-validator';
 
-import { User } from '#/core/database/entities/auth';
-import { env } from '#/env';
+import { User } from '~/core/database/entities/auth';
+import { env } from '~/env';
 
 @ApiSchema({ name: 'GetCustomersRequest' })
 export class GetCustomersRequestDto extends PageRequestDto<User, 'createdAt' | 'updatedAt'> {

@@ -3,9 +3,9 @@ import { Seeder } from '@mikro-orm/seeder';
 import { ALL_SERVICE_PERMISSIONS, MEMBER_PERMISSION_CODES } from '@pkg/shared';
 import { encrypt, hashPassword, hashWithSecret } from '@pkg/shared/server';
 
-import { Account, Profile, User } from '#/core/database/entities/auth';
-import { Role, RoleCode } from '#/core/database/entities/auth.extensions';
-import { env } from '#/env';
+import { Account, Profile, User } from '~/core/database/entities/auth';
+import { Role, RoleCode } from '~/core/database/entities/auth.extensions';
+import { env } from '~/env';
 
 const SUPER_USER_INIT_EMAIL = 'user@test.com';
 // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- local development seed account only

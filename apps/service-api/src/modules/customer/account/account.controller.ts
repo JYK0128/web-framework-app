@@ -1,18 +1,17 @@
 import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiExcludeController, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { MachineAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { MachineAuth, SwaggerApiResponse } from '@pkg/server-core/http/decorators';
 
-import { BanCustomerCommand } from '#/modules/customer/account/ban-customer.command';
-import { BanCustomerRequestDto } from '#/modules/customer/account/ban-customer.request.dto';
-import { BanCustomerResponseDto } from '#/modules/customer/account/ban-customer.response.dto';
-import { DeleteCustomerCommand } from '#/modules/customer/account/delete-customer.command';
-import { DeleteCustomerRequestDto } from '#/modules/customer/account/delete-customer.request.dto';
-import { DeleteCustomerResponseDto } from '#/modules/customer/account/delete-customer.response.dto';
-import { UnbanCustomerCommand } from '#/modules/customer/account/unban-customer.command';
-import { UnbanCustomerRequestDto } from '#/modules/customer/account/unban-customer.request.dto';
-import { UnbanCustomerResponseDto } from '#/modules/customer/account/unban-customer.response.dto';
+import { BanCustomerCommand } from '~/modules/customer/account/ban-customer.command';
+import { BanCustomerRequestDto } from '~/modules/customer/account/ban-customer.request.dto';
+import { BanCustomerResponseDto } from '~/modules/customer/account/ban-customer.response.dto';
+import { DeleteCustomerCommand } from '~/modules/customer/account/delete-customer.command';
+import { DeleteCustomerRequestDto } from '~/modules/customer/account/delete-customer.request.dto';
+import { DeleteCustomerResponseDto } from '~/modules/customer/account/delete-customer.response.dto';
+import { UnbanCustomerCommand } from '~/modules/customer/account/unban-customer.command';
+import { UnbanCustomerRequestDto } from '~/modules/customer/account/unban-customer.request.dto';
+import { UnbanCustomerResponseDto } from '~/modules/customer/account/unban-customer.response.dto';
 
 @ApiTags('Internal (Machine)')
 @ApiExcludeController()

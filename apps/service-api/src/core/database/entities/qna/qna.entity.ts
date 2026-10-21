@@ -2,9 +2,9 @@ import { type Opt, type Rel } from '@mikro-orm/core';
 import { Entity, Enum, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
 import { QnaPriority, QnaStatus } from '@pkg/shared/constants';
 
-import { User } from '#/core/database/entities/auth/user.entity';
-import { BaseEntity } from '#/core/database/entities/base.entity';
-import { ContentCategory } from '#/core/database/entities/common/content-category';
+import { User } from '~/core/database/entities/auth/user.entity';
+import { BaseEntity } from '~/core/database/entities/base.entity';
+import { ContentCategory } from '~/core/database/entities/common/content-category';
 
 export const QnaCategory = ContentCategory;
 export type QnaCategory = ContentCategory;

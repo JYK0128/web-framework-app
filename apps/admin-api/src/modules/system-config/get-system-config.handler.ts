@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { InternalClient } from '#/core/internal-client';
-import { SystemContext } from '#/core/system.context';
-import { AdminEmailConfigResponseDto } from '#/modules/system-config/admin-email/admin-email-config.response.dto';
-import { GetSystemConfigQuery } from '#/modules/system-config/get-system-config.query';
-import { GetSystemConfigResponseDto } from '#/modules/system-config/get-system-config.response.dto';
-import type { ServiceSystemConfigResponseDto } from '#/modules/system-config/service-system-config.response.dto';
-import { AdminWebhookConfigResponseDto } from '#/modules/system-config/webhook/admin-webhook-config.response.dto';
+import { InternalClient } from '~/core/internal-client';
+import { SystemContext } from '~/core/system.context';
+import { AdminEmailConfigResponseDto } from '~/modules/system-config/admin-email/admin-email-config.response.dto';
+import { GetSystemConfigQuery } from '~/modules/system-config/get-system-config.query';
+import { GetSystemConfigResponseDto } from '~/modules/system-config/get-system-config.response.dto';
+import type { ServiceSystemConfigResponseDto } from '~/modules/system-config/service-system-config.response.dto';
+import { AdminWebhookConfigResponseDto } from '~/modules/system-config/webhook/admin-webhook-config.response.dto';
 
 @Injectable()
 @QueryHandler(GetSystemConfigQuery)

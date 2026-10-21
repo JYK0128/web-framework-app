@@ -6,9 +6,9 @@ import { createFileRoute } from '@tanstack/react-router';
 import { Pencil, Plus, ShieldCheck, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
-import { getMembershipsControllerListV1QueryKey, useMembershipsControllerDeleteV1, useMembershipsControllerListV1 } from '#/.generated/api/endpoints/memberships/memberships';
-import type { MembershipItemDto } from '#/.generated/api/model';
-import { Button } from '#/.generated/shadcn/components/ui';
+import { getMembershipsControllerListV1QueryKey, useMembershipsControllerDeleteV1, useMembershipsControllerListV1 } from '~/.generated/api/endpoints/memberships/memberships';
+import type { MembershipItemDto } from '~/.generated/api/model';
+import { Button } from '~/.generated/shadcn/components/ui';
 
 import { MembershipEditor } from './-components/membership-editor-modal';
 

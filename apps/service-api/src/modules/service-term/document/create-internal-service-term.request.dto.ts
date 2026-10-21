@@ -1,9 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsDateString, IsNotEmpty, IsOptional, IsString, IsUUID, MaxLength, ValidateNested } from 'class-validator';
 
-import { ServiceAgreementMetadataDto } from '#/modules/service-term/agreement/service-agreement-metadata.dto';
+import { ServiceAgreementMetadataDto } from '~/modules/service-term/agreement/service-agreement-metadata.dto';
 
 export class CreateInternalServiceTermRequestDto extends BaseDto {
   @ApiProperty({ format: 'uuid' })

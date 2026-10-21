@@ -2,7 +2,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { plainToInstance, Type } from 'class-transformer';
 import { IsOptional, ValidateNested } from 'class-validator';
 
-import { OAuthProviderDetailDto } from '#/modules/system-config/oauth/oauth-provider-detail.dto';
+import { OAuthProviderDetailDto } from '~/modules/system-config/oauth/oauth-provider-detail.dto';
 
 export class OAuthConfigDto {
   static parse(plain: unknown): OAuthConfigDto {

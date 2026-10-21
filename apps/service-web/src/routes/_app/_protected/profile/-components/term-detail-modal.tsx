@@ -1,9 +1,9 @@
 import { Modal, type ModalComponentProps, openModal } from '@pkg/web-core/modal';
 import { Button, Skeleton } from '@pkg/web-core/ui';
 
-import { useServiceTermsControllerGetTermV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
-import type { ServiceTermAgreementItem } from '#/.generated/api/model';
-import { TermRevisionHistoryModal } from '#/routes/_app/_protected/profile/-components/term-revision-history-modal';
+import { useServiceTermsControllerGetTermV1 } from '~/.generated/api/endpoints/service-terms/service-terms';
+import type { ServiceTermAgreementItem } from '~/.generated/api/model';
+import { TermRevisionHistoryModal } from '~/routes/_app/_protected/profile/-components/term-revision-history-modal';
 
 type TermDetailModalProps = ModalComponentProps & {
   term: ServiceTermAgreementItem

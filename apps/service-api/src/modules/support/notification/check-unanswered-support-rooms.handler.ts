@@ -1,19 +1,18 @@
 import { QueryOrder, RequestContext as MikroRequestContext } from '@mikro-orm/core';
 import { Inject, Logger } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { EVENT_BROKER } from '@pkg/server-core/event-broker/event-broker.interface';
-import { EventBroker } from '@pkg/server-core/event-broker/event-broker.service';
+import { EVENT_BROKER, EventBroker } from '@pkg/server-core/event-broker';
 import { SupportUnansweredAlertEvent } from '@pkg/server-core/event-broker/events';
-import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
+import { KvStore } from '@pkg/server-core/kv-store';
 import { TimeUtil, uuid } from '@pkg/shared/common';
 import { isWithinOperatingHours } from '@pkg/shared/policy';
 
-import { SERVICE_RUNTIME_CONFIG } from '#/app.config';
-import { SupportMessage, SupportMessageSenderType, SupportRoom, SupportRoomStatus } from '#/core/database/entities/support';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { CheckUnansweredSupportRoomsCommand } from '#/modules/support/notification/check-unanswered-support-rooms.command';
-import { InquiryWebhookService } from '#/modules/support/notification/inquiry-webhook.service';
-import { ServiceContext } from '#/modules/system-config/service.context';
+import { SERVICE_RUNTIME_CONFIG } from '~/app.config';
+import { SupportMessage, SupportMessageSenderType, SupportRoom, SupportRoomStatus } from '~/core/database/entities/support';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { CheckUnansweredSupportRoomsCommand } from '~/modules/support/notification/check-unanswered-support-rooms.command';
+import { InquiryWebhookService } from '~/modules/support/notification/inquiry-webhook.service';
+import { ServiceContext } from '~/modules/system-config/service.context';
 
 const UNANSWERED_JOB_LOCK = 'service:support:scheduler:unanswered';
 

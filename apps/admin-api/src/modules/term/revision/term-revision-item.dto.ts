@@ -1,7 +1,7 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
-import { EntityDto } from '@pkg/server-core/http/dto/base/entity.dto';
+import { EntityDto } from '@pkg/server-core/http/dto/base';
 
-import { Term } from '#/core/database/entities/terms';
+import { Term } from '~/core/database/entities/terms';
 
 @ApiSchema({ name: 'TermRevisionItem' })
 export class TermRevisionItemDto extends EntityDto(Term) {

@@ -8,9 +8,9 @@ import { createColumnHelper, type SortingState } from '@tanstack/react-table';
 import { Ellipsis, Eye, Pencil, Plus, Trash2 } from 'lucide-react';
 import { type MouseEvent, type MouseEventHandler, useCallback, useMemo, useState } from 'react';
 
-import { getTermsControllerGetTermGroupsV1QueryKey, getTermsControllerGetTermsV1QueryKey, useTermsControllerDeleteTermGroupV1, useTermsControllerDeleteTermV1, useTermsControllerGetTermGroupsV1, useTermsControllerGetTermsV1 } from '#/.generated/api/endpoints/terms/terms';
-import type { TermGroupItemDto, TermItemDto, TermsControllerGetTermsV1Params } from '#/.generated/api/model';
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
+import { getTermsControllerGetTermGroupsV1QueryKey, getTermsControllerGetTermsV1QueryKey, useTermsControllerDeleteTermGroupV1, useTermsControllerDeleteTermV1, useTermsControllerGetTermGroupsV1, useTermsControllerGetTermsV1 } from '~/.generated/api/endpoints/terms/terms';
+import type { TermGroupItemDto, TermItemDto, TermsControllerGetTermsV1Params } from '~/.generated/api/model';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '~/.generated/shadcn/components/ui';
 
 import { TermEditorModal, TermGroupEditorModal, TermViewModal } from './-components/modals';
 import { TermGroupList } from './-components/term-group-list';

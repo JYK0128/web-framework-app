@@ -1,7 +1,7 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
-import { EntityDto } from '@pkg/server-core/http/dto/base/entity.dto';
+import { EntityDto } from '@pkg/server-core/http/dto/base';
 
-import { Event, EventPhase } from '#/core/database/entities/events';
+import { Event, EventPhase } from '~/core/database/entities/events';
 
 @ApiSchema({ name: 'EventItem' })
 export class EventItemDto extends EntityDto(Event) {

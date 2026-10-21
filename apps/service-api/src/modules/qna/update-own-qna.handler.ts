@@ -1,10 +1,10 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
+import { PrincipalContext } from '@pkg/server-core/http/contexts';
 
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { findQna } from '#/modules/qna/qna.helpers';
-import { UpdateOwnQnaCommand } from '#/modules/qna/update-own-qna.command';
-import { UpdateOwnQnaResponseDto } from '#/modules/qna/update-own-qna.response.dto';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { findQna } from '~/modules/qna/qna.helpers';
+import { UpdateOwnQnaCommand } from '~/modules/qna/update-own-qna.command';
+import { UpdateOwnQnaResponseDto } from '~/modules/qna/update-own-qna.response.dto';
 
 @CommandHandler(UpdateOwnQnaCommand)
 export class UpdateOwnQnaHandler implements ICommandHandler<UpdateOwnQnaCommand, UpdateOwnQnaResponseDto> {

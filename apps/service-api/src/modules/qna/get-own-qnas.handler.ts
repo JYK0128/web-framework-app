@@ -1,11 +1,11 @@
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
+import { PrincipalContext } from '@pkg/server-core/http/contexts';
 
-import { Qna } from '#/core/database/entities/qna';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { GetOwnQnasQuery } from '#/modules/qna/get-own-qnas.query';
-import { GetQnasResponseDto } from '#/modules/qna/get-qnas.response.dto';
-import { QnaItemDto } from '#/modules/qna/qna-item.dto';
+import { Qna } from '~/core/database/entities/qna';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { GetOwnQnasQuery } from '~/modules/qna/get-own-qnas.query';
+import { GetQnasResponseDto } from '~/modules/qna/get-qnas.response.dto';
+import { QnaItemDto } from '~/modules/qna/qna-item.dto';
 
 @QueryHandler(GetOwnQnasQuery)
 export class GetOwnQnasHandler implements IQueryHandler<GetOwnQnasQuery, GetQnasResponseDto> {

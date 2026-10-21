@@ -2,12 +2,12 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { User } from '#/core/database/entities/auth';
-import { Role } from '#/core/database/entities/auth.extensions';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { CreateCustomerMembershipCommand } from '#/modules/membership/create-customer-membership.command';
-import { CreateCustomerMembershipResponseDto } from '#/modules/membership/create-customer-membership.response.dto';
-import { normalizePermissions } from '#/modules/membership/customer-membership.helpers';
+import { User } from '~/core/database/entities/auth';
+import { Role } from '~/core/database/entities/auth.extensions';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { CreateCustomerMembershipCommand } from '~/modules/membership/create-customer-membership.command';
+import { CreateCustomerMembershipResponseDto } from '~/modules/membership/create-customer-membership.response.dto';
+import { normalizePermissions } from '~/modules/membership/customer-membership.helpers';
 
 @Injectable()
 @CommandHandler(CreateCustomerMembershipCommand)

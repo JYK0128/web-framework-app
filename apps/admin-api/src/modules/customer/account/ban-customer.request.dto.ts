@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 import { Transform } from 'class-transformer';
 import { IsDate, IsOptional, IsString, MaxLength } from 'class-validator';
 

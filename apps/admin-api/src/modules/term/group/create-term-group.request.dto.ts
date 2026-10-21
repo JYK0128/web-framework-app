@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 import { IsBoolean, IsInt, IsNotEmpty, IsString, MaxLength, Min, ValidateIf } from 'class-validator';
 
 export class CreateTermGroupRequestDto extends BaseDto {

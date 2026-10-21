@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { type IUserAuthService, USER_AUTH_SERVICE } from '@pkg/server-core/auth/user/user-auth.interface';
-import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
+import { type IUserAuthService, USER_AUTH_SERVICE } from '@pkg/server-core/auth';
+import { PrincipalContext } from '@pkg/server-core/http/contexts';
 
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { DeleteOperatorCommand } from '#/modules/operator/account/delete-operator.command';
-import { DeleteOperatorResponseDto } from '#/modules/operator/account/delete-operator.response.dto';
-import { assertNotSelf, assertNotSuperAdmin, findOperator } from '#/modules/operator/operator-actions.helpers';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { DeleteOperatorCommand } from '~/modules/operator/account/delete-operator.command';
+import { DeleteOperatorResponseDto } from '~/modules/operator/account/delete-operator.response.dto';
+import { assertNotSelf, assertNotSuperAdmin, findOperator } from '~/modules/operator/operator-actions.helpers';
 
 @Injectable()
 @CommandHandler(DeleteOperatorCommand)

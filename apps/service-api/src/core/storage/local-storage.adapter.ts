@@ -2,9 +2,9 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 
 import { Injectable } from '@nestjs/common';
-import { type FileStorageAdapter, type PresignedUploadUrlResult, type SaveFileResult } from '@pkg/server-core/file-storage/file-storage.interface';
+import { type FileStorageAdapter, type PresignedUploadUrlResult, type SaveFileResult } from '@pkg/server-core/file-storage';
 
-import { SERVICE_RUNTIME_CONFIG } from '#/app.config';
+import { SERVICE_RUNTIME_CONFIG } from '~/app.config';
 
 @Injectable()
 export class LocalStorageAdapter implements FileStorageAdapter {

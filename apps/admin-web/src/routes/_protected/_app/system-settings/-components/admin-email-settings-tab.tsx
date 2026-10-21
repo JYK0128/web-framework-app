@@ -6,11 +6,11 @@ import { Send } from 'lucide-react';
 import { forwardRef, useImperativeHandle } from 'react';
 import { toast } from 'sonner';
 
-import type { AdminEmailConfigResponseDto } from '#/.generated/api/model/adminEmailConfigResponseDto';
-import type { SystemConfigControllerTestAdminEmailV1200 } from '#/.generated/api/model/systemConfigControllerTestAdminEmailV1200';
-import type { UpdateAdminEmailConfigRequestDto } from '#/.generated/api/model/updateAdminEmailConfigRequestDto';
-import { Button } from '#/.generated/shadcn/components/ui';
-import { axios } from '#/lib/axios';
+import type { AdminEmailConfigResponseDto } from '~/.generated/api/model/adminEmailConfigResponseDto';
+import type { SystemConfigControllerTestAdminEmailV1200 } from '~/.generated/api/model/systemConfigControllerTestAdminEmailV1200';
+import type { UpdateAdminEmailConfigRequestDto } from '~/.generated/api/model/updateAdminEmailConfigRequestDto';
+import { Button } from '~/.generated/shadcn/components/ui';
+import { axios } from '~/lib/axios';
 
 export interface AdminEmailSettingsTabProps {
   adminEmail?: AdminEmailConfigResponseDto

@@ -1,10 +1,10 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
-import { EntityResponseDto } from '@pkg/server-core/http/dto/response/entity.response.dto';
+import { EntityResponseDto } from '@pkg/server-core/http/dto/response';
 import { decrypt } from '@pkg/shared/server';
 
-import { Account, type Profile, User } from '#/core/database/entities/auth';
-import { type Role } from '#/core/database/entities/auth.extensions';
-import { env } from '#/env';
+import { Account, type Profile, User } from '~/core/database/entities/auth';
+import { type Role } from '~/core/database/entities/auth.extensions';
+import { env } from '~/env';
 
 @ApiSchema({ name: 'MeResponse' })
 export class MeResponseDto extends EntityResponseDto(User) {

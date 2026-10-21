@@ -8,8 +8,8 @@ import { ChevronDown } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { z } from 'zod';
 
-import { faqsControllerGetFaqsV1 } from '#/.generated/api/endpoints/faqs/faqs';
-import type { FaqItem, FaqsControllerGetFaqsV1Category, FaqsControllerGetFaqsV1SortItem, SortDirection } from '#/.generated/api/model';
+import { faqsControllerGetFaqsV1 } from '~/.generated/api/endpoints/faqs/faqs';
+import type { FaqItem, FaqsControllerGetFaqsV1Category, FaqsControllerGetFaqsV1SortItem, SortDirection } from '~/.generated/api/model';
 
 const searchSchema = z.object({ search: z.string().optional(), category: z.string().optional() });
 

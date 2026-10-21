@@ -1,10 +1,10 @@
 import { HttpStatus } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { EntityResponseDto } from '@pkg/server-core/http/dto/response/entity.response.dto';
+import { EntityResponseDto } from '@pkg/server-core/http/dto/response';
 import { IsBoolean, IsInt, IsString, Max, Min } from 'class-validator';
 
-import { SystemConfig } from '#/core/database/entities/system-configs';
-import { AdminEmailConfigDto } from '#/modules/system-config/admin-email/admin-email-config.dto';
+import { SystemConfig } from '~/core/database/entities/system-configs';
+import { AdminEmailConfigDto } from '~/modules/system-config/admin-email/admin-email-config.dto';
 
 export class AdminEmailConfigResponseDto extends EntityResponseDto(SystemConfig) {
   protected static override readonly validationError = {

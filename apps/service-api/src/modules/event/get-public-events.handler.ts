@@ -2,11 +2,11 @@ import { type FilterQuery } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { Event, EventPhase } from '#/core/database/entities/events';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { EventItemDto } from '#/modules/event/event-item.dto';
-import { GetPublicEventsQuery } from '#/modules/event/get-public-events.query';
-import { GetPublicEventsResponseDto } from '#/modules/event/get-public-events.response.dto';
+import { Event, EventPhase } from '~/core/database/entities/events';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { EventItemDto } from '~/modules/event/event-item.dto';
+import { GetPublicEventsQuery } from '~/modules/event/get-public-events.query';
+import { GetPublicEventsResponseDto } from '~/modules/event/get-public-events.response.dto';
 
 @Injectable()
 @QueryHandler(GetPublicEventsQuery)

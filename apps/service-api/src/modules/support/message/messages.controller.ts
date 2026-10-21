@@ -1,17 +1,15 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { ServicePermission } from '@pkg/shared';
 
-import { CreateOwnSupportMessageCommand } from '#/modules/support/message/create-own-support-message.command';
-import { CreateSupportMessageRequestDto } from '#/modules/support/message/create-support-message.request.dto';
-import { CreateSupportMessageResponseDto } from '#/modules/support/message/create-support-message.response.dto';
-import { GetOwnSupportMessagesQuery } from '#/modules/support/message/get-own-support-messages.query';
-import { GetSupportMessagesRequestDto } from '#/modules/support/message/get-support-messages.request.dto';
-import { GetSupportMessagesResponseDto } from '#/modules/support/message/get-support-messages.response.dto';
+import { CreateOwnSupportMessageCommand } from '~/modules/support/message/create-own-support-message.command';
+import { CreateSupportMessageRequestDto } from '~/modules/support/message/create-support-message.request.dto';
+import { CreateSupportMessageResponseDto } from '~/modules/support/message/create-support-message.response.dto';
+import { GetOwnSupportMessagesQuery } from '~/modules/support/message/get-own-support-messages.query';
+import { GetSupportMessagesRequestDto } from '~/modules/support/message/get-support-messages.request.dto';
+import { GetSupportMessagesResponseDto } from '~/modules/support/message/get-support-messages.response.dto';
 
 @ApiTags('support')
 @UserAuth()

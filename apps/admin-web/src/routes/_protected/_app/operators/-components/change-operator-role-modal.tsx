@@ -3,10 +3,10 @@ import { FormLayout, useAppForm } from '@pkg/web-core/form';
 import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { getOperatorsControllerGetOperatorsV1QueryKey, useOperatorsControllerUpdateOperatorRoleV1 } from '#/.generated/api/endpoints/operators/operators';
-import { useRolesControllerGetRolesV1 } from '#/.generated/api/endpoints/roles/roles';
-import type { OperatorItem } from '#/.generated/api/model';
-import { Button } from '#/.generated/shadcn/components/ui';
+import { getOperatorsControllerGetOperatorsV1QueryKey, useOperatorsControllerUpdateOperatorRoleV1 } from '~/.generated/api/endpoints/operators/operators';
+import { useRolesControllerGetRolesV1 } from '~/.generated/api/endpoints/roles/roles';
+import type { OperatorItem } from '~/.generated/api/model';
+import { Button } from '~/.generated/shadcn/components/ui';
 
 type ChangeOperatorRoleModalProps = ModalComponentProps<boolean> & {
   operator: OperatorItem

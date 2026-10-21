@@ -1,13 +1,11 @@
 import { Body, Controller, Param, Patch } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalClient } from '#/core/internal-client';
-import { UpdateCustomerRoleRequestDto } from '#/modules/customer/membership/update-customer-role.request.dto';
-import { UpdateCustomerRoleResponseDto } from '#/modules/customer/membership/update-customer-role.response.dto';
+import { InternalClient } from '~/core/internal-client';
+import { UpdateCustomerRoleRequestDto } from '~/modules/customer/membership/update-customer-role.request.dto';
+import { UpdateCustomerRoleResponseDto } from '~/modules/customer/membership/update-customer-role.response.dto';
 
 @ApiTags('customers')
 @UserAuth()

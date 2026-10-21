@@ -2,7 +2,7 @@
 // Re-run `mikro-orm discovery:export` to update.
 
 import { Account, AccountMetadata } from './core/database/entities/auth/account.entity.js';
-import { BaseEntity } from '#/core/database/entities/base.entity';
+import { BaseEntity } from '~/core/database/entities/base.entity';
 import { Event } from './core/database/entities/events/event.entity.js';
 import { Faq } from './core/database/entities/faqs/faq.entity.js';
 import { LogEntry } from './core/database/entities/logs/log-entry.entity.js';

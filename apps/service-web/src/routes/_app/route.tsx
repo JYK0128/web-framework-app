@@ -1,6 +1,6 @@
 import { ServicePermission } from '@pkg/shared';
 import { BrandLogo, LocaleSwitcher, Navigation, type NavigationItem, ProfileDropdown } from '@pkg/web-core/application';
-import { useI18n } from '@pkg/web-core/i18n';
+import { useI18n } from '@pkg/web-core/context/i18n';
 import { usePermissions } from '@pkg/web-core/permission';
 import { AppLayout as AppLayoutParts } from '@pkg/web-core/template';
 import { Button, buttonVariants, ThemeToggle } from '@pkg/web-core/ui';
@@ -9,9 +9,9 @@ import { createFileRoute, Link, Outlet, useLocation, useNavigate, useRouter } fr
 import { LogIn, Menu } from 'lucide-react';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 
-import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
-import type { MeResponse } from '#/.generated/api/model';
-import { browserEnv } from '#/lib/browser-env';
+import { useAuthControllerLogoutV1 } from '~/.generated/api/endpoints/auth/auth';
+import type { MeResponse } from '~/.generated/api/model';
+import { browserEnv } from '~/lib/browser-env';
 
 import { ServiceNotifications } from './-components/service-notifications';
 

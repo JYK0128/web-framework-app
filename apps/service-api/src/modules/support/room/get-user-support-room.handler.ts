@@ -2,10 +2,10 @@ import { HttpStatus } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { SupportRoom } from '#/core/database/entities/support';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { GetSupportRoomResponseDto } from '#/modules/support/room/get-support-room.response.dto';
-import { GetUserSupportRoomQuery } from '#/modules/support/room/get-user-support-room.query';
+import { SupportRoom } from '~/core/database/entities/support';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { GetSupportRoomResponseDto } from '~/modules/support/room/get-support-room.response.dto';
+import { GetUserSupportRoomQuery } from '~/modules/support/room/get-user-support-room.query';
 
 @QueryHandler(GetUserSupportRoomQuery)
 export class GetUserSupportRoomHandler implements IQueryHandler<GetUserSupportRoomQuery, GetSupportRoomResponseDto> {

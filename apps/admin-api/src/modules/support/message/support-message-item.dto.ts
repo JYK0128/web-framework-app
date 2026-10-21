@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 
-import { SupportMessageSenderType } from '#/modules/support/support.constants';
+import { SupportMessageSenderType } from '~/modules/support/support.constants';
 
 @ApiSchema({ name: 'SupportMessageItem' })
 export class SupportMessageItemDto extends BaseDto {

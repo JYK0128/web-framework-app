@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserNotificationCreatedEvent } from '@pkg/server-core/event-broker/events';
-import { RealtimeService } from '@pkg/server-core/realtime/realtime.service';
+import { RealtimeService } from '@pkg/server-core/realtime';
 import { ServicePermission } from '@pkg/shared';
 import { filter } from 'rxjs';
 

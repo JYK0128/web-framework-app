@@ -1,14 +1,14 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
+import { useI18n } from '@pkg/web-core/context/i18n';
 import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
-import { useI18n } from '@pkg/web-core/i18n';
 import { ScreenLayout } from '@pkg/web-core/template';
 import { Card, CardContent, CardHeader, CardTitle, Separator } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router';
 
-import { getAuthControllerMeV1QueryKey, useAuthControllerLoginV1, useOAuthControllerProvidersV1 } from '#/.generated/api/endpoints/auth/auth';
-import { AuthControllerLoginV1Body } from '#/.generated/api/zod/auth/auth';
+import { getAuthControllerMeV1QueryKey, useAuthControllerLoginV1, useOAuthControllerProvidersV1 } from '~/.generated/api/endpoints/auth/auth';
+import { AuthControllerLoginV1Body } from '~/.generated/api/zod/auth/auth';
 
 export const Route = createFileRoute('/_public/_global/login/')({
   validateSearch: z.object({ callback: z.string().optional(), error: z.string().optional() }),

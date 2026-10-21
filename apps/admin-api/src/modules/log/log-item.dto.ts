@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
-import type { NormalizedLogError } from '@pkg/server-core/log-telemetry/log-normalizer';
-import type { LogEntry } from '@pkg/server-core/log-telemetry/log-telemetry.interface';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
+import { type LogEntry, type NormalizedLogError } from '@pkg/server-core/log-telemetry';
 import { Type } from 'class-transformer';
 
 export class LogErrorInfoDto extends BaseDto implements NormalizedLogError {

@@ -1,18 +1,18 @@
 import { LockMode } from '@mikro-orm/core';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { verifyTotp } from '@pkg/server-core/auth/user/totp';
-import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
+import { verifyTotp } from '@pkg/server-core/auth';
+import { PrincipalContext } from '@pkg/server-core/http/contexts';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { decrypt } from '@pkg/shared/server';
 
-import { SECURITY_CONFIG } from '#/app.config';
-import { User } from '#/core/database/entities/auth';
-import { TwoFactor } from '#/core/database/entities/auth.extensions';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { env } from '#/env';
-import { EnableTwoFactorCommand } from '#/modules/auth/two-factor/enable-two-factor.command';
-import { EnableTwoFactorResponseDto } from '#/modules/auth/two-factor/enable-two-factor.response.dto';
+import { SECURITY_CONFIG } from '~/app.config';
+import { User } from '~/core/database/entities/auth';
+import { TwoFactor } from '~/core/database/entities/auth.extensions';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { env } from '~/env';
+import { EnableTwoFactorCommand } from '~/modules/auth/two-factor/enable-two-factor.command';
+import { EnableTwoFactorResponseDto } from '~/modules/auth/two-factor/enable-two-factor.response.dto';
 
 @Injectable()
 @CommandHandler(EnableTwoFactorCommand)

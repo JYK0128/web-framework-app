@@ -1,21 +1,20 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiExcludeController, ApiTags } from '@nestjs/swagger';
-import { MachineAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { MachineAuth, SwaggerApiResponse } from '@pkg/server-core/http/decorators';
 
-import { CreateNoticeCommand } from '#/modules/notice/create-notice.command';
-import { CreateNoticeRequestDto } from '#/modules/notice/create-notice.request.dto';
-import { CreateNoticeResponseDto } from '#/modules/notice/create-notice.response.dto';
-import { DeleteNoticeCommand } from '#/modules/notice/delete-notice.command';
-import { DeleteNoticeRequestDto } from '#/modules/notice/delete-notice.request.dto';
-import { DeleteNoticeResponseDto } from '#/modules/notice/delete-notice.response.dto';
-import { GetNoticesQuery } from '#/modules/notice/get-notices.query';
-import { GetNoticesRequestDto } from '#/modules/notice/get-notices.request.dto';
-import { GetNoticesResponseDto } from '#/modules/notice/get-notices.response.dto';
-import { UpdateNoticeCommand } from '#/modules/notice/update-notice.command';
-import { UpdateNoticeRequestDto } from '#/modules/notice/update-notice.request.dto';
-import { UpdateNoticeResponseDto } from '#/modules/notice/update-notice.response.dto';
+import { CreateNoticeCommand } from '~/modules/notice/create-notice.command';
+import { CreateNoticeRequestDto } from '~/modules/notice/create-notice.request.dto';
+import { CreateNoticeResponseDto } from '~/modules/notice/create-notice.response.dto';
+import { DeleteNoticeCommand } from '~/modules/notice/delete-notice.command';
+import { DeleteNoticeRequestDto } from '~/modules/notice/delete-notice.request.dto';
+import { DeleteNoticeResponseDto } from '~/modules/notice/delete-notice.response.dto';
+import { GetNoticesQuery } from '~/modules/notice/get-notices.query';
+import { GetNoticesRequestDto } from '~/modules/notice/get-notices.request.dto';
+import { GetNoticesResponseDto } from '~/modules/notice/get-notices.response.dto';
+import { UpdateNoticeCommand } from '~/modules/notice/update-notice.command';
+import { UpdateNoticeRequestDto } from '~/modules/notice/update-notice.request.dto';
+import { UpdateNoticeResponseDto } from '~/modules/notice/update-notice.response.dto';
 
 @ApiTags('Internal (Machine)')
 @ApiExcludeController()

@@ -4,8 +4,7 @@
     "types": ["node"],
     "baseUrl": ".",
     "paths": {
-      "#/*": ["./src/*"],
-      "~/*": ["./server/*"]
+      "~/*": ["./src/*"]
     }
   },
   "include": [

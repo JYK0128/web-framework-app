@@ -1,4 +1,8 @@
-import type { AlimtalkMessageDto, EmailConfigDto, MessengerConfigDto, PushConfigDto, SmsConfigDto } from '#notification/dto';
+import type { AlimtalkMessageDto } from '#notification/dto/alimtalk-message.dto';
+import type { EmailConfigDto } from '#notification/dto/email-config.dto';
+import type { MessengerConfigDto } from '#notification/dto/messenger-config.dto';
+import type { PushConfigDto } from '#notification/dto/push-config.dto';
+import type { SmsConfigDto } from '#notification/dto/sms-config.dto';
 
 export const NOTIFICATION_MODULE_OPTIONS = Symbol('NOTIFICATION_MODULE_OPTIONS');
 

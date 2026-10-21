@@ -1,16 +1,15 @@
 import { Logger } from '@nestjs/common';
 import { EventsHandler, type IEventHandler, QueryBus } from '@nestjs/cqrs';
-import { BrokerConsumer } from '@pkg/server-core/event-broker/broker-consumer.decorator';
-import { EVENT_BROKER } from '@pkg/server-core/event-broker/event-broker.interface';
-import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
-import { NotificationService } from '@pkg/server-core/notification/notification.service';
+import { BrokerConsumer, EVENT_BROKER } from '@pkg/server-core/event-broker';
+import { KvStore } from '@pkg/server-core/kv-store';
+import { NotificationService } from '@pkg/server-core/notification';
 import { decrypt } from '@pkg/shared/server';
 
-import { SECURITY_CONFIG, SERVICE_ID } from '#/app.config';
-import { env } from '#/env';
-import { AuthKvStoreKey } from '#/modules/auth/auth.key';
-import { PasswordResetEmailEvent } from '#/modules/auth/credential/password-reset-email.event';
-import { GetAdminSmtpConfigQuery } from '#/modules/system-config/admin-email/get-admin-smtp-config.query';
+import { SECURITY_CONFIG, SERVICE_ID } from '~/app.config';
+import { env } from '~/env';
+import { AuthKvStoreKey } from '~/modules/auth/auth.key';
+import { PasswordResetEmailEvent } from '~/modules/auth/credential/password-reset-email.event';
+import { GetAdminSmtpConfigQuery } from '~/modules/system-config/admin-email/get-admin-smtp-config.query';
 
 type PasswordResetRecord = { emailEncrypted: string, token: string };
 

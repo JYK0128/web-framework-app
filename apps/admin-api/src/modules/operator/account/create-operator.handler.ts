@@ -1,19 +1,19 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CommandBus, CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { updateCredentialPassword } from '@pkg/server-core/auth/user/credential-password';
+import { updateCredentialPassword } from '@pkg/server-core/auth';
 import { ApplicationError } from '@pkg/shared/common';
 import { assertPasswordPolicy } from '@pkg/shared/policy';
 import { encrypt, hashWithSecret } from '@pkg/shared/server';
 
-import { SECURITY_CONFIG } from '#/app.config';
-import { Account, Profile, User } from '#/core/database/entities/auth';
-import { Role } from '#/core/database/entities/auth.extensions';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { env } from '#/env';
-import { RequestEmailVerificationCommand } from '#/modules/auth/email-verification/request-email-verification.command';
-import { RequestEmailVerificationRequestDto } from '#/modules/auth/email-verification/request-email-verification.request.dto';
-import { CreateOperatorCommand } from '#/modules/operator/account/create-operator.command';
-import { CreateOperatorResponseDto } from '#/modules/operator/account/create-operator.response.dto';
+import { SECURITY_CONFIG } from '~/app.config';
+import { Account, Profile, User } from '~/core/database/entities/auth';
+import { Role } from '~/core/database/entities/auth.extensions';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { env } from '~/env';
+import { RequestEmailVerificationCommand } from '~/modules/auth/email-verification/request-email-verification.command';
+import { RequestEmailVerificationRequestDto } from '~/modules/auth/email-verification/request-email-verification.request.dto';
+import { CreateOperatorCommand } from '~/modules/operator/account/create-operator.command';
+import { CreateOperatorResponseDto } from '~/modules/operator/account/create-operator.response.dto';
 
 @Injectable()
 @CommandHandler(CreateOperatorCommand)

@@ -1,7 +1,7 @@
 import { Entity, Enum, Property } from '@mikro-orm/decorators/legacy';
 import { defineEnum } from '@pkg/shared/common';
 
-import { BaseEntity } from '#/core/database/entities/base.entity';
+import { BaseEntity } from '~/core/database/entities/base.entity';
 
 export const AdminSystemConfigCode = defineEnum('AdminSystemConfigCode', {
   EMAIL: 'email',

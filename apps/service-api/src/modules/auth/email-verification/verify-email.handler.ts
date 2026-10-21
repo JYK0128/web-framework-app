@@ -1,13 +1,13 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
+import { KvStore } from '@pkg/server-core/kv-store';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { User } from '#/core/database/entities/auth';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { AuthKvStoreKey } from '#/modules/auth/auth.key';
-import { VerifyEmailCommand } from '#/modules/auth/email-verification/verify-email.command';
-import { VerifyEmailResponseDto } from '#/modules/auth/email-verification/verify-email.response.dto';
+import { User } from '~/core/database/entities/auth';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { AuthKvStoreKey } from '~/modules/auth/auth.key';
+import { VerifyEmailCommand } from '~/modules/auth/email-verification/verify-email.command';
+import { VerifyEmailResponseDto } from '~/modules/auth/email-verification/verify-email.response.dto';
 
 type EmailVerificationRecord = { userId: string, emailHash: string, token: string };
 

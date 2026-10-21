@@ -1,13 +1,13 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { type IUserAuthService, USER_AUTH_SERVICE } from '@pkg/server-core/auth/user/user-auth.interface';
-import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
+import { type IUserAuthService, USER_AUTH_SERVICE } from '@pkg/server-core/auth';
+import { PrincipalContext } from '@pkg/server-core/http/contexts';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { BanOperatorCommand } from '#/modules/operator/access/ban-operator.command';
-import { BanOperatorResponseDto } from '#/modules/operator/access/ban-operator.response.dto';
-import { assertNotSelf, assertNotSuperAdmin, findOperator } from '#/modules/operator/operator-actions.helpers';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { BanOperatorCommand } from '~/modules/operator/access/ban-operator.command';
+import { BanOperatorResponseDto } from '~/modules/operator/access/ban-operator.response.dto';
+import { assertNotSelf, assertNotSuperAdmin, findOperator } from '~/modules/operator/operator-actions.helpers';
 
 @Injectable()
 @CommandHandler(BanOperatorCommand)

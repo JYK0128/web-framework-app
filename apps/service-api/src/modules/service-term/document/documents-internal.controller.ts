@@ -1,24 +1,23 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiExcludeController, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { MachineAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { MachineAuth, SwaggerApiResponse } from '@pkg/server-core/http/decorators';
 
-import { CreateInternalServiceTermCommand } from '#/modules/service-term/document/create-internal-service-term.command';
-import { CreateInternalServiceTermRequestDto } from '#/modules/service-term/document/create-internal-service-term.request.dto';
-import { CreateInternalServiceTermResponseDto } from '#/modules/service-term/document/create-internal-service-term.response.dto';
-import { DeleteInternalServiceTermCommand } from '#/modules/service-term/document/delete-internal-service-term.command';
-import { DeleteInternalServiceTermRequestDto } from '#/modules/service-term/document/delete-internal-service-term.request.dto';
-import { DeleteInternalServiceTermResponseDto } from '#/modules/service-term/document/delete-internal-service-term.response.dto';
-import { GetInternalServiceTermsQuery } from '#/modules/service-term/document/get-internal-service-terms.query';
-import { GetInternalServiceTermsRequestDto } from '#/modules/service-term/document/get-internal-service-terms.request.dto';
-import { GetInternalServiceTermsResponseDto } from '#/modules/service-term/document/get-internal-service-terms.response.dto';
-import { PublishInternalServiceTermCommand } from '#/modules/service-term/document/publish-internal-service-term.command';
-import { PublishInternalServiceTermRequestDto } from '#/modules/service-term/document/publish-internal-service-term.request.dto';
-import { PublishInternalServiceTermResponseDto } from '#/modules/service-term/document/publish-internal-service-term.response.dto';
-import { UpdateInternalServiceTermCommand } from '#/modules/service-term/document/update-internal-service-term.command';
-import { UpdateInternalServiceTermRequestDto } from '#/modules/service-term/document/update-internal-service-term.request.dto';
-import { UpdateInternalServiceTermResponseDto } from '#/modules/service-term/document/update-internal-service-term.response.dto';
+import { CreateInternalServiceTermCommand } from '~/modules/service-term/document/create-internal-service-term.command';
+import { CreateInternalServiceTermRequestDto } from '~/modules/service-term/document/create-internal-service-term.request.dto';
+import { CreateInternalServiceTermResponseDto } from '~/modules/service-term/document/create-internal-service-term.response.dto';
+import { DeleteInternalServiceTermCommand } from '~/modules/service-term/document/delete-internal-service-term.command';
+import { DeleteInternalServiceTermRequestDto } from '~/modules/service-term/document/delete-internal-service-term.request.dto';
+import { DeleteInternalServiceTermResponseDto } from '~/modules/service-term/document/delete-internal-service-term.response.dto';
+import { GetInternalServiceTermsQuery } from '~/modules/service-term/document/get-internal-service-terms.query';
+import { GetInternalServiceTermsRequestDto } from '~/modules/service-term/document/get-internal-service-terms.request.dto';
+import { GetInternalServiceTermsResponseDto } from '~/modules/service-term/document/get-internal-service-terms.response.dto';
+import { PublishInternalServiceTermCommand } from '~/modules/service-term/document/publish-internal-service-term.command';
+import { PublishInternalServiceTermRequestDto } from '~/modules/service-term/document/publish-internal-service-term.request.dto';
+import { PublishInternalServiceTermResponseDto } from '~/modules/service-term/document/publish-internal-service-term.response.dto';
+import { UpdateInternalServiceTermCommand } from '~/modules/service-term/document/update-internal-service-term.command';
+import { UpdateInternalServiceTermRequestDto } from '~/modules/service-term/document/update-internal-service-term.request.dto';
+import { UpdateInternalServiceTermResponseDto } from '~/modules/service-term/document/update-internal-service-term.response.dto';
 
 @ApiTags('Internal (Machine)')
 @ApiExcludeController()

@@ -2,9 +2,9 @@ import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
-import { getTermsControllerGetAgreementHistoryV1QueryKey, termsControllerGetAgreementHistoryV1 } from '#/.generated/api/endpoints/terms/terms';
-import type { AgreementHistoryItemDto, TermAgreementItemDto } from '#/.generated/api/model';
-import { Button } from '#/.generated/shadcn/components/ui';
+import { getTermsControllerGetAgreementHistoryV1QueryKey, termsControllerGetAgreementHistoryV1 } from '~/.generated/api/endpoints/terms/terms';
+import type { AgreementHistoryItemDto, TermAgreementItemDto } from '~/.generated/api/model';
+import { Button } from '~/.generated/shadcn/components/ui';
 
 export function AgreementHistoryModal({ term, open, onOpenChange }: ModalComponentProps & { term: TermAgreementItemDto }) {
   const [selected, setSelected] = useState<AgreementHistoryItemDto | null>(null);

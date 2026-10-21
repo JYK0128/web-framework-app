@@ -1,7 +1,7 @@
 import { ApplicationError } from '@pkg/shared/common';
 import { GlobalLoading, RouterError, RouterNotFound, SystemDialog } from '@pkg/web-core/application';
+import { I18nContext, useI18nContextValue } from '@pkg/web-core/context/i18n';
 import { useHydrationMarker } from '@pkg/web-core/hooks';
-import { I18nContext, useI18nContextValue } from '@pkg/web-core/i18n';
 import { ModalContainer } from '@pkg/web-core/modal';
 import { PermissionProvider } from '@pkg/web-core/permission';
 import { ThemeProvider, Toaster } from '@pkg/web-core/ui';
@@ -11,12 +11,12 @@ import type { i18n } from 'i18next';
 import { Provider as JotaiProvider } from 'jotai';
 import type { PropsWithChildren } from 'react';
 
-import { getAuthControllerMeV1QueryKey, getAuthControllerMeV1QueryOptions } from '#/.generated/api/endpoints/auth/auth';
-import { getServiceTermsControllerGetAgreementsV1QueryKey, getServiceTermsControllerGetAgreementsV1QueryOptions } from '#/.generated/api/endpoints/service-terms/service-terms';
-import { getSystemConfigsControllerGetConfigsV1QueryOptions } from '#/.generated/api/endpoints/system-configs/system-configs';
-import { useSessionExpiration } from '#/hooks/use-session-expiration';
-import { i18nOptions } from '#/i18n/config';
-import appStylesHref from '#/styles/styles.css?url';
+import { getAuthControllerMeV1QueryKey, getAuthControllerMeV1QueryOptions } from '~/.generated/api/endpoints/auth/auth';
+import { getServiceTermsControllerGetAgreementsV1QueryKey, getServiceTermsControllerGetAgreementsV1QueryOptions } from '~/.generated/api/endpoints/service-terms/service-terms';
+import { getSystemConfigsControllerGetConfigsV1QueryOptions } from '~/.generated/api/endpoints/system-configs/system-configs';
+import { useSessionExpiration } from '~/hooks/use-session-expiration';
+import { i18nOptions } from '~/i18n/config';
+import appStylesHref from '~/styles/styles.css?url';
 
 import { Maintenance } from './-components/maintenance';
 

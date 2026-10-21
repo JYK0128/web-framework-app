@@ -4,7 +4,7 @@ import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { Button } from '#/.generated/shadcn/components/ui';
+import { Button } from '~/.generated/shadcn/components/ui';
 
 import type { OAuthProviderMeta } from './oauth-provider.types';
 

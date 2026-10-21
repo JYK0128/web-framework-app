@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
-import { EntityDto } from '@pkg/server-core/http/dto/base/entity.dto';
+import { EntityDto } from '@pkg/server-core/http/dto/base';
 
-import { Permission } from '#/core/database/entities/auth.extensions';
+import { Permission } from '~/core/database/entities/auth.extensions';
 
 @ApiSchema({ name: 'CustomerMembershipPermissionItem' })
 export class CustomerMembershipPermissionItemDto extends EntityDto(Permission) {

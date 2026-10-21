@@ -1,4 +1,4 @@
-import type { Term, UserTermAgreement } from '#/core/database/entities/terms';
+import type { Term, UserTermAgreement } from '~/core/database/entities/terms';
 
 export function isPublished(term: Term): boolean {
   return term.publishedAt !== null && term.publishedAt <= new Date();

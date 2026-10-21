@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 import { IsNotEmpty, IsString, Length } from 'class-validator';
 
-import { SECURITY_CONFIG } from '#/app.config';
+import { SECURITY_CONFIG } from '~/app.config';
 
 export class TwoFactorLoginRequestDto extends BaseDto {
   @ApiProperty({ type: String, description: '비밀번호 확인 후 발급된 일회성 로그인 챌린지 토큰' })

@@ -1,8 +1,8 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { PageRequestDto } from '@pkg/server-core/http/dto/request/page.request.dto';
+import { PageRequestDto } from '@pkg/server-core/http/dto/request';
 import { IsOptional, IsString } from 'class-validator';
 
-import { Term } from '#/core/database/entities/terms';
+import { Term } from '~/core/database/entities/terms';
 
 export class GetTermsRequestDto extends PageRequestDto<Term> {
   override get searchFields(): (keyof Term)[] {

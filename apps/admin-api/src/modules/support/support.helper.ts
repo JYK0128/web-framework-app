@@ -1,8 +1,8 @@
 import { maskEmail, maskName, maskPhone } from '@pkg/shared/common';
 
-import { GetSupportMessagesResponseDto } from '#/modules/support/message/get-support-messages.response.dto';
-import { SupportMessageItemDto } from '#/modules/support/message/support-message-item.dto';
-import { SupportRoomItemDto } from '#/modules/support/room/support-room-item.dto';
+import { GetSupportMessagesResponseDto } from '~/modules/support/message/get-support-messages.response.dto';
+import { SupportMessageItemDto } from '~/modules/support/message/support-message-item.dto';
+import { SupportRoomItemDto } from '~/modules/support/room/support-room-item.dto';
 
 function isAsciiAlphanumeric(character: string): boolean {
   const code = character.charCodeAt(0);

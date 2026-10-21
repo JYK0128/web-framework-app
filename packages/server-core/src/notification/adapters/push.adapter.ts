@@ -6,7 +6,7 @@ import axios from 'axios';
 import { importPKCS8, SignJWT } from 'jose';
 import { z } from 'zod';
 
-import type { PushConfigDto } from '#notification/dto';
+import type { PushConfigDto } from '#notification/dto/push-config.dto';
 import { NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions, type PushMessage } from '#notification/notification.interface';
 import { type NotificationProvider, parseNotificationResult } from '#notification/provider-response';
 

@@ -1,7 +1,7 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 
-import { Term, TermGroup } from '#/core/database/entities/terms';
+import { Term, TermGroup } from '~/core/database/entities/terms';
 
 const SERVICE_TERM_SEEDS = [
   {

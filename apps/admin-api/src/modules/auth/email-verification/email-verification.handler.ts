@@ -1,16 +1,15 @@
 import { Logger } from '@nestjs/common';
 import { EventsHandler, type IEventHandler, QueryBus } from '@nestjs/cqrs';
-import { BrokerConsumer } from '@pkg/server-core/event-broker/broker-consumer.decorator';
-import { EVENT_BROKER } from '@pkg/server-core/event-broker/event-broker.interface';
-import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
-import { NotificationService } from '@pkg/server-core/notification/notification.service';
+import { BrokerConsumer, EVENT_BROKER } from '@pkg/server-core/event-broker';
+import { KvStore } from '@pkg/server-core/kv-store';
+import { NotificationService } from '@pkg/server-core/notification';
 import { decrypt } from '@pkg/shared/server';
 
-import { SERVICE_ID } from '#/app.config';
-import { env } from '#/env';
-import { AuthKvStoreKey } from '#/modules/auth/auth.key';
-import { EmailVerificationEvent } from '#/modules/auth/email-verification/email-verification.event';
-import { GetAdminSmtpConfigQuery } from '#/modules/system-config/admin-email/get-admin-smtp-config.query';
+import { SERVICE_ID } from '~/app.config';
+import { env } from '~/env';
+import { AuthKvStoreKey } from '~/modules/auth/auth.key';
+import { EmailVerificationEvent } from '~/modules/auth/email-verification/email-verification.event';
+import { GetAdminSmtpConfigQuery } from '~/modules/system-config/admin-email/get-admin-smtp-config.query';
 
 type EmailVerificationRecord = { emailEncrypted: string, token: string };
 

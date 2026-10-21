@@ -1,6 +1,6 @@
 import { Bell, BellRing, KeyRound } from 'lucide-react';
 
-import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
+import { Tabs, TabsList, TabsTrigger } from '~/.generated/shadcn/components/ui';
 
 export type SystemSettingKey = 'notification' | 'oauth' | 'notifications';
 

@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 import { EmailConfigDto } from '@pkg/server-core/notification/dto';
 import { Type } from 'class-transformer';
 import { IsEmail, IsOptional, ValidateNested } from 'class-validator';

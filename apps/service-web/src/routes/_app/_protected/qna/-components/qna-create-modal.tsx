@@ -4,8 +4,8 @@ import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 import { Button } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { useQnaControllerCreateV1 } from '#/.generated/api/endpoints/qna/qna';
-import type { CreateQnaRequestDtoCategory } from '#/.generated/api/model';
+import { useQnaControllerCreateV1 } from '~/.generated/api/endpoints/qna/qna';
+import type { CreateQnaRequestDtoCategory } from '~/.generated/api/model';
 
 const categoryOptions = [{ label: '계정', value: '계정' }, { label: '서비스 이용', value: '서비스 이용' }, { label: '검증', value: '검증' }] as const;
 

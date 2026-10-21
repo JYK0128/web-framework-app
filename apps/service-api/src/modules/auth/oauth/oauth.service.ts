@@ -1,16 +1,15 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { type IUserAuthService, type TokenPairResult, USER_AUTH_SERVICE } from '@pkg/server-core/auth/user/user-auth.interface';
-import type { OAuthIdentity, OAuthProviderConfig, PublicOAuthProvider } from '@pkg/server-core/oauth/oauth-provider.config';
-import { OAuthProviderService } from '@pkg/server-core/oauth/oauth-provider.service';
+import { type IUserAuthService, type TokenPairResult, USER_AUTH_SERVICE } from '@pkg/server-core/auth';
+import { type OAuthIdentity, type OAuthProviderConfig, OAuthProviderService, type PublicOAuthProvider } from '@pkg/server-core/oauth';
 import { ApplicationError } from '@pkg/shared/common';
 import { encrypt, hashWithSecret } from '@pkg/shared/server';
 
-import { SECURITY_CONFIG } from '#/app.config';
-import { Account, Profile, User } from '#/core/database/entities/auth';
-import { Role } from '#/core/database/entities/auth.extensions';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { env } from '#/env';
-import { SystemContext } from '#/modules/system-config/system.context';
+import { SECURITY_CONFIG } from '~/app.config';
+import { Account, Profile, User } from '~/core/database/entities/auth';
+import { Role } from '~/core/database/entities/auth.extensions';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { env } from '~/env';
+import { SystemContext } from '~/modules/system-config/system.context';
 
 export interface OAuthCompletion {
   tokens: TokenPairResult

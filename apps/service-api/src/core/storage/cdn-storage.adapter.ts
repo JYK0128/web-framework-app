@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { type FileStorageAdapter, type PresignedUploadUrlResult, type SaveFileResult } from '@pkg/server-core/file-storage/file-storage.interface';
+import { type FileStorageAdapter, type PresignedUploadUrlResult, type SaveFileResult } from '@pkg/server-core/file-storage';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { env } from '#/env';
+import { env } from '~/env';
 
 @Injectable()
 export class CDNStorageAdapter implements FileStorageAdapter {

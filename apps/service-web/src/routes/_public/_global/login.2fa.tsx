@@ -1,15 +1,15 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
+import { useI18n } from '@pkg/web-core/context/i18n';
 import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
-import { useI18n } from '@pkg/web-core/i18n';
 import { ScreenLayout } from '@pkg/web-core/template';
 import { Card, CardContent, Separator } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, redirect, useLocation, useNavigate } from '@tanstack/react-router';
 import { ArrowRight, ShieldCheck } from 'lucide-react';
 
-import { getAuthControllerMeV1QueryKey, useAuthControllerCompleteTwoFactorLoginV1 } from '#/.generated/api/endpoints/auth/auth';
-import { authControllerCompleteTwoFactorLoginV1BodyCodeMax, authControllerCompleteTwoFactorLoginV1BodyCodeMin } from '#/.generated/api/zod/auth/auth';
+import { getAuthControllerMeV1QueryKey, useAuthControllerCompleteTwoFactorLoginV1 } from '~/.generated/api/endpoints/auth/auth';
+import { authControllerCompleteTwoFactorLoginV1BodyCodeMax, authControllerCompleteTwoFactorLoginV1BodyCodeMin } from '~/.generated/api/zod/auth/auth';
 
 export const Route = createFileRoute('/_public/_global/login/2fa')({
   validateSearch: z.object({ callback: z.string().optional() }),

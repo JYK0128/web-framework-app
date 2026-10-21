@@ -2,11 +2,11 @@ import { type FilterQuery } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { Notice } from '#/core/database/entities/notices';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { GetPublicNoticesQuery } from '#/modules/notice/get-public-notices.query';
-import { GetPublicNoticesResponseDto } from '#/modules/notice/get-public-notices.response.dto';
-import { NoticeItemDto } from '#/modules/notice/notice-item.dto';
+import { Notice } from '~/core/database/entities/notices';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { GetPublicNoticesQuery } from '~/modules/notice/get-public-notices.query';
+import { GetPublicNoticesResponseDto } from '~/modules/notice/get-public-notices.response.dto';
+import { NoticeItemDto } from '~/modules/notice/notice-item.dto';
 
 @Injectable()
 @QueryHandler(GetPublicNoticesQuery)

@@ -8,8 +8,8 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { ChevronDown } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
-import { eventsControllerListV1 } from '#/.generated/api/endpoints/events/events';
-import type { EventItem, EventsControllerListV1Phase } from '#/.generated/api/model';
+import { eventsControllerListV1 } from '~/.generated/api/endpoints/events/events';
+import type { EventItem, EventsControllerListV1Phase } from '~/.generated/api/model';
 
 export const Route = createFileRoute('/_app/_public/events/')({ component: EventsPage });
 

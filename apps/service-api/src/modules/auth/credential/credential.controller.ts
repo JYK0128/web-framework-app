@@ -1,21 +1,18 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Public, SkipPasswordExpiry, UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { NoStore } from '@pkg/server-core/http/decorators/no-store.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { NoStore, Permissions, Public, SkipPasswordExpiry, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { ServicePermission } from '@pkg/shared';
 
-import { ChangePasswordCommand } from '#/modules/auth/credential/change-password.command';
-import { ChangePasswordRequestDto } from '#/modules/auth/credential/change-password.request.dto';
-import { ChangePasswordResponseDto } from '#/modules/auth/credential/change-password.response.dto';
-import { RequestPasswordResetCommand } from '#/modules/auth/credential/request-password-reset.command';
-import { RequestPasswordResetRequestDto } from '#/modules/auth/credential/request-password-reset.request.dto';
-import { RequestPasswordResetResponseDto } from '#/modules/auth/credential/request-password-reset.response.dto';
-import { ResetPasswordCommand } from '#/modules/auth/credential/reset-password.command';
-import { ResetPasswordRequestDto } from '#/modules/auth/credential/reset-password.request.dto';
-import { ResetPasswordResponseDto } from '#/modules/auth/credential/reset-password.response.dto';
+import { ChangePasswordCommand } from '~/modules/auth/credential/change-password.command';
+import { ChangePasswordRequestDto } from '~/modules/auth/credential/change-password.request.dto';
+import { ChangePasswordResponseDto } from '~/modules/auth/credential/change-password.response.dto';
+import { RequestPasswordResetCommand } from '~/modules/auth/credential/request-password-reset.command';
+import { RequestPasswordResetRequestDto } from '~/modules/auth/credential/request-password-reset.request.dto';
+import { RequestPasswordResetResponseDto } from '~/modules/auth/credential/request-password-reset.response.dto';
+import { ResetPasswordCommand } from '~/modules/auth/credential/reset-password.command';
+import { ResetPasswordRequestDto } from '~/modules/auth/credential/reset-password.request.dto';
+import { ResetPasswordResponseDto } from '~/modules/auth/credential/reset-password.response.dto';
 
 @ApiTags('Auth')
 @UserAuth()

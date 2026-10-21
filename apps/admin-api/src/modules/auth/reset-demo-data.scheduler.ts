@@ -2,9 +2,9 @@ import { RequestContext } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { DatabaseSeeder } from '#/core/database/seeders/database.seeder';
-import { env } from '#/env';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { DatabaseSeeder } from '~/core/database/seeders/database.seeder';
+import { env } from '~/env';
 
 @Injectable()
 export class ResetDemoDataScheduler {

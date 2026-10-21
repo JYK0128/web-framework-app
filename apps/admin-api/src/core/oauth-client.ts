@@ -1,6 +1,6 @@
-import type { OAuthHttpRequest } from '@pkg/server-core/oauth/oauth-provider.interface';
+import type { OAuthHttpRequest } from '@pkg/server-core/oauth';
 
-import { httpClient } from '#/core/http-client';
+import { httpClient } from '~/core/http-client';
 
 export const oauthClient: { request: OAuthHttpRequest } = {
   request: async (url, init, options) => {
