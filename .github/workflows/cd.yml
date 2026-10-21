@@ -288,9 +288,9 @@ jobs:
             docker compose -f apps/deployment/docker-compose.prd.yml config --quiet
             docker network inspect "$APPS_RUNTIME_NETWORK" >/dev/null
             docker volume inspect "$ADMIN_API_UPLOADS_VOLUME" "$SERVICE_API_UPLOADS_VOLUME" >/dev/null
-            # Keep image extraction and the four app runtimes apart on the 1GiB host.
+            # Limit concurrent image extraction on the 1GiB host while speeding up pulls.
             docker compose -f apps/deployment/docker-compose.prd.yml stop --timeout 15
-            if ! docker compose --parallel 1 -f apps/deployment/docker-compose.prd.yml pull; then
+            if ! docker compose --parallel 2 -f apps/deployment/docker-compose.prd.yml pull; then
               docker compose -f apps/deployment/docker-compose.prd.yml start
               exit 1
             fi
