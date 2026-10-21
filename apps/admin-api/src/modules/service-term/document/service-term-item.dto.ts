@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 import { Type } from 'class-transformer';
 
-import { ServiceAgreementMetadataDto } from '#/modules/service-term/agreement/service-agreement-metadata.dto';
+import { ServiceAgreementMetadataDto } from '~/modules/service-term/agreement/service-agreement-metadata.dto';
 
 export class ServiceTermItemDto extends BaseDto {
   @ApiProperty() id!: string;

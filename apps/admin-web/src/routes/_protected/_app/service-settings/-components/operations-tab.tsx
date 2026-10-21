@@ -8,11 +8,11 @@ import { format } from 'date-fns';
 import { CalendarDays, CalendarIcon, Plus } from 'lucide-react';
 import { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
 
-import { serviceConfigControllerGetHolidaysV1 } from '#/.generated/api/endpoints/service-config/service-config';
-import type { OperatingHolidayItemDto, OperationConfigDto } from '#/.generated/api/model';
-import { Button, Calendar, Input, Label, Popover, PopoverContent, PopoverTrigger, Switch } from '#/.generated/shadcn/components/ui';
-import { createOperationsColumns } from '#/routes/_protected/_app/service-settings/-configs/operations-columns.config';
-import { DAY_NAMES, DAYS_OF_WEEK } from '#/routes/_protected/_app/service-settings/-constants/operations';
+import { serviceConfigControllerGetHolidaysV1 } from '~/.generated/api/endpoints/service-config/service-config';
+import type { OperatingHolidayItemDto, OperationConfigDto } from '~/.generated/api/model';
+import { Button, Calendar, Input, Label, Popover, PopoverContent, PopoverTrigger, Switch } from '~/.generated/shadcn/components/ui';
+import { createOperationsColumns } from '~/routes/_protected/_app/service-settings/-configs/operations-columns.config';
+import { DAY_NAMES, DAYS_OF_WEEK } from '~/routes/_protected/_app/service-settings/-constants/operations';
 
 import { HolidayDetailModal } from './holiday-detail-modal';
 

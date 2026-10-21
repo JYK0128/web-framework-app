@@ -8,7 +8,7 @@ import { Loader2, LogOut } from 'lucide-react';
 import type { IconName } from 'lucide-react/dynamic';
 import type { ReactNode } from 'react';
 
-import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
+import { useAuthControllerLogoutV1 } from '~/.generated/api/endpoints/auth/auth';
 
 type OnboardingLayoutProps = {
   icon?: IconName

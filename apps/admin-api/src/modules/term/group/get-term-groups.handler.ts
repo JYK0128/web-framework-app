@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { TermGroup } from '#/core/database/entities/terms';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { GetTermGroupsQuery } from '#/modules/term/group/get-term-groups.query';
-import { GetTermGroupsResponseDto } from '#/modules/term/group/get-term-groups.response.dto';
-import { TermGroupItemDto } from '#/modules/term/group/term-group-item.dto';
+import { TermGroup } from '~/core/database/entities/terms';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { GetTermGroupsQuery } from '~/modules/term/group/get-term-groups.query';
+import { GetTermGroupsResponseDto } from '~/modules/term/group/get-term-groups.response.dto';
+import { TermGroupItemDto } from '~/modules/term/group/term-group-item.dto';
 
 @Injectable()
 @QueryHandler(GetTermGroupsQuery)

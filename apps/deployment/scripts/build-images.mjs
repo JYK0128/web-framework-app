@@ -4,7 +4,8 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-const deploymentDir = path.dirname(fileURLToPath(import.meta.url));
+const scriptsDir = path.dirname(fileURLToPath(import.meta.url));
+const deploymentDir = path.resolve(scriptsDir, '..');
 const apps = ['admin-api', 'admin-web', 'service-api', 'service-web'];
 const [requestedApp] = process.argv.slice(2);
 
@@ -24,11 +25,10 @@ for (const app of apps) {
 }
 
 const composeArgs = [
-  'exec', 'dotenvx', 'run',
+  'exec', 'dotenvx', 'run', '--quiet', '--strict',
   '-f', 'env/.env.keys',
-  '-f', 'env/.env.prd',
+  '-f', 'env/.env.dev',
   '--', 'docker', 'compose',
-  '-f', 'docker-compose.prd.yml',
   '-f', 'docker-compose.build.yml',
   'build',
   ...(requestedApp ? [requestedApp] : []),

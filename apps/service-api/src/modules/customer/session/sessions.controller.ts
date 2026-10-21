@@ -1,16 +1,15 @@
 import { Controller, Delete, Get, HttpStatus, Param } from '@nestjs/common';
 import { ApiExcludeController, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { TokenStore } from '@pkg/server-core/auth/user/token/stores/token.store';
-import { MachineAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { TokenStore } from '@pkg/server-core/auth';
+import { MachineAuth, SwaggerApiResponse } from '@pkg/server-core/http/decorators';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { GetCustomerSessionsRequestDto } from '#/modules/customer/session/get-customer-sessions.request.dto';
-import { GetCustomerSessionsResponseDto } from '#/modules/customer/session/get-customer-sessions.response.dto';
-import { RevokeCustomerSessionRequestDto } from '#/modules/customer/session/revoke-customer-session.request.dto';
-import { RevokeCustomerSessionResponseDto } from '#/modules/customer/session/revoke-customer-session.response.dto';
-import { RevokeCustomerSessionsRequestDto } from '#/modules/customer/session/revoke-customer-sessions.request.dto';
-import { RevokeCustomerSessionsResponseDto } from '#/modules/customer/session/revoke-customer-sessions.response.dto';
+import { GetCustomerSessionsRequestDto } from '~/modules/customer/session/get-customer-sessions.request.dto';
+import { GetCustomerSessionsResponseDto } from '~/modules/customer/session/get-customer-sessions.response.dto';
+import { RevokeCustomerSessionRequestDto } from '~/modules/customer/session/revoke-customer-session.request.dto';
+import { RevokeCustomerSessionResponseDto } from '~/modules/customer/session/revoke-customer-session.response.dto';
+import { RevokeCustomerSessionsRequestDto } from '~/modules/customer/session/revoke-customer-sessions.request.dto';
+import { RevokeCustomerSessionsResponseDto } from '~/modules/customer/session/revoke-customer-sessions.response.dto';
 
 @ApiTags('Internal (Machine)')
 @ApiExcludeController()

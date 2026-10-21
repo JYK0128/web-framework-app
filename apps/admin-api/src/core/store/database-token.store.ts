@@ -1,10 +1,10 @@
 import { createHash } from 'node:crypto';
 
 import { Injectable } from '@nestjs/common';
-import { type RefreshToken, type TokenConsumeResult, TokenStore } from '@pkg/server-core/auth/user/token/stores/token.store';
+import { type RefreshToken, type TokenConsumeResult, TokenStore } from '@pkg/server-core/auth';
 
-import { RefreshToken as RefreshTokenEntity } from '#/core/database/entities/auth';
-import { AppEntityManager } from '#/core/database/entity-manager';
+import { RefreshToken as RefreshTokenEntity } from '~/core/database/entities/auth';
+import { AppEntityManager } from '~/core/database/entity-manager';
 
 @Injectable()
 export class DatabaseTokenStore extends TokenStore {

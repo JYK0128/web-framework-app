@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { Event } from '#/core/database/entities/events';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { EventItemDto } from '#/modules/event/event-item.dto';
-import { GetEventsQuery } from '#/modules/event/get-events.query';
-import { GetEventsResponseDto } from '#/modules/event/get-events.response.dto';
+import { Event } from '~/core/database/entities/events';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { EventItemDto } from '~/modules/event/event-item.dto';
+import { GetEventsQuery } from '~/modules/event/get-events.query';
+import { GetEventsResponseDto } from '~/modules/event/get-events.response.dto';
 
 @Injectable()
 @QueryHandler(GetEventsQuery)

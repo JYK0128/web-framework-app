@@ -8,9 +8,9 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { Eye, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
-import { getFaqsControllerListFaqsV1QueryKey, useFaqsControllerDeleteFaqV1, useFaqsControllerListFaqsV1 } from '#/.generated/api/endpoints/faqs/faqs';
-import type { FaqItemDto } from '#/.generated/api/model';
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
+import { getFaqsControllerListFaqsV1QueryKey, useFaqsControllerDeleteFaqV1, useFaqsControllerListFaqsV1 } from '~/.generated/api/endpoints/faqs/faqs';
+import type { FaqItemDto } from '~/.generated/api/model';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '~/.generated/shadcn/components/ui';
 
 import { FaqEditorModal } from './-components/faq-editor-modal';
 

@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { handleSessionRequest } from '#/lib/session';
+import { handleSessionRequest } from '~/lib/session';
 
 export const Route = createFileRoute('/api/$')({
   server: {

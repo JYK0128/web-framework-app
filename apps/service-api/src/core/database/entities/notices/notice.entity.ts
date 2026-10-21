@@ -2,7 +2,7 @@ import type { Opt } from '@mikro-orm/core';
 import { Entity, Enum, Index, Property } from '@mikro-orm/decorators/legacy';
 import { NoticeImportance } from '@pkg/shared/constants';
 
-import { BaseEntity } from '#/core/database/entities/base.entity';
+import { BaseEntity } from '~/core/database/entities/base.entity';
 
 @Entity({ tableName: 'notice' })
 @Index({ properties: ['publishedAt'] })

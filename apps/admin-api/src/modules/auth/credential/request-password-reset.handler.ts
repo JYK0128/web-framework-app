@@ -2,21 +2,20 @@ import { randomBytes, randomUUID } from 'node:crypto';
 
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler, QueryBus } from '@nestjs/cqrs';
-import { EVENT_BROKER } from '@pkg/server-core/event-broker/event-broker.interface';
-import { EventBroker } from '@pkg/server-core/event-broker/event-broker.service';
-import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
+import { EVENT_BROKER, EventBroker } from '@pkg/server-core/event-broker';
+import { KvStore } from '@pkg/server-core/kv-store';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { hashWithSecret } from '@pkg/shared/server';
 
-import { SECURITY_CONFIG } from '#/app.config';
-import { Account, User } from '#/core/database/entities/auth';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { env } from '#/env';
-import { AuthKvStoreKey } from '#/modules/auth/auth.key';
-import { PasswordResetEmailEvent } from '#/modules/auth/credential/password-reset-email.event';
-import { RequestPasswordResetCommand } from '#/modules/auth/credential/request-password-reset.command';
-import { RequestPasswordResetResponseDto } from '#/modules/auth/credential/request-password-reset.response.dto';
-import { CheckAdminEmailConfigQuery } from '#/modules/system-config/admin-email/check-admin-email-config.query';
+import { SECURITY_CONFIG } from '~/app.config';
+import { Account, User } from '~/core/database/entities/auth';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { env } from '~/env';
+import { AuthKvStoreKey } from '~/modules/auth/auth.key';
+import { PasswordResetEmailEvent } from '~/modules/auth/credential/password-reset-email.event';
+import { RequestPasswordResetCommand } from '~/modules/auth/credential/request-password-reset.command';
+import { RequestPasswordResetResponseDto } from '~/modules/auth/credential/request-password-reset.response.dto';
+import { CheckAdminEmailConfigQuery } from '~/modules/system-config/admin-email/check-admin-email-config.query';
 
 @Injectable()
 @CommandHandler(RequestPasswordResetCommand)

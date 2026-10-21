@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 
-import { Account, User } from '#/core/database/entities/auth';
-import { OperatorItemDto } from '#/modules/operator/profile/operator-item.dto';
+import { Account, User } from '~/core/database/entities/auth';
+import { OperatorItemDto } from '~/modules/operator/profile/operator-item.dto';
 
 @ApiSchema({ name: 'OperatorDetailResponse' })
 export class GetOperatorByIdResponseDto extends OperatorItemDto {

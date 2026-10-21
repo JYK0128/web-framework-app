@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler, QueryBus } from '@nestjs/cqrs';
-import { NotificationService } from '@pkg/server-core/notification/notification.service';
+import { NotificationService } from '@pkg/server-core/notification';
 
-import { GetAdminSmtpConfigQuery } from '#/modules/system-config/admin-email/get-admin-smtp-config.query';
-import { TestAdminEmailCommand } from '#/modules/system-config/admin-email/test-admin-email.command';
-import { TestAdminEmailResponseDto } from '#/modules/system-config/admin-email/test-admin-email.response.dto';
+import { GetAdminSmtpConfigQuery } from '~/modules/system-config/admin-email/get-admin-smtp-config.query';
+import { TestAdminEmailCommand } from '~/modules/system-config/admin-email/test-admin-email.command';
+import { TestAdminEmailResponseDto } from '~/modules/system-config/admin-email/test-admin-email.response.dto';
 
 @Injectable()
 @CommandHandler(TestAdminEmailCommand)

@@ -1,6 +1,6 @@
 import { validateSync, ValidatorConstraint, type ValidatorConstraintInterface } from 'class-validator';
 
-import { OAuthProviderDetailDto } from '#/modules/system-config/oauth/oauth-provider-detail.dto';
+import { OAuthProviderDetailDto } from '~/modules/system-config/oauth/oauth-provider-detail.dto';
 
 @ValidatorConstraint({ name: 'oauthConfig', async: false })
 export class OAuthConfigValidator implements ValidatorConstraintInterface {

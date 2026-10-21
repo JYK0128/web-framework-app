@@ -2,10 +2,10 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { User } from '#/core/database/entities/auth';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { GetCustomerResponseDto } from '#/modules/customer/profile/get-customer.response.dto';
-import { GetCustomerByIdQuery } from '#/modules/customer/profile/get-customer-by-id.query';
+import { User } from '~/core/database/entities/auth';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { GetCustomerResponseDto } from '~/modules/customer/profile/get-customer.response.dto';
+import { GetCustomerByIdQuery } from '~/modules/customer/profile/get-customer-by-id.query';
 
 @Injectable()
 @QueryHandler(GetCustomerByIdQuery)

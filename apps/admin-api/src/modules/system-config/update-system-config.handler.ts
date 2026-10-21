@@ -3,15 +3,15 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { encrypt } from '@pkg/shared/server';
 
-import { AdminSystemConfigCode, SystemConfig } from '#/core/database/entities/system-configs';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { InternalClient } from '#/core/internal-client';
-import { SystemContext } from '#/core/system.context';
-import { env } from '#/env';
-import { AdminEmailConfigDto } from '#/modules/system-config/admin-email/admin-email-config.dto';
-import { UpdateSystemConfigCommand } from '#/modules/system-config/update-system-config.command';
-import { UpdateSystemConfigResponseDto } from '#/modules/system-config/update-system-config.response.dto';
-import { WebhookConfigDto } from '#/modules/system-config/webhook/webhook-config.dto';
+import { AdminSystemConfigCode, SystemConfig } from '~/core/database/entities/system-configs';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { InternalClient } from '~/core/internal-client';
+import { SystemContext } from '~/core/system.context';
+import { env } from '~/env';
+import { AdminEmailConfigDto } from '~/modules/system-config/admin-email/admin-email-config.dto';
+import { UpdateSystemConfigCommand } from '~/modules/system-config/update-system-config.command';
+import { UpdateSystemConfigResponseDto } from '~/modules/system-config/update-system-config.response.dto';
+import { WebhookConfigDto } from '~/modules/system-config/webhook/webhook-config.dto';
 
 @Injectable()
 @CommandHandler(UpdateSystemConfigCommand)

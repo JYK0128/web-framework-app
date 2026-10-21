@@ -1,17 +1,15 @@
 import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put, Req, Res } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiExcludeEndpoint, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Public, UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Permissions, Public, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { AdminPermission } from '@pkg/shared';
 import type { Request, Response } from 'express';
 
-import { ADMIN_RUNTIME_CONFIG, SECURITY_CONFIG } from '#/app.config';
-import { InternalClient } from '#/core/internal-client';
-import { CreateOAuthIconPresignedUrlCommand } from '#/modules/system-config/oauth/create-oauth-icon-presigned-url.command';
-import { CreateOAuthIconPresignedUrlRequestDto } from '#/modules/system-config/oauth/create-oauth-icon-presigned-url.request.dto';
-import { CreateOAuthIconPresignedUrlResponseDto } from '#/modules/system-config/oauth/create-oauth-icon-presigned-url.response.dto';
+import { ADMIN_RUNTIME_CONFIG, SECURITY_CONFIG } from '~/app.config';
+import { InternalClient } from '~/core/internal-client';
+import { CreateOAuthIconPresignedUrlCommand } from '~/modules/system-config/oauth/create-oauth-icon-presigned-url.command';
+import { CreateOAuthIconPresignedUrlRequestDto } from '~/modules/system-config/oauth/create-oauth-icon-presigned-url.request.dto';
+import { CreateOAuthIconPresignedUrlResponseDto } from '~/modules/system-config/oauth/create-oauth-icon-presigned-url.response.dto';
 
 @ApiTags('system-configs')
 @UserAuth()

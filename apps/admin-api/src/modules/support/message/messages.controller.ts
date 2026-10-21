@@ -1,18 +1,16 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalClient } from '#/core/internal-client';
-import { CreateSupportMessageRequestDto } from '#/modules/support/message/create-support-message.request.dto';
-import { CreateSupportMessageResponseDto } from '#/modules/support/message/create-support-message.response.dto';
-import { GetSupportMessagePiiListRequestDto } from '#/modules/support/message/get-support-message-pii-list.request.dto';
-import { GetSupportMessagePiiListResponseDto } from '#/modules/support/message/get-support-message-pii-list.response.dto';
-import { GetSupportMessagesRequestDto } from '#/modules/support/message/get-support-messages.request.dto';
-import { GetSupportMessagesResponseDto } from '#/modules/support/message/get-support-messages.response.dto';
-import { maskMessages } from '#/modules/support/support.helper';
+import { InternalClient } from '~/core/internal-client';
+import { CreateSupportMessageRequestDto } from '~/modules/support/message/create-support-message.request.dto';
+import { CreateSupportMessageResponseDto } from '~/modules/support/message/create-support-message.response.dto';
+import { GetSupportMessagePiiListRequestDto } from '~/modules/support/message/get-support-message-pii-list.request.dto';
+import { GetSupportMessagePiiListResponseDto } from '~/modules/support/message/get-support-message-pii-list.response.dto';
+import { GetSupportMessagesRequestDto } from '~/modules/support/message/get-support-messages.request.dto';
+import { GetSupportMessagesResponseDto } from '~/modules/support/message/get-support-messages.response.dto';
+import { maskMessages } from '~/modules/support/support.helper';
 
 @ApiTags('support')
 @UserAuth()

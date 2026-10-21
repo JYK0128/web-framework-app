@@ -1,5 +1,5 @@
 import { ApplicationError } from '@pkg/shared/common';
-import { createI18nRequestMiddleware } from '@pkg/web-core/i18n/request-middleware';
+import { createI18nRequestMiddleware } from '@pkg/web-core/i18n';
 import type { Register } from '@tanstack/react-router';
 import { createCsrfMiddleware, createStart } from '@tanstack/react-start';
 

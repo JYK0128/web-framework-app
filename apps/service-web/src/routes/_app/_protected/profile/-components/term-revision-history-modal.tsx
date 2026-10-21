@@ -4,7 +4,7 @@ import { SectionCard } from '@pkg/web-core/template';
 import { Button, Skeleton } from '@pkg/web-core/ui';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { getServiceTermsControllerGetRevisionsV1QueryKey, serviceTermsControllerGetRevisionsV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
+import { getServiceTermsControllerGetRevisionsV1QueryKey, serviceTermsControllerGetRevisionsV1 } from '~/.generated/api/endpoints/service-terms/service-terms';
 
 type TermRevisionHistoryModalProps = ModalComponentProps & {
   term: { groupId: string, title: string }

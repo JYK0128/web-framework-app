@@ -1,10 +1,10 @@
 import { HttpStatus } from '@nestjs/common';
-import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
+import { PrincipalContext } from '@pkg/server-core/http/contexts';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { User } from '#/core/database/entities/auth';
-import { RoleCode } from '#/core/database/entities/auth.extensions';
-import { AppEntityManager } from '#/core/database/entity-manager';
+import { User } from '~/core/database/entities/auth';
+import { RoleCode } from '~/core/database/entities/auth.extensions';
+import { AppEntityManager } from '~/core/database/entity-manager';
 
 export async function findOperator(em: AppEntityManager, operatorId: string): Promise<User> {
   const operator = await em.findOne(User, { id: operatorId }, { populate: ['role'], filters: false });

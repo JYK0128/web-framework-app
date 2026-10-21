@@ -1,10 +1,10 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
+import { KvStore } from '@pkg/server-core/kv-store';
 import { ApplicationError, z } from '@pkg/shared/common';
 import { cloneDeep } from 'lodash-es';
 
-import { SERVICE_RUNTIME_CONFIG } from '#/app.config';
-import { SERVICE_CONTEXT_REDIS_KEY } from '#/modules/system-config/system-config.constants';
+import { SERVICE_RUNTIME_CONFIG } from '~/app.config';
+import { SERVICE_CONTEXT_REDIS_KEY } from '~/modules/system-config/system-config.constants';
 
 const TIME_PATTERN = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
 const END_OF_DAY_TIME_PATTERN = /^(?:(?:[01]\d|2[0-3]):[0-5]\d|24:00)$/;

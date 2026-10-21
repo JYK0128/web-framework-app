@@ -1,9 +1,9 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
-import { SECURITY_CONFIG } from '#/app.config';
+import { SECURITY_CONFIG } from '~/app.config';
 
 @ApiSchema({ name: 'OperatorCreateRequest' })
 export class CreateOperatorRequestDto extends BaseDto {

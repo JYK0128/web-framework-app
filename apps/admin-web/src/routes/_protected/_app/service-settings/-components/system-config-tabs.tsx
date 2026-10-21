@@ -1,6 +1,6 @@
 import { Clock, MessageSquare, Wrench } from 'lucide-react';
 
-import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
+import { Tabs, TabsList, TabsTrigger } from '~/.generated/shadcn/components/ui';
 
 type SystemConfigKey = 'operation' | 'maintenance' | 'inquiry';
 

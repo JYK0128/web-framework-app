@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { Notice } from '#/core/database/entities/notices';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { GetNoticesQuery } from '#/modules/notice/get-notices.query';
-import { GetNoticesResponseDto } from '#/modules/notice/get-notices.response.dto';
-import { NoticeItemDto } from '#/modules/notice/notice-item.dto';
+import { Notice } from '~/core/database/entities/notices';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { GetNoticesQuery } from '~/modules/notice/get-notices.query';
+import { GetNoticesResponseDto } from '~/modules/notice/get-notices.response.dto';
+import { NoticeItemDto } from '~/modules/notice/notice-item.dto';
 
 @Injectable()
 @QueryHandler(GetNoticesQuery)

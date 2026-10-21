@@ -1,20 +1,18 @@
 import { Body, Controller, Delete, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { AdminPermission } from '@pkg/shared';
 
-import { CreateOperatorCommand } from '#/modules/operator/account/create-operator.command';
-import { CreateOperatorRequestDto } from '#/modules/operator/account/create-operator.request.dto';
-import { CreateOperatorResponseDto } from '#/modules/operator/account/create-operator.response.dto';
-import { DeleteOperatorCommand } from '#/modules/operator/account/delete-operator.command';
-import { DeleteOperatorRequestDto } from '#/modules/operator/account/delete-operator.request.dto';
-import { DeleteOperatorResponseDto } from '#/modules/operator/account/delete-operator.response.dto';
-import { RestoreOperatorCommand } from '#/modules/operator/account/restore-operator.command';
-import { RestoreOperatorRequestDto } from '#/modules/operator/account/restore-operator.request.dto';
-import { RestoreOperatorResponseDto } from '#/modules/operator/account/restore-operator.response.dto';
+import { CreateOperatorCommand } from '~/modules/operator/account/create-operator.command';
+import { CreateOperatorRequestDto } from '~/modules/operator/account/create-operator.request.dto';
+import { CreateOperatorResponseDto } from '~/modules/operator/account/create-operator.response.dto';
+import { DeleteOperatorCommand } from '~/modules/operator/account/delete-operator.command';
+import { DeleteOperatorRequestDto } from '~/modules/operator/account/delete-operator.request.dto';
+import { DeleteOperatorResponseDto } from '~/modules/operator/account/delete-operator.response.dto';
+import { RestoreOperatorCommand } from '~/modules/operator/account/restore-operator.command';
+import { RestoreOperatorRequestDto } from '~/modules/operator/account/restore-operator.request.dto';
+import { RestoreOperatorResponseDto } from '~/modules/operator/account/restore-operator.response.dto';
 
 @ApiTags('operators')
 @UserAuth()

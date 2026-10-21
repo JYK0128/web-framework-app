@@ -1,11 +1,11 @@
 import { HttpStatus } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
-import { EntityDto } from '@pkg/server-core/http/dto/base/entity.dto';
+import { EntityDto } from '@pkg/server-core/http/dto/base';
 import { ApplicationError } from '@pkg/shared/common';
 import { decrypt } from '@pkg/shared/server';
 
-import { User } from '#/core/database/entities/auth';
-import { env } from '#/env';
+import { User } from '~/core/database/entities/auth';
+import { env } from '~/env';
 
 @ApiSchema({ name: 'CustomerItem' })
 export class CustomerItemDto extends EntityDto(User) {

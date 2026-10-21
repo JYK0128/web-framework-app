@@ -1,10 +1,9 @@
 import { MiddlewareConsumer, Module, type NestModule, RequestMethod } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
-import { RequestContextMiddleware } from '@pkg/server-core/http/middlewares/request-context.middleware';
-import { RequestLoggingMiddleware } from '@pkg/server-core/http/middlewares/request-logging.middleware';
+import { RequestContextMiddleware, RequestLoggingMiddleware } from '@pkg/server-core/http/middlewares';
 
-import { CoreModule } from '#/core/core.module';
-import { DomainModule } from '#/modules/domain.module';
+import { CoreModule } from '~/core/core.module';
+import { DomainModule } from '~/modules/domain.module';
 
 @Module({
   imports: [

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { InternalClient } from '#/core/internal-client';
-import { GetServiceConfigQuery } from '#/modules/service-config/get-service-config.query';
-import { GetServiceConfigResponseDto } from '#/modules/service-config/get-service-config.response.dto';
+import { InternalClient } from '~/core/internal-client';
+import { GetServiceConfigQuery } from '~/modules/service-config/get-service-config.query';
+import { GetServiceConfigResponseDto } from '~/modules/service-config/get-service-config.response.dto';
 
 @Injectable()
 @QueryHandler(GetServiceConfigQuery)

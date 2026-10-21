@@ -7,9 +7,9 @@ import { toString as qrToString } from 'qrcode';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-import { getAuthControllerMeV1QueryKey, useAuthControllerEnableTwoFactorV1, useAuthControllerGenerateTwoFactorV1 } from '#/.generated/api/endpoints/auth/auth';
-import { AuthControllerEnableTwoFactorV1Body, authControllerEnableTwoFactorV1BodyCodeMin } from '#/.generated/api/zod/auth/auth';
-import { Button, InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '#/.generated/shadcn/components/ui';
+import { getAuthControllerMeV1QueryKey, useAuthControllerEnableTwoFactorV1, useAuthControllerGenerateTwoFactorV1 } from '~/.generated/api/endpoints/auth/auth';
+import { AuthControllerEnableTwoFactorV1Body, authControllerEnableTwoFactorV1BodyCodeMin } from '~/.generated/api/zod/auth/auth';
+import { Button, InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '~/.generated/shadcn/components/ui';
 
 import { OnboardingLayout } from './-components/onboarding-layout';
 

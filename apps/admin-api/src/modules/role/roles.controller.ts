@@ -1,23 +1,21 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { AdminPermission } from '@pkg/shared';
 
-import { CreateRoleCommand } from '#/modules/role/create-role.command';
-import { CreateRoleRequestDto } from '#/modules/role/create-role.request.dto';
-import { CreateRoleResponseDto } from '#/modules/role/create-role.response.dto';
-import { DeleteRoleCommand } from '#/modules/role/delete-role.command';
-import { DeleteRoleRequestDto } from '#/modules/role/delete-role.request.dto';
-import { DeleteRoleResponseDto } from '#/modules/role/delete-role.response.dto';
-import { GetRolesQuery } from '#/modules/role/get-roles.query';
-import { GetRolesRequestDto } from '#/modules/role/get-roles.request.dto';
-import { GetRolesResponseDto } from '#/modules/role/get-roles.response.dto';
-import { UpdateRoleCommand } from '#/modules/role/update-role.command';
-import { UpdateRoleRequestDto } from '#/modules/role/update-role.request.dto';
-import { UpdateRoleResponseDto } from '#/modules/role/update-role.response.dto';
+import { CreateRoleCommand } from '~/modules/role/create-role.command';
+import { CreateRoleRequestDto } from '~/modules/role/create-role.request.dto';
+import { CreateRoleResponseDto } from '~/modules/role/create-role.response.dto';
+import { DeleteRoleCommand } from '~/modules/role/delete-role.command';
+import { DeleteRoleRequestDto } from '~/modules/role/delete-role.request.dto';
+import { DeleteRoleResponseDto } from '~/modules/role/delete-role.response.dto';
+import { GetRolesQuery } from '~/modules/role/get-roles.query';
+import { GetRolesRequestDto } from '~/modules/role/get-roles.request.dto';
+import { GetRolesResponseDto } from '~/modules/role/get-roles.response.dto';
+import { UpdateRoleCommand } from '~/modules/role/update-role.command';
+import { UpdateRoleRequestDto } from '~/modules/role/update-role.request.dto';
+import { UpdateRoleResponseDto } from '~/modules/role/update-role.response.dto';
 
 @ApiTags('roles')
 @UserAuth()

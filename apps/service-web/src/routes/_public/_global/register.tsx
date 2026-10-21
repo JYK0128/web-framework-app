@@ -1,13 +1,13 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { assertPasswordPolicy, SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
+import { useI18n } from '@pkg/web-core/context/i18n';
 import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
-import { useI18n } from '@pkg/web-core/i18n';
 import { ScreenLayout } from '@pkg/web-core/template';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@pkg/web-core/ui';
 import { createFileRoute, Link } from '@tanstack/react-router';
 
-import { useAuthControllerRegisterV1, useAuthControllerRequestEmailVerificationV1 } from '#/.generated/api/endpoints/auth/auth';
-import { AuthControllerRegisterV1Body } from '#/.generated/api/zod/auth/auth';
+import { useAuthControllerRegisterV1, useAuthControllerRequestEmailVerificationV1 } from '~/.generated/api/endpoints/auth/auth';
+import { AuthControllerRegisterV1Body } from '~/.generated/api/zod/auth/auth';
 
 export const Route = createFileRoute('/_public/_global/register')({ component: RegisterPage });
 

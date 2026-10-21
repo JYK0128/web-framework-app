@@ -5,16 +5,16 @@ import { ApplicationError } from '@pkg/shared/common';
 import { assertPasswordPolicy } from '@pkg/shared/policy';
 import { encrypt, hashPassword, hashWithSecret } from '@pkg/shared/server';
 
-import { SECURITY_CONFIG } from '#/app.config';
-import { Account, Profile, User } from '#/core/database/entities/auth';
-import { Role, RoleCode } from '#/core/database/entities/auth.extensions';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { env } from '#/env';
-import { RegisterCommand } from '#/modules/auth/account/register.command';
-import { RegisterResponseDto } from '#/modules/auth/account/register.response.dto';
-import { RequestEmailVerificationCommand } from '#/modules/auth/email-verification/request-email-verification.command';
-import { RequestEmailVerificationRequestDto } from '#/modules/auth/email-verification/request-email-verification.request.dto';
-import { CheckAdminEmailConfigQuery } from '#/modules/system-config/admin-email/check-admin-email-config.query';
+import { SECURITY_CONFIG } from '~/app.config';
+import { Account, Profile, User } from '~/core/database/entities/auth';
+import { Role, RoleCode } from '~/core/database/entities/auth.extensions';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { env } from '~/env';
+import { RegisterCommand } from '~/modules/auth/account/register.command';
+import { RegisterResponseDto } from '~/modules/auth/account/register.response.dto';
+import { RequestEmailVerificationCommand } from '~/modules/auth/email-verification/request-email-verification.command';
+import { RequestEmailVerificationRequestDto } from '~/modules/auth/email-verification/request-email-verification.request.dto';
+import { CheckAdminEmailConfigQuery } from '~/modules/system-config/admin-email/check-admin-email-config.query';
 
 @Injectable()
 @CommandHandler(RegisterCommand)

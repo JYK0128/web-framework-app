@@ -1,7 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { SystemContext } from '#/modules/system-config/system.context';
+import { SystemContext } from '~/modules/system-config/system.context';
 
 type EmailConfig = { from?: string, smtp?: { host?: string, port?: number, secure?: boolean, user?: string, pass?: string } };
 

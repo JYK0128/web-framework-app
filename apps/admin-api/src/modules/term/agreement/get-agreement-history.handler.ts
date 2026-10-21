@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
+import { PrincipalContext } from '@pkg/server-core/http/contexts';
 
-import { UserTermAgreement } from '#/core/database/entities/terms';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { AgreementHistoryItemDto } from '#/modules/term/agreement/agreement-history-item.dto';
-import { GetAgreementHistoryQuery } from '#/modules/term/agreement/get-agreement-history.query';
-import { GetAgreementHistoryResponseDto } from '#/modules/term/agreement/get-agreement-history.response.dto';
+import { UserTermAgreement } from '~/core/database/entities/terms';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { AgreementHistoryItemDto } from '~/modules/term/agreement/agreement-history-item.dto';
+import { GetAgreementHistoryQuery } from '~/modules/term/agreement/get-agreement-history.query';
+import { GetAgreementHistoryResponseDto } from '~/modules/term/agreement/get-agreement-history.response.dto';
 
 @Injectable()
 @QueryHandler(GetAgreementHistoryQuery)

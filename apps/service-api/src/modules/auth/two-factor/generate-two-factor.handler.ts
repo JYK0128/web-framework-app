@@ -3,17 +3,17 @@ import { randomBytes } from 'node:crypto';
 import { LockMode } from '@mikro-orm/core';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
+import { PrincipalContext } from '@pkg/server-core/http/contexts';
 import { ApplicationError } from '@pkg/shared/common';
 import { encrypt } from '@pkg/shared/server';
 
-import { SECURITY_CONFIG } from '#/app.config';
-import { User } from '#/core/database/entities/auth';
-import { TwoFactor } from '#/core/database/entities/auth.extensions';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { env } from '#/env';
-import { GenerateTwoFactorCommand } from '#/modules/auth/two-factor/generate-two-factor.command';
-import { GenerateTwoFactorResponseDto } from '#/modules/auth/two-factor/generate-two-factor.response.dto';
+import { SECURITY_CONFIG } from '~/app.config';
+import { User } from '~/core/database/entities/auth';
+import { TwoFactor } from '~/core/database/entities/auth.extensions';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { env } from '~/env';
+import { GenerateTwoFactorCommand } from '~/modules/auth/two-factor/generate-two-factor.command';
+import { GenerateTwoFactorResponseDto } from '~/modules/auth/two-factor/generate-two-factor.response.dto';
 
 @Injectable()
 @CommandHandler(GenerateTwoFactorCommand)

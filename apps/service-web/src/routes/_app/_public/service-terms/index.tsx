@@ -2,7 +2,7 @@ import { PageSection, SectionCard } from '@pkg/web-core/template';
 import { Skeleton } from '@pkg/web-core/ui';
 import { createFileRoute } from '@tanstack/react-router';
 
-import { useServiceTermsControllerGetTermsV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
+import { useServiceTermsControllerGetTermsV1 } from '~/.generated/api/endpoints/service-terms/service-terms';
 
 export const Route = createFileRoute('/_app/_public/service-terms/')({ component: PublicServiceTermsPage });
 

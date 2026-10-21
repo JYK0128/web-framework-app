@@ -1,15 +1,15 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
-import { PhoneIdentityService } from '@pkg/server-core/phone-identity/phone-identity.service';
+import { PrincipalContext } from '@pkg/server-core/http/contexts';
+import { PhoneIdentityService } from '@pkg/server-core/phone-identity';
 import { ApplicationError } from '@pkg/shared/common';
 import { encrypt, hashWithSecret } from '@pkg/shared/server';
 
-import { Profile, User } from '#/core/database/entities/auth';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { env } from '#/env';
-import { VerifyPhoneNumberCommand } from '#/modules/auth/phone-verification/verify-phone-number.command';
-import { VerifyPhoneNumberResponseDto } from '#/modules/auth/phone-verification/verify-phone-number.response.dto';
+import { Profile, User } from '~/core/database/entities/auth';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { env } from '~/env';
+import { VerifyPhoneNumberCommand } from '~/modules/auth/phone-verification/verify-phone-number.command';
+import { VerifyPhoneNumberResponseDto } from '~/modules/auth/phone-verification/verify-phone-number.response.dto';
 
 @Injectable()
 @CommandHandler(VerifyPhoneNumberCommand)

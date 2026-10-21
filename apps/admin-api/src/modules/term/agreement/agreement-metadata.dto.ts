@@ -1,8 +1,8 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 import { IsObject, IsOptional } from 'class-validator';
 
-import { AgreementOptionValue } from '#/modules/term/agreement/term-agreement-item.constants';
+import { AgreementOptionValue } from '~/modules/term/agreement/term-agreement-item.constants';
 
 export class AgreementMetadataDto extends BaseDto {
   @ApiPropertyOptional({

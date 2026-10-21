@@ -2,19 +2,19 @@ import { randomUUID } from 'node:crypto';
 
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { type AuthUser, type IUserAuthService, USER_AUTH_SERVICE } from '@pkg/server-core/auth/user/user-auth.interface';
-import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
+import { type AuthUser, type IUserAuthService, USER_AUTH_SERVICE } from '@pkg/server-core/auth';
+import { KvStore } from '@pkg/server-core/kv-store';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { hashWithSecret, verifyPassword } from '@pkg/shared/server';
 
-import { SECURITY_CONFIG } from '#/app.config';
-import { Account, User } from '#/core/database/entities/auth';
-import { TwoFactor } from '#/core/database/entities/auth.extensions';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { env } from '#/env';
-import { AuthKvStoreKey } from '#/modules/auth/auth.key';
-import { LoginCommand } from '#/modules/auth/session/login.command';
-import { LoginResponseDto } from '#/modules/auth/session/login.response.dto';
+import { SECURITY_CONFIG } from '~/app.config';
+import { Account, User } from '~/core/database/entities/auth';
+import { TwoFactor } from '~/core/database/entities/auth.extensions';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { env } from '~/env';
+import { AuthKvStoreKey } from '~/modules/auth/auth.key';
+import { LoginCommand } from '~/modules/auth/session/login.command';
+import { LoginResponseDto } from '~/modules/auth/session/login.response.dto';
 
 @Injectable()
 @CommandHandler(LoginCommand)

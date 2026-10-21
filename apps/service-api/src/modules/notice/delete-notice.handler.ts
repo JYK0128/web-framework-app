@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { DeleteNoticeCommand } from '#/modules/notice/delete-notice.command';
-import { DeleteNoticeResponseDto } from '#/modules/notice/delete-notice.response.dto';
-import { findNotice } from '#/modules/notice/notices.helpers';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { DeleteNoticeCommand } from '~/modules/notice/delete-notice.command';
+import { DeleteNoticeResponseDto } from '~/modules/notice/delete-notice.response.dto';
+import { findNotice } from '~/modules/notice/notices.helpers';
 
 @Injectable()
 @CommandHandler(DeleteNoticeCommand)

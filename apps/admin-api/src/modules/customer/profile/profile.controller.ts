@@ -1,23 +1,21 @@
 import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { AdminPermission } from '@pkg/shared';
 import { maskEmail, maskName } from '@pkg/shared/common';
 
-import { InternalClient } from '#/core/internal-client';
-import { CustomerItemDto } from '#/modules/customer/profile/customer-item.dto';
-import { GetCustomerRequestDto } from '#/modules/customer/profile/get-customer.request.dto';
-import { GetCustomerResponseDto } from '#/modules/customer/profile/get-customer.response.dto';
-import { GetCustomerPiiRequestDto } from '#/modules/customer/profile/get-customer-pii.request.dto';
-import { GetCustomerPiiResponseDto } from '#/modules/customer/profile/get-customer-pii.response.dto';
-import { GetCustomerPiiListRequestDto } from '#/modules/customer/profile/get-customer-pii-list.request.dto';
-import { GetCustomerPiiListResponseDto } from '#/modules/customer/profile/get-customer-pii-list.response.dto';
-import { GetCustomersRequestDto } from '#/modules/customer/profile/get-customers.request.dto';
-import { GetCustomersResponseDto } from '#/modules/customer/profile/get-customers.response.dto';
-import { UpdateCustomerMemoRequestDto } from '#/modules/customer/profile/update-customer-memo.request.dto';
-import { UpdateCustomerMemoResponseDto } from '#/modules/customer/profile/update-customer-memo.response.dto';
+import { InternalClient } from '~/core/internal-client';
+import { CustomerItemDto } from '~/modules/customer/profile/customer-item.dto';
+import { GetCustomerRequestDto } from '~/modules/customer/profile/get-customer.request.dto';
+import { GetCustomerResponseDto } from '~/modules/customer/profile/get-customer.response.dto';
+import { GetCustomerPiiRequestDto } from '~/modules/customer/profile/get-customer-pii.request.dto';
+import { GetCustomerPiiResponseDto } from '~/modules/customer/profile/get-customer-pii.response.dto';
+import { GetCustomerPiiListRequestDto } from '~/modules/customer/profile/get-customer-pii-list.request.dto';
+import { GetCustomerPiiListResponseDto } from '~/modules/customer/profile/get-customer-pii-list.response.dto';
+import { GetCustomersRequestDto } from '~/modules/customer/profile/get-customers.request.dto';
+import { GetCustomersResponseDto } from '~/modules/customer/profile/get-customers.response.dto';
+import { UpdateCustomerMemoRequestDto } from '~/modules/customer/profile/update-customer-memo.request.dto';
+import { UpdateCustomerMemoResponseDto } from '~/modules/customer/profile/update-customer-memo.response.dto';
 
 function maskCustomer(customer: CustomerItemDto): CustomerItemDto {
   return CustomerItemDto.parse({ ...customer, name: maskName(customer.name), email: maskEmail(customer.email) });

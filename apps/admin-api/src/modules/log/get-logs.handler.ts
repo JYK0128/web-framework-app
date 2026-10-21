@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { LogTelemetryService } from '@pkg/server-core/log-telemetry/log-telemetry.service';
+import { LogTelemetryService } from '@pkg/server-core/log-telemetry';
 
-import { GetLogsQuery } from '#/modules/log/get-logs.query';
-import { GetLogsResponseDto } from '#/modules/log/get-logs.response.dto';
-import { LogItemDto } from '#/modules/log/log-item.dto';
+import { GetLogsQuery } from '~/modules/log/get-logs.query';
+import { GetLogsResponseDto } from '~/modules/log/get-logs.response.dto';
+import { LogItemDto } from '~/modules/log/log-item.dto';
 
 @Injectable()
 @QueryHandler(GetLogsQuery)

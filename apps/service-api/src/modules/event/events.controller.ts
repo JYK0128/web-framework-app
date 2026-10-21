@@ -1,15 +1,14 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Public } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Public, SwaggerApiResponse } from '@pkg/server-core/http/decorators';
 
-import { GetEventQuery } from '#/modules/event/get-event.query';
-import { GetEventRequestDto } from '#/modules/event/get-event.request.dto';
-import { GetEventResponseDto } from '#/modules/event/get-event.response.dto';
-import { GetPublicEventsQuery } from '#/modules/event/get-public-events.query';
-import { GetPublicEventsRequestDto } from '#/modules/event/get-public-events.request.dto';
-import { GetPublicEventsResponseDto } from '#/modules/event/get-public-events.response.dto';
+import { GetEventQuery } from '~/modules/event/get-event.query';
+import { GetEventRequestDto } from '~/modules/event/get-event.request.dto';
+import { GetEventResponseDto } from '~/modules/event/get-event.response.dto';
+import { GetPublicEventsQuery } from '~/modules/event/get-public-events.query';
+import { GetPublicEventsRequestDto } from '~/modules/event/get-public-events.request.dto';
+import { GetPublicEventsResponseDto } from '~/modules/event/get-public-events.response.dto';
 
 @ApiTags('events')
 @Public()

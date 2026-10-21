@@ -1,9 +1,9 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
-import { EntityDto } from '@pkg/server-core/http/dto/base/entity.dto';
+import { EntityDto } from '@pkg/server-core/http/dto/base';
 import { Type } from 'class-transformer';
 
-import { Term, type UserTermAgreement } from '#/core/database/entities/terms';
-import { ServiceAgreementMetadataDto } from '#/modules/service-term/agreement/service-agreement-metadata.dto';
+import { Term, type UserTermAgreement } from '~/core/database/entities/terms';
+import { ServiceAgreementMetadataDto } from '~/modules/service-term/agreement/service-agreement-metadata.dto';
 
 @ApiSchema({ name: 'ServiceTermAgreementItem' })
 export class ServiceTermAgreementItemDto extends EntityDto(Term) {

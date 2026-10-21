@@ -1,18 +1,16 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query, Res } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Public, UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { NoStore } from '@pkg/server-core/http/decorators/no-store.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { NoStore, Public, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { ApplicationError } from '@pkg/shared/common';
 import type { Response } from 'express';
 
-import { env } from '#/env';
-import { OAuthService } from '#/modules/auth/oauth/oauth.service';
-import { OAuthCallbackRequestDto } from '#/modules/auth/oauth/oauth-callback.request.dto';
-import { OAuthCallbackResponseDto } from '#/modules/auth/oauth/oauth-callback.response.dto';
-import { OAuthLoginRequestDto } from '#/modules/auth/oauth/oauth-login.request.dto';
-import { OAuthProviderListRequestDto } from '#/modules/auth/oauth/oauth-provider-list.request.dto';
-import { OAuthProviderListResponseDto } from '#/modules/auth/oauth/oauth-provider-list.response.dto';
+import { env } from '~/env';
+import { OAuthService } from '~/modules/auth/oauth/oauth.service';
+import { OAuthCallbackRequestDto } from '~/modules/auth/oauth/oauth-callback.request.dto';
+import { OAuthCallbackResponseDto } from '~/modules/auth/oauth/oauth-callback.response.dto';
+import { OAuthLoginRequestDto } from '~/modules/auth/oauth/oauth-login.request.dto';
+import { OAuthProviderListRequestDto } from '~/modules/auth/oauth/oauth-provider-list.request.dto';
+import { OAuthProviderListResponseDto } from '~/modules/auth/oauth/oauth-provider-list.response.dto';
 
 @ApiTags('Auth')
 @UserAuth()

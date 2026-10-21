@@ -10,11 +10,11 @@ import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router'
 import { FileText, KeyRound, Mail, Phone, ShieldCheck, TriangleAlert, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-import { getAuthControllerMeV1QueryKey, useAuthControllerDisableTwoFactorV1, useAuthControllerUnregisterV1, useAuthControllerVerifyPhoneNumberV1 } from '#/.generated/api/endpoints/auth/auth';
-import { useTermsControllerGetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
-import type { MeResponse } from '#/.generated/api/model';
-import { Button, Separator, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
-import { browserEnv } from '#/lib/browser-env';
+import { getAuthControllerMeV1QueryKey, useAuthControllerDisableTwoFactorV1, useAuthControllerUnregisterV1, useAuthControllerVerifyPhoneNumberV1 } from '~/.generated/api/endpoints/auth/auth';
+import { useTermsControllerGetAgreementsV1 } from '~/.generated/api/endpoints/terms/terms';
+import type { MeResponse } from '~/.generated/api/model';
+import { Button, Separator, Tabs, TabsList, TabsTrigger } from '~/.generated/shadcn/components/ui';
+import { browserEnv } from '~/lib/browser-env';
 
 import { ProfileChangePasswordModal } from './profile/-components/change-password-modal';
 import { ProfileTermsTab } from './profile/-components/terms-tab';

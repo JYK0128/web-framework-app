@@ -1,15 +1,14 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiExcludeController, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { MachineAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { MachineAuth, SwaggerApiResponse } from '@pkg/server-core/http/decorators';
 
-import { CreateSupportMessageCommand } from '#/modules/support/message/create-support-message.command';
-import { CreateSupportMessageRequestDto } from '#/modules/support/message/create-support-message.request.dto';
-import { CreateSupportMessageResponseDto } from '#/modules/support/message/create-support-message.response.dto';
-import { GetSupportMessagesQuery } from '#/modules/support/message/get-support-messages.query';
-import { GetSupportMessagesRequestDto } from '#/modules/support/message/get-support-messages.request.dto';
-import { GetSupportMessagesResponseDto } from '#/modules/support/message/get-support-messages.response.dto';
+import { CreateSupportMessageCommand } from '~/modules/support/message/create-support-message.command';
+import { CreateSupportMessageRequestDto } from '~/modules/support/message/create-support-message.request.dto';
+import { CreateSupportMessageResponseDto } from '~/modules/support/message/create-support-message.response.dto';
+import { GetSupportMessagesQuery } from '~/modules/support/message/get-support-messages.query';
+import { GetSupportMessagesRequestDto } from '~/modules/support/message/get-support-messages.request.dto';
+import { GetSupportMessagesResponseDto } from '~/modules/support/message/get-support-messages.response.dto';
 
 @ApiTags('Internal (Machine)')
 @ApiExcludeController()

@@ -1,10 +1,10 @@
 import { Notification, type NotificationItem } from '@pkg/web-core/application';
+import { useI18n } from '@pkg/web-core/context/i18n';
 import { useSSE } from '@pkg/web-core/hooks';
-import { useI18n } from '@pkg/web-core/i18n';
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 
-import { isSupportChatOpen } from '#/hooks/use-support-socket';
+import { isSupportChatOpen } from '~/hooks/use-support-socket';
 
 type ServiceNotificationEvent = {
   id: string

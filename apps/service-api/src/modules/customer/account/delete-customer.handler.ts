@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { type IUserAuthService, USER_AUTH_SERVICE } from '@pkg/server-core/auth/user/user-auth.interface';
+import { type IUserAuthService, USER_AUTH_SERVICE } from '@pkg/server-core/auth';
 
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { DeleteCustomerCommand } from '#/modules/customer/account/delete-customer.command';
-import { DeleteCustomerResponseDto } from '#/modules/customer/account/delete-customer.response.dto';
-import { findCustomer } from '#/modules/customer/customer.helper';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { DeleteCustomerCommand } from '~/modules/customer/account/delete-customer.command';
+import { DeleteCustomerResponseDto } from '~/modules/customer/account/delete-customer.response.dto';
+import { findCustomer } from '~/modules/customer/customer.helper';
 
 @Injectable()
 @CommandHandler(DeleteCustomerCommand)

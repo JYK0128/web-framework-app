@@ -1,28 +1,28 @@
 import { randomUUID } from 'node:crypto';
 
 import { HttpStatus, Injectable, NotFoundException, type OnModuleInit } from '@nestjs/common';
-import { StorageService } from '@pkg/server-core/file-storage/storage.service';
-import { KvStore } from '@pkg/server-core/kv-store/kv-store.service';
+import { StorageService } from '@pkg/server-core/file-storage';
+import { KvStore } from '@pkg/server-core/kv-store';
 import { type NotificationConfigDto } from '@pkg/server-core/notification/dto';
-import { assertEnabledOAuthProvidersAreConfigured } from '@pkg/server-core/oauth/oauth-provider-validation';
+import { assertEnabledOAuthProvidersAreConfigured } from '@pkg/server-core/oauth';
 import { ApplicationError, TimeUtil, z } from '@pkg/shared/common';
 import { ServiceSystemConfigCode } from '@pkg/shared/constants';
 import { decrypt, encrypt, isEncrypted } from '@pkg/shared/server';
 import { cloneDeep, isPlainObject, merge } from 'lodash-es';
 
-import { SECURITY_CONFIG } from '#/app.config';
-import { SystemConfig } from '#/core/database/entities/system-configs';
-import { Upload, UploadStatus } from '#/core/database/entities/uploads';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { env } from '#/env';
-import { NOTIFICATION_SECRET_PATHS, transformNotificationSecrets } from '#/modules/system-config/notification/notification-config-secrets';
-import { assertEnabledNotificationProvidersAreConfigured } from '#/modules/system-config/notification/notification-provider-validation';
-import { CreateOAuthIconPresignedUrlRequestDto } from '#/modules/system-config/oauth/create-oauth-icon-presigned-url.request.dto';
-import { CreateOAuthIconPresignedUrlResponseDto } from '#/modules/system-config/oauth/create-oauth-icon-presigned-url.response.dto';
-import { OAUTH_ICON_SUBDIR } from '#/modules/system-config/oauth/oauth-icon.helpers';
-import { ServiceContext, ServiceContextSnapshotSchema } from '#/modules/system-config/service.context';
-import { SystemContext, SystemContextSnapshotSchema } from '#/modules/system-config/system.context';
-import { SERVICE_CONTEXT_REDIS_KEY, SERVICE_SYSTEM_CONTEXT_REDIS_KEY } from '#/modules/system-config/system-config.constants';
+import { SECURITY_CONFIG } from '~/app.config';
+import { SystemConfig } from '~/core/database/entities/system-configs';
+import { Upload, UploadStatus } from '~/core/database/entities/uploads';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { env } from '~/env';
+import { NOTIFICATION_SECRET_PATHS, transformNotificationSecrets } from '~/modules/system-config/notification/notification-config-secrets';
+import { assertEnabledNotificationProvidersAreConfigured } from '~/modules/system-config/notification/notification-provider-validation';
+import { CreateOAuthIconPresignedUrlRequestDto } from '~/modules/system-config/oauth/create-oauth-icon-presigned-url.request.dto';
+import { CreateOAuthIconPresignedUrlResponseDto } from '~/modules/system-config/oauth/create-oauth-icon-presigned-url.response.dto';
+import { OAUTH_ICON_SUBDIR } from '~/modules/system-config/oauth/oauth-icon.helpers';
+import { ServiceContext, ServiceContextSnapshotSchema } from '~/modules/system-config/service.context';
+import { SystemContext, SystemContextSnapshotSchema } from '~/modules/system-config/system.context';
+import { SERVICE_CONTEXT_REDIS_KEY, SERVICE_SYSTEM_CONTEXT_REDIS_KEY } from '~/modules/system-config/system-config.constants';
 
 const CONFIG_CODES = Object.values(ServiceSystemConfigCode);
 const SERVICE_CONTEXT_CODES = [

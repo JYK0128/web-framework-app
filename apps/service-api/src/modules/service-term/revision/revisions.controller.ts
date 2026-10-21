@@ -1,12 +1,11 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Public } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Public, SwaggerApiResponse } from '@pkg/server-core/http/decorators';
 
-import { GetTermRevisionsQuery } from '#/modules/service-term/revision/get-term-revisions.query';
-import { GetTermRevisionsRequestDto } from '#/modules/service-term/revision/get-term-revisions.request.dto';
-import { GetTermRevisionsResponseDto } from '#/modules/service-term/revision/get-term-revisions.response.dto';
+import { GetTermRevisionsQuery } from '~/modules/service-term/revision/get-term-revisions.query';
+import { GetTermRevisionsRequestDto } from '~/modules/service-term/revision/get-term-revisions.request.dto';
+import { GetTermRevisionsResponseDto } from '~/modules/service-term/revision/get-term-revisions.response.dto';
 
 @ApiTags('service-terms')
 @Controller('service-terms')

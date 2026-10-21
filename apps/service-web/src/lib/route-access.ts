@@ -1,7 +1,7 @@
 import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 import { redirect } from '@tanstack/react-router';
 
-import type { MeResponse } from '#/.generated/api/model';
+import type { MeResponse } from '~/.generated/api/model';
 
 type RouteAccessContext = {
   user: MeResponse | null

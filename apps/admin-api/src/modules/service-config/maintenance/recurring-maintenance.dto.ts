@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ToNumber } from '@pkg/server-core/http/decorators/to-number.decorator';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { ToNumber } from '@pkg/server-core/http/decorators';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 import { IsArray, IsBoolean, IsInt, IsString, Matches, Max, Min } from 'class-validator';
 
 export class RecurringMaintenanceDto extends BaseDto {

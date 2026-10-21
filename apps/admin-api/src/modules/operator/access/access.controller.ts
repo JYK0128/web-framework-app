@@ -1,23 +1,21 @@
 import { Body, Controller, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { AdminPermission } from '@pkg/shared';
 
-import { BanOperatorCommand } from '#/modules/operator/access/ban-operator.command';
-import { BanOperatorRequestDto } from '#/modules/operator/access/ban-operator.request.dto';
-import { BanOperatorResponseDto } from '#/modules/operator/access/ban-operator.response.dto';
-import { ResetOperatorTwoFactorCommand } from '#/modules/operator/access/reset-operator-two-factor.command';
-import { ResetOperatorTwoFactorRequestDto } from '#/modules/operator/access/reset-operator-two-factor.request.dto';
-import { ResetOperatorTwoFactorResponseDto } from '#/modules/operator/access/reset-operator-two-factor.response.dto';
-import { UnbanOperatorCommand } from '#/modules/operator/access/unban-operator.command';
-import { UnbanOperatorRequestDto } from '#/modules/operator/access/unban-operator.request.dto';
-import { UnbanOperatorResponseDto } from '#/modules/operator/access/unban-operator.response.dto';
-import { UpdateOperatorRoleCommand } from '#/modules/operator/access/update-operator-role.command';
-import { UpdateOperatorRoleRequestDto } from '#/modules/operator/access/update-operator-role.request.dto';
-import { UpdateOperatorRoleResponseDto } from '#/modules/operator/access/update-operator-role.response.dto';
+import { BanOperatorCommand } from '~/modules/operator/access/ban-operator.command';
+import { BanOperatorRequestDto } from '~/modules/operator/access/ban-operator.request.dto';
+import { BanOperatorResponseDto } from '~/modules/operator/access/ban-operator.response.dto';
+import { ResetOperatorTwoFactorCommand } from '~/modules/operator/access/reset-operator-two-factor.command';
+import { ResetOperatorTwoFactorRequestDto } from '~/modules/operator/access/reset-operator-two-factor.request.dto';
+import { ResetOperatorTwoFactorResponseDto } from '~/modules/operator/access/reset-operator-two-factor.response.dto';
+import { UnbanOperatorCommand } from '~/modules/operator/access/unban-operator.command';
+import { UnbanOperatorRequestDto } from '~/modules/operator/access/unban-operator.request.dto';
+import { UnbanOperatorResponseDto } from '~/modules/operator/access/unban-operator.response.dto';
+import { UpdateOperatorRoleCommand } from '~/modules/operator/access/update-operator-role.command';
+import { UpdateOperatorRoleRequestDto } from '~/modules/operator/access/update-operator-role.request.dto';
+import { UpdateOperatorRoleResponseDto } from '~/modules/operator/access/update-operator-role.response.dto';
 
 @ApiTags('operators')
 @UserAuth()

@@ -7,10 +7,10 @@ import { createFileRoute } from '@tanstack/react-router';
 import { Pencil, Plus, ShieldCheck, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
-import { usePermissionsControllerGetPermissionsV1 } from '#/.generated/api/endpoints/permissions/permissions';
-import { getRolesControllerGetRolesV1QueryKey, useRolesControllerDeleteRoleV1, useRolesControllerGetRolesV1 } from '#/.generated/api/endpoints/roles/roles';
-import type { PermissionItemDto, RoleItemDto } from '#/.generated/api/model';
-import { Button, Checkbox, FieldLabel } from '#/.generated/shadcn/components/ui';
+import { usePermissionsControllerGetPermissionsV1 } from '~/.generated/api/endpoints/permissions/permissions';
+import { getRolesControllerGetRolesV1QueryKey, useRolesControllerDeleteRoleV1, useRolesControllerGetRolesV1 } from '~/.generated/api/endpoints/roles/roles';
+import type { PermissionItemDto, RoleItemDto } from '~/.generated/api/model';
+import { Button, Checkbox, FieldLabel } from '~/.generated/shadcn/components/ui';
 
 import { RoleEditor } from './-components/role-editor-modal';
 

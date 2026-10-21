@@ -1,9 +1,9 @@
 import { HttpStatus } from '@nestjs/common';
-import { PrincipalContext } from '@pkg/server-core/http/contexts/principal.context';
+import { PrincipalContext } from '@pkg/server-core/http/contexts';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { SupportRoom } from '#/core/database/entities/support';
-import { AppEntityManager } from '#/core/database/entity-manager';
+import { SupportRoom } from '~/core/database/entities/support';
+import { AppEntityManager } from '~/core/database/entity-manager';
 
 export async function findSupportRoom(em: AppEntityManager, principal: PrincipalContext, roomId: string, mine: boolean): Promise<SupportRoom> {
   const user = mine ? principal.ensureUser() : null;

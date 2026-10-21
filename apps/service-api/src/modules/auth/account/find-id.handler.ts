@@ -3,12 +3,12 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { hashWithSecret } from '@pkg/shared/server';
 
-import { Account, User } from '#/core/database/entities/auth';
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { env } from '#/env';
-import { FindIdQuery } from '#/modules/auth/account/find-id.query';
-import { FindIdResponseDto } from '#/modules/auth/account/find-id.response.dto';
-import { FindIdItemDto } from '#/modules/auth/account/find-id-item.dto';
+import { Account, User } from '~/core/database/entities/auth';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { env } from '~/env';
+import { FindIdQuery } from '~/modules/auth/account/find-id.query';
+import { FindIdResponseDto } from '~/modules/auth/account/find-id.response.dto';
+import { FindIdItemDto } from '~/modules/auth/account/find-id-item.dto';
 
 @Injectable()
 @QueryHandler(FindIdQuery)

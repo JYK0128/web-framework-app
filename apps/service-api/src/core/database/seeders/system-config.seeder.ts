@@ -3,7 +3,7 @@ import { Seeder } from '@mikro-orm/seeder';
 import { ServiceSystemConfigCode } from '@pkg/shared/constants';
 import { merge } from 'lodash-es';
 
-import { SystemConfig } from '#/core/database/entities/system-configs';
+import { SystemConfig } from '~/core/database/entities/system-configs';
 
 const DEFAULT_CONFIGS: Array<{ code: ServiceSystemConfigCode, description: string, value: Record<string, unknown> }> = [
   { code: ServiceSystemConfigCode.OPERATION, description: '고객센터 운영시간, 공휴일 목록, 운영 상태별 안내 메시지 설정', value: { hours: { start: '09:00', end: '18:00', openDays: [1, 2, 3, 4, 5], lunchBreak: { enabled: false, start: '12:00', end: '13:00' } }, holidays: [], messages: { lunch: '현재 점심시간(12:00 ~ 13:00)입니다. 문의를 남겨주시면 순차적으로 답변드리겠습니다.', offHours: '현재 고객지원 운영시간이 아니어서 답변이 어렵습니다. 운영시간에 확인 후 답변드리겠습니다.', holiday: '주말 및 공휴일은 고객센터 휴무입니다. 문의는 다음 영업일에 순차 답변드립니다.' } } },

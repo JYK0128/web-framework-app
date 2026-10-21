@@ -15,7 +15,7 @@ import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '@pkg/web-core/data-grid';
 import { DatePicker, DatetimePicker, TimePicker } from '@pkg/web-core/date-time';
 import { Editor, EditorViewer } from '@pkg/web-core/editor';
-import { I18nContext, useI18n } from '@pkg/web-core/i18n';
+import { I18nContext, useI18n } from '@pkg/web-core/context/i18n';
 import { Modal, ModalContainer, openModal } from '@pkg/web-core/modal';
 import { Button, Card, Dialog, DropdownMenu, Skeleton, Spinner, Tabs, Toaster } from '@pkg/web-core/ui';
 ```

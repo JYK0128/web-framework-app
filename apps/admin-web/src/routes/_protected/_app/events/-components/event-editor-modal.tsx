@@ -5,9 +5,9 @@ import { FormLayout, useAppForm } from '@pkg/web-core/form';
 import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { eventsControllerCreateV1, eventsControllerUpdateV1, getEventsControllerListV1QueryKey } from '#/.generated/api/endpoints/events/events';
-import type { CreateEventRequestDto, EventItemDto } from '#/.generated/api/model';
-import { Button } from '#/.generated/shadcn/components/ui';
+import { eventsControllerCreateV1, eventsControllerUpdateV1, getEventsControllerListV1QueryKey } from '~/.generated/api/endpoints/events/events';
+import type { CreateEventRequestDto, EventItemDto } from '~/.generated/api/model';
+import { Button } from '~/.generated/shadcn/components/ui';
 
 export type EventEditorModalProps = ModalComponentProps<boolean> & { event?: EventItemDto, readOnly?: boolean };
 

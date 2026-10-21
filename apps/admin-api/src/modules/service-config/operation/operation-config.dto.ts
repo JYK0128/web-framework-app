@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseDto } from '@pkg/server-core/http/dto/base/base.dto';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 import { Type } from 'class-transformer';
 import { IsArray, ValidateNested } from 'class-validator';
 
-import { OperatingHolidayItemDto } from '#/modules/service-config/operation/operating-holiday-item.dto';
-import { OperatingHoursDto } from '#/modules/service-config/operation/operating-hours.dto';
-import { OperatingMessagesDto } from '#/modules/service-config/operation/operating-messages.dto';
+import { OperatingHolidayItemDto } from '~/modules/service-config/operation/operating-holiday-item.dto';
+import { OperatingHoursDto } from '~/modules/service-config/operation/operating-hours.dto';
+import { OperatingMessagesDto } from '~/modules/service-config/operation/operating-messages.dto';
 
 export class OperationConfigDto extends BaseDto {
   @ApiProperty({ type: OperatingHoursDto, description: '운영 시간 설정' })

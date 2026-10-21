@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ListResponseDto } from '@pkg/server-core/http/dto/response/list.response.dto';
+import { ListResponseDto } from '@pkg/server-core/http/dto/response';
 import { Type } from 'class-transformer';
 
-import { SupportMessageItemDto } from '#/modules/support/message/support-message-item.dto';
+import { SupportMessageItemDto } from '~/modules/support/message/support-message-item.dto';
 
 export class GetSupportMessagesResponseDto extends ListResponseDto<SupportMessageItemDto> {
   @ApiProperty({ type: [SupportMessageItemDto] })

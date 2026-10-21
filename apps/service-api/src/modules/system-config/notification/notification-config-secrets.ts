@@ -1,4 +1,4 @@
-import { env } from '#/env';
+import { env } from '~/env';
 
 const ENCRYPTION_KEYS: Record<string, string> = {
   email: env.NOTIFICATION_EMAIL_ENCRYPTION_KEY,

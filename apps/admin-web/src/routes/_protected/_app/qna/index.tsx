@@ -8,9 +8,9 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { Eye, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
-import { getQnaControllerListV1QueryKey, useQnaControllerListV1, useQnaControllerRemoveV1 } from '#/.generated/api/endpoints/qna/qna';
-import type { QnaItem } from '#/.generated/api/model';
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
+import { getQnaControllerListV1QueryKey, useQnaControllerListV1, useQnaControllerRemoveV1 } from '~/.generated/api/endpoints/qna/qna';
+import type { QnaItem } from '~/.generated/api/model';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '~/.generated/shadcn/components/ui';
 
 import { QnaEditorModal } from './-components/qna-editor-modal';
 

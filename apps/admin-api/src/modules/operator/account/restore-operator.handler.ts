@@ -2,10 +2,10 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { AppEntityManager } from '#/core/database/entity-manager';
-import { RestoreOperatorCommand } from '#/modules/operator/account/restore-operator.command';
-import { RestoreOperatorResponseDto } from '#/modules/operator/account/restore-operator.response.dto';
-import { findOperator } from '#/modules/operator/operator-actions.helpers';
+import { AppEntityManager } from '~/core/database/entity-manager';
+import { RestoreOperatorCommand } from '~/modules/operator/account/restore-operator.command';
+import { RestoreOperatorResponseDto } from '~/modules/operator/account/restore-operator.response.dto';
+import { findOperator } from '~/modules/operator/operator-actions.helpers';
 
 @Injectable()
 @CommandHandler(RestoreOperatorCommand)

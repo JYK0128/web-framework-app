@@ -8,9 +8,9 @@ import { createFileRoute, notFound } from '@tanstack/react-router';
 import { type ColumnFiltersState, createColumnHelper } from '@tanstack/react-table';
 import { useCallback, useMemo, useState } from 'react';
 
-import { getSupportControllerListRoomsV1QueryKey, supportControllerListRoomsV1 } from '#/.generated/api/endpoints/support/support';
-import type { SupportRoomItem } from '#/.generated/api/model';
-import { OperationNotice } from '#/routes/_app/_protected/-components/operation-notice';
+import { getSupportControllerListRoomsV1QueryKey, supportControllerListRoomsV1 } from '~/.generated/api/endpoints/support/support';
+import type { SupportRoomItem } from '~/.generated/api/model';
+import { OperationNotice } from '~/routes/_app/_protected/-components/operation-notice';
 
 import { SupportRoomDetailModal } from './-components/support-room-detail-modal';
 

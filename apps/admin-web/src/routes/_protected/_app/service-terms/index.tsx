@@ -8,9 +8,9 @@ import { createColumnHelper, type SortingState } from '@tanstack/react-table';
 import { Ellipsis, Eye, Pencil, Plus, Trash2 } from 'lucide-react';
 import { type MouseEvent, type MouseEventHandler, useCallback, useMemo, useState } from 'react';
 
-import { getServiceTermsControllerGroupsV1QueryKey, getServiceTermsControllerListV1QueryKey, useServiceTermsControllerDeleteGroupV1, useServiceTermsControllerDeleteV1, useServiceTermsControllerGroupsV1, useServiceTermsControllerListV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
-import type { ServiceTermGroupItemDto, ServiceTermItemDto } from '#/.generated/api/model';
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
+import { getServiceTermsControllerGroupsV1QueryKey, getServiceTermsControllerListV1QueryKey, useServiceTermsControllerDeleteGroupV1, useServiceTermsControllerDeleteV1, useServiceTermsControllerGroupsV1, useServiceTermsControllerListV1 } from '~/.generated/api/endpoints/service-terms/service-terms';
+import type { ServiceTermGroupItemDto, ServiceTermItemDto } from '~/.generated/api/model';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '~/.generated/shadcn/components/ui';
 
 import { ServiceTermEditorModal } from './-components/service-term-editor-modal';
 import { ServiceTermGroupEditorModal } from './-components/service-term-group-editor-modal';

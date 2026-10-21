@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EntityDto } from '@pkg/server-core/http/dto/base/entity.dto';
+import { EntityDto } from '@pkg/server-core/http/dto/base';
 import { defineEnum } from '@pkg/shared/common';
 import { IsBoolean, IsEnum, IsInt, IsUrl, Max, Min, ValidateIf } from 'class-validator';
 
-import { SystemConfig } from '#/core/database/entities/system-configs';
+import { SystemConfig } from '~/core/database/entities/system-configs';
 
 export const WebhookType = defineEnum('WebhookType', {
   SLACK: 'SLACK',

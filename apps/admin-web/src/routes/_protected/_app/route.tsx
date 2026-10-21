@@ -1,6 +1,6 @@
 import { AppIcon, BrandLogo, LocaleSwitcher, ProfileDropdown } from '@pkg/web-core/application';
+import { useI18n } from '@pkg/web-core/context/i18n';
 import { useSSE } from '@pkg/web-core/hooks';
-import { useI18n } from '@pkg/web-core/i18n';
 import { AppLayout as AppLayoutParts, LinkCard } from '@pkg/web-core/template';
 import { ThemeToggle } from '@pkg/web-core/ui';
 import { cn } from '@pkg/web-core/utils';
@@ -10,10 +10,10 @@ import { Bell, Menu, PanelLeftClose, PanelLeftOpen, X } from 'lucide-react';
 import type { IconName } from 'lucide-react/dynamic';
 import { type ReactNode, useState } from 'react';
 
-import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
-import type { MeResponse } from '#/.generated/api/model';
-import { Button } from '#/.generated/shadcn/components/ui';
-import { isSupportChatOpen } from '#/hooks/use-support-socket';
+import { useAuthControllerLogoutV1 } from '~/.generated/api/endpoints/auth/auth';
+import type { MeResponse } from '~/.generated/api/model';
+import { Button } from '~/.generated/shadcn/components/ui';
+import { isSupportChatOpen } from '~/hooks/use-support-socket';
 
 type AdminAlert = {
   kind: 'support.unanswered'
@@ -200,7 +200,7 @@ function AdminAppLayout({ user, children }: AppLayoutProps) {
         ? `w-18`
         : `w-64`)}
       >
-        <div className="flex h-16 items-center border-b px-5"><BrandLogo /></div>
+        <div className="flex h-16 items-center border-b px-5"><BrandLogo text="SERVICE FACTORY" /></div>
         <NavigationMenu groups={visibleNavigationGroups} activeHref={activeItem?.href} collapsed={isCollapsed} label={t('admin.navigation.menu')} />
       </AppLayoutParts.Sidebar>
       <AppLayoutParts.Sidebar
@@ -214,7 +214,7 @@ function AdminAppLayout({ user, children }: AppLayoutProps) {
         )}
       >
         <div className="flex h-16 items-center justify-between border-b px-5">
-          <BrandLogo />
+          <BrandLogo text="SERVICE FACTORY" />
           <Button type="button" variant="ghost" size="icon" aria-label="메뉴 닫기" onClick={() => setIsMobileOpen(false)}>
             <X className="size-5" />
           </Button>

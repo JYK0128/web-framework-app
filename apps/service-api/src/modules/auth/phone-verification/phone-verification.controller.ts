@@ -1,15 +1,12 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { SkipPasswordExpiry, SkipPhoneVerification, SkipTwoFactorSetup, UserAuth } from '@pkg/server-core/http/decorators/auth-mode.decorator';
-import { NoStore } from '@pkg/server-core/http/decorators/no-store.decorator';
-import { Permissions } from '@pkg/server-core/http/decorators/permission.decorator';
-import { SwaggerApiResponse } from '@pkg/server-core/http/decorators/swagger-api-response.decorator';
+import { NoStore, Permissions, SkipPasswordExpiry, SkipPhoneVerification, SkipTwoFactorSetup, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
 import { ServicePermission } from '@pkg/shared';
 
-import { VerifyPhoneNumberCommand } from '#/modules/auth/phone-verification/verify-phone-number.command';
-import { VerifyPhoneNumberRequestDto } from '#/modules/auth/phone-verification/verify-phone-number.request.dto';
-import { VerifyPhoneNumberResponseDto } from '#/modules/auth/phone-verification/verify-phone-number.response.dto';
+import { VerifyPhoneNumberCommand } from '~/modules/auth/phone-verification/verify-phone-number.command';
+import { VerifyPhoneNumberRequestDto } from '~/modules/auth/phone-verification/verify-phone-number.request.dto';
+import { VerifyPhoneNumberResponseDto } from '~/modules/auth/phone-verification/verify-phone-number.response.dto';
 
 @ApiTags('Auth')
 @UserAuth()
