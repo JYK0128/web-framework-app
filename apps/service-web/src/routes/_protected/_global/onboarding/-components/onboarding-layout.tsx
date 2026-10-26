@@ -1,6 +1,4 @@
-import { AppIcon } from '@pkg/web-core/application';
-import { ScreenLayout } from '@pkg/web-core/template';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@pkg/web-core/ui';
+import { AppIcon, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, ScreenLayout } from '@pkg/web-core/ui';
 import { cn } from '@pkg/web-core/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useRouter } from '@tanstack/react-router';

@@ -1,6 +1,6 @@
 import { ApplicationError } from '@pkg/shared/common';
 import { useHashTab } from '@pkg/web-core/hooks';
-import { PageSection } from '@pkg/web-core/template';
+import { PageSection } from '@pkg/web-core/ui';
 import { cn } from '@pkg/web-core/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';

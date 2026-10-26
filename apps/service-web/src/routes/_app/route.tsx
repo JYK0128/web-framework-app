@@ -1,9 +1,6 @@
 import { ServicePermission } from '@pkg/shared';
-import { BrandLogo, LocaleSwitcher, Navigation, type NavigationItem, ProfileDropdown } from '@pkg/web-core/application';
-import { useI18n } from '@pkg/web-core/context/i18n';
-import { usePermissions } from '@pkg/web-core/permission';
-import { AppLayout as AppLayoutParts } from '@pkg/web-core/template';
-import { Button, buttonVariants, ThemeToggle } from '@pkg/web-core/ui';
+import { useI18n, usePermissions } from '@pkg/web-core/context';
+import { AppLayout as AppLayoutParts, BrandLogo, Button, buttonVariants, LocaleSwitcher, Navigation, type NavigationItem, ProfileDropdown, ThemeToggle } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, Outlet, useLocation, useNavigate, useRouter } from '@tanstack/react-router';
 import { LogIn, Menu } from 'lucide-react';

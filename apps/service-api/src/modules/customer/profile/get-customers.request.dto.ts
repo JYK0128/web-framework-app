@@ -1,6 +1,6 @@
 import type { ObjectQuery } from '@mikro-orm/core';
 import { ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
-import { PageRequestDto } from '@pkg/server-core/http/dto/request';
+import { ApiFiltersProperty, type FilterFieldDefinitions, type Filters, PageRequestDto } from '@pkg/server-core/http/dto/request';
 import { hashWithSecret } from '@pkg/shared/server';
 import { IsIn, IsOptional, IsString } from 'class-validator';
 
@@ -9,6 +9,16 @@ import { env } from '~/env';
 
 @ApiSchema({ name: 'GetCustomersRequest' })
 export class GetCustomersRequestDto extends PageRequestDto<User, 'createdAt' | 'updatedAt'> {
+  @ApiFiltersProperty()
+  override filters: Filters<User> = {};
+
+  protected override get filterFields(): FilterFieldDefinitions<User> {
+    return {
+      createdAt: { type: 'date' },
+      updatedAt: { type: 'date' },
+    };
+  }
+
   @ApiPropertyOptional({ isArray: true, enum: ['createdAt', 'updatedAt'] })
   @IsIn(['createdAt', 'updatedAt'], { each: true })
   override sort: ('createdAt' | 'updatedAt')[] = ['createdAt'];
@@ -19,7 +29,7 @@ export class GetCustomersRequestDto extends PageRequestDto<User, 'createdAt' | '
   override search?: string;
 
   override toFilterQuery(): ObjectQuery<User> {
-    const filters = this.filters.toFilterQuery();
+    const filters = super.toFilterQuery();
     const search = this.search?.trim();
     const email = search?.toLowerCase();
     let searchQuery: ObjectQuery<User> | null = null;
@@ -30,6 +40,6 @@ export class GetCustomersRequestDto extends PageRequestDto<User, 'createdAt' | '
         : nameQuery;
     }
     const conditions = [filters, searchQuery].filter((query): query is ObjectQuery<User> => !!query && Object.keys(query).length > 0);
-    return { $and: conditions };
+    return conditions.length ? { $and: conditions } : {};
   }
 }

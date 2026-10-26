@@ -1,4 +1,4 @@
-import { createSessionRequestHandler } from '@pkg/web-core/runtime';
+import { createSessionRequestHandler } from '@pkg/web-core/runtime/server';
 
 import { serverEnvSchema } from '~/lib/server-env';
 

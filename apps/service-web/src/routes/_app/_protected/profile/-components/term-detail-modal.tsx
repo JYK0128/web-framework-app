@@ -1,5 +1,4 @@
-import { Modal, type ModalComponentProps, openModal } from '@pkg/web-core/modal';
-import { Button, Skeleton } from '@pkg/web-core/ui';
+import { Button, Modal, type ModalComponentProps, openModal, Skeleton } from '@pkg/web-core/ui';
 
 import { useServiceTermsControllerGetTermV1 } from '~/.generated/api/endpoints/service-terms/service-terms';
 import type { ServiceTermAgreementItem } from '~/.generated/api/model';

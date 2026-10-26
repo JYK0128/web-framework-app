@@ -1,6 +1,5 @@
 import { getMaintenanceMessage } from '@pkg/shared/policy';
-import { ScreenLayout } from '@pkg/web-core/template';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@pkg/web-core/ui';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, ScreenLayout } from '@pkg/web-core/ui';
 import { useRouteContext } from '@tanstack/react-router';
 import type { PropsWithChildren } from 'react';
 

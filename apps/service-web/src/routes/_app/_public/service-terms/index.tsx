@@ -1,5 +1,4 @@
-import { PageSection, SectionCard } from '@pkg/web-core/template';
-import { Skeleton } from '@pkg/web-core/ui';
+import { PageSection, SectionCard, Skeleton } from '@pkg/web-core/ui';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { useServiceTermsControllerGetTermsV1 } from '~/.generated/api/endpoints/service-terms/service-terms';

@@ -1,6 +1,4 @@
-import { confirm } from '@pkg/web-core/application';
-import { openModal } from '@pkg/web-core/modal';
-import { Action } from '@pkg/web-core/template';
+import { Action, confirm, openModal } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { BadgeCheck, Ban, CheckCircle2, Eye, FileText, KeyRound, MoreHorizontal } from 'lucide-react';
 

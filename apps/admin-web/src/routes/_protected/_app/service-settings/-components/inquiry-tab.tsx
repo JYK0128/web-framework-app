@@ -1,5 +1,4 @@
-import { FormLayout, useAppForm } from '@pkg/web-core/form';
-import { SectionCard } from '@pkg/web-core/template';
+import { FormLayout, SectionCard, useAppForm } from '@pkg/web-core/ui';
 import { forwardRef, useImperativeHandle } from 'react';
 
 import type { InquiryConfigDto } from '~/.generated/api/model';

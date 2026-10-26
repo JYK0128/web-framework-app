@@ -1,7 +1,5 @@
 import { z } from '@pkg/shared/common';
-import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
-import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
-import { Button, InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@pkg/web-core/ui';
+import { Button, FormLayout, FormSubmit, InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput, Modal, type ModalComponentProps, useAppForm } from '@pkg/web-core/ui';
 import { Copy } from 'lucide-react';
 import { toString as qrToString } from 'qrcode';
 import { useEffect, useState } from 'react';

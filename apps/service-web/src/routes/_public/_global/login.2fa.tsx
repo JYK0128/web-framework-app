@@ -1,9 +1,7 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
-import { useI18n } from '@pkg/web-core/context/i18n';
-import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
-import { ScreenLayout } from '@pkg/web-core/template';
-import { Card, CardContent, Separator } from '@pkg/web-core/ui';
+import { useI18n } from '@pkg/web-core/context';
+import { Card, CardContent, FormLayout, FormSubmit, ScreenLayout, Separator, useAppForm } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, redirect, useLocation, useNavigate } from '@tanstack/react-router';
 import { ArrowRight, ShieldCheck } from 'lucide-react';

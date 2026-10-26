@@ -3,4 +3,5 @@
 @import "../.generated/shadcn/styles.css";
 @import "./custom.css";
 @import "./utilities.css";
+@import "../ui/survey-flow/survey-flow.css";
 @source "..";

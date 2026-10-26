@@ -1,6 +1,4 @@
-import { openModal } from '@pkg/web-core/modal';
-import { ActionCard, SectionCard } from '@pkg/web-core/template';
-import { Button, Checkbox } from '@pkg/web-core/ui';
+import { ActionCard, Button, Checkbox, openModal, SectionCard } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { FileText } from 'lucide-react';
 

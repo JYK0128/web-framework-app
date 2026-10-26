@@ -1,5 +1,4 @@
-import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
-import { Action } from '@pkg/web-core/template';
+import { Action, Modal, type ModalComponentProps } from '@pkg/web-core/ui';
 import { Loader2, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
 

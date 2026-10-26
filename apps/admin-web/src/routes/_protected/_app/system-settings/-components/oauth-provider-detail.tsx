@@ -1,5 +1,4 @@
-import { OAuthProviderIcon } from '@pkg/web-core/application';
-import { SectionCard } from '@pkg/web-core/template';
+import { OAuthProviderIcon, SectionCard } from '@pkg/web-core/ui';
 import { Check, Copy, Globe, ListChecks, Shield, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';

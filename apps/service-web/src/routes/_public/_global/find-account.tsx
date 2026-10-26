@@ -1,9 +1,7 @@
 import { z } from '@pkg/shared/common';
-import { useI18n } from '@pkg/web-core/context/i18n';
-import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
+import { useI18n } from '@pkg/web-core/context';
 import { useHashTab } from '@pkg/web-core/hooks';
-import { ScreenLayout } from '@pkg/web-core/template';
-import { Button, Card, CardContent, Tabs, TabsList, TabsTrigger } from '@pkg/web-core/ui';
+import { Button, Card, CardContent, FormLayout, FormSubmit, ScreenLayout, Tabs, TabsList, TabsTrigger, useAppForm } from '@pkg/web-core/ui';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ArrowRight, Check, CheckCircle2, Copy, Mail, Phone, RefreshCw, Search, Sparkles, User } from 'lucide-react';
 import { useState } from 'react';

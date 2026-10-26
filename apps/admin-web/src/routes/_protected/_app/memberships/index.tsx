@@ -1,6 +1,4 @@
-import { confirm } from '@pkg/web-core/application';
-import { openModal } from '@pkg/web-core/modal';
-import { PageSection, SectionCard } from '@pkg/web-core/template';
+import { confirm, openModal, PageSection, SectionCard } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { Pencil, Plus, ShieldCheck, Trash2 } from 'lucide-react';

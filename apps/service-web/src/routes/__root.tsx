@@ -1,10 +1,7 @@
 import { ApplicationError } from '@pkg/shared/common';
-import { GlobalLoading, RouterError, RouterNotFound, SystemDialog } from '@pkg/web-core/application';
-import { I18nContext, useI18nContextValue } from '@pkg/web-core/context/i18n';
+import { I18nContext, PermissionProvider, useI18nContextValue } from '@pkg/web-core/context';
 import { useHydrationMarker } from '@pkg/web-core/hooks';
-import { ModalContainer } from '@pkg/web-core/modal';
-import { PermissionProvider } from '@pkg/web-core/permission';
-import { ThemeProvider, Toaster } from '@pkg/web-core/ui';
+import { GlobalLoading, ModalContainer, RouterError, RouterNotFound, SystemDialog, ThemeProvider, Toaster } from '@pkg/web-core/ui';
 import type { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts, useLocation, useRouter } from '@tanstack/react-router';
 import type { i18n } from 'i18next';

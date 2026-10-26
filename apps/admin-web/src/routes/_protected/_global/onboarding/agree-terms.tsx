@@ -1,7 +1,5 @@
 import { z } from '@pkg/shared/common';
-import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
-import { openModal } from '@pkg/web-core/modal';
-import { SectionCard } from '@pkg/web-core/template';
+import { FormLayout, FormSubmit, openModal, SectionCard, useAppForm } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { ArrowRight, Check, ChevronRight, Loader2 } from 'lucide-react';

@@ -1,8 +1,6 @@
-import { AppIcon, BrandLogo, LocaleSwitcher, ProfileDropdown } from '@pkg/web-core/application';
-import { useI18n } from '@pkg/web-core/context/i18n';
+import { useI18n } from '@pkg/web-core/context';
 import { useSSE } from '@pkg/web-core/hooks';
-import { AppLayout as AppLayoutParts, LinkCard } from '@pkg/web-core/template';
-import { ThemeToggle } from '@pkg/web-core/ui';
+import { AppIcon, AppLayout as AppLayoutParts, BrandLogo, LinkCard, LocaleSwitcher, ProfileDropdown, ThemeToggle } from '@pkg/web-core/ui';
 import { cn } from '@pkg/web-core/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Outlet, type ToOptions, useLocation, useNavigate, useRouter } from '@tanstack/react-router';

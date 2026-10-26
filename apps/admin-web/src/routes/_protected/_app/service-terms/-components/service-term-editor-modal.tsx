@@ -1,6 +1,5 @@
 import { z } from '@pkg/shared/common';
-import { FormLayout, useAppForm } from '@pkg/web-core/form';
-import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
+import { FormLayout, Modal, type ModalComponentProps, useAppForm } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { getServiceTermsControllerListV1QueryKey, useServiceTermsControllerCreateV1, useServiceTermsControllerUpdateV1 } from '~/.generated/api/endpoints/service-terms/service-terms';

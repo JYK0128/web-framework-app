@@ -1,5 +1,4 @@
-import { AppIcon } from '@pkg/web-core/application';
-import { ScreenLayout } from '@pkg/web-core/template';
+import { AppIcon, ScreenLayout } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useRouter } from '@tanstack/react-router';
 import { Loader2, LogOut } from 'lucide-react';

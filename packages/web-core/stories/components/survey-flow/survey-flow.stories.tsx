@@ -10,12 +10,11 @@ const description = `
 
 미리보기에서는 페이지 구분 노드 기준으로 질문을 묶어 보여주며, 이전 페이지와 다음 페이지로 이동할 수 있습니다.
 
-설문 제목을 편집하고 \`initialFlow\`로 저장된 흐름을 불러옵니다. \`onChange\`는 편집 중 변경을 전달하고 저장 버튼은 제목, 노드와 연결선을 \`onSave\`로 전달합니다. 앱에서 사용할 때는 \`@pkg/web-core/survey-flow\`와 \`@pkg/web-core/survey-flow.css\`를 가져오세요. React Flow 스타일시트는 앱의 Tailwind 스타일 뒤에 포함해야 합니다.
+설문 제목을 편집하고 \`initialFlow\`로 저장된 흐름을 불러옵니다. \`onChange\`는 편집 중 변경을 전달하고 저장 버튼은 제목, 노드와 연결선을 \`onSave\`로 전달합니다. 앱에서 사용할 때는 \`@pkg/web-core/ui\`와 root stylesheet인 \`@pkg/web-core/styles.css\`를 가져오세요.
 
 \`\`\`tsx
 import { useState } from 'react';
-import { initialSurveyFlow, SurveyFlowEditor, type SurveyFlow } from '@pkg/web-core/survey-flow';
-import '@pkg/web-core/survey-flow.css';
+import { initialSurveyFlow, SurveyFlowEditor, type SurveyFlow } from '@pkg/web-core/ui';
 
 function SurveyBuilder() {
   const [flow, setFlow] = useState<SurveyFlow>(initialSurveyFlow);

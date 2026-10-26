@@ -1,6 +1,5 @@
-import { AppIcon } from '@pkg/web-core/application';
-import { useI18n } from '@pkg/web-core/context/i18n';
-import { LinkCard, PageSection, SectionCard } from '@pkg/web-core/template';
+import { useI18n } from '@pkg/web-core/context';
+import { AppIcon, LinkCard, PageSection, SectionCard } from '@pkg/web-core/ui';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_protected/_app/')({ component: AdminDashboard });

@@ -78,7 +78,7 @@ export function DataTablePagination<TData>({ table, rowCount, length = 5, size =
       "
       >
         <span>{t('core.dataGrid.pagination.rowsPerPage')}</span>
-        <Select value={`${pageSize}`} onValueChange={(value) => table.setPageSize(Number(value))}>
+        <Select items={size.map((value) => ({ value: `${value}`, label: `${value}` }))} value={`${pageSize}`} onValueChange={(value) => table.setPageSize(Number(value))}>
           <SelectTrigger className="max-w-20">
             <SelectValue placeholder={t('core.dataGrid.pagination.pageSize')} />
           </SelectTrigger>

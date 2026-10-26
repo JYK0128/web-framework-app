@@ -1,3 +1,4 @@
+export * from './aggregate.request.dto';
 export * from './cursor.request.dto';
 export * from './filterable.request.dto';
 export * from './list.request.dto';

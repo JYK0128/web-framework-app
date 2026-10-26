@@ -3,13 +3,9 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { parseSearchTokens } from '@pkg/shared/common';
 import { IsOptional, IsString } from 'class-validator';
 
-import { FilterableRequestDto } from './filterable.request.dto';
 import { SortableRequestDto, type SortKey } from './sortable.request.dto';
 
 export abstract class SearchableRequestDto<TEntity extends object, TSortKey extends string = SortKey<TEntity>> extends SortableRequestDto<TEntity, TSortKey> {
-  @IsOptional()
-  filters: FilterableRequestDto<TEntity> = new FilterableRequestDto<TEntity>();
-
   @ApiPropertyOptional({ type: 'string' })
   @IsOptional()
   @IsString()
@@ -40,7 +36,7 @@ export abstract class SearchableRequestDto<TEntity extends object, TSortKey exte
   }
 
   override toFilterQuery(): ObjectQuery<TEntity> {
-    const conditions = [this.filters.toFilterQuery(), this.toSearchQuery()].filter((q): q is ObjectQuery<TEntity> => !!q && Object.keys(q).length > 0);
-    return { $and: conditions } as ObjectQuery<TEntity>;
+    const conditions = [super.toFilterQuery(), this.toSearchQuery()].filter((q): q is ObjectQuery<TEntity> => !!q && Object.keys(q).length > 0);
+    return (conditions.length ? { $and: conditions } : {}) as ObjectQuery<TEntity>;
   }
 }

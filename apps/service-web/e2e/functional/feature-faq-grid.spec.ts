@@ -59,7 +59,7 @@ test('FAQ respects column resizing, minimum width and reordered columns', async 
   await page.goto('/faq');
   await expect(page.locator('html')).toHaveAttribute('data-hydrated', 'true');
   const category = page.getByRole('columnheader', { name: /카테고리/ });
-  const handle = page.getByRole('separator', { name: 'category 열 크기 조절' });
+  const handle = page.getByRole('separator', { name: '카테고리 열 크기 조절', exact: true });
   const box = await handle.boundingBox();
   expect(box).not.toBeNull();
   await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);

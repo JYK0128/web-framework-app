@@ -9,9 +9,10 @@ import { Meta } from '@storybook/addon-docs/blocks';
 ## 앱에서 사용하기
 
 ```tsx
-import { Button, Card, CardContent, CardHeader, CardTitle } from '@pkg/web-core/ui';
-import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
-import { DataGrid, useDataGrid } from '@pkg/web-core/data-grid';
+import {
+  Button, Card, CardContent, CardHeader, CardTitle, DataGrid, FormLayout,
+  FormSubmit, useAppForm, useDataGrid,
+} from '@pkg/web-core/ui';
 ```
 
 Tailwind 앱은 스타일 진입점에서 `@pkg/web-core` 소스를 스캔해야 합니다. 이 저장소 앱처럼 `@source "../../../../packages/web-core/src";`를 등록하고 `@pkg/web-core/styles.css`를 불러오세요.

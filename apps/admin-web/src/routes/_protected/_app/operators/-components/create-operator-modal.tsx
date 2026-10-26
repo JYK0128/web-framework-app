@@ -1,8 +1,7 @@
 import { ApplicationError, z } from '@pkg/shared/common';
 import { ADMIN_AUTH_POLICY_CONFIG, assertPasswordPolicy } from '@pkg/shared/policy';
-import { useI18n } from '@pkg/web-core/context/i18n';
-import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
-import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
+import { useI18n } from '@pkg/web-core/context';
+import { FormLayout, FormSubmit, Modal, type ModalComponentProps, useAppForm } from '@pkg/web-core/ui';
 
 import { useOperatorsControllerCreateOperatorV1 } from '~/.generated/api/endpoints/operators/operators';
 import { useRolesControllerGetRolesV1 } from '~/.generated/api/endpoints/roles/roles';

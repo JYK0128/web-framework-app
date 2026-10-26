@@ -5,6 +5,7 @@ export * from './mask-name.decorator';
 export * from './no-store.decorator';
 export * from './permission.decorator';
 export * from './swagger-api-response.decorator';
+export * from './to-array.decorator';
 export * from './to-boolean.decorator';
 export * from './to-lower-case.decorator';
 export * from './to-number.decorator';

@@ -274,16 +274,19 @@ function QuestionNodeSettings({
   onUpdateQuestionType: (questionType: SurveyQuestionType) => void
 }) {
   const options = node.data.options ?? [];
+  const questionTypeOptions = [
+    { value: 'single', label: '단일 선택' },
+    { value: 'multiple', label: '복수 선택' },
+    { value: 'text', label: '주관식' },
+  ];
   return (
     <>
       <label className="grid gap-1.5 text-xs font-medium">
         질문 형식
-        <Select value={node.data.questionType ?? 'single'} onValueChange={(value) => onUpdateQuestionType(value as SurveyQuestionType)}>
+        <Select items={questionTypeOptions} value={node.data.questionType ?? 'single'} onValueChange={(value) => onUpdateQuestionType(value as SurveyQuestionType)}>
           <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="single">단일 선택</SelectItem>
-            <SelectItem value="multiple">복수 선택</SelectItem>
-            <SelectItem value="text">주관식</SelectItem>
+            {questionTypeOptions.map(({ value, label }) => <SelectItem key={value} value={value}>{label}</SelectItem>)}
           </SelectContent>
         </Select>
       </label>

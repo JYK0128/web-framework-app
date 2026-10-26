@@ -1,4 +1,4 @@
-import { Modal, type ModalComponentProps, openModal } from '@pkg/web-core/modal';
+import { Modal, type ModalComponentProps, openModal } from '@pkg/web-core/ui';
 
 import { useTermsControllerGetTermV1 } from '~/.generated/api/endpoints/terms/terms';
 import type { TermAgreementItemDto } from '~/.generated/api/model';

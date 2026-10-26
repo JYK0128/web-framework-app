@@ -1,10 +1,7 @@
 import { DateUtil, z } from '@pkg/shared/common';
 import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
-import { confirm } from '@pkg/web-core/application';
 import { useHashTab } from '@pkg/web-core/hooks';
-import { openModal } from '@pkg/web-core/modal';
-import { ActionCard, PageSection, SectionCard } from '@pkg/web-core/template';
-import { Button, Separator, Tabs, TabsList, TabsTrigger } from '@pkg/web-core/ui';
+import { ActionCard, Button, confirm, openModal, PageSection, SectionCard, Separator, Tabs, TabsList, TabsTrigger } from '@pkg/web-core/ui';
 import * as PortOne from '@portone/browser-sdk/v2';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router';

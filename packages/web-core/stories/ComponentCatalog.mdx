@@ -8,21 +8,14 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 | 영역 | 공개 진입점 | 포함 기능 |
 | --- | --- | --- |
-| 기본 UI | `@pkg/web-core/ui` | 버튼, 카드, 다이얼로그, 메뉴, 입력, 표, 탭, 토스트, 스켈레톤 |
-| 폼 | `@pkg/web-core/form` | `useAppForm`, FormLayout, FormSubmit, 입력 필드(날짜·시간 포함) |
-| 데이터 그리드 | `@pkg/web-core/data-grid` | DataGrid, toolbar, pagination, `useDataGrid` |
-| 설문 흐름 | `@pkg/web-core/survey-flow` | 노드 기반 설문 편집기, 시작·질문·페이지 구분·종료 |
-| 에디터 | `@pkg/web-core/editor` | Editor, EditorViewer |
-| 모달 | `@pkg/web-core/modal` | Modal, ModalContainer, openModal |
-| 템플릿 | `@pkg/web-core/template` | 버튼, 카드, 페이지 섹션, 레이아웃, 앱 셸 |
-| 애플리케이션 UI | `@pkg/web-core/application` | 피드백, 네비게이션, 브랜딩, 쿠키 동의 |
+| 공통 UI 전체 | `@pkg/web-core/ui` | 기본 UI, 폼, 데이터 그리드, 날짜·시간, 설문 흐름, 에디터, 모달, 템플릿, 애플리케이션 UI |
 
 ## 확인·취소 다이얼로그
 
 `Modal`은 헤더, 제목, 설명, 본문, 푸터를 조합하는 커스텀 다이얼로그입니다. 화면에서 열림 상태를 제어하려면 `open`과 `onOpenChange`를 전달하고, 사용자 동작을 기다렸다가 이어서 처리하려면 `openModal`의 Promise 결과를 사용합니다. `openModal`을 쓰는 앱은 앱 루트에 `ModalContainer`를 한 번 마운트합니다. [모달 사용 스토리](/?path=/story/웹코어-모달-modal--usage)에서 두 패턴을 확인할 수 있습니다.
 
 ```tsx
-import { Modal, ModalContainer, openModal } from '@pkg/web-core/modal';
+import { Modal, ModalContainer, openModal, Editor, EditorViewer, initialSurveyFlow, SurveyFlowEditor, type SurveyFlow, ScreenLayout, SideMainLayout } from '@pkg/web-core/ui';
 
 function ConfirmName({ close }: { close: (result: boolean) => void }) {
   return <Modal open><Modal.Content size="sm"><Modal.Header><Modal.Title>이름 확인</Modal.Title><Modal.Description>입력한 이름으로 저장합니다.</Modal.Description></Modal.Header><Modal.Body>저장할까요?</Modal.Body><Modal.Footer><button onClick={() => close(false)}>취소</button><button onClick={() => close(true)}>저장</button></Modal.Footer></Modal.Content></Modal>;
@@ -34,11 +27,9 @@ const saved = await openModal(ConfirmName);
 
 ## 편집기와 보기 전용 콘텐츠
 
-`Editor`는 controlled 컴포넌트입니다. `value`와 `onChange`를 연결하고 `@pkg/web-core/editor/editor.css`를 앱 스타일에서 가져옵니다. 테마와 언어를 읽으므로 `ThemeProvider`와 `I18nContext.Provider` 아래에서 렌더링해야 합니다. 저장된 HTML을 출력할 때는 `EditorViewer`를 사용합니다.
+`Editor`는 controlled 컴포넌트입니다. `value`와 `onChange`를 연결합니다. 에디터 스타일은 컴포넌트에서 함께 가져오므로 앱의 root stylesheet에는 `@pkg/web-core/styles.css`를 포함합니다. 테마와 언어를 읽으므로 `ThemeProvider`와 `I18nContext.Provider` 아래에서 렌더링해야 합니다. 저장된 HTML을 출력할 때는 `EditorViewer`를 사용합니다.
 
 ```tsx
-import { Editor, EditorViewer } from '@pkg/web-core/editor';
-import '@pkg/web-core/editor/editor.css';
 
 <Editor value={html} onChange={setHtml} label="본문" />
 <EditorViewer content={html} />
@@ -46,11 +37,9 @@ import '@pkg/web-core/editor/editor.css';
 
 ## 설문 흐름 편집기
 
-`SurveyFlowEditor`에서 노드를 추가하고 연결해 설문 경로를 구성합니다. 선택형 질문은 선택지별로 다음 질문을 직접 연결하고, 미리보기는 응답한 선택지에 연결된 경로를 따라갑니다. 페이지 구분 노드 앞까지의 질문이 한 페이지에 모이고 노드 다음부터 다음 페이지가 시작됩니다. 설문 제목은 편집할 수 있으며 `initialFlow`로 저장된 흐름을 불러오고 `onChange`로 편집 결과를 받습니다. 저장 버튼은 흐름 검증을 통과하면 제목, 노드와 연결선을 `onSave`로 전달합니다. 앱 스타일에서 `@pkg/web-core/survey-flow.css`를 Tailwind 뒤에 포함해야 React Flow 캔버스 컨트롤이 표시됩니다. [설문 흐름 스토리](/?path=/story/웹코어-설문-흐름-surveyflow--survey-flow)에서 전체 편집 예시를 확인할 수 있습니다.
+`SurveyFlowEditor`에서 노드를 추가하고 연결해 설문 경로를 구성합니다. 선택형 질문은 선택지별로 다음 질문을 직접 연결하고, 미리보기는 응답한 선택지에 연결된 경로를 따라갑니다. 페이지 구분 노드 앞까지의 질문이 한 페이지에 모이고 노드 다음부터 다음 페이지가 시작됩니다. 설문 제목은 편집할 수 있으며 `initialFlow`로 저장된 흐름을 불러오고 `onChange`로 편집 결과를 받습니다. 저장 버튼은 흐름 검증을 통과하면 제목, 노드와 연결선을 `onSave`로 전달합니다. React Flow 스타일은 앱 root stylesheet인 `@pkg/web-core/styles.css`에 포함됩니다. [설문 흐름 스토리](/?path=/story/웹코어-설문-흐름-surveyflow--survey-flow)에서 전체 편집 예시를 확인할 수 있습니다.
 
 ```tsx
-import { initialSurveyFlow, SurveyFlowEditor, type SurveyFlow } from '@pkg/web-core/survey-flow';
-import '@pkg/web-core/survey-flow.css';
 
 <SurveyFlowEditor initialFlow={initialSurveyFlow} onChange={(flow: SurveyFlow) => updateDraft(flow)} onSave={saveDraft} />
 ```
@@ -64,7 +53,6 @@ import '@pkg/web-core/survey-flow.css';
 ## 레이아웃 조합
 
 ```tsx
-import { ScreenLayout, SideMainLayout } from '@pkg/web-core/template';
 
 <ScreenLayout.Root>
   <ScreenLayout.Content size="lg">

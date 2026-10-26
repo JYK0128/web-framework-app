@@ -1,5 +1,5 @@
 import type { CreateI18nOptions } from '@pkg/shared/common';
-import { localeResources } from '@pkg/web-core/i18n/resource';
+import { localeResources } from '@pkg/web-core/i18n';
 
 import en from '~/i18n/resource/en';
 import ko from '~/i18n/resource/ko';

@@ -1,7 +1,4 @@
-import { DataGrid, DataGridToolbar, useDataGrid } from '@pkg/web-core/data-grid';
-import { EditorViewer } from '@pkg/web-core/editor';
-import { PageSection, SectionCard } from '@pkg/web-core/template';
-import { Skeleton } from '@pkg/web-core/ui';
+import { DataGrid, DataGridToolbar, EditorViewer, PageSection, SectionCard, Skeleton, useDataGrid } from '@pkg/web-core/ui';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';

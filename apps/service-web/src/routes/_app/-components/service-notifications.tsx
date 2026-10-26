@@ -1,6 +1,6 @@
-import { Notification, type NotificationItem } from '@pkg/web-core/application';
-import { useI18n } from '@pkg/web-core/context/i18n';
+import { useI18n } from '@pkg/web-core/context';
 import { useSSE } from '@pkg/web-core/hooks';
+import { Notification, type NotificationItem } from '@pkg/web-core/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 

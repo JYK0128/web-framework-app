@@ -1,9 +1,7 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { assertPasswordPolicy, SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
-import { useI18n } from '@pkg/web-core/context/i18n';
-import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
-import { ScreenLayout } from '@pkg/web-core/template';
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@pkg/web-core/ui';
+import { useI18n } from '@pkg/web-core/context';
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, FormLayout, FormSubmit, ScreenLayout, useAppForm } from '@pkg/web-core/ui';
 import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { useAuthControllerRegisterV1, useAuthControllerRequestEmailVerificationV1 } from '~/.generated/api/endpoints/auth/auth';

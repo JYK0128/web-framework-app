@@ -1,6 +1,6 @@
 import { z } from '@pkg/shared/common';
-import { useI18n } from '@pkg/web-core/context/i18n';
-import { ScreenLayout } from '@pkg/web-core/template';
+import { useI18n } from '@pkg/web-core/context';
+import { ScreenLayout } from '@pkg/web-core/ui';
 import { createFileRoute, Link, notFound } from '@tanstack/react-router';
 import { ShieldCheck } from 'lucide-react';
 

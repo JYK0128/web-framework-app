@@ -1,11 +1,10 @@
 import { Clock3Icon } from 'lucide-react';
 import { type CSSProperties, useState } from 'react';
 
+import { Popover, PopoverContent, PopoverTrigger } from '#.generated/shadcn/components/ui/popover';
 import { cn } from '#.generated/shadcn/lib/utils';
 import { useI18n } from '#context/i18n';
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#ui';
-
-import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
 const hours = Array.from({ length: 24 }, (_, index) => String(index).padStart(2, '0'));
 const minutes = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55'];
@@ -43,12 +42,12 @@ export function TimePicker({ value, onChange, placeholder: placeholderProp, disa
       </PopoverTrigger>
       <PopoverContent className="w-auto p-3">
         <div className="flex items-center gap-2">
-          <Select value={hour} onValueChange={(next) => update(next ?? '', minute)} disabled={disabled}>
+          <Select items={hours.map((item) => ({ value: item, label: item }))} value={hour} onValueChange={(next) => update(next ?? '', minute)} disabled={disabled}>
             <SelectTrigger className="w-20"><SelectValue /></SelectTrigger>
             <SelectContent>{hours.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent>
           </Select>
           <span>:</span>
-          <Select value={minute} onValueChange={(next) => update(hour, next ?? '')} disabled={disabled}>
+          <Select items={minutes.map((item) => ({ value: item, label: item }))} value={minute} onValueChange={(next) => update(hour, next ?? '')} disabled={disabled}>
             <SelectTrigger className="w-20"><SelectValue /></SelectTrigger>
             <SelectContent>{minutes.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent>
           </Select>

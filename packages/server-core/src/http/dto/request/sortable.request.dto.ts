@@ -3,6 +3,7 @@ import { defineEnum } from '@pkg/shared/common';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 import { ApiEnumOptional } from '../../decorators/api-enum.decorator';
+import { ToArray } from '../../decorators/to-array.decorator';
 import { FilterableRequestDto } from './filterable.request.dto';
 
 export const SortDirection = defineEnum('SortDirection', {
@@ -14,11 +15,13 @@ export type SortKey<TEntity extends object> = Extract<keyof TEntity, string>;
 export abstract class SortableRequestDto<TEntity extends object, TSortKey extends string = SortKey<TEntity>> extends FilterableRequestDto<TEntity> {
   @ApiPropertyOptional({ isArray: true })
   @IsOptional()
+  @ToArray()
   @IsString({ each: true })
   sort: TSortKey[] = ['createdAt' as TSortKey];
 
   @ApiEnumOptional({ isArray: true, enum: SortDirection })
   @IsOptional()
+  @ToArray()
   @IsEnum(SortDirection, { each: true })
   direction: SortDirection[] = [SortDirection.DESC];
 

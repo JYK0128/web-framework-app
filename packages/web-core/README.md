@@ -11,13 +11,13 @@ import는 공통 lint 규칙에 따라 허용합니다.
 ## 공개 진입점
 
 ```tsx
-import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
-import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '@pkg/web-core/data-grid';
-import { DatePicker, DatetimePicker, TimePicker } from '@pkg/web-core/date-time';
-import { Editor, EditorViewer } from '@pkg/web-core/editor';
-import { I18nContext, useI18n } from '@pkg/web-core/context/i18n';
-import { Modal, ModalContainer, openModal } from '@pkg/web-core/modal';
-import { Button, Card, Dialog, DropdownMenu, Skeleton, Spinner, Tabs, Toaster } from '@pkg/web-core/ui';
+import {
+  Button, Card, DataGrid, DataGridToolbar, DataTablePagination, DatePicker,
+  DatetimePicker, Dialog, DropdownMenu, Editor, EditorViewer, FormLayout,
+  FormSubmit, Modal, ModalContainer, Skeleton, Spinner, Tabs, TimePicker,
+  Toaster, openModal, useAppForm, useDataGrid,
+} from '@pkg/web-core/ui';
+import { I18nContext, useI18n } from '@pkg/web-core/context';
 ```
 
 ## Storybook

@@ -4,98 +4,17 @@
   "private": true,
   "type": "module",
   "imports": {
-    "#*": [
-      "./src/*.ts",
-      "./src/*.tsx",
-      "./src/*/index.ts",
-      "./src/*/index.tsx"
-    ]
+    "#*": "./src/*/index.ts"
   },
   "exports": {
-    "./application": {
-      "types": "./src/ui/application/index.ts",
-      "default": "./src/ui/application/index.ts"
-    },
-    "./chart": {
-      "types": "./src/ui/chart/index.ts",
-      "default": "./src/ui/chart/index.ts"
-    },
-    "./context/i18n": {
-      "types": "./src/context/i18n/index.ts",
-      "default": "./src/context/i18n/index.ts"
-    },
-    "./data-grid": {
-      "types": "./src/ui/data-grid/index.ts",
-      "default": "./src/ui/data-grid/index.ts"
-    },
-    "./date-time": {
-      "types": "./src/ui/date-time/index.ts",
-      "default": "./src/ui/date-time/index.ts"
-    },
-    "./editor": {
-      "types": "./src/ui/editor/index.ts",
-      "default": "./src/ui/editor/index.ts"
-    },
-    "./editor/editor.css": {
-      "types": "./src/ui/editor/editor.css",
-      "default": "./src/ui/editor/editor.css"
-    },
-    "./form": {
-      "types": "./src/ui/form/index.ts",
-      "default": "./src/ui/form/index.ts"
-    },
-    "./hooks": {
-      "types": "./src/hooks/index.ts",
-      "default": "./src/hooks/index.ts"
-    },
-    "./i18n": {
-      "types": "./src/i18n/index.ts",
-      "default": "./src/i18n/index.ts"
-    },
-    "./i18n/resource": {
-      "types": "./src/i18n/resource/index.ts",
-      "default": "./src/i18n/resource/index.ts"
-    },
-    "./modal": {
-      "types": "./src/ui/modal/index.ts",
-      "default": "./src/ui/modal/index.ts"
-    },
-    "./permission": {
-      "types": "./src/context/permission/index.ts",
-      "default": "./src/context/permission/index.ts"
-    },
-    "./runtime": {
-      "types": "./src/runtime/index.ts",
-      "default": "./src/runtime/index.ts"
-    },
-    "./slot": {
-      "types": "./src/ui/slot/index.ts",
-      "default": "./src/ui/slot/index.ts"
-    },
-    "./styles.css": {
-      "types": "./src/styles/index.css",
-      "default": "./src/styles/index.css"
-    },
-    "./survey-flow": {
-      "types": "./src/ui/survey-flow/index.ts",
-      "default": "./src/ui/survey-flow/index.ts"
-    },
-    "./survey-flow.css": {
-      "types": "./src/ui/survey-flow/survey-flow.css",
-      "default": "./src/ui/survey-flow/survey-flow.css"
-    },
-    "./template": {
-      "types": "./src/ui/template/index.ts",
-      "default": "./src/ui/template/index.ts"
-    },
-    "./ui": {
-      "types": "./src/ui/index.ts",
-      "default": "./src/ui/index.ts"
-    },
-    "./utils": {
-      "types": "./src/utils/index.ts",
-      "default": "./src/utils/index.ts"
-    }
+    "./context": "./src/context/index.ts",
+    "./hooks": "./src/hooks/index.ts",
+    "./i18n": "./src/i18n/index.ts",
+    "./runtime/browser": "./src/runtime/browser/index.ts",
+    "./runtime/server": "./src/runtime/server/index.ts",
+    "./styles.css": "./src/styles/index.css",
+    "./ui": "./src/ui/index.ts",
+    "./utils": "./src/utils/index.ts"
   },
   "scripts": {
     "storybook": "storybook dev -p 6006",

@@ -1,5 +1,4 @@
-import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
-import { Button } from '@pkg/web-core/ui';
+import { Button, Modal, type ModalComponentProps } from '@pkg/web-core/ui';
 
 import type { ServiceTermAgreementItem } from '~/.generated/api/model';
 

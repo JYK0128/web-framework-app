@@ -1,17 +1,18 @@
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { useState } from 'react';
+import { enUS, ko } from 'react-day-picker/locale';
 
+import { Calendar } from '#.generated/shadcn/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '#.generated/shadcn/components/ui/popover';
 import { cn } from '#.generated/shadcn/lib/utils';
 import { useI18n } from '#context/i18n';
 import { Button } from '#ui';
 
-import { Calendar } from './calendar';
-import { Popover, PopoverContent, PopoverTrigger } from './popover';
-
 export function DatePicker({ value, onChange, placeholder: placeholderProp, disabled, id, className, onBlur }: { value?: string, onChange: (value: string | undefined) => void, placeholder?: string, disabled?: boolean, id?: string, className?: string, onBlur?: () => void }) {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const placeholder = placeholderProp ?? t('core.form.datePlaceholder');
+  const calendarLocale = language.split('-')[0] === 'ko' ? ko : enUS;
   const [open, setOpen] = useState(false);
   const selected = value ? new Date(`${value}T00:00:00`) : undefined;
   return (
@@ -44,6 +45,7 @@ export function DatePicker({ value, onChange, placeholder: placeholderProp, disa
       <PopoverContent className="w-auto p-2">
         <Calendar
           mode="single"
+          locale={calendarLocale}
           selected={selected}
           onSelect={(date) => {
             onChange(date ? format(date, 'yyyy-MM-dd') : undefined);

@@ -1,7 +1,5 @@
 import { DateUtil } from '@pkg/shared/common';
-import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
-import { SectionCard } from '@pkg/web-core/template';
-import { Button, Skeleton } from '@pkg/web-core/ui';
+import { Button, Modal, type ModalComponentProps, SectionCard, Skeleton } from '@pkg/web-core/ui';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { getServiceTermsControllerGetRevisionsV1QueryKey, serviceTermsControllerGetRevisionsV1 } from '~/.generated/api/endpoints/service-terms/service-terms';

@@ -1,5 +1,5 @@
 import { getOperationNotice } from '@pkg/shared/policy';
-import { NoticeBanner } from '@pkg/web-core/application';
+import { NoticeBanner } from '@pkg/web-core/ui';
 import { useEffect, useState } from 'react';
 
 import { SYSTEM_CONFIG_REFRESH_INTERVAL_MS } from '~/app.config';

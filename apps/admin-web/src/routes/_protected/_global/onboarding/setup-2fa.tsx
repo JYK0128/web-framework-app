@@ -1,5 +1,5 @@
 import { z } from '@pkg/shared/common';
-import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
+import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { Copy } from 'lucide-react';

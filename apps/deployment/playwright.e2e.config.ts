@@ -31,14 +31,14 @@ export default defineConfig({
   globalSetup: './playwright.e2e.setup.ts',
   globalTeardown: './playwright.e2e.teardown.ts',
   projects: [
-    browserProject('admin-auth', '../admin-web/e2e', adminWebURL, 'workflow-auth.spec.ts'),
+    browserProject('admin-auth', '../admin-web/e2e/auth', adminWebURL),
     {
-      ...browserProject('admin', '../admin-web/e2e', adminWebURL, ['action-auth-redirect.spec.ts', 'workflow-content.spec.ts', 'workflow-faq.spec.ts', 'feature-routes.spec.ts', 'workflow-access-management.spec.ts']),
+      ...browserProject('admin-functional', '../admin-web/e2e/functional', adminWebURL),
       dependencies: ['admin-auth'],
     },
-    browserProject('service-auth', '../service-web/e2e', serviceWebURL, ['feature-auth-forms.spec.ts', 'workflow-auth.spec.ts', 'feature-routes.spec.ts']),
+    browserProject('service-auth', '../service-web/e2e/auth', serviceWebURL),
     {
-      ...browserProject('service', '../service-web/e2e', serviceWebURL, ['feature-faq-grid.spec.ts', 'action-auth-redirect.spec.ts', 'action-faq-qna-auth.spec.ts', 'action-navigation.spec.ts', 'workflow-qna.spec.ts', 'workflow-support.spec.ts']),
+      ...browserProject('service-functional', '../service-web/e2e/functional', serviceWebURL),
       dependencies: ['service-auth'],
     },
   ],

@@ -1,5 +1,4 @@
-import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '@pkg/web-core/data-grid';
-import { PageSection, SectionCard, StatsCard } from '@pkg/web-core/template';
+import { DataGrid, DataGridToolbar, DataTablePagination, PageSection, SectionCard, StatsCard, useDataGrid } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { type ColumnFiltersState, createColumnHelper, type SortingState } from '@tanstack/react-table';

@@ -1,6 +1,5 @@
 import { z } from '@pkg/shared/common';
-import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
-import { SectionCard } from '@pkg/web-core/template';
+import { FormLayout, FormSubmit, SectionCard, useAppForm } from '@pkg/web-core/ui';
 import { useMutation } from '@tanstack/react-query';
 import { Send } from 'lucide-react';
 

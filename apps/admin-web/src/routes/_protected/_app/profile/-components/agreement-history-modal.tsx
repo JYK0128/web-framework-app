@@ -1,4 +1,4 @@
-import { Modal, type ModalComponentProps } from '@pkg/web-core/modal';
+import { Modal, type ModalComponentProps } from '@pkg/web-core/ui';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 

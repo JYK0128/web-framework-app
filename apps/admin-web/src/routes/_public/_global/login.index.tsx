@@ -1,8 +1,7 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
-import { useI18n } from '@pkg/web-core/context/i18n';
-import { FormLayout, FormSubmit, useAppForm } from '@pkg/web-core/form';
-import { ScreenLayout } from '@pkg/web-core/template';
+import { useI18n } from '@pkg/web-core/context';
+import { FormLayout, FormSubmit, ScreenLayout, useAppForm } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router';
 

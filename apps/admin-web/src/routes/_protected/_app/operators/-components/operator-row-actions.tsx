@@ -1,6 +1,5 @@
-import { confirm } from '@pkg/web-core/application';
-import { createCachePatcher } from '@pkg/web-core/runtime';
-import { Action } from '@pkg/web-core/template';
+import { createCachePatcher } from '@pkg/web-core/runtime/browser';
+import { Action, confirm } from '@pkg/web-core/ui';
 import { type QueryClient, useQueryClient } from '@tanstack/react-query';
 import { Eye, MoreHorizontal } from 'lucide-react';
 

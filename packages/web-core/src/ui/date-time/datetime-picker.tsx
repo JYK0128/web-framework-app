@@ -1,20 +1,21 @@
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { type CSSProperties, useState } from 'react';
+import { enUS, ko } from 'react-day-picker/locale';
 
+import { Calendar } from '#.generated/shadcn/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '#.generated/shadcn/components/ui/popover';
 import { cn } from '#.generated/shadcn/lib/utils';
 import { useI18n } from '#context/i18n';
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#ui';
-
-import { Calendar } from './calendar';
-import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
 const hours = Array.from({ length: 24 }, (_, index) => String(index).padStart(2, '0'));
 const minutes = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55'];
 
 export function DatetimePicker({ value, onChange, placeholder: placeholderProp, disabled, id, className, style, onBlur }: { value?: string, onChange: (value: string | undefined) => void, placeholder?: string, disabled?: boolean, id?: string, className?: string, style?: CSSProperties, onBlur?: () => void }) {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const placeholder = placeholderProp ?? t('core.form.dateTimePlaceholder');
+  const calendarLocale = language.split('-')[0] === 'ko' ? ko : enUS;
   const [open, setOpen] = useState(false);
   const selected = value ? new Date(value) : undefined;
   const validDate = selected && !Number.isNaN(selected.getTime()) ? selected : undefined;
@@ -59,14 +60,14 @@ export function DatetimePicker({ value, onChange, placeholder: placeholderProp, 
         <CalendarIcon className="size-4" />
       </PopoverTrigger>
       <PopoverContent className="w-auto p-2">
-        <Calendar mode="single" selected={validDate} onSelect={(date) => update(date)} />
+        <Calendar mode="single" locale={calendarLocale} selected={validDate} onSelect={(date) => update(date)} />
         <div className="flex items-center gap-2 border-t p-3">
-          <Select value={hour} onValueChange={(next) => update(validDate ?? new Date(), next ?? hour, minute)} disabled={disabled}>
+          <Select items={hours.map((item) => ({ value: item, label: item }))} value={hour} onValueChange={(next) => update(validDate ?? new Date(), next ?? hour, minute)} disabled={disabled}>
             <SelectTrigger className="w-20"><SelectValue /></SelectTrigger>
             <SelectContent>{hours.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent>
           </Select>
           <span>:</span>
-          <Select value={minute} onValueChange={(next) => update(validDate ?? new Date(), hour, next ?? minute)} disabled={disabled}>
+          <Select items={minutes.map((item) => ({ value: item, label: item }))} value={minute} onValueChange={(next) => update(validDate ?? new Date(), hour, next ?? minute)} disabled={disabled}>
             <SelectTrigger className="w-20"><SelectValue /></SelectTrigger>
             <SelectContent>{minutes.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent>
           </Select>

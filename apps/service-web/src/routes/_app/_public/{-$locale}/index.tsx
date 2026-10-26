@@ -1,5 +1,5 @@
 import { PreviewCard } from '@base-ui/react/preview-card';
-import { useI18n } from '@pkg/web-core/context/i18n';
+import { useI18n } from '@pkg/web-core/context';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ArrowDown, ArrowRight, ArrowUpRight, Bot, Boxes, Check, Copy, Layers3, Orbit, Workflow } from 'lucide-react';
 import { useState } from 'react';
