@@ -1,10 +1,10 @@
 import { raw } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { PrincipalContext } from '@pkg/server-core/http/contexts';
 
 import { Term, UserTermAgreement } from '~/core/database/entities/terms';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { GetAgreementsQuery } from '~/modules/term/agreement/get-agreements.query';
 import { GetAgreementsResponseDto } from '~/modules/term/agreement/get-agreements.response.dto';
 import { TermAgreementItemDto } from '~/modules/term/agreement/term-agreement-item.dto';

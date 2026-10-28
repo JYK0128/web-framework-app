@@ -553,26 +553,6 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
-        "status": {
-          "name": "status",
-          "type": "text",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": "'draft'",
-          "comment": null,
-          "collation": null,
-          "enumItems": [
-            "draft",
-            "published"
-          ],
-          "mappedType": "enum"
-        },
         "title": {
           "name": "title",
           "type": "varchar(255)",
@@ -638,15 +618,14 @@
         },
         {
           "columnNames": [
-            "status",
-            "startsAt"
+            "publishedAt"
           ],
-          "composite": true,
+          "composite": false,
           "constraint": false,
-          "keyName": "event_status_startsAt_index",
+          "keyName": "event_publishedAt_index",
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX \"event_status_startsAt_index\" ON public.event USING btree (status, \"startsAt\")"
+          "expression": "CREATE INDEX \"event_publishedAt_index\" ON public.event USING btree (\"publishedAt\")"
         }
       ],
       "checks": [
@@ -655,12 +634,6 @@
           "expression": "\"endsAt\" > \"startsAt\"",
           "definition": "CHECK ((\"endsAt\" > \"startsAt\"))",
           "columnName": "endsAt"
-        },
-        {
-          "name": "event_status_check",
-          "expression": "\"status\" in ('draft', 'published')",
-          "definition": "check (\"status\" in ('draft', 'published'))",
-          "columnName": "status"
         }
       ],
       "triggers": [],
@@ -703,9 +676,9 @@
           "comment": null,
           "collation": null,
           "enumItems": [
-            "\uacc4\uc815",
-            "\uc11c\ube44\uc2a4 \uc774\uc6a9",
-            "\uac80\uc99d"
+            "계정",
+            "서비스 이용",
+            "검증"
           ],
           "mappedType": "enum"
         },
@@ -912,8 +885,8 @@
       "checks": [
         {
           "name": "faq_category_check",
-          "expression": "\"category\" in ('\uacc4\uc815', '\uc11c\ube44\uc2a4 \uc774\uc6a9', '\uac80\uc99d')",
-          "definition": "check (\"category\" in ('\uacc4\uc815', '\uc11c\ube44\uc2a4 \uc774\uc6a9', '\uac80\uc99d'))",
+          "expression": "\"category\" in ('계정', '서비스 이용', '검증')",
+          "definition": "check (\"category\" in ('계정', '서비스 이용', '검증'))",
           "columnName": "category"
         }
       ],
@@ -1473,26 +1446,6 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
-        "status": {
-          "name": "status",
-          "type": "text",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": "'draft'",
-          "comment": null,
-          "collation": null,
-          "enumItems": [
-            "draft",
-            "published"
-          ],
-          "mappedType": "enum"
-        },
         "title": {
           "name": "title",
           "type": "varchar(255)",
@@ -1558,15 +1511,14 @@
         },
         {
           "columnNames": [
-            "status",
             "publishedAt"
           ],
-          "composite": true,
+          "composite": false,
           "constraint": false,
-          "keyName": "notice_status_publishedAt_index",
+          "keyName": "notice_publishedAt_index",
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX \"notice_status_publishedAt_index\" ON public.notice USING btree (status, \"publishedAt\")"
+          "expression": "CREATE INDEX \"notice_publishedAt_index\" ON public.notice USING btree (\"publishedAt\")"
         }
       ],
       "checks": [
@@ -1575,12 +1527,6 @@
           "expression": "\"importance\" in ('normal', 'important', 'urgent')",
           "definition": "check (\"importance\" in ('normal', 'important', 'urgent'))",
           "columnName": "importance"
-        },
-        {
-          "name": "notice_status_check",
-          "expression": "\"status\" in ('draft', 'published')",
-          "definition": "check (\"status\" in ('draft', 'published'))",
-          "columnName": "status"
         }
       ],
       "triggers": [],
@@ -2237,9 +2183,9 @@
           "comment": null,
           "collation": null,
           "enumItems": [
-            "\uacc4\uc815",
-            "\uc11c\ube44\uc2a4 \uc774\uc6a9",
-            "\uac80\uc99d"
+            "계정",
+            "서비스 이용",
+            "검증"
           ],
           "mappedType": "enum"
         },
@@ -2480,8 +2426,8 @@
       "checks": [
         {
           "name": "qna_category_check",
-          "expression": "\"category\" in ('\uacc4\uc815', '\uc11c\ube44\uc2a4 \uc774\uc6a9', '\uac80\uc99d')",
-          "definition": "check (\"category\" in ('\uacc4\uc815', '\uc11c\ube44\uc2a4 \uc774\uc6a9', '\uac80\uc99d'))",
+          "expression": "\"category\" in ('계정', '서비스 이용', '검증')",
+          "definition": "check (\"category\" in ('계정', '서비스 이용', '검증'))",
           "columnName": "category"
         }
       ],
@@ -3722,7 +3668,6 @@
             "operation",
             "maintenance",
             "inquiry",
-            "webhook",
             "notification",
             "oauth"
           ],
@@ -3934,8 +3879,8 @@
       "checks": [
         {
           "name": "system_config_code_check",
-          "expression": "\"code\" in ('operation', 'maintenance', 'inquiry', 'webhook', 'notification', 'oauth')",
-          "definition": "check (\"code\" in ('operation', 'maintenance', 'inquiry', 'webhook', 'notification', 'oauth'))",
+          "expression": "\"code\" in ('operation', 'maintenance', 'inquiry', 'notification', 'oauth')",
+          "definition": "check (\"code\" in ('operation', 'maintenance', 'inquiry', 'notification', 'oauth'))",
           "columnName": "code"
         }
       ],
@@ -4141,7 +4086,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "unique": false,
+          "unique": true,
           "length": 255,
           "precision": null,
           "scale": null,
@@ -4213,7 +4158,8 @@
           "constraint": true,
           "keyName": "service_term_group_version_unique",
           "primary": false,
-          "unique": true
+          "unique": true,
+          "expression": "CREATE UNIQUE INDEX service_term_group_version_unique ON public.term USING btree (\"termGroup\", version)"
         },
         {
           "columnNames": [

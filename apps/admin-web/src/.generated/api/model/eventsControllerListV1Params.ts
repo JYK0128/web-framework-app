@@ -8,9 +8,12 @@
 import type { SortDirection } from './sortDirection';
 
 export type EventsControllerListV1Params = {
+search?: string;
+/**
+ * Allowed fields: startsAt, createdAt
+ */
 sort?: string[];
 direction?: SortDirection[];
-search?: string;
 page?: number;
 limit?: number;
 };

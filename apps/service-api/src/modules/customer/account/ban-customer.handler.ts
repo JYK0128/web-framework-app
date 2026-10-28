@@ -1,9 +1,9 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { type IUserAuthService, USER_AUTH_SERVICE } from '@pkg/server-core/auth';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { BanCustomerCommand } from '~/modules/customer/account/ban-customer.command';
 import { BanCustomerResponseDto } from '~/modules/customer/account/ban-customer.response.dto';
 import { findCustomer } from '~/modules/customer/customer.helper';

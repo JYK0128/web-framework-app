@@ -1,8 +1,8 @@
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { PrincipalContext } from '@pkg/server-core/http/contexts';
 
 import { SupportRoom } from '~/core/database/entities/support';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { GetOwnSupportRoomsQuery } from '~/modules/support/room/get-own-support-rooms.query';
 import { GetSupportRoomsCursorResponseDto } from '~/modules/support/room/get-support-rooms-cursor.response.dto';
 import { SupportRoomItemDto } from '~/modules/support/room/support-room-item.dto';
@@ -12,13 +12,17 @@ export class GetOwnSupportRoomsHandler implements IQueryHandler<GetOwnSupportRoo
   constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext) {}
   async execute({ input }: GetOwnSupportRoomsQuery): Promise<GetSupportRoomsCursorResponseDto> {
     const user = this.principal.ensureUser();
+    const { where, ...options } = input.toQuery();
     const result = await this.em.findByCursor(SupportRoom, {
+      ...options,
       where: {
-        user: user.id,
-        ...(input.status ? { status: input.status } : {}),
-        ...(input.search ? { title: { $ilike: `%${input.search}%` } } : {}),
+        $and: [where,
+          {
+            user: user.id,
+            ...(input.status ? { status: input.status } : {}),
+            ...(input.search ? { title: { $ilike: `%${input.search}%` } } : {}),
+          }],
       },
-      ...input.toCursorOptions(),
       populate: ['user.profile', 'assignee.profile'],
     });
     return GetSupportRoomsCursorResponseDto.parse({

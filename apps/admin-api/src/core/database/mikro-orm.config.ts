@@ -4,8 +4,8 @@ import { EntityCaseNamingStrategy } from '@mikro-orm/core';
 import { Migrator } from '@mikro-orm/migrations';
 import { defineConfig, PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { SeedManager } from '@mikro-orm/seeder';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { entities } from '~/entities.generated';
 import { env } from '~/env';
 

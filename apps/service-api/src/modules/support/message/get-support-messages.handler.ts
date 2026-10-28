@@ -1,8 +1,8 @@
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { PrincipalContext } from '@pkg/server-core/http/contexts';
 
 import { SupportMessage } from '~/core/database/entities/support';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { GetSupportMessagesQuery } from '~/modules/support/message/get-support-messages.query';
 import { GetSupportMessagesResponseDto } from '~/modules/support/message/get-support-messages.response.dto';
 import { SupportMessageItemDto } from '~/modules/support/message/support-message-item.dto';

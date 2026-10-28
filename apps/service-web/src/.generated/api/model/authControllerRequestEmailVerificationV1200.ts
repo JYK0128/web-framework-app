@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { AuthControllerRequestEmailVerificationV1200Meta } from './authControllerRequestEmailVerificationV1200Meta';
-import type { RequestEmailVerificationResponseDto } from './requestEmailVerificationResponseDto';
+import type { EmailVerificationRequestResponseDto } from './emailVerificationRequestResponseDto';
 
 export type AuthControllerRequestEmailVerificationV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type AuthControllerRequestEmailVerificationV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: RequestEmailVerificationResponseDto;
+  data: EmailVerificationRequestResponseDto;
   message?: string;
   meta?: AuthControllerRequestEmailVerificationV1200Meta;
 };

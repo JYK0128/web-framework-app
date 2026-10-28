@@ -1,4 +1,5 @@
 import { CommandHandler, EventBus, type ICommandHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { EventBroker } from '@pkg/server-core/event-broker';
 import { AdminQnaCreatedEvent } from '@pkg/server-core/event-broker/events';
 import { PrincipalContext } from '@pkg/server-core/http/contexts';
@@ -6,7 +7,6 @@ import { QnaPriority, QnaStatus } from '@pkg/shared/constants';
 
 import { User } from '~/core/database/entities/auth';
 import { Qna } from '~/core/database/entities/qna';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { CreateOwnQnaCommand } from '~/modules/qna/create-own-qna.command';
 import { CreateQnaResponseDto } from '~/modules/qna/create-qna.response.dto';
 import { QnaCreatedEvent } from '~/modules/qna/qna-created.event';

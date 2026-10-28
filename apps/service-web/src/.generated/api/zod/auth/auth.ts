@@ -200,8 +200,12 @@ export const AuthControllerVerifyEmailV1Response = zod.object({
 /**
  * @summary PortOne 전화번호 인증 결과 검증 및 계정에 반영
  */
+export const authControllerVerifyPhoneNumberV1BodyIdentityVerificationIdMax = 200;
+
+
+
 export const AuthControllerVerifyPhoneNumberV1Body = zod.object({
-  "identityVerificationId": zod.string().describe('PortOne verification transaction ID')
+  "identityVerificationId": zod.string().max(authControllerVerifyPhoneNumberV1BodyIdentityVerificationIdMax)
 })
 
 export const AuthControllerVerifyPhoneNumberV1Response = zod.object({
@@ -463,4 +467,3 @@ export const OAuthControllerCallbackV1Response = zod.object({
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
-

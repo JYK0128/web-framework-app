@@ -10,9 +10,12 @@ import type { LogsControllerGetLogsV1Status } from './logsControllerGetLogsV1Sta
 import type { SortDirection } from './sortDirection';
 
 export type LogsControllerGetLogsV1Params = {
+search?: string;
+/**
+ * Allowed fields: createdAt, level, method, url, statusCode, duration, requestId
+ */
 sort?: LogsControllerGetLogsV1SortItem[];
 direction?: SortDirection[];
-search?: string;
 page?: number;
 limit?: number;
 method?: string;

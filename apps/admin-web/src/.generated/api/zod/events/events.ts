@@ -12,9 +12,9 @@ export const eventsControllerListV1QueryPageDefault = 1;
 export const eventsControllerListV1QueryLimitDefault = 20;
 
 export const EventsControllerListV1QueryParams = zod.object({
-  "sort": zod.array(zod.string()).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
+  "sort": zod.array(zod.string()).optional().describe('Allowed fields: startsAt, createdAt'),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "page": zod.number().default(eventsControllerListV1QueryPageDefault),
   "limit": zod.number().default(eventsControllerListV1QueryLimitDefault)
 })

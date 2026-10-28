@@ -1,12 +1,12 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { type IUserAuthService, USER_AUTH_SERVICE } from '@pkg/server-core/auth';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { PrincipalContext } from '@pkg/server-core/http/contexts';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { User } from '~/core/database/entities/auth';
 import { Role, RoleCode } from '~/core/database/entities/auth.extensions';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { UpdateOperatorRoleCommand } from '~/modules/operator/access/update-operator-role.command';
 import { UpdateOperatorRoleResponseDto } from '~/modules/operator/access/update-operator-role.response.dto';
 import { assertNotSelf, findOperator } from '~/modules/operator/operator-actions.helpers';

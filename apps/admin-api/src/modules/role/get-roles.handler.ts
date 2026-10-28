@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 
 import { User } from '~/core/database/entities/auth';
 import { Role } from '~/core/database/entities/auth.extensions';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { GetRolesQuery } from '~/modules/role/get-roles.query';
 import { GetRolesResponseDto } from '~/modules/role/get-roles.response.dto';
 import { RoleItemDto } from '~/modules/role/role-item.dto';

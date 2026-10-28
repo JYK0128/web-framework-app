@@ -1,24 +1,21 @@
 import type { ObjectQuery } from '@mikro-orm/core';
 import { ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
-import { ApiFiltersProperty, type FilterFieldDefinitions, type Filters, PageRequestDto } from '@pkg/server-core/http/dto/request';
+import { QueryRequestDtoFor } from '@pkg/server-core/http/dto/request';
 import { hashWithSecret } from '@pkg/shared/server';
 import { IsIn, IsOptional, IsString } from 'class-validator';
 
 import { User } from '~/core/database/entities/auth';
 import { env } from '~/env';
 
+const GetCustomersRequestDtoBase = QueryRequestDtoFor<User>()({
+  search: { fields: [] },
+  filter: { createdAt: { type: 'date' }, updatedAt: { type: 'date' } },
+  sort: { fields: ['createdAt', 'updatedAt'], default: ['createdAt'] },
+  page: {},
+});
+
 @ApiSchema({ name: 'GetCustomersRequest' })
-export class GetCustomersRequestDto extends PageRequestDto<User, 'createdAt' | 'updatedAt'> {
-  @ApiFiltersProperty()
-  override filters: Filters<User> = {};
-
-  protected override get filterFields(): FilterFieldDefinitions<User> {
-    return {
-      createdAt: { type: 'date' },
-      updatedAt: { type: 'date' },
-    };
-  }
-
+export class GetCustomersRequestDto extends GetCustomersRequestDtoBase {
   @ApiPropertyOptional({ isArray: true, enum: ['createdAt', 'updatedAt'] })
   @IsIn(['createdAt', 'updatedAt'], { each: true })
   override sort: ('createdAt' | 'updatedAt')[] = ['createdAt'];
@@ -28,8 +25,9 @@ export class GetCustomersRequestDto extends PageRequestDto<User, 'createdAt' | '
   @IsString()
   override search?: string;
 
-  override toFilterQuery(): ObjectQuery<User> {
-    const filters = super.toFilterQuery();
+  override toQuery() {
+    const queryOptions = super.toQuery();
+    const filters = queryOptions.where;
     const search = this.search?.trim();
     const email = search?.toLowerCase();
     let searchQuery: ObjectQuery<User> | null = null;
@@ -40,6 +38,6 @@ export class GetCustomersRequestDto extends PageRequestDto<User, 'createdAt' | '
         : nameQuery;
     }
     const conditions = [filters, searchQuery].filter((query): query is ObjectQuery<User> => !!query && Object.keys(query).length > 0);
-    return conditions.length ? { $and: conditions } : {};
+    return { ...queryOptions, where: conditions.length ? { $and: conditions } : {} };
   }
 }

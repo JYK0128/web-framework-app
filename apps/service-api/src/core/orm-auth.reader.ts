@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import type { AuthAccount, AuthReader, AuthUser } from '@pkg/server-core/auth';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 
 import { Account, User } from '~/core/database/entities/auth';
-import { AppEntityManager } from '~/core/database/entity-manager';
 
 @Injectable()
 export class OrmAuthReader implements AuthReader {

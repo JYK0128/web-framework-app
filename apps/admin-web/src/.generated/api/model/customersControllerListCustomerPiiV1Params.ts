@@ -9,9 +9,12 @@ import type { CustomersControllerListCustomerPiiV1SortItem } from './customersCo
 import type { SortDirection } from './sortDirection';
 
 export type CustomersControllerListCustomerPiiV1Params = {
+search?: string;
+/**
+ * Allowed fields: createdAt, updatedAt
+ */
 sort?: CustomersControllerListCustomerPiiV1SortItem[];
 direction?: SortDirection[];
-search?: string;
 page?: number;
 limit?: number;
 };

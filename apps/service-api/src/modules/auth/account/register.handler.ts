@@ -1,6 +1,7 @@
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CommandBus, CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { ApplicationError } from '@pkg/shared/common';
 import { assertPasswordPolicy } from '@pkg/shared/policy';
 import { encrypt, hashPassword, hashWithSecret } from '@pkg/shared/server';
@@ -8,7 +9,6 @@ import { encrypt, hashPassword, hashWithSecret } from '@pkg/shared/server';
 import { SECURITY_CONFIG } from '~/app.config';
 import { Account, Profile, User } from '~/core/database/entities/auth';
 import { Role, RoleCode } from '~/core/database/entities/auth.extensions';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { env } from '~/env';
 import { RegisterCommand } from '~/modules/auth/account/register.command';
 import { RegisterResponseDto } from '~/modules/auth/account/register.response.dto';

@@ -3,11 +3,11 @@ import { Inject } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { ConnectedSocket, MessageBody, OnGatewayInit, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { type IUserAuthService, USER_AUTH_SERVICE } from '@pkg/server-core/auth';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { RealtimeService } from '@pkg/server-core/realtime';
 import type { Request } from 'express';
 import type { Namespace, Socket } from 'socket.io';
 
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { GetUserSupportRoomQuery } from '~/modules/support/room/get-user-support-room.query';
 
 @WebSocketGateway({ namespace: '/support', path: '/api/v1/socket.io', cors: { origin: false } })

@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { AuthControllerEnableTwoFactorV1200Meta } from './authControllerEnableTwoFactorV1200Meta';
-import type { TwoFactorStateResponseDto } from './twoFactorStateResponseDto';
+import type { EnableTwoFactorResponseDto } from './enableTwoFactorResponseDto';
 
 export type AuthControllerEnableTwoFactorV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type AuthControllerEnableTwoFactorV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: TwoFactorStateResponseDto;
+  data: EnableTwoFactorResponseDto;
   message?: string;
   meta?: AuthControllerEnableTwoFactorV1200Meta;
 };

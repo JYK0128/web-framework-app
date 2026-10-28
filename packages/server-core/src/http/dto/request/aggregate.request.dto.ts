@@ -1,165 +1,213 @@
-import type { FilterQuery } from '@mikro-orm/core';
-import { type Type } from '@nestjs/common';
+import type { RawQueryFragment } from '@mikro-orm/core';
+import type { Type } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ApplicationError } from '@pkg/shared/common';
 import { Type as TransformType } from 'class-transformer';
-import { IsArray, IsEnum, IsIn, IsInt, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+import { Allow, ArrayMinSize, ArrayUnique, IsArray, IsIn, IsInt, IsOptional, IsString, Matches, Min, ValidateIf, ValidateNested } from 'class-validator';
 
-import { ToArray } from '#http/decorators/to-array.decorator';
-import { ToNumber } from '#http/decorators/to-number.decorator';
+import { AGGREGATE_FUNCTION_RULES, AGGREGATE_FUNCTIONS, type AggregateFieldType, type AggregateFunction } from '#core/persistence/aggregate/aggregate.rules';
+import type { AggregateGroupExpression, AggregateHaving, AggregateOrderBy, AggregateSpec } from '#core/persistence/aggregate/aggregate.types';
 import { BaseDto } from '#http/dto/base/base.dto';
-import { type EntityDtoFields } from '#http/dto/base/entity.dto';
+import { EntityDto, type EntityDtoFields } from '#http/dto/base/entity.dto';
 
-import { ApiFiltersProperty, type FilterFieldDefinitions, type Filters } from './filterable.request.dto';
-import { SearchableRequestDto } from './searchable.request.dto';
-import { SortDirection } from './sortable.request.dto';
+export class AggregateMetricRequestDto extends BaseDto {
+  @ApiProperty({ example: 'eventCount' })
+  @IsString()
+  @Matches(/^[A-Za-z_]\w*$/)
+  name!: string;
 
-export type AggregateFunction = 'count' | 'sum' | 'avg' | 'min' | 'max';
+  @ApiProperty({ enum: AGGREGATE_FUNCTIONS })
+  @IsIn(AGGREGATE_FUNCTIONS)
+  function!: AggregateFunction;
 
-export type AggregateSpec<TEntity extends object> = Record<string, {
-  fn: AggregateFunction
-  field?: keyof TEntity & string
-}>;
+  @ApiPropertyOptional({ example: 'startsAt' })
+  @IsOptional()
+  @IsString()
+  field?: string;
+}
 
-export type AggregateHaving = {
-  field: string
-  op: '$gt' | '$gte' | '$lt' | '$lte' | '$eq' | '$ne'
-  value: number
+const havingOperators: AggregateHaving['op'][] = ['gt', 'gte', 'lt', 'lte', 'eq', 'ne'];
+
+class AggregateHavingRequestDto extends BaseDto {
+  @ApiProperty({ example: 'eventCount' })
+  @IsString()
+  @Matches(/^[A-Za-z_]\w*$/)
+  field!: string;
+
+  @ApiProperty({ enum: havingOperators })
+  @IsIn(havingOperators)
+  op!: AggregateHaving['op'];
+
+  @ApiProperty({ oneOf: [{ type: 'number' }, { type: 'string' }] })
+  @Allow()
+  value!: number | string;
+}
+
+class AggregateOrderByRequestDto extends BaseDto {
+  @ApiProperty({ example: 'eventCount' })
+  @IsString()
+  @Matches(/^[A-Za-z_]\w*$/)
+  field!: string;
+
+  @ApiProperty({ enum: ['asc', 'desc'] })
+  @IsIn(['asc', 'desc'])
+  direction!: 'asc' | 'desc';
+}
+
+export type AggregateRequestDefinition<TEntity extends object> = {
+  fields: Record<string, { field: keyof TEntity & string, type: AggregateFieldType }>
+  dimensions: Record<string, { field: keyof TEntity & string } | { expression: (alias: string) => RawQueryFragment }>
+  defaultMetrics: readonly { name: string, function: AggregateFunction, field?: string }[]
 };
 
-export type AggregateOrderBy = { field: string, direction: 'asc' | 'desc' };
-
-export interface AggregateOptions<
-  TEntity extends object,
-  TGroupBy extends readonly (keyof TEntity & string)[] = readonly (keyof TEntity & string)[],
-  TAggregates extends AggregateSpec<TEntity> = AggregateSpec<TEntity>,
-> {
-  where?: FilterQuery<TEntity>
-  groupBy?: TGroupBy
-  aggregates: TAggregates
+export type AggregateRequestQuery<TEntity extends object> = {
+  groupBy: (keyof TEntity & string)[]
+  groupByExpressions: AggregateGroupExpression<string>[]
+  aggregates: AggregateSpec<TEntity>
   having?: AggregateHaving[]
   orderBy?: AggregateOrderBy[]
   take?: number
-}
-
-export type AggregateValue<TSpec> = TSpec extends { fn: 'count' } ? number : number | null;
-export type AggregateResult<
-  TEntity extends object,
-  TGroupBy extends readonly (keyof TEntity & string)[],
-  TAggregates extends AggregateSpec<TEntity>,
-> = Partial<Pick<TEntity, TGroupBy[number]>> & {
-  [K in keyof TAggregates]: AggregateValue<TAggregates[K]>
 };
 
-class AggregateHavingDto {
-  @ApiProperty()
-  @IsString()
-  field!: string;
-
-  @ApiProperty({ enum: ['$gt', '$gte', '$lt', '$lte', '$eq', '$ne'] })
-  @IsEnum({ GT: '$gt', GTE: '$gte', LT: '$lt', LTE: '$lte', EQ: '$eq', NE: '$ne' })
-  op!: AggregateHaving['op'];
-
-  @ApiProperty({ type: Number })
-  @ToNumber()
-  @IsNumber()
-  value!: number;
+function invalidAggregate(message: string): never {
+  throw new ApplicationError({ code: 'VALIDATION_ERROR', status: 400, message });
 }
 
-export interface AggregateDefinition<
-  TEntity extends object,
-  TGroupBy extends readonly (keyof TEntity & string)[],
-  TAggregates extends AggregateSpec<TEntity>,
-  TSearchKey extends keyof TEntity & string,
-> {
-  dimensions: TGroupBy
-  aggregates: TAggregates
-  searchFields?: readonly TSearchKey[]
-  filterFields?: FilterFieldDefinitions<TEntity>
-}
+/** Creates a request body whose aggregate fields and dimensions are owned by the endpoint. */
+export function AggregateRequestDto<TEntity extends object>(
+  entity: Type<TEntity>,
+  definition: AggregateRequestDefinition<TEntity>,
+) {
+  const dimensionNames = Object.keys(definition.dimensions);
 
-/** Builds an entity-aware request DTO with validated aggregate controls and MikroORM option mapping. */
-export function AggregateRequestDto<
-  TEntity extends object,
-  TGroupBy extends readonly (keyof TEntity & string)[],
-  TAggregates extends AggregateSpec<TEntity>,
-  TSearchKey extends keyof TEntity & string = keyof TEntity & string,
->(_entity: Type<TEntity>, definition: AggregateDefinition<TEntity, TGroupBy, TAggregates, TSearchKey>) {
-  type AggregateSortKey = TGroupBy[number] | Extract<keyof TAggregates, string>;
-  const declaredSortFields = [...definition.dimensions, ...Object.keys(definition.aggregates)] as AggregateSortKey[];
-
-  abstract class EntityAggregateRequestDto extends SearchableRequestDto<TEntity, AggregateSortKey> {
-    override filters: Filters<TEntity> = {};
-
-    override get searchFields(): TSearchKey[] {
-      return [...(definition.searchFields ?? [])];
+  function toGroups(requestedGroups: string[]) {
+    const groupBy: (keyof TEntity & string)[] = [];
+    const groupByExpressions: AggregateGroupExpression<string>[] = [];
+    const groupNames = new Set<string>();
+    for (const name of requestedGroups) {
+      if (typeof name !== 'string' || !Object.hasOwn(definition.dimensions, name) || groupNames.has(name)) {
+        invalidAggregate(`Invalid or duplicate aggregate group: ${String(name)}`);
+      }
+      groupNames.add(name);
+      const dimension = definition.dimensions[name];
+      if ('expression' in dimension) groupByExpressions.push({ field: name, expression: dimension.expression });
+      else if (dimension.field === name) groupBy.push(dimension.field);
+      else invalidAggregate(`Aggregate group ${name} must use its entity field name.`);
     }
 
-    protected override get filterFields(): FilterFieldDefinitions<TEntity> {
-      return definition.filterFields ?? {};
+    return { groupBy, groupByExpressions, groupNames };
+  }
+
+  function toAggregates(requestedMetrics: AggregateMetricRequestDto[], groupNames: Set<string>): AggregateSpec<TEntity> {
+    const aggregates: AggregateSpec<TEntity> = Object.create(null) as AggregateSpec<TEntity>;
+    const names = new Set<string>();
+    for (const metric of requestedMetrics) {
+      if (!metric || typeof metric.name !== 'string' || !/^[A-Za-z_]\w*$/.test(metric.name)
+        || Object.hasOwn(Object.prototype, metric.name) || names.has(metric.name) || groupNames.has(metric.name)) {
+        invalidAggregate(`Invalid or duplicate aggregate metric name: ${String(metric?.name)}`);
+      }
+      names.add(metric.name);
+      if (!AGGREGATE_FUNCTIONS.includes(metric.function)) invalidAggregate(`Unknown aggregate function: ${String(metric.function)}`);
+      if (metric.field === undefined) {
+        if (metric.function !== 'count') invalidAggregate(`${metric.function} requires a field.`);
+        aggregates[metric.name] = { fn: 'count' };
+        continue;
+      }
+      if (typeof metric.field !== 'string' || !Object.hasOwn(definition.fields, metric.field)) {
+        invalidAggregate(`Unsupported aggregate field: ${String(metric.field)}`);
+      }
+      const field = definition.fields[metric.field];
+      if (!AGGREGATE_FUNCTION_RULES[metric.function].fieldTypes.includes(field.type)) {
+        invalidAggregate(`${metric.function} is not supported for ${field.type} field ${metric.field}.`);
+      }
+      aggregates[metric.name] = { fn: metric.function, field: field.field, valueType: field.type };
     }
+    return aggregates;
+  }
 
-    @ApiPropertyOptional({ enum: declaredSortFields, isArray: true })
-    @IsOptional()
-    @IsIn(declaredSortFields, { each: true })
-    override sort: AggregateSortKey[] = [];
+  function toHaving(requested: AggregateHavingRequestDto[] | undefined, aggregates: AggregateSpec<TEntity>): AggregateHaving[] | undefined {
+    if (requested === undefined) return undefined;
+    return requested.map(({ field, op, value }) => {
+      if (!Object.hasOwn(aggregates, field)) invalidAggregate(`Having field must name an aggregate metric: ${field}`);
+      const aggregate = aggregates[field];
+      if (aggregate.fn === 'count' || aggregate.valueType === 'number') {
+        if (typeof value !== 'number' || !Number.isFinite(value)) invalidAggregate(`Having value for ${field} must be a number.`);
+        return { field, op, value };
+      }
+      if (aggregate.valueType === 'date') {
+        if (typeof value !== 'string' || Number.isNaN(new Date(value).getTime())) invalidAggregate(`Having value for ${field} must be a valid date string.`);
+        return { field, op, value: new Date(value) };
+      }
+      if (aggregate.valueType === 'string') {
+        if (typeof value !== 'string') invalidAggregate(`Having value for ${field} must be a string.`);
+        return { field, op, value };
+      }
+      return invalidAggregate(`Having is not supported for aggregate ${field}.`);
+    });
+  }
 
-    @ApiPropertyOptional({ enum: definition.dimensions, isArray: true })
-    @IsOptional()
-    @ToArray()
+  function toOrderBy(requested: AggregateOrderByRequestDto[] | undefined, groupNames: Set<string>, aggregates: AggregateSpec<TEntity>): AggregateOrderBy[] | undefined {
+    if (requested === undefined) return undefined;
+    const names = new Set<string>();
+    return requested.map(({ field, direction }) => {
+      if ((!groupNames.has(field) && !Object.hasOwn(aggregates, field)) || names.has(field)) {
+        invalidAggregate(`Order field must uniquely name a selected group or aggregate: ${field}`);
+      }
+      names.add(field);
+      return { field, direction };
+    });
+  }
+
+  const EntityAggregateDto = EntityDto(entity) as typeof BaseDto;
+
+  class AggregateQuery extends EntityAggregateDto {
+    @ApiPropertyOptional({ type: [AggregateMetricRequestDto], description: `Allowed fields: ${Object.keys(definition.fields).join(', ') || 'none'}` })
+    @ValidateIf((_object, value) => value !== undefined)
+    @TransformType(() => AggregateMetricRequestDto)
     @IsArray()
-    @IsIn(definition.dimensions, { each: true })
-    groupBy: TGroupBy[number][] = [...definition.dimensions];
-
-    @ApiPropertyOptional({ type: AggregateHavingDto, isArray: true })
-    @IsOptional()
-    @IsArray()
-    @TransformType(() => AggregateHavingDto)
+    @ArrayMinSize(1)
     @ValidateNested({ each: true })
-    having?: AggregateHavingDto[];
+    metrics: AggregateMetricRequestDto[] = definition.defaultMetrics.map((metric) => AggregateMetricRequestDto.parse(metric));
+
+    @ApiPropertyOptional({ enum: dimensionNames, isArray: true })
+    @ValidateIf((_object, value) => value !== undefined)
+    @IsArray()
+    @ArrayUnique()
+    @IsIn(dimensionNames, { each: true })
+    groupBy: string[] = [];
+
+    @ApiPropertyOptional({ type: [AggregateHavingRequestDto] })
+    @ValidateIf((_object, value) => value !== undefined)
+    @TransformType(() => AggregateHavingRequestDto)
+    @IsArray()
+    @ValidateNested({ each: true })
+    having?: AggregateHavingRequestDto[];
+
+    @ApiPropertyOptional({ type: [AggregateOrderByRequestDto] })
+    @ValidateIf((_object, value) => value !== undefined)
+    @TransformType(() => AggregateOrderByRequestDto)
+    @IsArray()
+    @ValidateNested({ each: true })
+    orderBy?: AggregateOrderByRequestDto[];
 
     @ApiPropertyOptional({ type: Number, minimum: 1 })
     @IsOptional()
-    @ToNumber()
     @IsInt()
     @Min(1)
     take?: number;
 
-    toAggregateOptions(where?: FilterQuery<TEntity>): AggregateOptions<TEntity, TGroupBy, TAggregates> {
-      const metricNames = Object.keys(definition.aggregates);
-      const allowedSortFields = new Set<string>([...this.groupBy, ...metricNames]);
-      for (const field of this.sort) {
-        if (!allowedSortFields.has(field)) {
-          throw new ApplicationError({ code: 'VALIDATION_ERROR', status: 400, message: `Unknown aggregate sort field: ${field}` });
-        }
-      }
-      for (const condition of this.having ?? []) {
-        if (!metricNames.includes(condition.field)) {
-          throw new ApplicationError({ code: 'VALIDATION_ERROR', status: 400, message: `Unknown aggregate alias in having: ${condition.field}` });
-        }
-      }
-      const requestWhere = super.toFilterQuery();
-      const whereConditions = [requestWhere, where].filter((query): query is FilterQuery<TEntity> => !!query && Object.keys(query).length > 0);
-      const sort = this.sort.length > 0 ? this.sort : this.groupBy.slice(0, 1);
-      const orderBy = sort.map((field, index) => ({
-        field,
-        direction: this.direction[index] ?? SortDirection.ASC,
-      }));
-      return {
-        where: whereConditions.length > 1 ? { $and: whereConditions } as FilterQuery<TEntity> : whereConditions[0],
-        groupBy: this.groupBy as unknown as TGroupBy,
-        aggregates: definition.aggregates,
-        having: this.having,
-        orderBy,
-        take: this.take,
-      };
+    toQuery(): AggregateRequestQuery<TEntity> {
+      if (!Array.isArray(this.metrics) || !this.metrics.length) invalidAggregate('At least one aggregate metric is required.');
+      if (!Array.isArray(this.groupBy)) invalidAggregate('groupBy must be an array.');
+
+      if (this.take !== undefined && (!Number.isInteger(this.take) || this.take < 1)) invalidAggregate('take must be a positive integer.');
+      const { groupBy, groupByExpressions, groupNames } = toGroups(this.groupBy);
+      const aggregates = toAggregates(this.metrics, groupNames);
+      const having = toHaving(this.having, aggregates);
+      const orderBy = toOrderBy(this.orderBy, groupNames, aggregates);
+      return { groupBy, groupByExpressions, aggregates, ...(having ? { having } : {}), ...(orderBy ? { orderBy } : {}), ...(this.take ? { take: this.take } : {}) };
     }
   }
 
-  if (Object.keys(definition.filterFields ?? {}).length > 0) {
-    ApiFiltersProperty()(EntityAggregateRequestDto.prototype, 'filters');
-  }
-
-  // EntityDto is a compile-time field hint; the factory itself adds the runtime request behavior.
-  return EntityAggregateRequestDto as Type<EntityDtoFields<[Type<TEntity>]> & InstanceType<typeof EntityAggregateRequestDto>> & typeof BaseDto;
+  return AggregateQuery as Type<EntityDtoFields<[Type<TEntity>]> & InstanceType<typeof AggregateQuery>> & typeof BaseDto;
 }

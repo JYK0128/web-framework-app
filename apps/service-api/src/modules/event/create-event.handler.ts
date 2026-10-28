@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 
 import { Event } from '~/core/database/entities/events';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { CreateEventCommand } from '~/modules/event/create-event.command';
 import { CreateEventResponseDto } from '~/modules/event/create-event.response.dto';
 import { validateDates } from '~/modules/event/events.helpers';

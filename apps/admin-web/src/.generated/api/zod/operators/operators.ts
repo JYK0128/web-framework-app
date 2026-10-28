@@ -16,9 +16,9 @@ export const operatorsControllerGetOperatorsV1QueryLimitDefault = 20;
 export const operatorsControllerGetOperatorsV1QueryIncludeDeletedDefault = false;
 
 export const OperatorsControllerGetOperatorsV1QueryParams = zod.object({
-  "sort": zod.array(zod.string()).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
+  "sort": zod.array(zod.string()).optional().describe('Allowed fields: name, twoFactorEnabled, createdAt, updatedAt'),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "page": zod.number().default(operatorsControllerGetOperatorsV1QueryPageDefault),
   "limit": zod.number().default(operatorsControllerGetOperatorsV1QueryLimitDefault),
   "includeDeleted": zod.boolean().default(operatorsControllerGetOperatorsV1QueryIncludeDeletedDefault),

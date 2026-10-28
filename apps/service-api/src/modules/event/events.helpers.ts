@@ -1,8 +1,8 @@
 import { HttpStatus } from '@nestjs/common';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { Event } from '~/core/database/entities/events';
-import { AppEntityManager } from '~/core/database/entity-manager';
 
 export async function findEvent(em: AppEntityManager, id: string): Promise<Event> {
   const event = await em.findOne(Event, { id }, { filters: false });

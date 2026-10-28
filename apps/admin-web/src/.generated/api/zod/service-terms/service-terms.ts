@@ -15,9 +15,9 @@ export const serviceTermsControllerListV1QueryPageDefault = 1;
 export const serviceTermsControllerListV1QueryLimitDefault = 20;
 
 export const ServiceTermsControllerListV1QueryParams = zod.object({
-  "sort": zod.array(zod.string()).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
+  "sort": zod.array(zod.string()).optional().describe('Allowed fields: title, version, isNoticeRequired, isRequired, publishedAt, createdAt, updatedAt'),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "page": zod.number().default(serviceTermsControllerListV1QueryPageDefault),
   "limit": zod.number().default(serviceTermsControllerListV1QueryLimitDefault),
   "groupId": zod.uuid().optional()

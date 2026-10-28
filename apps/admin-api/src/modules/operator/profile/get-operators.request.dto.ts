@@ -1,7 +1,7 @@
 import type { ObjectQuery, QueryOrderMap } from '@mikro-orm/core';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { ApiEnumOptional, ToBoolean } from '@pkg/server-core/http/decorators';
-import { PageRequestDto, type PageRequestOptions, SortDirection } from '@pkg/server-core/http/dto/request';
+import { QueryRequestDtoFor, SortDirection } from '@pkg/server-core/http/dto/request';
 import { parseSearchTokens } from '@pkg/shared/common';
 import { hashWithSecret } from '@pkg/shared/server';
 import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
@@ -13,24 +13,13 @@ import { OperatorStatus } from '~/modules/operator/profile/operator-status.enum'
 export const OPERATOR_SORT_FIELDS = ['name', 'twoFactorEnabled', 'createdAt', 'updatedAt'] as const;
 export type OperatorSortField = (typeof OPERATOR_SORT_FIELDS)[number];
 
-export class GetOperatorsRequestDto extends PageRequestDto<User, OperatorSortField> {
-  override toSearchQuery(): ObjectQuery<User> | null {
-    const term = this.search?.trim();
-    if (!term) return null;
+const GetOperatorsRequestDtoBase = QueryRequestDtoFor<User>()({
+  search: { fields: [] },
+  sort: { fields: OPERATOR_SORT_FIELDS, default: ['createdAt'] },
+  page: {},
+});
 
-    const { original, qwertyConverted, choseongRegex } = parseSearchTokens(term);
-    const nameMatchers: Record<string, string>[] = [{ $like: `%${original}%` }];
-    if (qwertyConverted && qwertyConverted !== original) nameMatchers.push({ $like: `%${qwertyConverted}%` });
-    if (choseongRegex) nameMatchers.push({ $re: choseongRegex });
-
-    return {
-      $or: [
-        ...nameMatchers.map((matcher) => ({ profile: { name: matcher } })),
-        { profile: { emailHash: hashWithSecret(term, env.PII_HASH_KEY) } },
-      ],
-    };
-  }
-
+export class GetOperatorsRequestDto extends GetOperatorsRequestDtoBase {
   @ApiPropertyOptional({ type: 'boolean', default: false })
   @IsOptional()
   @ToBoolean()
@@ -50,20 +39,23 @@ export class GetOperatorsRequestDto extends PageRequestDto<User, OperatorSortFie
 
   override sort: OperatorSortField[] = ['createdAt'];
 
-  override toPageOptions(): PageRequestOptions<User> {
-    return {
-      page: this.page,
-      limit: this.limit,
-      orderBy: this.sort.map<QueryOrderMap<User>>((field, index) => {
-        const direction = this.direction[index] ?? SortDirection.ASC;
-        return field === 'name' ? { profile: { name: direction } } : { [field]: direction };
-      }),
-    };
-  }
+  override toQuery() {
+    const baseQuery = super.toQuery();
+    const conditions: ObjectQuery<User>[] = [baseQuery.where];
 
-  override toFilterQuery(): ObjectQuery<User> {
-    const baseQuery = super.toFilterQuery();
-    const conditions: ObjectQuery<User>[] = [baseQuery];
+    const term = this.search?.trim();
+    if (term) {
+      const { original, qwertyConverted, choseongRegex } = parseSearchTokens(term);
+      const nameMatchers: Record<string, string>[] = [{ $like: `%${original}%` }];
+      if (qwertyConverted && qwertyConverted !== original) nameMatchers.push({ $like: `%${qwertyConverted}%` });
+      if (choseongRegex) nameMatchers.push({ $re: choseongRegex });
+      conditions.push({
+        $or: [
+          ...nameMatchers.map((matcher) => ({ profile: { name: matcher } })),
+          { profile: { emailHash: hashWithSecret(term, env.PII_HASH_KEY) } },
+        ],
+      });
+    }
 
     if (this.status === OperatorStatus.BANNED) {
       conditions.push({ $or: [{ banned: true, $or: [{ banExpires: null }, { banExpires: { $gt: new Date() } }] }, { banExpires: { $gt: new Date() } }] });
@@ -84,6 +76,13 @@ export class GetOperatorsRequestDto extends PageRequestDto<User, OperatorSortFie
       conditions.push({ deletedAt: null });
     }
 
-    return { $and: conditions };
+    return {
+      ...baseQuery,
+      where: { $and: conditions },
+      orderBy: this.sort.map<QueryOrderMap<User>>((field, index) => {
+        const direction = this.direction[index] ?? SortDirection.ASC;
+        return field === 'name' ? { profile: { name: direction } } : { [field]: direction };
+      }),
+    };
   }
 }

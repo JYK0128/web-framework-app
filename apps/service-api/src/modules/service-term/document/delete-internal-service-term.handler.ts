@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { DeleteInternalServiceTermCommand } from '~/modules/service-term/document/delete-internal-service-term.command';
 import { DeleteInternalServiceTermResponseDto } from '~/modules/service-term/document/delete-internal-service-term.response.dto';
 import { assertEditable, findServiceTerm } from '~/modules/service-term/document/internal-service-term-actions.helpers';

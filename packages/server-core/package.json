@@ -12,6 +12,10 @@
     ]
   },
   "exports": {
+    "./core/persistence": {
+      "types": "./src/core/persistence/index.ts",
+      "default": "./src/core/persistence/index.ts"
+    },
     "./auth": {
       "types": "./src/auth/index.ts",
       "default": "./src/auth/index.ts"

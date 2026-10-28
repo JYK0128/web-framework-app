@@ -1,9 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { Event } from '~/core/database/entities/events';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { GetEventQuery } from '~/modules/event/get-event.query';
 import { GetEventResponseDto } from '~/modules/event/get-event.response.dto';
 

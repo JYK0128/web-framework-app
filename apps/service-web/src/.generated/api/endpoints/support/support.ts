@@ -33,7 +33,6 @@ import type {
   SupportControllerListMessagesV1200,
   SupportControllerListRoomsV1200,
   SupportControllerListRoomsV1Params,
-  SupportControllerSocketTicketV1200,
   SupportControllerUpdateRoomV1200,
   UpdateSupportRoomRequestDto
 } from '../../model';
@@ -494,60 +493,4 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getSupportControllerCreateMessageV1MutationOptions(options), queryClient);
-    }
-    export const supportControllerSocketTicketV1 = (
-    roomId: string,
- options?: SecondParameter<typeof axios>,signal?: AbortSignal
-) => {
-
-
-      return axios<SupportControllerSocketTicketV1200>(
-      {url: `/api/v1/support/rooms/${roomId}/socket-ticket`, method: 'POST', signal
-    },
-      options);
-    }
-
-
-
-
-export const getSupportControllerSocketTicketV1MutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof supportControllerSocketTicketV1>>, TError,{roomId: string}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof supportControllerSocketTicketV1>>, TError,{roomId: string}, TContext> => {
-
-const mutationKey = ['supportControllerSocketTicketV1'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof supportControllerSocketTicketV1>>, {roomId: string}> = (props) => {
-          const {roomId} = props ?? {};
-
-          return  supportControllerSocketTicketV1(roomId,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type SupportControllerSocketTicketV1MutationResult = NonNullable<Awaited<ReturnType<typeof supportControllerSocketTicketV1>>>
-
-    export type SupportControllerSocketTicketV1MutationError = unknown
-
-    export const useSupportControllerSocketTicketV1 = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof supportControllerSocketTicketV1>>, TError,{roomId: string}, TContext>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof supportControllerSocketTicketV1>>,
-        TError,
-        {roomId: string},
-        TContext
-      > => {
-      return useMutation(getSupportControllerSocketTicketV1MutationOptions(options), queryClient);
     }

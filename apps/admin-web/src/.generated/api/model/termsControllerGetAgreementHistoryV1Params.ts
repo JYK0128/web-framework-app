@@ -8,9 +8,11 @@
 import type { SortDirection } from './sortDirection';
 
 export type TermsControllerGetAgreementHistoryV1Params = {
+/**
+ * Allowed fields: createdAt
+ */
 sort?: string[];
 direction?: SortDirection[];
-search?: string;
 /**
  * @nullable
  */

@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 
 import { HttpStatus, Injectable, NotFoundException, type OnModuleInit } from '@nestjs/common';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { StorageService } from '@pkg/server-core/file-storage';
 import { KvStore } from '@pkg/server-core/kv-store';
 import { type NotificationConfigDto } from '@pkg/server-core/notification/dto';
@@ -13,7 +14,6 @@ import { cloneDeep, isPlainObject, merge } from 'lodash-es';
 import { SECURITY_CONFIG } from '~/app.config';
 import { SystemConfig } from '~/core/database/entities/system-configs';
 import { Upload, UploadStatus } from '~/core/database/entities/uploads';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { env } from '~/env';
 import { NOTIFICATION_SECRET_PATHS, transformNotificationSecrets } from '~/modules/system-config/notification/notification-config-secrets';
 import { assertEnabledNotificationProvidersAreConfigured } from '~/modules/system-config/notification/notification-provider-validation';

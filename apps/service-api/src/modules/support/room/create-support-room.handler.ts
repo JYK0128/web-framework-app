@@ -1,9 +1,9 @@
 import { CommandHandler, EventBus, type ICommandHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { PrincipalContext } from '@pkg/server-core/http/contexts';
 import { isWithinOperatingHours } from '@pkg/shared/policy';
 
 import { SupportMessage, SupportMessageSenderType, SupportRoom, SupportRoomStatus } from '~/core/database/entities/support';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { CreateSupportRoomCommand } from '~/modules/support/room/create-support-room.command';
 import { CreateSupportRoomResponseDto } from '~/modules/support/room/create-support-room.response.dto';
 import { SupportRoomCreatedEvent } from '~/modules/support/room/support-room-created.event';

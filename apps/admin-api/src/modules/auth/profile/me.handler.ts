@@ -1,11 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { isCredentialPasswordExpired } from '@pkg/server-core/auth';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { SECURITY_CONFIG } from '~/app.config';
 import { Account, User } from '~/core/database/entities/auth';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { MeQuery } from '~/modules/auth/profile/me.query';
 import { MeResponseDto } from '~/modules/auth/profile/me.response.dto';
 

@@ -1,4 +1,3 @@
-export * from './aggregate.response.dto';
 export * from './api.response.dto';
 export * from './cursor.response.dto';
 export * from './entity.response.dto';

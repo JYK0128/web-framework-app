@@ -1,9 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { Term } from '~/core/database/entities/terms';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { GetTermQuery } from '~/modules/term/document/get-term.query';
 import { GetTermResponseDto } from '~/modules/term/document/get-term.response.dto';
 

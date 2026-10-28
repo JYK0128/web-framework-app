@@ -1,9 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { TermGroup } from '~/core/database/entities/terms';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { UpdateTermGroupCommand } from '~/modules/term/group/update-term-group.command';
 import { UpdateTermGroupResponseDto } from '~/modules/term/group/update-term-group.response.dto';
 

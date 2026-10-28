@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 
 import { User } from '~/core/database/entities/auth';
 import { Role } from '~/core/database/entities/auth.extensions';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { CustomerMembershipItemDto } from '~/modules/membership/customer-membership-item.dto';
 import { GetCustomerMembershipsQuery } from '~/modules/membership/get-customer-memberships.query';
 import { GetCustomerMembershipsResponseDto } from '~/modules/membership/get-customer-memberships.response.dto';

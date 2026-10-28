@@ -14,9 +14,9 @@ import * as zod from 'zod';
 export const faqsControllerGetFaqsV1QueryLimitDefault = 20;
 
 export const FaqsControllerGetFaqsV1QueryParams = zod.object({
-  "sort": zod.array(zod.enum(['sortOrder', 'createdAt'])).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
+  "sort": zod.array(zod.enum(['sortOrder', 'createdAt'])).optional().describe('Allowed fields: sortOrder, createdAt'),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "cursor": zod.string().nullish(),
   "limit": zod.number().default(faqsControllerGetFaqsV1QueryLimitDefault),
   "category": zod.enum(['계정', '서비스 이용', '검증']).optional().describe('FAQ 카테고리')

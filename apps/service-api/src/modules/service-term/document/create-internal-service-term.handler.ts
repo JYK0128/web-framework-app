@@ -1,9 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { Term, TermGroup } from '~/core/database/entities/terms';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { CreateInternalServiceTermCommand } from '~/modules/service-term/document/create-internal-service-term.command';
 import { CreateInternalServiceTermResponseDto } from '~/modules/service-term/document/create-internal-service-term.response.dto';
 import { assertVersionAvailable, flushServiceTerm, parseFuturePublishDate } from '~/modules/service-term/document/internal-service-term-actions.helpers';

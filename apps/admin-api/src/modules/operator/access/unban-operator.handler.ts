@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { UnbanOperatorCommand } from '~/modules/operator/access/unban-operator.command';
 import { UnbanOperatorResponseDto } from '~/modules/operator/access/unban-operator.response.dto';
 import { findOperator } from '~/modules/operator/operator-actions.helpers';

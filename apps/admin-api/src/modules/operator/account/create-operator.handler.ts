@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CommandBus, CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { updateCredentialPassword } from '@pkg/server-core/auth';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { ApplicationError } from '@pkg/shared/common';
 import { assertPasswordPolicy } from '@pkg/shared/policy';
 import { encrypt, hashWithSecret } from '@pkg/shared/server';
@@ -8,7 +9,6 @@ import { encrypt, hashWithSecret } from '@pkg/shared/server';
 import { SECURITY_CONFIG } from '~/app.config';
 import { Account, Profile, User } from '~/core/database/entities/auth';
 import { Role } from '~/core/database/entities/auth.extensions';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { env } from '~/env';
 import { RequestEmailVerificationCommand } from '~/modules/auth/email-verification/request-email-verification.command';
 import { RequestEmailVerificationRequestDto } from '~/modules/auth/email-verification/request-email-verification.request.dto';

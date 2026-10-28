@@ -52,7 +52,15 @@ async function reviewAndAcceptTerms(page: import('@playwright/test').Page): Prom
   await expect(agreeAll).toBeChecked();
   const continueButton = page.getByRole('button', { name: /동의하고 계속하기/ });
   await expect(continueButton).toBeEnabled();
+  const agreementResponse = page.waitForResponse((response) => response.url().endsWith('/api/v1/service-terms/agreements') && response.request().method() === 'POST');
+  const agreementRefresh = page.waitForResponse((response) => response.url().endsWith('/api/v1/service-terms/agreements') && response.request().method() === 'GET');
   await continueButton.click();
+  const response = await agreementResponse;
+  expect(response.status(), await response.text()).toBe(200);
+  const refreshed = await agreementRefresh;
+  expect(refreshed.status()).toBe(200);
+  const agreementItems = (await refreshed.json()).data.items as Array<{ isRequired: boolean; isAgreed: boolean }>;
+  expect(agreementItems.filter((term) => term.isRequired).every((term) => term.isAgreed)).toBe(true);
 }
 
 async function waitForHydration(locator: Locator): Promise<void> {

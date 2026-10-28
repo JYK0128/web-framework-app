@@ -1,6 +1,6 @@
 import { ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { ApiEnumOptional } from '@pkg/server-core/http/decorators';
-import { CursorRequestDto, SortDirection } from '@pkg/server-core/http/dto/request';
+import { QueryRequestDtoFor, SortDirection } from '@pkg/server-core/http/dto/request';
 import { IsEnum, IsIn, IsOptional } from 'class-validator';
 
 import { Faq, FaqCategory } from '~/core/database/entities/faqs';
@@ -8,8 +8,14 @@ import { Faq, FaqCategory } from '~/core/database/entities/faqs';
 const FAQ_SORT_FIELDS = ['sortOrder', 'createdAt'] as const;
 type FaqSortKey = (typeof FAQ_SORT_FIELDS)[number];
 
+const GetPublicFaqsRequestDtoBase = QueryRequestDtoFor<Faq>()({
+  search: { fields: ['question', 'answer'] },
+  sort: { fields: FAQ_SORT_FIELDS, default: ['sortOrder', 'createdAt'] },
+  cursor: {},
+});
+
 @ApiSchema({ name: 'GetPublicFaqsRequest' })
-export class GetPublicFaqsRequestDto extends CursorRequestDto<Faq, FaqSortKey> {
+export class GetPublicFaqsRequestDto extends GetPublicFaqsRequestDtoBase {
   @ApiPropertyOptional({ enum: FaqCategory, description: 'FAQ 카테고리' })
   @IsOptional()
   @IsEnum(FaqCategory)
@@ -24,14 +30,10 @@ export class GetPublicFaqsRequestDto extends CursorRequestDto<Faq, FaqSortKey> {
   @IsEnum(SortDirection, { each: true })
   override direction: SortDirection[] = [SortDirection.ASC, SortDirection.DESC];
 
-  override get searchFields(): (keyof Faq)[] {
-    return ['question', 'answer'];
-  }
-
-  override toFilterQuery() {
-    const query = super.toFilterQuery();
+  override toQuery() {
+    const query = super.toQuery();
     return this.category
-      ? { $and: [query, { category: this.category }] }
+      ? { ...query, where: { $and: [query.where, { category: this.category }] } }
       : query;
   }
 }

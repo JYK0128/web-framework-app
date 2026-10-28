@@ -1,2 +1,2 @@
 export * from './database.module';
-export * from '~/core/database/entity-manager';
+export * from '@pkg/server-core/core/persistence';

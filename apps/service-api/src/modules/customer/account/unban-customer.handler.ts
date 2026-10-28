@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { UnbanCustomerCommand } from '~/modules/customer/account/unban-customer.command';
 import { UnbanCustomerResponseDto } from '~/modules/customer/account/unban-customer.response.dto';
 import { findCustomer } from '~/modules/customer/customer.helper';

@@ -1,5 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { EventBroker } from '@pkg/server-core/event-broker';
 import { UserNotificationCreatedEvent } from '@pkg/server-core/event-broker/events';
 import { PrincipalContext } from '@pkg/server-core/http/contexts';
@@ -7,7 +8,6 @@ import { RealtimeService } from '@pkg/server-core/realtime';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { SupportMessage, SupportMessageSenderType, SupportRoom, SupportRoomStatus } from '~/core/database/entities/support';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { CreateSupportMessageCommand } from '~/modules/support/message/create-support-message.command';
 import { CreateSupportMessageResponseDto } from '~/modules/support/message/create-support-message.response.dto';
 import { SupportMessageItemDto } from '~/modules/support/message/support-message-item.dto';

@@ -1,21 +1,31 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { PageRequestDto } from '@pkg/server-core/http/dto/request';
+import { QueryRequestDtoFor, SortDirection } from '@pkg/server-core/http/dto/request';
 import { IsOptional, IsString } from 'class-validator';
 
 import { Term } from '~/core/database/entities/terms';
 
-export class GetTermsRequestDto extends PageRequestDto<Term> {
-  override get searchFields(): (keyof Term)[] {
-    return ['version', 'content'];
+const GetTermsRequestDtoBase = QueryRequestDtoFor<Term>()({
+  search: { fields: ['version', 'content'] },
+  sort: { fields: ['title', 'version', 'isNoticeRequired', 'isRequired', 'publishedAt', 'createdAt', 'updatedAt'], default: ['createdAt'] },
+  page: {},
+});
+
+export class GetTermsRequestDto extends GetTermsRequestDtoBase {
+  override toQuery() {
+    const query = super.toQuery();
+    return {
+      ...query,
+      where: this.groupId ? { $and: [query.where, { termGroup: this.groupId }] } : query.where,
+      orderBy: this.sort.map((field, index) => {
+        const direction = this.direction[index] ?? SortDirection.ASC;
+        if (field === 'title' || field === 'isRequired') return { termGroup: { [field]: direction } };
+        return { [field]: direction };
+      }),
+    };
   }
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   groupId?: string;
-
-  override toFilterQuery() {
-    const query = super.toFilterQuery();
-    return this.groupId ? { $and: [query, { termGroup: this.groupId }] } : query;
-  }
 }

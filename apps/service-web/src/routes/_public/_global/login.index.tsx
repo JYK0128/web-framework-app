@@ -3,7 +3,7 @@ import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 import { useI18n } from '@pkg/web-core/context';
 import { Card, CardContent, CardHeader, CardTitle, FormLayout, FormSubmit, ScreenLayout, Separator, useAppForm } from '@pkg/web-core/ui';
 import { useQueryClient } from '@tanstack/react-query';
-import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Link, redirect, useNavigate, useRouter } from '@tanstack/react-router';
 
 import { getAuthControllerMeV1QueryKey, useAuthControllerLoginV1, useOAuthControllerProvidersV1 } from '~/.generated/api/endpoints/auth/auth';
 import { AuthControllerLoginV1Body } from '~/.generated/api/zod/auth/auth';
@@ -19,6 +19,7 @@ export const Route = createFileRoute('/_public/_global/login/')({
 function LoginPage() {
   const { t } = useI18n();
   const navigate = useNavigate();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const { callback } = Route.useSearch();
   const destination = resolveDestination(callback);
@@ -53,6 +54,7 @@ function LoginPage() {
           return;
         }
         queryClient.removeQueries({ queryKey: getAuthControllerMeV1QueryKey() });
+        await router.invalidate();
         await navigate({ href: destination, replace: true });
       }
       catch (error) {

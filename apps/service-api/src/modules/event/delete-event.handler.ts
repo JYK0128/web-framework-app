@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { DeleteEventCommand } from '~/modules/event/delete-event.command';
 import { DeleteEventResponseDto } from '~/modules/event/delete-event.response.dto';
 import { findEvent } from '~/modules/event/events.helpers';

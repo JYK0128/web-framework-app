@@ -3,6 +3,8 @@ import { existsSync } from 'node:fs';
 import { defineConfig } from 'orval';
 import { z } from 'zod';
 
+import { normalizeGeneratedApi } from '../../packages/config/normalize-generated-api.mjs';
+
 const envFile = existsSync('.env') ? '.env' : '.env.example';
 if (existsSync(envFile)) process.loadEnvFile?.(envFile);
 
@@ -10,6 +12,7 @@ const targetUrl = z.url().parse(process.env.API_SPEC_URL);
 
 export default defineConfig({
   api: {
+    hooks: { afterAllFilesWrite: normalizeGeneratedApi },
     input: {
       target: targetUrl,
     },
@@ -30,6 +33,7 @@ export default defineConfig({
     },
   },
   zod: {
+    hooks: { afterAllFilesWrite: normalizeGeneratedApi },
     input: {
       target: targetUrl,
     },

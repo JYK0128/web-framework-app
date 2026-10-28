@@ -9,9 +9,12 @@ import type { FaqsControllerListFaqsV1SortItem } from './faqsControllerListFaqsV
 import type { SortDirection } from './sortDirection';
 
 export type FaqsControllerListFaqsV1Params = {
+search?: string;
+/**
+ * Allowed fields: sortOrder, createdAt
+ */
 sort?: FaqsControllerListFaqsV1SortItem[];
 direction?: SortDirection[];
-search?: string;
 page?: number;
 limit?: number;
 /**

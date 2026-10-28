@@ -14,9 +14,9 @@ import * as zod from 'zod';
 export const noticesControllerListV1QueryLimitDefault = 20;
 
 export const NoticesControllerListV1QueryParams = zod.object({
-  "sort": zod.array(zod.string()).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
+  "sort": zod.array(zod.string()).optional().describe('Allowed fields: createdAt'),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "cursor": zod.string().nullish(),
   "limit": zod.number().default(noticesControllerListV1QueryLimitDefault),
   "importance": zod.enum(['normal', 'important', 'urgent']).optional()

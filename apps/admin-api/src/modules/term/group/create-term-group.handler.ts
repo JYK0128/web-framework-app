@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 
 import { TermGroup } from '~/core/database/entities/terms';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { CreateTermGroupCommand } from '~/modules/term/group/create-term-group.command';
 import { CreateTermGroupResponseDto } from '~/modules/term/group/create-term-group.response.dto';
 

@@ -1,10 +1,10 @@
 import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { ApplicationError } from '@pkg/shared/common';
 import { encrypt } from '@pkg/shared/server';
 
 import { AdminSystemConfigCode, SystemConfig } from '~/core/database/entities/system-configs';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { InternalClient } from '~/core/internal-client';
 import { SystemContext } from '~/core/system.context';
 import { env } from '~/env';

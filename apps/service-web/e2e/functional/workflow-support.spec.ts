@@ -21,7 +21,10 @@ test('customer creates a support room, sends a message, and closes the conversat
       await detail.getByRole('button', { name: '닫기' }).click();
     }
     await page.getByRole('checkbox', { name: '전체 약관에 동의합니다.' }).click();
+    const agreementResponse = page.waitForResponse((response) => response.url().endsWith('/api/v1/service-terms/agreements') && response.request().method() === 'POST');
     await page.getByRole('button', { name: /동의하고 계속하기/ }).click();
+    const response = await agreementResponse;
+    expect(response.status(), await response.text()).toBe(200);
   }
 
   await page.goto('/support');

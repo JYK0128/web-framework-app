@@ -9,14 +9,59 @@ import * as zod from 'zod';
 
 
 /**
+ * @summary 이벤트 전체 및 단계별 집계 조회
+ */
+export const EventsControllerGetEventSummaryV1QueryParams = zod.object({
+  "filters": zod.record(zod.string(), zod.record(zod.string(), zod.string())).optional().describe('필드별 조회 필터. 예: filters[startsAt][gte]=2026-01-01'),
+  "search": zod.string().optional()
+})
+
+
+
+
+export const EventsControllerGetEventSummaryV1Body = zod.object({
+  "metrics": zod.array(zod.object({
+  "name": zod.string(),
+  "function": zod.enum(['count', 'sum', 'avg', 'min', 'max']),
+  "field": zod.string().optional()
+})).optional().describe('Allowed fields: startsAt, endsAt, publishedAt'),
+  "groupBy": zod.array(zod.enum(['phase'])).optional(),
+  "having": zod.array(zod.object({
+  "field": zod.string(),
+  "op": zod.enum(['gt', 'gte', 'lt', 'lte', 'eq', 'ne']),
+  "value": zod.union([zod.number(),zod.string()])
+})).optional(),
+  "orderBy": zod.array(zod.object({
+  "field": zod.string(),
+  "direction": zod.enum(['asc', 'desc'])
+})).optional(),
+  "take": zod.number().min(1).optional()
+})
+
+export const EventsControllerGetEventSummaryV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "items": zod.array(zod.object({
+  "phase": zod.enum(['ongoing', 'upcoming', 'ended', 'all'])
+}))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
  * @summary 공개 이벤트 목록 조회
  */
 export const eventsControllerListV1QueryLimitDefault = 20;
 
 export const EventsControllerListV1QueryParams = zod.object({
-  "sort": zod.array(zod.string()).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
+  "sort": zod.array(zod.string()).optional().describe('Allowed fields: createdAt'),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "cursor": zod.string().nullish(),
   "limit": zod.number().default(eventsControllerListV1QueryLimitDefault),
   "phase": zod.enum(['ongoing', 'upcoming', 'ended']).optional()

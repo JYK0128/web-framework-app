@@ -1,6 +1,7 @@
 import { QueryOrder, RequestContext as MikroRequestContext } from '@mikro-orm/core';
 import { Inject, Logger } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { EVENT_BROKER, EventBroker } from '@pkg/server-core/event-broker';
 import { SupportUnansweredAlertEvent } from '@pkg/server-core/event-broker/events';
 import { KvStore } from '@pkg/server-core/kv-store';
@@ -9,7 +10,6 @@ import { isWithinOperatingHours } from '@pkg/shared/policy';
 
 import { SERVICE_RUNTIME_CONFIG } from '~/app.config';
 import { SupportMessage, SupportMessageSenderType, SupportRoom, SupportRoomStatus } from '~/core/database/entities/support';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { CheckUnansweredSupportRoomsCommand } from '~/modules/support/notification/check-unanswered-support-rooms.command';
 import { InquiryWebhookService } from '~/modules/support/notification/inquiry-webhook.service';
 import { ServiceContext } from '~/modules/system-config/service.context';

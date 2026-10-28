@@ -207,9 +207,9 @@ export const customersControllerListCustomersV1QueryPageDefault = 1;
 export const customersControllerListCustomersV1QueryLimitDefault = 20;
 
 export const CustomersControllerListCustomersV1QueryParams = zod.object({
-  "sort": zod.array(zod.enum(['createdAt', 'updatedAt'])).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
+  "sort": zod.array(zod.enum(['createdAt', 'updatedAt'])).optional().describe('Allowed fields: createdAt, updatedAt'),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "page": zod.number().default(customersControllerListCustomersV1QueryPageDefault),
   "limit": zod.number().default(customersControllerListCustomersV1QueryLimitDefault)
 })
@@ -250,9 +250,9 @@ export const customersControllerListCustomerPiiV1QueryPageDefault = 1;
 export const customersControllerListCustomerPiiV1QueryLimitDefault = 20;
 
 export const CustomersControllerListCustomerPiiV1QueryParams = zod.object({
-  "sort": zod.array(zod.enum(['createdAt', 'updatedAt'])).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
+  "sort": zod.array(zod.enum(['createdAt', 'updatedAt'])).optional().describe('Allowed fields: createdAt, updatedAt'),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "page": zod.number().default(customersControllerListCustomerPiiV1QueryPageDefault),
   "limit": zod.number().default(customersControllerListCustomerPiiV1QueryLimitDefault)
 })

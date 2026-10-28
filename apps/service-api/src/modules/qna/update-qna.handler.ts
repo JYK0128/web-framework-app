@@ -1,11 +1,11 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { EventBroker } from '@pkg/server-core/event-broker';
 import { UserNotificationCreatedEvent } from '@pkg/server-core/event-broker/events';
 import { PrincipalContext } from '@pkg/server-core/http/contexts';
 import { QnaStatus } from '@pkg/shared/constants';
 
 import { User } from '~/core/database/entities/auth';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { findQna } from '~/modules/qna/qna.helpers';
 import { UpdateQnaCommand } from '~/modules/qna/update-qna.command';
 import { UpdateQnaResponseDto } from '~/modules/qna/update-qna.response.dto';

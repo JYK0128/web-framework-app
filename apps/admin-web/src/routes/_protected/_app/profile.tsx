@@ -129,7 +129,7 @@ function ProfilePage() {
   const disableTwoFactor = useAuthControllerDisableTwoFactorV1();
   const unregister = useAuthControllerUnregisterV1();
   const policy = ADMIN_AUTH_POLICY_CONFIG;
-  const agreementsQuery = useTermsControllerGetAgreementsV1(undefined, {
+  const agreementsQuery = useTermsControllerGetAgreementsV1({
     query: {
       enabled: canLoadAgreements(policy, user ?? null),
     },

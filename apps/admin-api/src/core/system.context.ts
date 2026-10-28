@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 
 import { AdminSystemConfigCode, SystemConfig } from '~/core/database/entities/system-configs';
-import { AppEntityManager } from '~/core/database/entity-manager';
 
 export type SystemContextConfig = {
   adminEmail: unknown

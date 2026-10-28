@@ -111,9 +111,8 @@ export const ServiceTermsControllerSetAgreementsV1Response = zod.object({
 export const serviceTermsControllerGetAgreementHistoryV1QueryLimitDefault = 20;
 
 export const ServiceTermsControllerGetAgreementHistoryV1QueryParams = zod.object({
-  "sort": zod.array(zod.string()).optional(),
+  "sort": zod.array(zod.string()).optional().describe('Allowed fields: createdAt, id'),
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
-  "search": zod.string().optional(),
   "cursor": zod.string().nullish(),
   "limit": zod.number().default(serviceTermsControllerGetAgreementHistoryV1QueryLimitDefault),
   "groupId": zod.uuid()
@@ -157,9 +156,9 @@ export const serviceTermsControllerGetTermsV1QueryPageDefault = 1;
 export const serviceTermsControllerGetTermsV1QueryLimitDefault = 20;
 
 export const ServiceTermsControllerGetTermsV1QueryParams = zod.object({
-  "sort": zod.array(zod.string()).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
+  "sort": zod.array(zod.string()).optional().describe('Allowed fields: createdAt'),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "page": zod.number().default(serviceTermsControllerGetTermsV1QueryPageDefault),
   "limit": zod.number().default(serviceTermsControllerGetTermsV1QueryLimitDefault)
 })

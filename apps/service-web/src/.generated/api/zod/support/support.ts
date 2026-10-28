@@ -11,9 +11,9 @@ import * as zod from 'zod';
 export const supportControllerListRoomsV1QueryLimitDefault = 20;
 
 export const SupportControllerListRoomsV1QueryParams = zod.object({
-  "sort": zod.array(zod.enum(['createdAt', 'id'])).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
+  "sort": zod.array(zod.enum(['createdAt', 'id'])).optional().describe('Allowed fields: createdAt, id'),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "cursor": zod.string().nullish(),
   "limit": zod.number().default(supportControllerListRoomsV1QueryLimitDefault),
   "status": zod.enum(['open', 'in_progress', 'closed']).optional()
@@ -207,23 +207,6 @@ export const SupportControllerCreateMessageV1Response = zod.object({
 
 }).nullish(),
   "createdAt": zod.iso.datetime({"offset":true})
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-export const SupportControllerSocketTicketV1Params = zod.object({
-  "roomId": zod.string()
-})
-
-export const SupportControllerSocketTicketV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "ticket": zod.string()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

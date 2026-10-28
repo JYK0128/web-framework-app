@@ -12,9 +12,9 @@ export const qnaControllerListV1QueryPageDefault = 1;
 export const qnaControllerListV1QueryLimitDefault = 20;
 
 export const QnaControllerListV1QueryParams = zod.object({
-  "sort": zod.array(zod.enum(['createdAt', 'updatedAt'])).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
+  "sort": zod.array(zod.enum(['createdAt', 'updatedAt'])).optional().describe('Allowed fields: createdAt, updatedAt'),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "page": zod.number().default(qnaControllerListV1QueryPageDefault),
   "limit": zod.number().default(qnaControllerListV1QueryLimitDefault),
   "category": zod.enum(['계정', '서비스 이용', '검증']).optional(),

@@ -1,10 +1,10 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { ApplicationError } from '@pkg/shared/common';
 import { hashWithSecret } from '@pkg/shared/server';
 
 import { Account, User } from '~/core/database/entities/auth';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { env } from '~/env';
 import { FindIdQuery } from '~/modules/auth/account/find-id.query';
 import { FindIdResponseDto } from '~/modules/auth/account/find-id.response.dto';

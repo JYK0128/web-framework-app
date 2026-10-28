@@ -35,7 +35,6 @@ import type {
   TermsControllerGetAgreementHistoryV1200,
   TermsControllerGetAgreementHistoryV1Params,
   TermsControllerGetAgreementsV1200,
-  TermsControllerGetAgreementsV1Params,
   TermsControllerGetRevisionsV1200,
   TermsControllerGetRevisionsV1Params,
   TermsControllerGetTermGroupsV1200,
@@ -76,14 +75,13 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
  * @summary 약관 동의 목록 조회
  */
 export const termsControllerGetAgreementsV1 = (
-    params?: TermsControllerGetAgreementsV1Params,
+
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
       return axios<TermsControllerGetAgreementsV1200>(
-      {url: `/api/v1/terms/agreements`, method: 'GET',
-        params, signal
+      {url: `/api/v1/terms/agreements`, method: 'GET', signal
     },
       options);
     }
@@ -91,23 +89,23 @@ export const termsControllerGetAgreementsV1 = (
 
 
 
-export const getTermsControllerGetAgreementsV1QueryKey = (params?: TermsControllerGetAgreementsV1Params,) => {
+export const getTermsControllerGetAgreementsV1QueryKey = () => {
     return [
-    `/api/v1/terms/agreements`, ...(params ? [params] : [])
+    `/api/v1/terms/agreements`
     ] as const;
     }
 
 
-export const getTermsControllerGetAgreementsV1QueryOptions = <TData = Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>, TError = unknown>(params?: TermsControllerGetAgreementsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export const getTermsControllerGetAgreementsV1QueryOptions = <TData = Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getTermsControllerGetAgreementsV1QueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getTermsControllerGetAgreementsV1QueryKey();
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>> = ({ signal }) => termsControllerGetAgreementsV1(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>> = ({ signal }) => termsControllerGetAgreementsV1(requestOptions, signal);
 
 
 
@@ -121,7 +119,7 @@ export type TermsControllerGetAgreementsV1QueryError = unknown
 
 
 export function useTermsControllerGetAgreementsV1<TData = Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>, TError = unknown>(
- params: undefined |  TermsControllerGetAgreementsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>, TError, TData>> & Pick<
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>,
           TError,
@@ -131,7 +129,7 @@ export function useTermsControllerGetAgreementsV1<TData = Awaited<ReturnType<typ
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useTermsControllerGetAgreementsV1<TData = Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>, TError = unknown>(
- params?: TermsControllerGetAgreementsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>, TError, TData>> & Pick<
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>,
           TError,
@@ -141,7 +139,7 @@ export function useTermsControllerGetAgreementsV1<TData = Awaited<ReturnType<typ
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useTermsControllerGetAgreementsV1<TData = Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>, TError = unknown>(
- params?: TermsControllerGetAgreementsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -149,11 +147,11 @@ export function useTermsControllerGetAgreementsV1<TData = Awaited<ReturnType<typ
  */
 
 export function useTermsControllerGetAgreementsV1<TData = Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>, TError = unknown>(
- params?: TermsControllerGetAgreementsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getTermsControllerGetAgreementsV1QueryOptions(params,options)
+  const queryOptions = getTermsControllerGetAgreementsV1QueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

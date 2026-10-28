@@ -1,8 +1,8 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { PrincipalContext } from '@pkg/server-core/http/contexts';
 import { RealtimeService } from '@pkg/server-core/realtime';
 
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { findSupportRoom } from '~/modules/support/room/support-rooms.helpers';
 import { UpdateOwnSupportRoomCommand } from '~/modules/support/room/update-own-support-room.command';
 import { UpdateSupportRoomResponseDto } from '~/modules/support/room/update-support-room.response.dto';

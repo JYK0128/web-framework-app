@@ -8,9 +8,12 @@
 import type { SortDirection } from './sortDirection';
 
 export type TermsControllerGetTermsV1Params = {
+search?: string;
+/**
+ * Allowed fields: title, version, isNoticeRequired, isRequired, publishedAt, createdAt, updatedAt
+ */
 sort?: string[];
 direction?: SortDirection[];
-search?: string;
 page?: number;
 limit?: number;
 groupId?: string;

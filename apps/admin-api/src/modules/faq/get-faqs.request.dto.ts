@@ -1,10 +1,16 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { PageRequestDto } from '@pkg/server-core/http/dto/request';
+import { QueryRequestDtoFor } from '@pkg/server-core/http/dto/request';
 import { IsIn, IsOptional, IsString } from 'class-validator';
 
 import type { BaseEntity } from '~/core/database/entities/base.entity';
 
-export class GetFaqsRequestDto extends PageRequestDto<BaseEntity, 'sortOrder' | 'createdAt'> {
+const GetFaqsRequestDtoBase = QueryRequestDtoFor<BaseEntity>()({
+  search: { fields: [] },
+  sort: { fields: ['sortOrder', 'createdAt'], default: ['sortOrder', 'createdAt'] },
+  page: {},
+});
+
+export class GetFaqsRequestDto extends GetFaqsRequestDtoBase {
   @ApiPropertyOptional({ isArray: true, enum: ['sortOrder', 'createdAt'] })
   @IsIn(['sortOrder', 'createdAt'], { each: true })
   override sort: ('sortOrder' | 'createdAt')[] = ['sortOrder', 'createdAt'];

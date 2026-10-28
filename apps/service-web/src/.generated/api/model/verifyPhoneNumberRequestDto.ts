@@ -7,6 +7,6 @@
  */
 
 export interface VerifyPhoneNumberRequestDto {
-  /** PortOne verification transaction ID */
+  /** @maxLength 200 */
   identityVerificationId: string;
 }

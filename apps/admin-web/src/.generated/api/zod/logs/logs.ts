@@ -15,9 +15,9 @@ export const logsControllerGetLogsV1QueryPageDefault = 1;
 export const logsControllerGetLogsV1QueryLimitDefault = 20;
 
 export const LogsControllerGetLogsV1QueryParams = zod.object({
-  "sort": zod.array(zod.enum(['createdAt', 'level', 'method', 'url', 'statusCode', 'duration', 'requestId'])).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
+  "sort": zod.array(zod.enum(['createdAt', 'level', 'method', 'url', 'statusCode', 'duration', 'requestId'])).optional().describe('Allowed fields: createdAt, level, method, url, statusCode, duration, requestId'),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "page": zod.number().default(logsControllerGetLogsV1QueryPageDefault),
   "limit": zod.number().default(logsControllerGetLogsV1QueryLimitDefault),
   "method": zod.string().optional(),

@@ -9,9 +9,12 @@ import type { NoticesControllerListV1Importance } from './noticesControllerListV
 import type { SortDirection } from './sortDirection';
 
 export type NoticesControllerListV1Params = {
+search?: string;
+/**
+ * Allowed fields: createdAt
+ */
 sort?: string[];
 direction?: SortDirection[];
-search?: string;
 /**
  * @nullable
  */

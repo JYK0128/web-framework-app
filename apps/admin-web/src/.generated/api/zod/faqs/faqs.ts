@@ -15,9 +15,9 @@ export const faqsControllerListFaqsV1QueryPageDefault = 1;
 export const faqsControllerListFaqsV1QueryLimitDefault = 20;
 
 export const FaqsControllerListFaqsV1QueryParams = zod.object({
-  "sort": zod.array(zod.enum(['sortOrder', 'createdAt'])).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
+  "sort": zod.array(zod.enum(['sortOrder', 'createdAt'])).optional().describe('Allowed fields: sortOrder, createdAt'),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "page": zod.number().default(faqsControllerListFaqsV1QueryPageDefault),
   "limit": zod.number().default(faqsControllerListFaqsV1QueryLimitDefault),
   "category": zod.string().optional().describe('FAQ 카테고리')

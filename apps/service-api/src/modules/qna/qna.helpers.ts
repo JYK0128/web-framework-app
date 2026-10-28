@@ -1,9 +1,9 @@
 import { HttpStatus } from '@nestjs/common';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { PrincipalContext } from '@pkg/server-core/http/contexts';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { Qna } from '~/core/database/entities/qna';
-import { AppEntityManager } from '~/core/database/entity-manager';
 
 export async function findQna(em: AppEntityManager, principal: PrincipalContext, qnaId: string, mine: boolean): Promise<Qna> {
   const user = mine ? principal.ensureUser() : null;

@@ -34,7 +34,6 @@ import type {
   SupportControllerListRoomPiiV1Params,
   SupportControllerListRoomsV1200,
   SupportControllerListRoomsV1Params,
-  SupportControllerSocketTicketV1200,
   SupportControllerUpdateRoomV1200,
   UpdateSupportRoomRequestDto
 } from '../../model';
@@ -60,6 +59,92 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+export const supportControllerNotificationsV1 = (
+
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<void>(
+      {url: `/api/v1/support/notifications/events`, method: 'GET', signal
+    },
+      options);
+    }
+
+
+
+
+export const getSupportControllerNotificationsV1QueryKey = () => {
+    return [
+    `/api/v1/support/notifications/events`
+    ] as const;
+    }
+
+
+export const getSupportControllerNotificationsV1QueryOptions = <TData = Awaited<ReturnType<typeof supportControllerNotificationsV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerNotificationsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSupportControllerNotificationsV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof supportControllerNotificationsV1>>> = ({ signal }) => supportControllerNotificationsV1(requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof supportControllerNotificationsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SupportControllerNotificationsV1QueryResult = NonNullable<Awaited<ReturnType<typeof supportControllerNotificationsV1>>>
+export type SupportControllerNotificationsV1QueryError = unknown
+
+
+export function useSupportControllerNotificationsV1<TData = Awaited<ReturnType<typeof supportControllerNotificationsV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerNotificationsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof supportControllerNotificationsV1>>,
+          TError,
+          Awaited<ReturnType<typeof supportControllerNotificationsV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSupportControllerNotificationsV1<TData = Awaited<ReturnType<typeof supportControllerNotificationsV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerNotificationsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof supportControllerNotificationsV1>>,
+          TError,
+          Awaited<ReturnType<typeof supportControllerNotificationsV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSupportControllerNotificationsV1<TData = Awaited<ReturnType<typeof supportControllerNotificationsV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerNotificationsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useSupportControllerNotificationsV1<TData = Awaited<ReturnType<typeof supportControllerNotificationsV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerNotificationsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSupportControllerNotificationsV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
 
 export const supportControllerListRoomsV1 = (
     params?: SupportControllerListRoomsV1Params,
@@ -612,148 +697,6 @@ export function useSupportControllerListMessagePiiV1<TData = Awaited<ReturnType<
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getSupportControllerListMessagePiiV1QueryOptions(roomId,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-
-
-
-
-
-export const supportControllerSocketTicketV1 = (
-    roomId: string,
- options?: SecondParameter<typeof axios>,signal?: AbortSignal
-) => {
-
-
-      return axios<SupportControllerSocketTicketV1200>(
-      {url: `/api/v1/support/rooms/${roomId}/socket-ticket`, method: 'POST', signal
-    },
-      options);
-    }
-
-
-
-
-export const getSupportControllerSocketTicketV1MutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof supportControllerSocketTicketV1>>, TError,{roomId: string}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof supportControllerSocketTicketV1>>, TError,{roomId: string}, TContext> => {
-
-const mutationKey = ['supportControllerSocketTicketV1'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof supportControllerSocketTicketV1>>, {roomId: string}> = (props) => {
-          const {roomId} = props ?? {};
-
-          return  supportControllerSocketTicketV1(roomId,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type SupportControllerSocketTicketV1MutationResult = NonNullable<Awaited<ReturnType<typeof supportControllerSocketTicketV1>>>
-
-    export type SupportControllerSocketTicketV1MutationError = unknown
-
-    export const useSupportControllerSocketTicketV1 = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof supportControllerSocketTicketV1>>, TError,{roomId: string}, TContext>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof supportControllerSocketTicketV1>>,
-        TError,
-        {roomId: string},
-        TContext
-      > => {
-      return useMutation(getSupportControllerSocketTicketV1MutationOptions(options), queryClient);
-    }
-    export const supportControllerNotificationsV1 = (
-
- options?: SecondParameter<typeof axios>,signal?: AbortSignal
-) => {
-
-
-      return axios<void>(
-      {url: `/api/v1/support/notifications/events`, method: 'GET', signal
-    },
-      options);
-    }
-
-
-
-
-export const getSupportControllerNotificationsV1QueryKey = () => {
-    return [
-    `/api/v1/support/notifications/events`
-    ] as const;
-    }
-
-
-export const getSupportControllerNotificationsV1QueryOptions = <TData = Awaited<ReturnType<typeof supportControllerNotificationsV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerNotificationsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getSupportControllerNotificationsV1QueryKey();
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof supportControllerNotificationsV1>>> = ({ signal }) => supportControllerNotificationsV1(requestOptions, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof supportControllerNotificationsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type SupportControllerNotificationsV1QueryResult = NonNullable<Awaited<ReturnType<typeof supportControllerNotificationsV1>>>
-export type SupportControllerNotificationsV1QueryError = unknown
-
-
-export function useSupportControllerNotificationsV1<TData = Awaited<ReturnType<typeof supportControllerNotificationsV1>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerNotificationsV1>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof supportControllerNotificationsV1>>,
-          TError,
-          Awaited<ReturnType<typeof supportControllerNotificationsV1>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useSupportControllerNotificationsV1<TData = Awaited<ReturnType<typeof supportControllerNotificationsV1>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerNotificationsV1>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof supportControllerNotificationsV1>>,
-          TError,
-          Awaited<ReturnType<typeof supportControllerNotificationsV1>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useSupportControllerNotificationsV1<TData = Awaited<ReturnType<typeof supportControllerNotificationsV1>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerNotificationsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-
-export function useSupportControllerNotificationsV1<TData = Awaited<ReturnType<typeof supportControllerNotificationsV1>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerNotificationsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getSupportControllerNotificationsV1QueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

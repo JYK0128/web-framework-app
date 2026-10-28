@@ -10,9 +10,12 @@ import type { SupportControllerListRoomPiiV1SortItem } from './supportController
 import type { SupportControllerListRoomPiiV1Status } from './supportControllerListRoomPiiV1Status';
 
 export type SupportControllerListRoomPiiV1Params = {
+search?: string;
+/**
+ * Allowed fields: lastMessageAt, createdAt, updatedAt, id
+ */
 sort?: SupportControllerListRoomPiiV1SortItem[];
 direction?: SortDirection[];
-search?: string;
 page?: number;
 limit?: number;
 status?: SupportControllerListRoomPiiV1Status;

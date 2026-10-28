@@ -1,9 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { Account, User } from '~/core/database/entities/auth';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { GetOperatorByIdQuery } from '~/modules/operator/profile/get-operator-by-id.query';
 import { GetOperatorByIdResponseDto } from '~/modules/operator/profile/get-operator-by-id.response.dto';
 

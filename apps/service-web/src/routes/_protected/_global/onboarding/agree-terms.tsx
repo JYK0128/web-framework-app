@@ -6,7 +6,7 @@ import { ArrowRight, Check, ChevronRight, Loader2 } from 'lucide-react';
 import { useMemo } from 'react';
 
 import { getServiceTermsControllerGetAgreementsV1QueryKey, useServiceTermsControllerGetAgreementsV1, useServiceTermsControllerSetAgreementsV1 } from '~/.generated/api/endpoints/service-terms/service-terms';
-import type { ServiceTermAgreementItem } from '~/.generated/api/model';
+import type { GetServiceTermAgreementsResponseDto, ServiceTermAgreementItem } from '~/.generated/api/model';
 
 import { OnboardingLayout } from './-components/onboarding-layout';
 import { OnboardingTermDetailModal } from './-components/term-detail-modal';
@@ -40,7 +40,26 @@ function TermsOnboardingPage() {
           })),
         },
       });
-      await queryClient.invalidateQueries({ queryKey: getServiceTermsControllerGetAgreementsV1QueryKey() });
+      const queryKey = getServiceTermsControllerGetAgreementsV1QueryKey();
+      const submittedAgreements = new Map(terms.map((term) => [term.termId, value.agreements[term.termId] === true]));
+      queryClient.setQueryData<GetServiceTermAgreementsResponseDto>(queryKey, (current) => current
+        ? {
+          ...current,
+          items: current.items.map((term) => {
+            if (!submittedAgreements.has(term.termId)) return term;
+            const isAgreed = submittedAgreements.get(term.termId) === true;
+            return {
+              ...term,
+              isAgreed,
+              agreedAt: isAgreed ? new Date().toISOString() : null,
+              agreementMetadata: term.metadata?.options
+                ? { options: value.options[term.termId] ?? {} }
+                : null,
+            };
+          }),
+        }
+        : current);
+      await queryClient.invalidateQueries({ queryKey, exact: true });
       await router.invalidate();
     },
   });

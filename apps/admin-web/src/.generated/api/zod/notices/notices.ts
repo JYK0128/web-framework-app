@@ -12,9 +12,9 @@ export const noticesControllerListV1QueryPageDefault = 1;
 export const noticesControllerListV1QueryLimitDefault = 20;
 
 export const NoticesControllerListV1QueryParams = zod.object({
-  "sort": zod.array(zod.string()).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
+  "sort": zod.array(zod.string()).optional().describe('Allowed fields: createdAt, publishedAt'),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "page": zod.number().default(noticesControllerListV1QueryPageDefault),
   "limit": zod.number().default(noticesControllerListV1QueryLimitDefault),
   "importance": zod.enum(['normal', 'important', 'urgent']).optional()

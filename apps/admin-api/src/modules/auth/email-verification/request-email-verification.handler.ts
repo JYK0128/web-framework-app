@@ -2,6 +2,7 @@ import { randomBytes, randomUUID } from 'node:crypto';
 
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler, QueryBus } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { EVENT_BROKER, EventBroker } from '@pkg/server-core/event-broker';
 import { KvStore } from '@pkg/server-core/kv-store';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
@@ -9,7 +10,6 @@ import { hashWithSecret } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '~/app.config';
 import { User } from '~/core/database/entities/auth';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { env } from '~/env';
 import { AuthKvStoreKey } from '~/modules/auth/auth.key';
 import { EmailVerificationEvent } from '~/modules/auth/email-verification/email-verification.event';

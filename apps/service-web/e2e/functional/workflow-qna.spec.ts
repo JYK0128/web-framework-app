@@ -11,11 +11,15 @@ test('customer submits a question and opens its details from the Q&A screen', as
   const onboarding = page.getByRole('heading', { name: /약관/ });
   if (await onboarding.isVisible().catch(() => false)) {
     await page.getByRole('checkbox', { name: '전체 약관에 동의합니다.' }).click();
+    const agreementResponse = page.waitForResponse((response) => response.url().endsWith('/api/v1/service-terms/agreements') && response.request().method() === 'POST');
     await page.getByRole('button', { name: /동의하고 계속하기/ }).click();
+    const response = await agreementResponse;
+    expect(response.status(), await response.text()).toBe(200);
   }
   await expect(page).not.toHaveURL(/\/login/);
 
   await page.goto('/qna');
+  await expect(page.locator('html')).toHaveAttribute('data-hydrated', 'true');
   const title = `E2E 문의 ${Date.now()}`;
   await page.getByRole('button', { name: '문의 등록' }).click();
   const dialog = page.getByRole('dialog');

@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { type IUserAuthService, USER_AUTH_SERVICE } from '@pkg/server-core/auth';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 
 import { TwoFactor } from '~/core/database/entities/auth.extensions';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { ResetOperatorTwoFactorCommand } from '~/modules/operator/access/reset-operator-two-factor.command';
 import { ResetOperatorTwoFactorResponseDto } from '~/modules/operator/access/reset-operator-two-factor.response.dto';
 import { findOperator } from '~/modules/operator/operator-actions.helpers';

@@ -1,7 +1,7 @@
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { PrincipalContext } from '@pkg/server-core/http/contexts';
 
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { GetAllQnaQuery } from '~/modules/qna/get-all-qna.query';
 import { GetQnaResponseDto } from '~/modules/qna/get-qna.response.dto';
 import { findQna } from '~/modules/qna/qna.helpers';

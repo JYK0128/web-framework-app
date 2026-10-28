@@ -1,9 +1,15 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { PageRequestDto } from '@pkg/server-core/http/dto/request';
+import { QueryRequestDtoFor } from '@pkg/server-core/http/dto/request';
 import type { LogEntry } from '@pkg/server-core/log-telemetry';
 import { IsIn, IsOptional, IsString } from 'class-validator';
 
-export class GetLogsRequestDto extends PageRequestDto<LogEntry, 'createdAt' | 'level' | 'method' | 'url' | 'statusCode' | 'duration' | 'requestId'> {
+const GetLogsRequestDtoBase = QueryRequestDtoFor<LogEntry>()({
+  search: { fields: [] },
+  sort: { fields: ['createdAt', 'level', 'method', 'url', 'statusCode', 'duration', 'requestId'], default: ['createdAt'] },
+  page: {},
+});
+
+export class GetLogsRequestDto extends GetLogsRequestDtoBase {
   @ApiPropertyOptional({ isArray: true, enum: ['createdAt', 'level', 'method', 'url', 'statusCode', 'duration', 'requestId'] })
   @IsIn(['createdAt', 'level', 'method', 'url', 'statusCode', 'duration', 'requestId'], { each: true })
   override sort: ('createdAt' | 'level' | 'method' | 'url' | 'statusCode' | 'duration' | 'requestId')[] = ['createdAt'];

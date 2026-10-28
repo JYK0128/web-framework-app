@@ -9,9 +9,12 @@ import type { OperatorStatus } from './operatorStatus';
 import type { SortDirection } from './sortDirection';
 
 export type OperatorsControllerGetOperatorsV1Params = {
+search?: string;
+/**
+ * Allowed fields: name, twoFactorEnabled, createdAt, updatedAt
+ */
 sort?: string[];
 direction?: SortDirection[];
-search?: string;
 page?: number;
 limit?: number;
 includeDeleted?: boolean;

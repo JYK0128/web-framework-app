@@ -8,13 +8,15 @@
 import * as zod from 'zod';
 
 
+export const SupportControllerNotificationsV1Response = zod.unknown()
+
 export const supportControllerListRoomsV1QueryPageDefault = 1;
 export const supportControllerListRoomsV1QueryLimitDefault = 20;
 
 export const SupportControllerListRoomsV1QueryParams = zod.object({
-  "sort": zod.array(zod.enum(['lastMessageAt', 'createdAt', 'updatedAt', 'id'])).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
+  "sort": zod.array(zod.enum(['lastMessageAt', 'createdAt', 'updatedAt', 'id'])).optional().describe('Allowed fields: lastMessageAt, createdAt, updatedAt, id'),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "page": zod.number().default(supportControllerListRoomsV1QueryPageDefault),
   "limit": zod.number().default(supportControllerListRoomsV1QueryLimitDefault),
   "status": zod.enum(['open', 'in_progress', 'closed']).optional()
@@ -59,9 +61,9 @@ export const supportControllerListRoomPiiV1QueryPageDefault = 1;
 export const supportControllerListRoomPiiV1QueryLimitDefault = 20;
 
 export const SupportControllerListRoomPiiV1QueryParams = zod.object({
-  "sort": zod.array(zod.enum(['lastMessageAt', 'createdAt', 'updatedAt', 'id'])).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
+  "sort": zod.array(zod.enum(['lastMessageAt', 'createdAt', 'updatedAt', 'id'])).optional().describe('Allowed fields: lastMessageAt, createdAt, updatedAt, id'),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "page": zod.number().default(supportControllerListRoomPiiV1QueryPageDefault),
   "limit": zod.number().default(supportControllerListRoomPiiV1QueryLimitDefault),
   "status": zod.enum(['open', 'in_progress', 'closed']).optional()
@@ -255,22 +257,3 @@ export const SupportControllerListMessagePiiV1Response = zod.object({
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
-
-export const SupportControllerSocketTicketV1Params = zod.object({
-  "roomId": zod.string()
-})
-
-export const SupportControllerSocketTicketV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "ticket": zod.string()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-export const SupportControllerNotificationsV1Response = zod.unknown()

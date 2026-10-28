@@ -11,14 +11,6 @@ import * as zod from 'zod';
 /**
  * @summary 약관 동의 목록 조회
  */
-export const TermsControllerGetAgreementsV1QueryParams = zod.object({
-  "sort": zod.array(zod.string()).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
-  "search": zod.string().optional(),
-  "offset": zod.number().optional(),
-  "limit": zod.number().nullish()
-})
-
 export const TermsControllerGetAgreementsV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
@@ -78,9 +70,8 @@ export const TermsControllerSetAgreementsV1Response = zod.object({
 export const termsControllerGetAgreementHistoryV1QueryLimitDefault = 20;
 
 export const TermsControllerGetAgreementHistoryV1QueryParams = zod.object({
-  "sort": zod.array(zod.string()).optional(),
+  "sort": zod.array(zod.string()).optional().describe('Allowed fields: createdAt'),
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
-  "search": zod.string().optional(),
   "cursor": zod.string().nullish(),
   "limit": zod.number().default(termsControllerGetAgreementHistoryV1QueryLimitDefault),
   "groupId": zod.uuid().optional()
@@ -274,9 +265,9 @@ export const termsControllerGetTermsV1QueryPageDefault = 1;
 export const termsControllerGetTermsV1QueryLimitDefault = 20;
 
 export const TermsControllerGetTermsV1QueryParams = zod.object({
-  "sort": zod.array(zod.string()).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
+  "sort": zod.array(zod.string()).optional().describe('Allowed fields: title, version, isNoticeRequired, isRequired, publishedAt, createdAt, updatedAt'),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "page": zod.number().default(termsControllerGetTermsV1QueryPageDefault),
   "limit": zod.number().default(termsControllerGetTermsV1QueryLimitDefault),
   "groupId": zod.string().optional()

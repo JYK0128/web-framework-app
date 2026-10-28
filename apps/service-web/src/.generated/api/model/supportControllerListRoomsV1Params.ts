@@ -10,9 +10,12 @@ import type { SupportControllerListRoomsV1SortItem } from './supportControllerLi
 import type { SupportControllerListRoomsV1Status } from './supportControllerListRoomsV1Status';
 
 export type SupportControllerListRoomsV1Params = {
+search?: string;
+/**
+ * Allowed fields: createdAt, id
+ */
 sort?: SupportControllerListRoomsV1SortItem[];
 direction?: SortDirection[];
-search?: string;
 /**
  * @nullable
  */

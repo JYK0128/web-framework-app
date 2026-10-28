@@ -10,9 +10,12 @@ import type { FaqsControllerGetFaqsV1SortItem } from './faqsControllerGetFaqsV1S
 import type { SortDirection } from './sortDirection';
 
 export type FaqsControllerGetFaqsV1Params = {
+search?: string;
+/**
+ * Allowed fields: sortOrder, createdAt
+ */
 sort?: FaqsControllerGetFaqsV1SortItem[];
 direction?: SortDirection[];
-search?: string;
 /**
  * @nullable
  */

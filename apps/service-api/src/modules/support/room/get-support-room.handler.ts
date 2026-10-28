@@ -1,7 +1,7 @@
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { PrincipalContext } from '@pkg/server-core/http/contexts';
 
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { GetSupportRoomQuery } from '~/modules/support/room/get-support-room.query';
 import { GetSupportRoomResponseDto } from '~/modules/support/room/get-support-room.response.dto';
 import { findSupportRoom } from '~/modules/support/room/support-rooms.helpers';

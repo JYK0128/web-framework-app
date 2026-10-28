@@ -1,12 +1,12 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { assertPasswordCanBeUsed, updateCredentialPassword } from '@pkg/server-core/auth';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { KvStore } from '@pkg/server-core/kv-store';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { SECURITY_CONFIG } from '~/app.config';
 import { Account, User } from '~/core/database/entities/auth';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { AuthKvStoreKey } from '~/modules/auth/auth.key';
 import { ResetPasswordCommand } from '~/modules/auth/credential/reset-password.command';
 import { ResetPasswordResponseDto } from '~/modules/auth/credential/reset-password.response.dto';

@@ -6,24 +6,31 @@
  * OpenAPI spec version: 1.0.0
  */
 import {
+  useMutation,
   useQuery
 } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult
 } from '@tanstack/react-query';
 
 import type {
   EventsControllerDetailV1200,
+  EventsControllerGetEventSummaryV1200,
+  EventsControllerGetEventSummaryV1Params,
   EventsControllerListV1200,
-  EventsControllerListV1Params
+  EventsControllerListV1Params,
+  GetEventSummaryAggregationRequest
 } from '../../model';
 
 import { axios } from '../../../../lib/axios';
@@ -49,6 +56,72 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
 };
 
 /**
+ * @summary 이벤트 전체 및 단계별 집계 조회
+ */
+export const eventsControllerGetEventSummaryV1 = (
+    getEventSummaryAggregationRequest: GetEventSummaryAggregationRequest,
+    params?: EventsControllerGetEventSummaryV1Params,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<EventsControllerGetEventSummaryV1200>(
+      {url: `/api/v1/events/summary`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: getEventSummaryAggregationRequest,
+        params, signal
+    },
+      options);
+    }
+
+
+
+
+export const getEventsControllerGetEventSummaryV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof eventsControllerGetEventSummaryV1>>, TError,{data: GetEventSummaryAggregationRequest;params?: EventsControllerGetEventSummaryV1Params}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof eventsControllerGetEventSummaryV1>>, TError,{data: GetEventSummaryAggregationRequest;params?: EventsControllerGetEventSummaryV1Params}, TContext> => {
+
+const mutationKey = ['eventsControllerGetEventSummaryV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof eventsControllerGetEventSummaryV1>>, {data: GetEventSummaryAggregationRequest;params?: EventsControllerGetEventSummaryV1Params}> = (props) => {
+          const {data,params} = props ?? {};
+
+          return  eventsControllerGetEventSummaryV1(data,params,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type EventsControllerGetEventSummaryV1MutationResult = NonNullable<Awaited<ReturnType<typeof eventsControllerGetEventSummaryV1>>>
+    export type EventsControllerGetEventSummaryV1MutationBody = GetEventSummaryAggregationRequest
+    export type EventsControllerGetEventSummaryV1MutationError = unknown
+
+    /**
+ * @summary 이벤트 전체 및 단계별 집계 조회
+ */
+export const useEventsControllerGetEventSummaryV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof eventsControllerGetEventSummaryV1>>, TError,{data: GetEventSummaryAggregationRequest;params?: EventsControllerGetEventSummaryV1Params}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof eventsControllerGetEventSummaryV1>>,
+        TError,
+        {data: GetEventSummaryAggregationRequest;params?: EventsControllerGetEventSummaryV1Params},
+        TContext
+      > => {
+      return useMutation(getEventsControllerGetEventSummaryV1MutationOptions(options), queryClient);
+    }
+    /**
  * @summary 공개 이벤트 목록 조회
  */
 export const eventsControllerListV1 = (

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 
 import { User } from '~/core/database/entities/auth';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { GetOperatorOverviewQuery } from '~/modules/operator/profile/get-operator-overview.query';
 import { GetOperatorOverviewResponseDto } from '~/modules/operator/profile/get-operator-overview.response.dto';
 

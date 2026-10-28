@@ -1,5 +1,6 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { type IUserAuthService, type TokenPairResult, USER_AUTH_SERVICE } from '@pkg/server-core/auth';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 import { type OAuthIdentity, type OAuthProviderConfig, OAuthProviderService, type PublicOAuthProvider } from '@pkg/server-core/oauth';
 import { ApplicationError } from '@pkg/shared/common';
 import { encrypt, hashWithSecret } from '@pkg/shared/server';
@@ -7,7 +8,6 @@ import { encrypt, hashWithSecret } from '@pkg/shared/server';
 import { SECURITY_CONFIG } from '~/app.config';
 import { Account, Profile, User } from '~/core/database/entities/auth';
 import { Role } from '~/core/database/entities/auth.extensions';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { SystemContext } from '~/core/system.context';
 import { env } from '~/env';
 

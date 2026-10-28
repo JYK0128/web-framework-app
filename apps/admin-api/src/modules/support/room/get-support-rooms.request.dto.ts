@@ -1,11 +1,17 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { PageRequestDto } from '@pkg/server-core/http/dto/request';
+import { QueryRequestDtoFor } from '@pkg/server-core/http/dto/request';
 import { IsEnum, IsIn, IsOptional } from 'class-validator';
 
 import type { BaseEntity } from '~/core/database/entities/base.entity';
 import { SupportRoomStatus } from '~/modules/support/support.constants';
 
-export class GetSupportRoomsRequestDto extends PageRequestDto<BaseEntity, 'lastMessageAt' | 'createdAt' | 'updatedAt' | 'id'> {
+const GetSupportRoomsRequestDtoBase = QueryRequestDtoFor<BaseEntity>()({
+  search: { fields: [] },
+  sort: { fields: ['lastMessageAt', 'createdAt', 'updatedAt', 'id'], default: ['lastMessageAt', 'createdAt'] },
+  page: {},
+});
+
+export class GetSupportRoomsRequestDto extends GetSupportRoomsRequestDtoBase {
   @ApiPropertyOptional({ isArray: true, enum: ['lastMessageAt', 'createdAt', 'updatedAt', 'id'] })
   @IsIn(['lastMessageAt', 'createdAt', 'updatedAt', 'id'], { each: true })
   override sort: ('lastMessageAt' | 'createdAt' | 'updatedAt' | 'id')[] = ['lastMessageAt', 'createdAt'];

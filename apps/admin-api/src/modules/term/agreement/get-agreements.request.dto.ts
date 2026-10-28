@@ -1,5 +1,3 @@
-import { ListRequestDto } from '@pkg/server-core/http/dto/request';
+import { BaseDto } from '@pkg/server-core/http/dto/base';
 
-import { UserTermAgreement } from '~/core/database/entities/terms';
-
-export class GetAgreementsRequestDto extends ListRequestDto<UserTermAgreement> {}
+export class GetAgreementsRequestDto extends BaseDto {}

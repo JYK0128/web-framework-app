@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { AppEntityManager } from '@pkg/server-core/core/persistence';
 
 import { User } from '~/core/database/entities/auth';
-import { AppEntityManager } from '~/core/database/entity-manager';
 import { GetOperatorsQuery } from '~/modules/operator/profile/get-operators.query';
 import { GetOperatorsResponseDto } from '~/modules/operator/profile/get-operators.response.dto';
 import { OperatorItemDto } from '~/modules/operator/profile/operator-item.dto';
@@ -14,8 +14,9 @@ export class GetOperatorsHandler implements IQueryHandler<GetOperatorsQuery, Get
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetOperatorsQuery): Promise<GetOperatorsResponseDto> {
-    const result = await this.em.findByPage(User, query.input.toFilterQuery(), {
-      ...query.input.toPageOptions(),
+    const { where, ...options } = query.input.toQuery();
+    const result = await this.em.findByPage(User, where, {
+      ...options,
       populate: ['role', 'profile'],
       filters: query.input.includeDeleted || query.input.status === OperatorStatus.DELETED ? false : undefined,
     });
