@@ -71,6 +71,13 @@ class OverlayObserver {
     }, 300);
   };
 
+  closeTopFromHistory = () => {
+    const topOverlay = [...this.overlays].reverse().find((item) => item.isOpen);
+    if (topOverlay) this.close(topOverlay.id);
+  };
+
+  hasOpenOverlay = () => this.overlays.some((item) => item.isOpen);
+
   private publish() {
     this.subscribers.forEach((subscriber) => subscriber());
   }
@@ -91,4 +98,12 @@ export function openOverlay<P extends object, R = void>(
 
 export function closeOverlay(id: string, result?: unknown) {
   overlayState.close(id, result);
+}
+
+export function closeTopOverlayFromHistory() {
+  overlayState.closeTopFromHistory();
+}
+
+export function hasOpenOverlay() {
+  return overlayState.hasOpenOverlay();
 }
