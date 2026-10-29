@@ -1,9 +1,10 @@
-import { type ComponentProps, createElement, type ReactNode, useSyncExternalStore } from 'react';
+import { useBlocker } from '@tanstack/react-router';
+import { type ComponentProps, createElement, type ReactNode, useEffect, useSyncExternalStore } from 'react';
 
 import { cn } from '#.generated/shadcn/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#ui';
 
-import { closeOverlay, getOverlaysSnapshot, subscribeToOverlays } from './modal-registry';
+import { closeOverlay, closeTopOverlayFromHistory, getOverlaysSnapshot, hasOpenOverlay, subscribeToOverlays } from './modal-registry';
 
 export type ModalComponentProps<TResult = boolean> = {
   open?: boolean
@@ -65,6 +66,17 @@ export function ModalContainer() {
     getOverlaysSnapshot,
     getOverlaysSnapshot,
   );
+  const blocker = useBlocker({
+    shouldBlockFn: ({ action }) => action === 'BACK' && hasOpenOverlay(),
+    enableBeforeUnload: false,
+    withResolver: true,
+  });
+
+  useEffect(() => {
+    if (blocker.status !== 'blocked') return;
+    closeTopOverlayFromHistory();
+    blocker.reset();
+  }, [blocker]);
 
   return (
     <>
