@@ -21,6 +21,10 @@ const config: StorybookConfig = {
   ],
   framework: '@storybook/react-vite',
   docs: { autodocs: 'tag' },
+  managerHead(head) {
+    const basePath = process.env.STORYBOOK_BASE_PATH;
+    return basePath ? `<base href="${basePath}" />\n${head}` : head;
+  },
   async viteFinal(viteConfig) {
     if (process.env.STORYBOOK_BASE_PATH) {
       viteConfig.base = process.env.STORYBOOK_BASE_PATH;
