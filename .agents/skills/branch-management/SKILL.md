@@ -1,6 +1,6 @@
 ---
 name: branch-management
-description: Use for Git branch selection, creation, switching, integration, publishing, or recovery when working on changes in a repository.
+description: Use for Git branch workflows, publishing, releases, and production deployments tied to repository refs.
 ---
 
 # Branch management
@@ -30,6 +30,17 @@ Keep changes on the branch that matches the task and repository workflow. Preser
 - Do not create a release, publish a package, deploy, or create/move a release tag unless the user requested that release action. A request to push code does not by itself authorize a release.
 - Before a requested release, confirm the intended version and release target from the user or repository policy, and verify that the release source contains the reviewed changes and has no unintended local changes. Follow required checks and approvals.
 - After releasing, verify the resulting version, tag or release record, and deployment/publish result using the repository's available tooling. Report the observed outcome and any incomplete step.
+
+## Manual production deployment
+
+For this repository's apps deployment, read `docs/apps-deployment-plan.md` and `.github/workflows/cd.yml` before triggering production work.
+
+- The normal apps deployment path is GitHub Actions. A push to `main` may deploy automatically when the changed paths match the CD workflow. `workflow_dispatch` is also a production deployment: it checks out the selected ref, builds and publishes all four app images (`admin-api`, `admin-web`, `service-api`, `service-web`) at that SHA, then updates the full Compose stack and waits for all four healthchecks. It is not a dry run or an app-scoped deploy.
+- Use `main` as the production deployment source for both automatic and manual CD. This repository's release branches are integrated into `main` by PR; `dev`, feature branches, and temporary branches are not production deployment sources by default. If the requested change is not in `main`, follow the repo's PR/release flow to get it there; do not dispatch another branch to bypass that flow. Use another ref only when the user explicitly names it and the repository has an approved reason to deploy that ref.
+- Before dispatching, inspect the current branch, upstream, working tree, `origin/main` SHA, and active CD runs. Confirm the intended change is committed on `main` and the exact SHA to ship. Local uncommitted or unpushed changes are not included in a workflow run; stop and explain what needs to be published. Do not commit, push, create/switch branches, cherry-pick, or merge just to make dispatch possible unless the user asked for that operation or the repository's approved release flow requires it.
+- A direct request to deploy authorizes the production workflow, but does not authorize changing the requested source ref or adding unrelated changes to it. If the intended SHA or deployment target is ambiguous, ask before dispatching. State that dispatch updates all four apps when that is not already clear from the user's request.
+- Check for an active production CD run before starting another. Do not dispatch a temporary or arbitrary branch merely because GitHub permits it. Use the selected-service `deploy:*` helpers only for an explicitly requested emergency service recovery; they are not the normal release path.
+- After dispatch, report the workflow URL, selected ref and SHA, and observed result. Verify quality checks, all four image builds, the deploy job, and healthchecks. If the run fails or is cancelled, distinguish that from a completed deployment; inspect the job outcome before considering a retry.
 
 ## Recovering a change on the wrong branch
 
