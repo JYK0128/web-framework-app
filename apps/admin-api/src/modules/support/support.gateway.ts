@@ -7,6 +7,7 @@ import { AdminPermission } from '@pkg/shared';
 import type { Namespace, Socket } from 'socket.io';
 
 import { AppEntityManager } from '~/core/database/entity-manager';
+
 @WebSocketGateway({ namespace: '/support', path: '/api/v1/socket.io', cors: { origin: false } })
 export class SupportGateway implements OnGatewayInit {
   constructor(
