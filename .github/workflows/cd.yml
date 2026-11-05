@@ -253,6 +253,25 @@ jobs:
           script: |
             set -eu
 
+            on_deploy_failure() {
+              status=$?
+              trap - EXIT
+              if [ "$status" -eq 0 ]; then
+                return
+              fi
+              echo "Deployment failed (exit $status); collecting app container state." >&2
+              docker compose -f apps/deployment/docker-compose.prd.yml ps -a >&2 || true
+              for service in admin-api service-api admin-web service-web; do
+                echo "--- ${service} container state ---" >&2
+                docker compose -f apps/deployment/docker-compose.prd.yml ps -a "$service" >&2 || true
+                docker compose -f apps/deployment/docker-compose.prd.yml logs --tail=80 --no-color "$service" 2>&1 \
+                  | sed -E 's#(postgres(ql)?|redis)://[^[:space:]" ]+#\1://[REDACTED]#Ig; s#((password|secret|token|authorization)[=: ]+)[^[:space:]" ]+#\1[REDACTED]#Ig' \
+                  | tail -n 80 >&2 || true
+              done
+              exit "$status"
+            }
+            trap on_deploy_failure EXIT
+
             if [ -z "$SERVER_DEPLOY_PATH" ] || [ ! -d "$SERVER_DEPLOY_PATH/.git" ]; then
               echo "SERVER_DEPLOY_PATH must point to an existing checkout of this repository." >&2
               exit 1

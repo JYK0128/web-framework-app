@@ -56,6 +56,15 @@ const EMAIL_KEYWORDS = ['email'];
 const PHONE_KEYWORDS = ['phone', 'mobile'];
 const NAME_KEYWORDS = ['name', 'username', 'ssn', 'creditcard'];
 
+/** 자유 형식 문자열 안의 한국 주민등록번호와 휴대전화 번호를 가립니다. */
+function maskInlinePii(value: string): string {
+  return value
+    // 주민등록번호: 하이픈 유무를 모두 허용하고 번호 전체를 숨깁니다.
+    .replace(/\b\d{6}-?[1-4]\d{6}\b/g, '******-*******')
+    // 한국 휴대전화: 010/011/016/017/018/019, 구분자 유무를 허용합니다.
+    .replace(/\b(01[016789])[- .]?(\d{3,4})[- .]?(\d{4})\b/g, (_match, prefix: string, _middle: string, last: string) => `${prefix}-****-${last}`);
+}
+
 /** 민감 키워드가 포함되어 있더라도 마스킹에서 제외할 정확한 키 목록 */
 const EXCLUDED_KEYS = new Set([
   'statuscode',    // HTTP 상태코드
@@ -88,6 +97,7 @@ function maskFieldValue(key: string, val: unknown): unknown {
     if (EMAIL_KEYWORDS.some((kw) => lKey.includes(kw))) return maskEmail(val);
     if (PHONE_KEYWORDS.some((kw) => lKey.includes(kw))) return maskPhone(val);
     if (NAME_KEYWORDS.some((kw) => lKey.includes(kw))) return maskName(val);
+    return maskInlinePii(val);
   }
 
   return val;
@@ -172,7 +182,7 @@ export function maskData(data: unknown): unknown {
     if (trimmed.includes('?') && trimmed.includes('=')) {
       return maskUrl(trimmed);
     }
-    return data;
+    return maskInlinePii(data);
   }
 
   if (typeof data === 'object') {

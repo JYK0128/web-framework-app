@@ -1,18 +1,23 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { SessionStore, USER_SESSION_OPTIONS, type UserSessionOptions } from '@pkg/server-core/auth';
 import { KvStore } from '@pkg/server-core/kv-store';
 import { type SessionData } from 'express-session';
 
-import { SERVICE_ID } from '~/app.config';
+import { SessionStore } from '#auth/user/session/session.store';
+import { USER_SESSION_OPTIONS, type UserSessionOptions } from '#auth/user/user-auth.interface';
+
+import { REDIS_AUTH_STORE_NAMESPACE } from './redis-auth-store.config';
+
+export { REDIS_AUTH_STORE_NAMESPACE } from './redis-auth-store.config';
 
 @Injectable()
 export class RedisSessionStore extends SessionStore {
   constructor(
     private readonly kvStore: KvStore,
     @Inject(USER_SESSION_OPTIONS) private readonly options: UserSessionOptions,
+    @Inject(REDIS_AUTH_STORE_NAMESPACE) private readonly namespace: string,
   ) { super(); }
 
-  private key(id: string): string { return `${SERVICE_ID}:auth_session:${id}`; }
+  private key(id: string): string { return `${this.namespace}:auth_session:${id}`; }
 
   override get(id: string, callback: (error: unknown, session?: SessionData | null) => void): void {
     void this.kvStore.get<SessionData & { principal?: { id?: unknown } }>(this.key(id)).then((value) => {
@@ -41,7 +46,7 @@ export class RedisSessionStore extends SessionStore {
     }
   }
 
-  private userKey(userId: string): string { return `${SERVICE_ID}:auth_user_sessions:${userId}`; }
+  private userKey(userId: string): string { return `${this.namespace}:auth_user_sessions:${userId}`; }
 
   private async save(id: string, session: SessionData): Promise<void> {
     const previous = await this.kvStore.get<SessionData>(this.key(id));

@@ -2,11 +2,11 @@ import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Param
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiExcludeEndpoint, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions, Public, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
+import { InternalClient } from '@pkg/server-core/http/internal-client';
 import { AdminPermission } from '@pkg/shared';
 import type { Request, Response } from 'express';
 
 import { ADMIN_RUNTIME_CONFIG, SECURITY_CONFIG } from '~/app.config';
-import { InternalClient } from '~/core/internal-client';
 import { CreateOAuthIconPresignedUrlCommand } from '~/modules/system-config/oauth/create-oauth-icon-presigned-url.command';
 import { CreateOAuthIconPresignedUrlRequestDto } from '~/modules/system-config/oauth/create-oauth-icon-presigned-url.request.dto';
 import { CreateOAuthIconPresignedUrlResponseDto } from '~/modules/system-config/oauth/create-oauth-icon-presigned-url.response.dto';

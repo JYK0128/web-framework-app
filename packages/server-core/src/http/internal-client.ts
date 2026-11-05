@@ -1,9 +1,11 @@
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
-import { MACHINE_AUTH_ISSUER, MACHINE_CONNECTION, type MachineAuthIssuer, type MachineConnection } from '@pkg/server-core/auth';
-import { RequestContext } from '@pkg/server-core/http/contexts';
 import { ApplicationError } from '@pkg/shared/common';
+import axios from 'axios';
 
-import { httpClient } from '~/core/http-client';
+import { MACHINE_AUTH_ISSUER, MACHINE_CONNECTION, type MachineAuthIssuer, type MachineConnection } from '#auth/machine/machine-auth.interface';
+import { RequestContext } from '#http/contexts/request.context';
+
+const INTERNAL_CLIENT_TIMEOUT_MS = 10_000;
 
 interface InternalApiResponse<T> {
   data: T
@@ -11,29 +13,30 @@ interface InternalApiResponse<T> {
 
 @Injectable()
 export class InternalClient {
+  private readonly client = axios.create({ validateStatus: () => true, timeout: INTERNAL_CLIENT_TIMEOUT_MS });
   private readonly logger = new Logger(InternalClient.name);
 
-  constructor(@Inject(MACHINE_AUTH_ISSUER) private readonly authIssuer: MachineAuthIssuer, private readonly requestContext: RequestContext, @Inject(MACHINE_CONNECTION) private readonly connection: MachineConnection) {}
+  constructor(
+    @Inject(MACHINE_AUTH_ISSUER) private readonly authIssuer: MachineAuthIssuer,
+    private readonly requestContext: RequestContext,
+    @Inject(MACHINE_CONNECTION) private readonly connection: MachineConnection,
+  ) {}
 
   async fetch<T>(path: string, options: { method?: 'GET' | 'POST' | 'PATCH' | 'DELETE', body?: unknown } = {}): Promise<T> {
     const credential = await this.authIssuer.issue({ targetService: this.connection.targetService });
     const url = this.targetUrl(path);
     try {
-      const response = await httpClient.request<InternalApiResponse<T>>({
+      const response = await this.client.request<InternalApiResponse<T>>({
         url,
         method: options.method ?? 'GET',
-        headers: { ...(credential.type === 'bearer' ? { Authorization: `Bearer ${credential.value}` } : { 'x-api-key': credential.value }), 'Content-Type': 'application/json', ...this.forwardedHeaders() },
+        headers: { ...this.authHeaders(credential), 'Content-Type': 'application/json', ...this.forwardedHeaders() },
         ...(options.body === undefined ? {} : { data: options.body }),
       });
-      if (!isSuccessful(response.status)) {
-        throw upstreamError(response.status, response.data);
-      }
+      if (!isSuccessful(response.status)) throw upstreamError(response.status, response.data);
       return response.data.data;
     }
-    catch (err: unknown) {
-      if (err instanceof ApplicationError) throw err;
-      this.logger.error(`[Machine Network Failure] Failed to reach ${this.connection.targetService} at ${url}`, err);
-      throw new ApplicationError({ code: 'INTERNAL_SERVICE_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE, details: err instanceof Error ? err.message : String(err) });
+    catch (error: unknown) {
+      this.throwNetworkError(error, url);
     }
   }
 
@@ -41,24 +44,16 @@ export class InternalClient {
     const credential = await this.authIssuer.issue({ targetService: this.connection.targetService });
     const url = this.targetUrl(path);
     try {
-      const response = await httpClient.request({
+      const response = await this.client.request({
         url,
         method: 'PUT',
-        headers: {
-          ...(credential.type === 'bearer' ? { Authorization: `Bearer ${credential.value}` } : { 'x-api-key': credential.value }),
-          'Content-Type': contentType,
-          ...this.forwardedHeaders(),
-        },
+        headers: { ...this.authHeaders(credential), 'Content-Type': contentType, ...this.forwardedHeaders() },
         data: body,
       });
-      if (!isSuccessful(response.status)) {
-        throw upstreamError(response.status, response.data);
-      }
+      if (!isSuccessful(response.status)) throw upstreamError(response.status, response.data);
     }
-    catch (err: unknown) {
-      if (err instanceof ApplicationError) throw err;
-      this.logger.error(`[Machine Network Failure] Failed to reach ${this.connection.targetService} at ${url}`, err);
-      throw new ApplicationError({ code: 'INTERNAL_SERVICE_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE, details: err instanceof Error ? err.message : String(err) });
+    catch (error: unknown) {
+      this.throwNetworkError(error, url);
     }
   }
 
@@ -66,24 +61,21 @@ export class InternalClient {
     const credential = await this.authIssuer.issue({ targetService: this.connection.targetService });
     const url = this.targetUrl(path);
     try {
-      const response = await httpClient.get<ArrayBuffer>(url, {
+      const response = await this.client.get<ArrayBuffer>(url, {
         responseType: 'arraybuffer',
-        headers: {
-          ...(credential.type === 'bearer' ? { Authorization: `Bearer ${credential.value}` } : { 'x-api-key': credential.value }),
-          ...this.forwardedHeaders(),
-        },
+        headers: { ...this.authHeaders(credential), ...this.forwardedHeaders() },
       });
-      if (!isSuccessful(response.status)) {
-        throw upstreamError(response.status, response.data);
-      }
+      if (!isSuccessful(response.status)) throw upstreamError(response.status, response.data);
       const contentType = response.headers['content-type'];
       return { body: Buffer.from(response.data), contentType: typeof contentType === 'string' ? contentType : 'application/octet-stream' };
     }
-    catch (err: unknown) {
-      if (err instanceof ApplicationError) throw err;
-      this.logger.error(`[Machine Network Failure] Failed to reach ${this.connection.targetService} at ${url}`, err);
-      throw new ApplicationError({ code: 'INTERNAL_SERVICE_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE, details: err instanceof Error ? err.message : String(err) });
+    catch (error: unknown) {
+      this.throwNetworkError(error, url);
     }
+  }
+
+  private authHeaders(credential: Awaited<ReturnType<MachineAuthIssuer['issue']>>): Record<string, string> {
+    return credential.type === 'bearer' ? { Authorization: `Bearer ${credential.value}` } : { 'x-api-key': credential.value };
   }
 
   private forwardedHeaders(): Record<string, string> {
@@ -95,6 +87,12 @@ export class InternalClient {
   private targetUrl(path: string): string {
     const relativePath = path.startsWith('/') ? path : `/${path}`;
     return new URL(`/api/v1${relativePath}`, this.connection.baseUrl).toString();
+  }
+
+  private throwNetworkError(error: unknown, url: string): never {
+    if (error instanceof ApplicationError) throw error;
+    this.logger.error(`[Machine Network Failure] Failed to reach ${this.connection.targetService} at ${url}`, error);
+    throw new ApplicationError({ code: 'INTERNAL_SERVICE_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE, details: error instanceof Error ? error.message : String(error) });
   }
 }
 

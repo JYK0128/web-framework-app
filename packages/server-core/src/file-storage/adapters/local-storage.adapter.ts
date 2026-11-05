@@ -1,17 +1,26 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { type FileStorageAdapter, type PresignedUploadUrlResult, type SaveFileResult } from '@pkg/server-core/file-storage';
 
-import { ADMIN_RUNTIME_CONFIG } from '~/app.config';
+export const LOCAL_FILE_STORAGE_OPTIONS = Symbol('LOCAL_FILE_STORAGE_OPTIONS');
+
+export interface LocalFileStorageOptions { localDirectory: string, publicUrlPrefix: string, uploadUrlPrefix: string }
 
 @Injectable()
 export class LocalStorageAdapter implements FileStorageAdapter {
   readonly name = 'local';
-  private readonly baseDir = resolve(process.cwd(), ADMIN_RUNTIME_CONFIG.storage.localDirectory);
-  private readonly publicUrlPrefix = ADMIN_RUNTIME_CONFIG.storage.publicUrlPrefix;
-  private readonly uploadUrlPrefix = ADMIN_RUNTIME_CONFIG.storage.uploadUrlPrefix;
+  private readonly baseDir: string;
+
+  constructor(@Inject(LOCAL_FILE_STORAGE_OPTIONS) options: LocalFileStorageOptions) {
+    this.baseDir = resolve(process.cwd(), options.localDirectory);
+    this.publicUrlPrefix = options.publicUrlPrefix;
+    this.uploadUrlPrefix = options.uploadUrlPrefix;
+  }
+
+  private readonly publicUrlPrefix: string;
+  private readonly uploadUrlPrefix: string;
 
   async saveFile(subDir: string, filename: string, buffer: Buffer): Promise<SaveFileResult> {
     const targetDir = join(this.baseDir, subDir);
