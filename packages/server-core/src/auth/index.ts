@@ -2,7 +2,6 @@ export * from './authentication.guard';
 export * from './machine/machine-auth.interface';
 export * from './machine/machine-auth.module';
 export * from './stores/redis-session.store';
-export * from './stores/redis-session.store';
 export * from './stores/redis-token.store';
 export * from './user/credential-password';
 export * from './user/session/session.store';

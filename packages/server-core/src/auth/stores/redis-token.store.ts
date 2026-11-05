@@ -1,8 +1,9 @@
 import { createHash } from 'node:crypto';
 
 import { Inject, Injectable } from '@nestjs/common';
-import { type RefreshToken, type TokenConsumeResult, TokenStore } from '@pkg/server-core/auth';
 import { KvStore } from '@pkg/server-core/kv-store';
+
+import { type RefreshToken, type TokenConsumeResult, TokenStore } from '#auth/user/token/stores/token.store';
 
 import { REDIS_AUTH_STORE_NAMESPACE } from './redis-auth-store.config';
 
