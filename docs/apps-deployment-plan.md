@@ -18,6 +18,19 @@ workflow 제거만으로 서버의 기존 `service-factory-app` 컨테이너가 
 
 2026-10-02 앱 네 개의 운영 배포를 완료했다. 실제 구성·검증·작은 서버의 배포 제한은 [apps-prd-readiness.md](./apps-prd-readiness.md)를 따른다. 아래 단계별 계획 중 기존 template 데이터 보존·이전은 사용자 요청에 따라 적용하지 않았다.
 
+## 브랜치, 릴리스, 버전 태그 규칙
+
+앱 변경은 `dev`에서 통합하고, 운영 반영은 검토된 릴리스 PR만 `main`에 병합한다. 배포 대상 경로를 바꾼 `main` push는 네 앱 전체의 production 배포를 시작하므로 기능·수정 브랜치를 직접 `main`에 병합하지 않는다.
+
+1. 기능 및 버그 수정은 작업 브랜치에서 진행하고 PR로 `dev`에 병합한다. CI의 typecheck와 lint가 통과한 뒤 릴리스 후보를 고른다.
+2. 릴리스 브랜치 `release/vX.Y.Z`는 검증할 `dev` 커밋에서 만든다. `main`과의 전체 diff를 확인하고, 이 버전에 포함할 변경만 있는지 확인한 뒤 `release: vX.Y.Z 운영 반영` 제목으로 `main` 대상 PR을 연다.
+3. 실제 PR 번호를 확인해 병합 커밋 제목에 포함한다. `main` 병합 후 CD의 품질 검사, 네 이미지 빌드, Compose 배포, 네 컨테이너 health 상태와 공개 readiness를 확인한다.
+4. CD가 성공한 뒤 workflow의 실제 `DEPLOY_SHA`를 확인하고, 그 SHA에 annotated tag `vX.Y.Z`를 생성해 push한다. tag가 배포 SHA와 같은지 `git rev-parse vX.Y.Z^{}`로 확인한다. 배포가 실패하면 태그를 만들지 않는다.
+5. 이미 존재하는 태그를 옮기거나 덮어쓰지 않는다. 태그가 있거나 릴리스 번호와 Git 태그·GitHub Release 기록이 서로 다르면 새 버전을 추측하지 말고 먼저 이력을 대조해 정리한다. GitHub Release 페이지는 저장소 convention 또는 사용자 요청에 따라 별도로 만들고 같은 Git tag를 사용한다. 배포 버전의 기준은 Git tag와 배포 SHA 일치 여부다.
+6. 운영 장애 긴급 수정도 기본적으로 `dev`에 먼저 통합하고 릴리스 PR로 배포한다. 사용자가 긴급 우회 경로를 명시적으로 요청한 경우에만 별도 수정 PR을 `main`에 보낼 수 있으며, 같은 수정은 즉시 PR로 `dev`에 역반영한다.
+
+**현재 이력 점검 (2026-11-06):** Git 태그는 `v0.9.0`–`v0.9.5`까지만 있고, `main`에는 `v0.9.6`–`v0.9.9`, `v0.9.91`, `v0.9.92` 릴리스 커밋이 있다. GitHub Release 목록도 Git 태그/커밋 이력과 일치하지 않는다. 이미 배포된 버전 태그를 만들 때는 각 릴리스의 실제 배포 SHA를 확인해야 하며, 이 불일치를 확인하기 전에는 다음 버전 번호를 자동으로 정하지 않는다. 기존 `main` 이력은 재작성하지 말고 이후 릴리스 규칙을 적용한다.
+
 `apps/deployment/`는 네 앱의 이미지와 서비스를 정의한다. `Dockerfile.prd`는 Turbo로 대상 workspace를 prune하고, `docker-compose.prd.yml`은 네 서비스와 healthcheck를 정의한다. `.github/workflows/cd.yml`은 전체 검사와 네 이미지의 SHA tag 빌드·게시 뒤 같은 SHA의 Compose 릴리스를 서버에 적용한다. 운영값과 실제 이미지/서버 동작은 별도 준비 및 운영 검증이 필요하다.
 
 | 영역 | 현재 상태 | 계획에 미치는 영향 |
