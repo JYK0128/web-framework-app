@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
+import { InternalClient } from '@pkg/server-core/http/internal-client';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalClient } from '~/core/internal-client';
 import { CreateEventRequestDto } from '~/modules/event/create-event.request.dto';
 import { CreateEventResponseDto } from '~/modules/event/create-event.response.dto';
 import { DeleteEventRequestDto } from '~/modules/event/delete-event.request.dto';

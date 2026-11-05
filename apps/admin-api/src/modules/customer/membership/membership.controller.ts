@@ -1,9 +1,9 @@
 import { Body, Controller, Param, Patch } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
+import { InternalClient } from '@pkg/server-core/http/internal-client';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalClient } from '~/core/internal-client';
 import { UpdateCustomerRoleRequestDto } from '~/modules/customer/membership/update-customer-role.request.dto';
 import { UpdateCustomerRoleResponseDto } from '~/modules/customer/membership/update-customer-role.response.dto';
 

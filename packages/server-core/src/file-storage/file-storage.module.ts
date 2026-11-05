@@ -1,11 +1,11 @@
-import { type DynamicModule, Module } from '@nestjs/common';
+import { type DynamicModule, Module, type Provider } from '@nestjs/common';
 
 import type { FileStorageAdapter, FileStorageModuleOptions } from '#file-storage/file-storage.interface';
 import { FileStorageService } from '#file-storage/file-storage.service';
 
 @Module({})
 export class FileStorageModule {
-  static forRoot(adapters: FileStorageModuleOptions): DynamicModule {
+  static forRoot(adapters: FileStorageModuleOptions, providers: Provider[] = []): DynamicModule {
     const adapterTypes = [...new Set(Object.values(adapters))];
     const adapterNames = Object.keys(adapters);
 
@@ -13,6 +13,7 @@ export class FileStorageModule {
       module: FileStorageModule,
       global: true,
       providers: [
+        ...providers,
         ...adapterTypes,
         {
           provide: FileStorageService,

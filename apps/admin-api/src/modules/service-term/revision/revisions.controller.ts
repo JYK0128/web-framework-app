@@ -1,9 +1,9 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
+import { InternalClient } from '@pkg/server-core/http/internal-client';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalClient } from '~/core/internal-client';
 import { GetServiceTermRevisionsRequestDto } from '~/modules/service-term/revision/get-service-term-revisions.request.dto';
 import { GetServiceTermRevisionsResponseDto } from '~/modules/service-term/revision/get-service-term-revisions.response.dto';
 

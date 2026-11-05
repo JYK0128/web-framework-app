@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
+import { InternalClient } from '@pkg/server-core/http/internal-client';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalClient } from '~/core/internal-client';
 import { DeleteQnaRequestDto } from '~/modules/qna/delete-qna.request.dto';
 import { DeleteQnaResponseDto } from '~/modules/qna/delete-qna.response.dto';
 import { GetQnaRequestDto } from '~/modules/qna/get-qna.request.dto';
