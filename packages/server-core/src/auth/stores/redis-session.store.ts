@@ -1,7 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { SessionStore, USER_SESSION_OPTIONS, type UserSessionOptions } from '@pkg/server-core/auth';
 import { KvStore } from '@pkg/server-core/kv-store';
 import { type SessionData } from 'express-session';
+
+import { SessionStore } from '#auth/user/session/session.store';
+import { USER_SESSION_OPTIONS, type UserSessionOptions } from '#auth/user/user-auth.interface';
 
 import { REDIS_AUTH_STORE_NAMESPACE } from './redis-auth-store.config';
 
