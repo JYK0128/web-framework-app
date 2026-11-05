@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
+import { InternalClient } from '@pkg/server-core/http/internal-client';
 import { AdminPermission } from '@pkg/shared';
 import { maskEmail, maskName } from '@pkg/shared/common';
 
-import { InternalClient } from '~/core/internal-client';
 import { CustomerItemDto } from '~/modules/customer/profile/customer-item.dto';
 import { GetCustomerRequestDto } from '~/modules/customer/profile/get-customer.request.dto';
 import { GetCustomerResponseDto } from '~/modules/customer/profile/get-customer.response.dto';

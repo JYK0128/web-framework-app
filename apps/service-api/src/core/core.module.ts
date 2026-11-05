@@ -1,13 +1,14 @@
 import { Global, HttpStatus, Module, type ModuleMetadata, ValidationPipe } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { AuthenticationGuard, MachineAuthModule, UserAuthModule } from '@pkg/server-core/auth';
+import { AuthenticationGuard, MachineAuthModule, REDIS_AUTH_STORE_NAMESPACE, RedisTokenStore, UserAuthModule } from '@pkg/server-core/auth';
 import { EventBrokerModule } from '@pkg/server-core/event-broker';
-import { StorageModule } from '@pkg/server-core/file-storage';
+import { CDN_FILE_STORAGE_OPTIONS, CDNStorageAdapter, LOCAL_FILE_STORAGE_OPTIONS, LocalStorageAdapter, S3_FILE_STORAGE_OPTIONS, S3StorageAdapter, StorageModule } from '@pkg/server-core/file-storage';
 import { PrincipalContext, RequestContext } from '@pkg/server-core/http/contexts';
 import { ApplicationErrorFilter, HttpExceptionFilter, UnexpectedExceptionFilter } from '@pkg/server-core/http/filters';
 import { PermissionGuard } from '@pkg/server-core/http/guards';
 import { ResponseTransformInterceptor } from '@pkg/server-core/http/interceptors';
+import { InternalClient } from '@pkg/server-core/http/internal-client';
 import { REQUEST_LOGGING_PII_HASH_KEY, RequestContextMiddleware, RequestLoggingMiddleware } from '@pkg/server-core/http/middlewares';
 import { SanitizeHtmlPipe, TrimStringPipe } from '@pkg/server-core/http/pipes';
 import { KvStoreModule } from '@pkg/server-core/kv-store';
@@ -20,16 +21,11 @@ import { WebhookModule } from '@pkg/server-core/webhook';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsModule } from 'nestjs-cls';
 
-import { MACHINE_ALLOWED_LIST, SECURITY_CONFIG, SERVICE_ID } from '~/app.config';
+import { MACHINE_ALLOWED_LIST, SECURITY_CONFIG, SERVICE_ID, SERVICE_RUNTIME_CONFIG } from '~/app.config';
 import { DatabaseModule } from '~/core/database/database.module';
 import { env } from '~/env';
 
-import { InternalClient } from './internal-client';
 import { OrmAuthReader } from './orm-auth.reader';
-import { CDNStorageAdapter } from './storage/cdn-storage.adapter';
-import { LocalStorageAdapter } from './storage/local-storage.adapter';
-import { S3StorageAdapter } from './storage/s3-storage.adapter';
-import { RedisTokenStore } from './stores/redis-token.store';
 
 const PERSISTENCE_MODULES = {
   imports: [
@@ -63,7 +59,7 @@ const AUTH_MODULES = {
           twoFactorRequired: SECURITY_CONFIG.twoFactor.required,
         },
       },
-      { reader: OrmAuthReader, tokenStore: RedisTokenStore },
+      { reader: OrmAuthReader, tokenStore: RedisTokenStore, providers: [{ provide: REDIS_AUTH_STORE_NAMESPACE, useValue: SERVICE_ID }] },
     ),
     MachineAuthModule.forRoot(
       {
@@ -128,7 +124,11 @@ const MESSAGING_MODULES = {
 } satisfies Pick<ModuleMetadata, 'imports' | 'exports'>;
 
 const STORAGE_MODULES = {
-  imports: [StorageModule.forRoot({ local: LocalStorageAdapter, s3: S3StorageAdapter, cdn: CDNStorageAdapter })],
+  imports: [StorageModule.forRoot({ local: LocalStorageAdapter, s3: S3StorageAdapter, cdn: CDNStorageAdapter }, [
+    { provide: LOCAL_FILE_STORAGE_OPTIONS, useValue: SERVICE_RUNTIME_CONFIG.storage },
+    { provide: S3_FILE_STORAGE_OPTIONS, useValue: { bucket: env.AWS_S3_BUCKET, region: env.AWS_S3_REGION, endpoint: env.AWS_S3_ENDPOINT, awsConfigFile: env.AWS_CONFIG_FILE, awsProfile: env.AWS_PROFILE } },
+    { provide: CDN_FILE_STORAGE_OPTIONS, useValue: { baseUrl: env.CDN_URL } },
+  ])],
   exports: [StorageModule],
 } satisfies Pick<ModuleMetadata, 'imports' | 'exports'>;
 

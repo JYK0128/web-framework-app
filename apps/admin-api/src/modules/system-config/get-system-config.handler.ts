@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { InternalClient } from '@pkg/server-core/http/internal-client';
 
-import { InternalClient } from '~/core/internal-client';
 import { SystemContext } from '~/core/system.context';
 import { AdminEmailConfigResponseDto } from '~/modules/system-config/admin-email/admin-email-config.response.dto';
 import { GetSystemConfigQuery } from '~/modules/system-config/get-system-config.query';

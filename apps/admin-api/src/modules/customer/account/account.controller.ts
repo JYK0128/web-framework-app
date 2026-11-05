@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
+import { InternalClient } from '@pkg/server-core/http/internal-client';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalClient } from '~/core/internal-client';
 import { BanCustomerRequestDto } from '~/modules/customer/account/ban-customer.request.dto';
 import { BanCustomerResponseDto } from '~/modules/customer/account/ban-customer.response.dto';
 import { DeleteCustomerRequestDto } from '~/modules/customer/account/delete-customer.request.dto';

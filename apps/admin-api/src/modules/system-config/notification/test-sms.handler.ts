@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { InternalClient } from '@pkg/server-core/http/internal-client';
 import { NotificationService } from '@pkg/server-core/notification';
 import type { NotificationConfigDto } from '@pkg/server-core/notification/dto';
 
-import { InternalClient } from '~/core/internal-client';
 import { TestSmsCommand } from '~/modules/system-config/notification/test-sms.command';
 import { TestSmsResponseDto } from '~/modules/system-config/notification/test-sms.response.dto';
 

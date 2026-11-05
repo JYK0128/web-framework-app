@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
+import { InternalClient } from '@pkg/server-core/http/internal-client';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalClient } from '~/core/internal-client';
 import { CreateServiceTermGroupRequestDto } from '~/modules/service-term/group/create-service-term-group.request.dto';
 import { CreateServiceTermGroupResponseDto } from '~/modules/service-term/group/create-service-term-group.response.dto';
 import { DeleteServiceTermGroupRequestDto } from '~/modules/service-term/group/delete-service-term-group.request.dto';

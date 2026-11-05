@@ -1,9 +1,9 @@
 import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
+import { InternalClient } from '@pkg/server-core/http/internal-client';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalClient } from '~/core/internal-client';
 import { GetCustomerSessionsRequestDto } from '~/modules/customer/session/get-customer-sessions.request.dto';
 import { GetCustomerSessionsResponseDto } from '~/modules/customer/session/get-customer-sessions.response.dto';
 import { RevokeCustomerSessionRequestDto } from '~/modules/customer/session/revoke-customer-session.request.dto';

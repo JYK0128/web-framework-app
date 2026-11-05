@@ -1,16 +1,18 @@
 import { createHash } from 'node:crypto';
 
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { type RefreshToken, type TokenConsumeResult, TokenStore } from '@pkg/server-core/auth';
 import { KvStore } from '@pkg/server-core/kv-store';
 
-import { SERVICE_ID } from '~/app.config';
+import { REDIS_AUTH_STORE_NAMESPACE } from './redis-auth-store.config';
+
+export { REDIS_AUTH_STORE_NAMESPACE } from './redis-auth-store.config';
 
 @Injectable()
 export class RedisTokenStore extends TokenStore {
-  constructor(private readonly kvStore: KvStore) { super(); }
+  constructor(private readonly kvStore: KvStore, @Inject(REDIS_AUTH_STORE_NAMESPACE) private readonly namespace: string) { super(); }
 
-  private key(name: string): string { return `${SERVICE_ID}:auth_token:${name}`; }
+  private key(name: string): string { return `${this.namespace}:auth_token:${name}`; }
   private roleFamilies(roleId: string): string { return this.key(`role_families:${roleId}`); }
   private hash(token: string): string { return createHash('sha256').update(token).digest('hex'); }
 
