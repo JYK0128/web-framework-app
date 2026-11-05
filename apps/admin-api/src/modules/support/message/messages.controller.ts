@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
+import { InternalClient } from '@pkg/server-core/http/internal-client';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalClient } from '~/core/internal-client';
 import { CreateSupportMessageRequestDto } from '~/modules/support/message/create-support-message.request.dto';
 import { CreateSupportMessageResponseDto } from '~/modules/support/message/create-support-message.response.dto';
 import { GetSupportMessagePiiListRequestDto } from '~/modules/support/message/get-support-message-pii-list.request.dto';

@@ -1,12 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { type FileStorageAdapter, type PresignedUploadUrlResult, type SaveFileResult } from '@pkg/server-core/file-storage';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { env } from '~/env';
+export const CDN_FILE_STORAGE_OPTIONS = Symbol('CDN_FILE_STORAGE_OPTIONS');
+export interface CdnFileStorageOptions { baseUrl?: string }
 
 @Injectable()
 export class CDNStorageAdapter implements FileStorageAdapter {
   readonly name = 'cdn';
+
+  constructor(@Inject(CDN_FILE_STORAGE_OPTIONS) private readonly options: CdnFileStorageOptions) {}
 
   async saveFile(_subDir: string, _filename: string, _buffer: Buffer): Promise<SaveFileResult> {
     throw this.unsupportedOperation();
@@ -45,11 +48,11 @@ export class CDNStorageAdapter implements FileStorageAdapter {
   }
 
   private getBaseUrl(): URL {
-    if (!env.CDN_URL) {
+    if (!this.options.baseUrl) {
       throw new ApplicationError({ code: 'CDN_NOT_CONFIGURED', status: 503 });
     }
 
-    return new URL(env.CDN_URL.endsWith('/') ? env.CDN_URL : `${env.CDN_URL}/`);
+    return new URL(this.options.baseUrl.endsWith('/') ? this.options.baseUrl : `${this.options.baseUrl}/`);
   }
 
   private buildKey(subDir: string, filename: string): string {

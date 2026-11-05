@@ -17,7 +17,6 @@ export const SECURITY_CONFIG = {
   twoFactor: { enabled: SERVICE_AUTH_POLICY_CONFIG.twoFactorEnabled, required: SERVICE_AUTH_POLICY_CONFIG.twoFactorRequired, digits: SERVICE_AUTH_POLICY_CONFIG.twoFactorDigits, periodSeconds: 30, windowSteps: 1, challengeTtlSeconds: 300 },
   identityVerification: { requestTimeoutSeconds: 5, maxRetries: 2, retryDelayMilliseconds: 200, retryMaxDelayMilliseconds: 10_000, retryBackoffFactor: 2, retryJitterEnabled: false },
   integrations: {
-    internalServiceRequestTimeoutSeconds: 10,
     oauthProviderRequestTimeoutSeconds: 5,
     holidayCalendarRequestTimeoutSeconds: 6,
     webhookRequestTimeoutSeconds: 5,

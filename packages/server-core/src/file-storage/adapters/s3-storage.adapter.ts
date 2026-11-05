@@ -3,11 +3,11 @@ import { existsSync } from 'node:fs';
 import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { fromIni } from '@aws-sdk/credential-provider-ini';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { type FileStorageAdapter, type PresignedUploadUrlResult, type SaveFileResult } from '@pkg/server-core/file-storage';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { env } from '~/env';
+export const S3_FILE_STORAGE_OPTIONS = Symbol('S3_FILE_STORAGE_OPTIONS');
 
 interface S3StorageOptions {
   bucket: string
@@ -17,17 +17,19 @@ interface S3StorageOptions {
   awsProfile: string
 }
 
+export interface S3FileStorageOptions {
+  bucket?: string
+  region?: string
+  endpoint?: string
+  awsConfigFile?: string
+  awsProfile?: string
+}
+
 /** S3 설정은 실제 접근 시점에 검증한다. */
 @Injectable()
 export class S3StorageAdapter implements FileStorageAdapter {
   readonly name = 's3';
-  private readonly s3Config = {
-    bucket: env.AWS_S3_BUCKET,
-    region: env.AWS_S3_REGION,
-    endpoint: env.AWS_S3_ENDPOINT,
-    awsConfigFile: env.AWS_CONFIG_FILE,
-    awsProfile: env.AWS_PROFILE,
-  };
+  constructor(@Inject(S3_FILE_STORAGE_OPTIONS) private readonly s3Config: S3FileStorageOptions) {}
 
   async saveFile(subDir: string, filename: string, buffer: Buffer): Promise<SaveFileResult> {
     const config = this.ensureConfig();

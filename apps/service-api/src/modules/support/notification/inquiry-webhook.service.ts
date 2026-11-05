@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-
-import { InternalClient } from '~/core/internal-client';
+import { InternalClient } from '@pkg/server-core/http/internal-client';
 
 interface SendWebhookResponse {
   accepted: boolean

@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
+import { InternalClient } from '@pkg/server-core/http/internal-client';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalClient } from '~/core/internal-client';
 import { CreateFaqRequestDto } from '~/modules/faq/create-faq.request.dto';
 import { CreateFaqResponseDto } from '~/modules/faq/create-faq.response.dto';
 import { DeleteFaqRequestDto } from '~/modules/faq/delete-faq.request.dto';

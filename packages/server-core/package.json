@@ -64,6 +64,10 @@
       "types": "./src/http/guards/index.ts",
       "default": "./src/http/guards/index.ts"
     },
+    "./http/internal-client": {
+      "types": "./src/http/internal-client.ts",
+      "default": "./src/http/internal-client.ts"
+    },
     "./http/interceptors": {
       "types": "./src/http/interceptors/index.ts",
       "default": "./src/http/interceptors/index.ts"
@@ -118,6 +122,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "3.1152.0",
+    "@aws-sdk/credential-provider-ini": "3.973.19",
+    "@aws-sdk/s3-request-presigner": "3.1152.0",
     "@nestjs/common": "11.1.28",
     "@nestjs/core": "11.1.28",
     "@mikro-orm/decorators": "7.1.10",

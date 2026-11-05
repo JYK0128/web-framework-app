@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
+import { InternalClient } from '@pkg/server-core/http/internal-client';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalClient } from '~/core/internal-client';
 import { CreateMembershipRequestDto } from '~/modules/membership/create-membership.request.dto';
 import { CreateMembershipResponseDto } from '~/modules/membership/create-membership.response.dto';
 import { DeleteMembershipRequestDto } from '~/modules/membership/delete-membership.request.dto';

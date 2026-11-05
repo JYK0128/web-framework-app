@@ -14,8 +14,8 @@ interface UserAuthModuleAdapterBase {
   reader: Type<AuthReader>
 }
 
-type TokenStoreAdapter = { tokenStore: Type<TokenStore> };
-type SessionStoreAdapter = { sessionStore: Type<SessionStore> };
+type TokenStoreAdapter = { tokenStore: Type<TokenStore>, providers?: Provider[] };
+type SessionStoreAdapter = { sessionStore: Type<SessionStore>, providers?: Provider[] };
 
 export type UserAuthModuleAdapters<TOptions extends UserAuthModuleOptions = UserAuthModuleOptions>
   = UserAuthModuleAdapterBase
@@ -49,6 +49,7 @@ export class UserAuthModule implements NestModule {
     if (options.driver === 'jwt') {
       const tokenStore = requireAdapter((adapters as Partial<TokenStoreAdapter>).tokenStore, 'tokenStore');
       providers.push(
+        ...((adapters as Partial<TokenStoreAdapter>).providers ?? []),
         { provide: USER_JWT_OPTIONS, useValue: options.jwt },
         { provide: TokenStore, useClass: tokenStore },
       );
@@ -57,6 +58,7 @@ export class UserAuthModule implements NestModule {
     else {
       const sessionStore = requireAdapter((adapters as Partial<SessionStoreAdapter>).sessionStore, 'sessionStore');
       providers.push(
+        ...((adapters as Partial<SessionStoreAdapter>).providers ?? []),
         { provide: USER_SESSION_OPTIONS, useValue: options.session },
         { provide: SessionStore, useClass: sessionStore },
         ExpressSessionMiddleware,

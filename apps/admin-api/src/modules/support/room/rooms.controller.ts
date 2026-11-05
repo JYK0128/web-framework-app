@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions, SwaggerApiResponse, UserAuth } from '@pkg/server-core/http/decorators';
+import { InternalClient } from '@pkg/server-core/http/internal-client';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalClient } from '~/core/internal-client';
 import { GetSupportRoomRequestDto } from '~/modules/support/room/get-support-room.request.dto';
 import { GetSupportRoomResponseDto } from '~/modules/support/room/get-support-room.response.dto';
 import { GetSupportRoomPiiListRequestDto } from '~/modules/support/room/get-support-room-pii-list.request.dto';
