@@ -1,7 +1,9 @@
-import { z } from '@pkg/shared/common';
+import { createLogger, z } from '@pkg/shared/common';
 import { deriveSecretKey } from '@pkg/shared/server';
 
 import { SECRET_KEY_PURPOSE } from './app.secret';
+
+const envLogger = createLogger('admin-api.env');
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']),
@@ -27,7 +29,9 @@ const envSchema = z.object({
 const parsed = envSchema.safeParse(process.env);
 
 if (!parsed.success) {
-  console.error('Invalid admin-api environment variables:', parsed.error.issues);
+  envLogger.error('Invalid admin-api environment variables', {
+    issues: parsed.error.issues.map(({ code, message, path }) => ({ code, message, path })),
+  });
   throw new Error('Invalid admin-api environment variables');
 }
 

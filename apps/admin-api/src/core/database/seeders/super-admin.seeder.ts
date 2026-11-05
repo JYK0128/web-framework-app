@@ -1,6 +1,7 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 import { AdminPermission, ALL_ADMIN_PERMISSIONS } from '@pkg/shared';
+import { createLogger } from '@pkg/shared/common';
 import { encrypt, hashPassword, hashWithSecret } from '@pkg/shared/server';
 
 import { Account, Profile, User } from '~/core/database/entities/auth';
@@ -10,6 +11,7 @@ import { env } from '~/env';
 const ADMIN_INIT_EMAIL = 'admin@test.com';
 // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- local development seed account only
 const ADMIN_INIT_PASSWORD = '1q2w3e4r1@';
+const logger = createLogger('admin-api.seeder');
 
 export class SuperAdminSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
@@ -89,6 +91,6 @@ export class SuperAdminSeeder extends Seeder {
     em.persist([user, profile, account]);
     await em.flush();
 
-    console.log(`[SuperAdminSeeder] Successfully seeded initial SuperAdmin (${initialEmail})`);
+    logger.info('Seeded initial SuperAdmin', { event: 'database.seed', accountType: 'super-admin' });
   }
 }
