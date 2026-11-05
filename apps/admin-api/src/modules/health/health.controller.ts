@@ -9,6 +9,8 @@ import { CheckLiveResponseDto } from '~/modules/health/check-live.response.dto';
 import { CheckReadyRequestDto } from '~/modules/health/check-ready.request.dto';
 import { CheckReadyResponseDto } from '~/modules/health/check-ready.response.dto';
 
+const READY_CHECK_TIMEOUT_MS = 4_000;
+
 /**
  * Health check controller
  * Note: Intentionally a direct integration with Terminus per cqrs.md architectural rules.
@@ -40,14 +42,15 @@ export class HealthController {
   @SwaggerApiResponse(CheckReadyResponseDto)
   async checkReady(_input: CheckReadyRequestDto = new CheckReadyRequestDto()): Promise<CheckReadyResponseDto> {
     return CheckReadyResponseDto.parse((await this.health.check([
-      () => this.db.pingCheck('database'),
+      () => this.db.pingCheck('database').withTimeout(READY_CHECK_TIMEOUT_MS),
       () =>
         this.healthIndicatorService
           .check('redis')
           .attempt(async () => {
             const isUp = await this.kvStore.ping();
             if (!isUp) throw new Error('Redis connection is down');
-          }),
+          })
+          .withTimeout(READY_CHECK_TIMEOUT_MS),
     ])));
   }
 }
